@@ -454,10 +454,10 @@ RSA *tmp_rsa_cb(SSL *ssl, int export, int keylen)
 {
   if (!export) keylen = 512;
   if (keylen == 512) {
-    BIO *in = BIO_new_file("control/rsa512.pem", "r");
+    FILE *in = fopen("control/rsa512.pem", "r");
     if (in) {
-      RSA *rsa = PEM_read_bio_RSAPrivateKey(in, NULL, NULL, NULL);
-      BIO_free(in);
+      RSA *rsa = PEM_read_RSAPrivateKey(in, NULL, NULL, NULL);
+      fclose(in);
       if (rsa) return rsa;
     }
   }
@@ -466,31 +466,24 @@ RSA *tmp_rsa_cb(SSL *ssl, int export, int keylen)
 
 DH *tmp_dh_cb(SSL *ssl, int export, int keylen)
 {
-  DSA *dsa = NULL;
-  DH *dh = NULL;
-
   if (!export) keylen = 1024;
   if (keylen == 512) {
-    BIO *in = BIO_new_file("control/dh512.pem", "r");
+    FILE *in = fopen("control/dh512.pem", "r");
     if (in) {
-      dh = PEM_read_bio_DHparams(in, NULL, NULL, NULL);
-      BIO_free(in);
+      DH *dh = PEM_read_DHparams(in, NULL, NULL, NULL);
+      fclose(in);
       if (dh) return dh;
     }
   }
   if (keylen == 1024) {
-    BIO *in = BIO_new_file("control/dh1024.pem", "r");
+    FILE *in = fopen("control/dh1024.pem", "r");
     if (in) {
-      dh = PEM_read_bio_DHparams(in, NULL, NULL, NULL);
-      BIO_free(in);
+      DH *dh = PEM_read_DHparams(in, NULL, NULL, NULL);
+      fclose(in);
       if (dh) return dh;
     }
   }
-
-  /* faster than DH_generate_parameters(keylen, 2, NULL, NULL); */
-  dsa = DSA_generate_parameters(1024, NULL, 0, NULL, NULL, 0, NULL);
-  dh = DSA_dup_DH(dsa); DSA_free(dsa);
-  return dh; 
+  return DH_generate_parameters(keylen, DH_GENERATOR_2, NULL, NULL);
 } 
 
 /* don't want to fail handshake if cert isn't verifiable */

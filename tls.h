@@ -2,7 +2,6 @@
 #define TLS_H
 
 #include <openssl/ssl.h>
-#include <openssl/x509v3.h>
 
 extern int smtps;
 extern SSL *ssl;

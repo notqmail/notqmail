@@ -269,20 +269,11 @@ stralloc *sa;
 int pref;
 {
  int r;
- struct ip_mx ix;
-#ifdef TLS
- stralloc fqdn = {0};
-
- if (!stralloc_copy(&fqdn,sa)) return DNS_MEM;
- if (!stralloc_0(&fqdn)) return DNS_MEM;
- ix.fqdn = fqdn.s;
- alloc_free(fqdn);
-#endif
+ struct ip_mx ix = {0};
 
  if (!stralloc_copy(&glue,sa)) return DNS_MEM;
  if (!stralloc_0(&glue)) return DNS_MEM;
  if (glue.s[0]) {
-   ix.pref = 0;
    if (!glue.s[ip_scan(glue.s,&ix.ip)] || !glue.s[ip_scanbracket(glue.s,&ix.ip)])
     {
      if (!ipalloc_append(ia,&ix)) return DNS_MEM;
@@ -301,9 +292,16 @@ int pref;
    ix.ip = ip;
    ix.pref = pref;
    if (r == DNS_SOFT) return DNS_SOFT;
-   if (r == 1)
+   if (r == 1) {
+#ifdef IX_FQDN
+     ix.fqdn = glue.s;
+#endif
      if (!ipalloc_append(ia,&ix)) return DNS_MEM;
   }
+  }
+#ifdef IX_FQDN
+ glue.s = 0;
+#endif
  return 0;
 }
 
@@ -323,7 +321,7 @@ unsigned long random;
 {
  int r;
  struct mx { stralloc sa; unsigned short p; } *mx;
- struct ip_mx ix;
+ struct ip_mx ix = {0};
  int nummx;
  int i;
  int j;
@@ -335,12 +333,8 @@ unsigned long random;
  if (!stralloc_copy(&glue,sa)) return DNS_MEM;
  if (!stralloc_0(&glue)) return DNS_MEM;
  if (glue.s[0]) {
-   ix.pref = 0;
    if (!glue.s[ip_scan(glue.s,&ix.ip)] || !glue.s[ip_scanbracket(glue.s,&ix.ip)])
     {
-#ifdef TLS
-     ix.fqdn = NULL;
-#endif
      if (!ipalloc_append(ia,&ix)) return DNS_MEM;
      return 0;
     }

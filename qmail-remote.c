@@ -26,18 +26,8 @@
 #include "tcpto.h"
 #include "readwrite.h"
 #include "timeoutconn.h"
-#ifndef TLS
 #include "timeoutread.h"
 #include "timeoutwrite.h"
-#endif
-
-#ifdef TLS
-#include <sys/stat.h>
-#include <openssl/ssl.h>
-SSL *ssl = NULL;
-
-stralloc tlsclientciphers = {0};
-#endif
 
 #define HUGESMTPTEXT 5000
 
@@ -57,6 +47,10 @@ stralloc sender = {0};
 saa reciplist = {0};
 
 struct ip_address partner;
+#ifdef TLS
+char *partner_fqdn = 0;
+#define PORT_SMTPS 465
+#endif
 
 void out(s) char *s; { if (substdio_puts(subfdoutsmall,s) == -1) _exit(0); }
 void zero() { if (substdio_put(subfdoutsmall,"\0",1) == -1) _exit(0); }
@@ -118,82 +112,58 @@ int smtpfd;
 int timeout = 1200;
 
 #ifdef TLS
-int flagtimedout = 0;
-void sigalrm()
+
+#include <sys/stat.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include "ssl_timeoutio.h"
+
+SSL *ssl = NULL;
+
+stralloc tlsclientciphers = {0};
+
+void ssl_shutdie()
 {
- flagtimedout = 1;
+  SSL_shutdown(ssl);
+  SSL_free(ssl);
+  zerodie();
 }
-
-int ssl_timeoutread(timeout,fd,buf,n) int timeout; int fd; char *buf; int n;
+void ssl_zerodie()
 {
- int r; int saveerrno;
- if (flagtimedout) { errno = error_timeout; return -1; }
- alarm(timeout);
- if (ssl) {
-   while(((r = SSL_read(ssl,buf,n)) <= 0)
-         && (SSL_get_error(ssl, r) == SSL_ERROR_WANT_READ));
-   if (SSL_get_error(ssl, r) != SSL_ERROR_NONE)
-    {char buf[1024];
- 
-     out("ZTLS connection to "); outhost(); out(" died: ");
-     SSL_load_error_strings();
-     out(ERR_error_string(ERR_get_error(), buf)); out("\n");
-     SSL_shutdown(ssl);
-     zerodie();
-    }
- }else r = read(fd,buf,n);
- saveerrno = errno;
- alarm(0);
- if (flagtimedout) { errno = error_timeout; return -1; }
- errno = saveerrno;
- return r;
-}
-
-int ssl_timeoutwrite(timeout,fd,buf,n) int timeout; int fd; char *buf; int n;
-{
- int r; int saveerrno;
- if (flagtimedout) { errno = error_timeout; return -1; }
- alarm(timeout);
- if (ssl) {
-   while(((r = SSL_write(ssl,buf,n)) <= 0)
-         && (SSL_get_error(ssl, r) == SSL_ERROR_WANT_WRITE));
-   if (SSL_get_error(ssl, r) != SSL_ERROR_NONE)
-    {char buf[1024];
-
-     out("ZTLS connection to "); outhost(); out(" died: ");
-     SSL_load_error_strings();
-     out(ERR_error_string(ERR_get_error(), buf)); out("\n");
-     SSL_shutdown(ssl);
-     zerodie();
-    }
- }else r = write(fd,buf,n);
- saveerrno = errno;
- alarm(0);
- if (flagtimedout) { errno = error_timeout; return -1; }
- errno = saveerrno;
- return r;
+  char buf[1024];
+  SSL_load_error_strings();
+  out(ERR_error_string(ERR_get_error(), buf));
+  out("\n");
+  ssl_shutdie();
 }
 
 static int client_cert_cb(SSL *s,X509 **x509, EVP_PKEY **pkey)
 {
- out("ZTLS found no client cert in control/clientcert.pem\n");
- zerodie(NULL,NULL);
+  out("ZTLS found no client cert in control/clientcert.pem\n");
+  ssl_shutdie();
+  return 0; /* isn't reached but... */
 }
 
 static int verify_cb(int ok, X509_STORE_CTX * ctx)
 {
-  return (1);
+  return 1;
 }
+
 #endif 
 
 int saferead(fd,buf,len) int fd; char *buf; int len;
 {
   int r;
 #ifdef TLS
-  r = ssl_timeoutread(timeout,smtpfd,buf,len);
-#else
-  r = timeoutread(timeout,smtpfd,buf,len);
+  if (ssl) {
+    r = ssl_timeoutread(timeout,smtpfd,smtpfd,ssl,buf,len);
+    if (r == -2) {
+      out("ZTLS connection to "); outhost(); out(" died: ");
+      ssl_zerodie();
+    }
+  } else
 #endif
+  r = timeoutread(timeout,smtpfd,buf,len);
   if (r <= 0) dropped();
   return r;
 }
@@ -201,10 +171,15 @@ int safewrite(fd,buf,len) int fd; char *buf; int len;
 {
   int r;
 #ifdef TLS
-  r = ssl_timeoutwrite(timeout,smtpfd,buf,len);
-#else
+  if (ssl) {
+    r = ssl_timeoutwrite(timeout,smtpfd,smtpfd,ssl,buf,len);
+    if (r == -2) {
+      out("ZTLS connection to "); outhost(); out(" died: ");
+      ssl_zerodie();
+    }
+  } else
+#endif 
   r = timeoutwrite(timeout,smtpfd,buf,len);
-#endif
   if (r <= 0) dropped();
   return r;
 }
@@ -275,30 +250,32 @@ char *append;
   outsmtptext();
 
 /* TAG */
-#if defined(TLS) && defined(DEBUG)
-#define ONELINE_NAME(X) X509_NAME_oneline(X,NULL,0)
+#ifdef TLS
+  if (ssl) {
+# ifdef DEBUG
+    X509 *peercert;
 
- if(ssl){
- X509 *peer;
+    out("STARTTLS proto="); out(SSL_get_version(ssl));
+    out("; cipher="); out(SSL_CIPHER_get_name(SSL_get_current_cipher(ssl)));
 
-  out("STARTTLS proto="); out(SSL_get_version(ssl));
-  out("; cipher="); out(SSL_CIPHER_get_name(SSL_get_current_cipher(ssl)));
+    /* we want certificate details */
+    if (peercert = SSL_get_peer_certificate(ssl)) {
+      char *str;
 
-  /* we want certificate details */
-  peer=SSL_get_peer_certificate(ssl);
-  if (peer != NULL) {
-   char *str;
+      str = X509_NAME_oneline(X509_get_subject_name(peercert),NULL,0);
+      out("; subject="); out(str);
+      OPENSSL_free(str);
 
-   str=ONELINE_NAME(X509_get_subject_name(peer));
-   out("; subject="); out(str);
-   OPENSSL_free(str);
-   str=ONELINE_NAME(X509_get_issuer_name(peer));
-   out("; issuer="); out(str);
-   OPENSSL_free(str);
-   X509_free(peer);
-  }
-  out(";\n");
- }
+      str = X509_NAME_oneline(X509_get_issuer_name(peercert),NULL,0);
+      out("; issuer="); out(str);
+      OPENSSL_free(str);
+
+      X509_free(peercert);
+    }
+    out(";\n");
+# endif
+    ssl_shutdie();
+  } else
 #endif
 
   zerodie();
@@ -331,158 +308,157 @@ void blast()
 
 stralloc recip = {0};
 
-#ifdef TLS
-void smtp(fqdn)
-char *fqdn;
-#else
 void smtp()
-#endif
 {
   unsigned long code;
   int flagbother;
   int i;
 #ifdef TLS
-  int needtlsauth = 0;
-  SSL_CTX *ctx;
-  int saveerrno, r;
-
-  stralloc servercert = {0};
+  char *starttls;
+  char *servercert = 0;
   struct stat st;
-  if(fqdn){
-   if(!stralloc_copys(&servercert, "control/tlshosts/")) temp_nomem();
-   if(!stralloc_catb(&servercert, fqdn, str_len(fqdn))) temp_nomem();
-   if(!stralloc_catb(&servercert, ".pem", 4)) temp_nomem();
-   if(!stralloc_0(&servercert)) temp_nomem();
-   if (stat(servercert.s,&st) == 0)  needtlsauth = 1;
-  }
+  /* ifdef PORT_SMTP to go along with qmtp patch */
+#ifdef PORT_SMTP
+  int smtps = (PORT_SMTPS == port);
+#else
+  int smtps = (PORT_SMTPS == smtp_port);
 #endif
-
+  if (!smtps) {
+#endif
   if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
  
 #ifdef TLS
-  substdio_puts(&smtpto,"EHLO ");
-#else
-  substdio_puts(&smtpto,"HELO ");
+    substdio_puts(&smtpto,"EHLO ");
+    substdio_put(&smtpto,helohost.s,helohost.len);
+    substdio_puts(&smtpto,"\r\n");
+    substdio_flush(&smtpto);
+    if (smtpcode() != 250) {
 #endif
+  substdio_puts(&smtpto,"HELO ");
   substdio_put(&smtpto,helohost.s,helohost.len);
   substdio_puts(&smtpto,"\r\n");
   substdio_flush(&smtpto);
-#ifdef TLS
-  if (smtpcode() != 250){
-   substdio_puts(&smtpto,"HELO ");
-   substdio_put(&smtpto,helohost.s,helohost.len);
-   substdio_puts(&smtpto,"\r\n");
-   substdio_flush(&smtpto);
-   if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
-  }
-#else
   if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
-#endif
-
 #ifdef TLS
-  i = 0; 
-  while((i += str_chr(smtptext.s+i,'\n') + 1) && (i+12 < smtptext.len) &&
-        str_diffn(smtptext.s+i+4,"STARTTLS\n",9));
-  if (i+12 < smtptext.len)
-   {
-    substdio_puts(&smtpto,"STARTTLS\r\n");
-    substdio_flush(&smtpto);
-    if (smtpcode() == 220)
-     {
-      SSL_library_init();
-      if(!(ctx=SSL_CTX_new(SSLv23_client_method())))
-       {char buf[1024];
+    }
 
-        out("ZTLS not available: error initializing ctx: ");
-        SSL_load_error_strings();
-        out(ERR_error_string(ERR_get_error(), buf));
-        out("\n");
-        SSL_shutdown(ssl);
-        zerodie();
-      }
-      if((stat("control/clientcert.pem", &st) == 0) &&
-         ((SSL_CTX_use_RSAPrivateKey_file(ctx, "control/clientcert.pem", SSL_FILETYPE_PEM) <= 0) ||
-         (SSL_CTX_use_certificate_chain_file(ctx, "control/clientcert.pem") <= 0) ||
-         (SSL_CTX_check_private_key(ctx) <= 0)))
-        /* if there is a cert and it is bad, I fail
-           if there is no cert, I leave it to the other side to complain */
-        SSL_CTX_set_client_cert_cb(ctx, client_cert_cb);
- 
-      /*SSL_CTX_set_options(ctx, SSL_OP_NO_TLSv1);*/
-      SSL_CTX_set_cipher_list(ctx,tlsclientciphers.s);
- 
-      if (needtlsauth){
-        if (!SSL_CTX_load_verify_locations(ctx, servercert.s, NULL))
-          {out("ZTLS unable to load "); out(servercert.s); out("\n");
-           zerodie();}
-        SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, verify_cb);
-      }
-     
-      if(!(ssl=SSL_new(ctx)))
-        {char buf[1024];
+    starttls = smtptext.s + 4; /* skipping "250 " */
+    do {
+      starttls += str_chr(starttls, '\n') + 5;
+      if (starttls + 9 > smtptext.s + smtptext.len) { starttls = 0; break; }
+    } while (str_diffn(starttls,"STARTTLS\n",9));
 
-         out("ZTLS not available: error initializing ssl: "); 
-         SSL_load_error_strings();
-         out(ERR_error_string(ERR_get_error(), buf));
-         out("\n");
-         SSL_shutdown(ssl);
-         zerodie();
-        }
-      SSL_set_fd(ssl,smtpfd);
-
-      alarm(timeout);
-      r = SSL_connect(ssl); saveerrno = errno;
-      alarm(0); 
-      if (flagtimedout) 
-       {out("ZTLS not available: connect timed out\n");
-        zerodie();}
-      errno = saveerrno;
-      if (r<=0)
-        {char buf[1024];
-
-         out("ZTLS not available: connect failed: ");
-         SSL_load_error_strings();
-         out(ERR_error_string(ERR_get_error(), buf));
-         out("\n");
-         SSL_shutdown(ssl);
-         zerodie();
-        }
-      if (needtlsauth)
-       /* should also check alternate names */
-       {char commonName[256];
-
-        if ((r=SSL_get_verify_result(ssl)) != X509_V_OK)
-         {out("ZTLS unable to verify server with ");
-          out(servercert.s); out(": ");
-          out(X509_verify_cert_error_string(r)); out("\n");
-          zerodie();
-         }
-        X509_NAME_get_text_by_NID(X509_get_subject_name(
-                                   SSL_get_peer_certificate(ssl)),
-                                   NID_commonName, commonName, 256);
-        if (strcasecmp(fqdn,commonName)){
-         out("ZTLS connection to "); out(fqdn);
-         out(" wanted, certificate for "); out(commonName);
-         out(" received\n");
-         zerodie();}
-        }
-
-      substdio_puts(&smtpto,"EHLO ");
-      substdio_put(&smtpto,helohost.s,helohost.len);
-      substdio_puts(&smtpto,"\r\n");
+    if (starttls) { /* found STARTTLS */
+      substdio_puts(&smtpto,"STARTTLS\r\n");
       substdio_flush(&smtpto);
+      if (smtpcode() != 220) starttls = 0;
+    }
+  } else /* smtps */
+    starttls = "";
 
-      if (smtpcode() != 250)
-       {
-        quit("ZTLS connected to "," but my name was rejected");
-       }
-     } 
-   }
-  if ((!ssl) && needtlsauth)
-   {out("ZNo TLS achieved while "); out(servercert.s); out(" exists.\n");
-    quit();}
+  if (partner_fqdn) {
+    stralloc tmp = {0};
+    if (!stralloc_copys(&tmp, "control/tlshosts/")) temp_nomem();
+    if (!stralloc_catb(&tmp, partner_fqdn, str_len(partner_fqdn))) temp_nomem();
+    if (!stralloc_catb(&tmp, ".pem", 4)) temp_nomem();
+    if (!stralloc_0(&tmp)) temp_nomem();
+    if (stat(tmp.s,&st)) /* no such file */
+      alloc_free(tmp.s);
+    else if (starttls)
+      servercert = tmp.s;
+    else {
+      out("ZNo TLS achieved while "); out(tmp.s); out(" exists.\n");
+      quit();
+    }
+  }
+ 
+  if (starttls) {
+    SSL_CTX *ctx;
+
+    SSL_library_init();
+    if (!(ctx = SSL_CTX_new(SSLv23_client_method()))) {
+      out("ZTLS not available: error initializing ctx: ");
+      ssl_zerodie();
+    }
+    /* if there is a cert and it is bad, I fail
+       if there is no cert, I leave it to the other side to complain */
+    if (stat("control/clientcert.pem",&st) == 0)
+      if (
+        1 != SSL_CTX_use_RSAPrivateKey_file(ctx,
+          "control/clientcert.pem",SSL_FILETYPE_PEM) ||
+        1 != SSL_CTX_use_certificate_chain_file(ctx,"control/clientcert.pem") ||
+        1 != SSL_CTX_check_private_key(ctx)
+      )
+        SSL_CTX_set_client_cert_cb(ctx, client_cert_cb);
+
+    if (servercert && !SSL_CTX_load_verify_locations(ctx,servercert,NULL)) {
+      out("ZTLS unable to load "); out(servercert); out("\n");
+      zerodie();
+    }
+
+    if (!(ssl = SSL_new(ctx))) {
+      out("ZTLS not available: error initializing ssl: "); 
+      ssl_zerodie();
+    }
+    SSL_CTX_free(ctx);
+    if (servercert) SSL_set_verify(ssl,SSL_VERIFY_PEER,verify_cb);
+    /*SSL_set_options(ssl, SSL_OP_NO_TLSv1);*/
+    SSL_set_cipher_list(ssl,tlsclientciphers.s);
+    SSL_set_fd(ssl,smtpfd);
+
+    if (ssl_timeoutconn(timeout,smtpfd,smtpfd,ssl) <= 0) {
+      out("ZTLS not available: connect ");
+      if (errno == error_timeout)
+        { out("timed out\n"); ssl_shutdie(); }
+      else
+        { out("failed: "); ssl_zerodie(); }
+    }
+    if (servercert) {
+      /* should also check alternate names */
+      char commonName[256];
+      X509 *peercert;
+      int r;
+
+      if ((r = SSL_get_verify_result(ssl)) != X509_V_OK) {
+        out("ZTLS unable to verify server with ");
+        out(servercert); out(": ");
+        out(X509_verify_cert_error_string(r)); out("\n");
+        ssl_shutdie();
+      }
+      alloc_free(servercert);
+
+      peercert = SSL_get_peer_certificate(ssl);
+      X509_NAME_get_text_by_NID(
+        X509_get_subject_name(peercert), NID_commonName, commonName, 256);
+      X509_free(peercert);
+
+      r = case_diffs(partner_fqdn,commonName);
+      /* we also match if the cert has commonName *.domainname */
+      if (r && commonName[0] == '*' && commonName[1] == '.') {
+        char *partner_domain = partner_fqdn + str_chr(partner_fqdn,'.');
+        if (*partner_domain) r = case_diffs(partner_domain+1,commonName+2);
+      }
+      if (r) {
+        out("ZTLS connection to "); out(partner_fqdn);
+        out(" wanted, certificate for "); out(commonName);
+        out(" received\n");
+        ssl_shutdie();
+      }
+    }
+
+    if (smtps) if (smtpcode() != 220)
+      quit("ZTLS Connected to "," but greeting failed");
+
+    substdio_puts(&smtpto,"HELO ");
+    substdio_put(&smtpto,helohost.s,helohost.len);
+    substdio_puts(&smtpto,"\r\n");
+    substdio_flush(&smtpto);
+
+    if (smtpcode() != 250)
+      quit("ZTLS connected to "," but my name was rejected");
+  }
 #endif
-
+ 
   substdio_puts(&smtpto,"MAIL FROM:<");
   substdio_put(&smtpto,sender.s,sender.len);
   substdio_puts(&smtpto,">\r\n");
@@ -578,9 +554,10 @@ void getcontrols()
       if (!constmap_init(&maproutes,routes.s,routes.len,1)) temp_nomem(); break;
   }
 #ifdef TLS
-  if (control_rldef(&tlsclientciphers,"control/tlsclientciphers",0,"DEFAULT") != 1)
-    temp_control();
-  if(!stralloc_0(&tlsclientciphers)) temp_nomem();
+  if (1 !=
+    control_rldef(&tlsclientciphers, "control/tlsclientciphers",0,"DEFAULT")
+  ) temp_control();
+  if (!stralloc_0(&tlsclientciphers)) temp_nomem();
 #endif
 }
 
@@ -596,10 +573,7 @@ char **argv;
   int flagallaliases;
   int flagalias;
   char *relayhost;
-
-#ifdef TLS
-  sig_alarmcatch(sigalrm);
-#endif
+ 
   sig_pipeignore();
   if (argc < 4) perm_usage();
   if (chdir(auto_qmail) == -1) temp_chdir();
@@ -679,10 +653,9 @@ char **argv;
       tcpto_err(&ip.ix[i].ip,0);
       partner = ip.ix[i].ip;
 #ifdef TLS
-      smtp(ip.ix[i].fqdn); /* does not return */
-#else
-      smtp(); /* does not return */
+      partner_fqdn = ip.ix[i].fqdn;
 #endif
+      smtp(); /* does not return */
     }
     tcpto_err(&ip.ix[i].ip,errno == error_timeout);
     close(smtpfd);

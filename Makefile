@@ -404,7 +404,7 @@ alloc.a error.a fs.a str.a
 dns.o: \
 compile dns.c ip.h ipalloc.h ip.h gen_alloc.h fmt.h alloc.h str.h \
 stralloc.h gen_alloc.h dns.h case.h
-	./compile dns.c
+	./compile -DIX_FQDN dns.c
 
 dnscname: \
 load dnscname.o dns.o dnsdoe.o ip.o ipalloc.o stralloc.a alloc.a \
@@ -779,7 +779,7 @@ compile ip.c fmt.h scan.h ip.h
 ipalloc.o: \
 compile ipalloc.c alloc.h gen_allocdefs.h ip.h ipalloc.h ip.h \
 gen_alloc.h
-	./compile ipalloc.c
+	./compile -DIX_FQDN ipalloc.c
 
 ipme.o: \
 compile ipme.c hassalen.h byte.h ip.h ipalloc.h ip.h gen_alloc.h \
@@ -1439,15 +1439,16 @@ auto_qmail.h auto_uids.h date822fmt.h fmtqfn.h
 
 qmail-remote: \
 load qmail-remote.o control.o constmap.o timeoutread.o timeoutwrite.o \
+ssl_timeoutio.o \
 timeoutconn.o tcpto.o now.o dns.o ip.o ipalloc.o ipme.o quote.o \
 ndelay.a case.a sig.a open.a lock.a seek.a getln.a stralloc.a alloc.a \
 substdio.a error.a str.a fs.a auto_qmail.o dns.lib socket.lib
 	./load qmail-remote control.o constmap.o timeoutread.o \
 	timeoutwrite.o timeoutconn.o tcpto.o now.o dns.o ip.o \
+	ssl_timeoutio.o -L/usr/local/ssl/lib -lssl -lcrypto \
 	ipalloc.o ipme.o quote.o ndelay.a case.a sig.a open.a \
 	lock.a seek.a getln.a stralloc.a alloc.a substdio.a error.a \
-	str.a fs.a auto_qmail.o  `cat dns.lib` `cat socket.lib` \
-	-L/usr/local/ssl/lib -lssl -lcrypto
+	str.a fs.a auto_qmail.o  `cat dns.lib` `cat socket.lib`
 
 qmail-remote.0: \
 qmail-remote.8
@@ -1459,7 +1460,7 @@ subfd.h substdio.h scan.h case.h error.h auto_qmail.h control.h dns.h \
 alloc.h quote.h ip.h ipalloc.h ip.h gen_alloc.h ipme.h ip.h ipalloc.h \
 gen_alloc.h gen_allocdefs.h str.h now.h datetime.h exit.h constmap.h \
 tcpto.h readwrite.h timeoutconn.h timeoutread.h timeoutwrite.h
-	./compile qmail-remote.c
+	./compile -DTLS -DIX_FQDN -I/usr/local/ssl/include qmail-remote.c
 
 qmail-rspawn: \
 load qmail-rspawn.o spawn.o tcpto_clean.o now.o coe.o sig.a open.a \
@@ -1535,15 +1536,17 @@ auto_split.h
 qmail-smtpd: \
 load qmail-smtpd.o rcpthosts.o commands.o timeoutread.o \
 timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
+ssl_timeoutio.o ndelay.a \
 date822fmt.o now.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
 open.a sig.a case.a env.a stralloc.a alloc.a substdio.a error.a str.a \
 fs.a auto_qmail.o socket.lib
 	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
+	ssl_timeoutio.o ndelay.a -L/usr/local/ssl/lib -lssl -lcrypto \
 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
 	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
 	alloc.a substdio.a error.a str.a fs.a auto_qmail.o  `cat \
-	socket.lib` -L/usr/local/ssl/lib -lssl -lcrypto
+	socket.lib`
 
 qmail-smtpd.0: \
 qmail-smtpd.8
@@ -1555,7 +1558,7 @@ substdio.h alloc.h auto_qmail.h control.h received.h constmap.h \
 error.h ipme.h ip.h ipalloc.h ip.h gen_alloc.h ip.h qmail.h \
 substdio.h str.h fmt.h scan.h byte.h case.h env.h now.h datetime.h \
 exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h
-	./compile qmail-smtpd.c
+	./compile -DTLS -I/usr/local/ssl/include qmail-smtpd.c
 
 qmail-start: \
 load qmail-start.o prot.o fd.a auto_uids.o
@@ -2109,6 +2112,10 @@ timeoutwrite.o: \
 compile timeoutwrite.c timeoutwrite.h select.h error.h readwrite.h
 	./compile timeoutwrite.c
 
+ssl_timeoutio.o: \
+compile ssl_timeoutio.c ssl_timeoutio.h select.h error.h ndelay.h
+	./compile -I/usr/local/ssl/include ssl_timeoutio.c
+
 token822.o: \
 compile token822.c stralloc.h gen_alloc.h alloc.h str.h token822.h \
 gen_alloc.h gen_allocdefs.h
@@ -2141,21 +2148,12 @@ wait_pid.o: \
 compile wait_pid.c error.h haswaitp.h
 	./compile wait_pid.c
 
-cert:
-	openssl req -new -x509 -nodes \
-	-out /var/qmail/control/servercert.pem -days 366 \
-	-keyout /var/qmail/control/servercert.pem
-	chmod 640 /var/qmail/control/servercert.pem
-	chown qmaild.qmail /var/qmail/control/servercert.pem
-	ln -s /var/qmail/control/servercert.pem /var/qmail/control/clientcert.pem
+cert cert-req: \
+Makefile-cert
+	@$(MAKE) -sf $< $@
 
-cert-req:
-	openssl req -new -nodes \
-	-out req.pem \
-	-keyout /var/qmail/control/servercert.pem
-	chmod 640 /var/qmail/control/servercert.pem
-	chown qmaild.qmail /var/qmail/control/servercert.pem
-	ln -s /var/qmail/control/servercert.pem /var/qmail/control/clientcert.pem
-	@echo
-	@echo "Send req.pem to your CA to obtain signed_req.pem, and do:"
-	@echo "cat signed_req.pem >> /var/qmail/control/servercert.pem"
+Makefile-cert: \
+conf-qmail Makefile-cert.mk
+	@cat Makefile-cert.mk \
+	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	> $@

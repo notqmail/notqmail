@@ -3,7 +3,7 @@
 
 #include "ip.h"
 
-#ifdef TLS
+#ifdef IX_FQDN
 #include "stralloc.h"
 struct ip_mx { struct ip_address ip; int pref; char *fqdn; } ;
 #else

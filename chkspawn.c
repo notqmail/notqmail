@@ -22,8 +22,8 @@ void main()
     _exit(1);
   }
 
-  if (auto_spawn > 255) {
-    substdio_puts(subfderr,"Oops. You have set conf-spawn higher than 255.\n");
+  if (auto_spawn > 65000) {
+    substdio_puts(subfderr,"Oops. You have set conf-spawn higher than 65000.\n");
     substdio_flush(subfderr);
     _exit(1);
   }

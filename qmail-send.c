@@ -262,6 +262,8 @@ char *recip;
  while (!stralloc_copys(&comm_buf[c],"")) nomem();
  ch = delnum;
  while (!stralloc_append(&comm_buf[c],&ch)) nomem();
+ ch = delnum >> 8;
+ while (!stralloc_append(&comm_buf[c],&ch)) nomem();
  fnmake_split(id);
  while (!stralloc_cats(&comm_buf[c],fn.s)) nomem();
  while (!stralloc_0(&comm_buf[c])) nomem();
@@ -906,41 +908,42 @@ int c;
      dline[c].len = REPORTMAX;
      /* qmail-lspawn and qmail-rspawn are responsible for keeping it short */
      /* but from a security point of view, we don't trust rspawn */
-   if (!ch && (dline[c].len > 1))
+   if (!ch && (dline[c].len > 2))
     {
      delnum = (unsigned int) (unsigned char) dline[c].s[0];
+     delnum += (unsigned int) ((unsigned int) dline[c].s[1]) << 8;
      if ((delnum < 0) || (delnum >= concurrency[c]) || !d[c][delnum].used)
        log1("warning: internal error: delivery report out of range\n");
      else
       {
        strnum3[fmt_ulong(strnum3,d[c][delnum].delid)] = 0;
-       if (dline[c].s[1] == 'Z')
+       if (dline[c].s[2] == 'Z')
 	 if (jo[d[c][delnum].j].flagdying)
 	  {
-	   dline[c].s[1] = 'D';
+	   dline[c].s[2] = 'D';
 	   --dline[c].len;
 	   while (!stralloc_cats(&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
 	   while (!stralloc_0(&dline[c])) nomem();
 	  }
-       switch(dline[c].s[1])
+       switch(dline[c].s[2])
 	{
 	 case 'K':
 	   log3("delivery ",strnum3,": success: ");
-	   logsafe(dline[c].s + 2);
+	   logsafe(dline[c].s + 3);
 	   log1("\n");
 	   markdone(c,jo[d[c][delnum].j].id,d[c][delnum].mpos);
 	   --jo[d[c][delnum].j].numtodo;
 	   break;
 	 case 'Z':
 	   log3("delivery ",strnum3,": deferral: ");
-	   logsafe(dline[c].s + 2);
+	   logsafe(dline[c].s + 3);
 	   log1("\n");
 	   break;
 	 case 'D':
 	   log3("delivery ",strnum3,": failure: ");
-	   logsafe(dline[c].s + 2);
+	   logsafe(dline[c].s + 3);
 	   log1("\n");
-	   addbounce(jo[d[c][delnum].j].id,d[c][delnum].recip.s,dline[c].s + 2);
+	   addbounce(jo[d[c][delnum].j].id,d[c][delnum].recip.s,dline[c].s + 3);
 	   markdone(c,jo[d[c][delnum].j].id,d[c][delnum].mpos);
 	   --jo[d[c][delnum].j].numtodo;
 	   break;
@@ -1544,7 +1547,7 @@ void main()
  numjobs = 0;
  for (c = 0;c < CHANNELS;++c)
   {
-   char ch;
+   char ch, ch1;
    int u;
    int r;
    do
@@ -1552,7 +1555,13 @@ void main()
    while ((r == -1) && (errno == error_intr));
    if (r < 1)
     { log1("alert: cannot start: hath the daemon spawn no fire?\n"); _exit(111); }
+   do
+     r = read(chanfdin[c],&ch1,1);
+   while ((r == -1) && (errno == error_intr));
+   if (r < 1)
+    { log1("alert: cannot start: hath the daemon spawn no fire?\n"); _exit(111); }
    u = (unsigned int) (unsigned char) ch;
+   u += (unsigned int) ((unsigned char) ch1) << 8;
    if (concurrency[c] > u) concurrency[c] = u;
    numjobs += concurrency[c];
   }

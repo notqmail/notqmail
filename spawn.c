@@ -64,7 +64,7 @@ int okwrite(fd,buf,n) int fd; char *buf; int n;
 int flagreading = 1;
 char outbuf[1024]; substdio ssout;
 
-int stage = 0; /* reading 0:delnum 1:messid 2:sender 3:recip */
+int stage = 0; /* reading 0:delnum 1:delnum2 2:messid 3:sender 4:recip */
 int flagabort = 0; /* if 1, everything except delnum is garbage */
 int delnum;
 stralloc messid = {0};
@@ -74,6 +74,7 @@ stralloc recip = {0};
 void err(s) char *s;
 {
  char ch; ch = delnum; substdio_put(&ssout,&ch,1);
+ ch = delnum >> 8; substdio_put(&ssout,&ch,1);
  substdio_puts(&ssout,s); substdio_putflush(&ssout,"",1);
 }
 
@@ -156,16 +157,19 @@ void getcmd()
     {
      case 0:
        delnum = (unsigned int) (unsigned char) ch;
-       messid.len = 0; stage = 1; break;
+       stage = 1; break;
      case 1:
+       delnum += (unsigned int) ((unsigned int) ch) << 8;
+       messid.len = 0; stage = 2; break;
+     case 2:
        if (!stralloc_append(&messid,&ch)) flagabort = 1;
        if (ch) break;
-       sender.len = 0; stage = 2; break;
-     case 2:
+       sender.len = 0; stage = 3; break;
+     case 3:
        if (!stralloc_append(&sender,&ch)) flagabort = 1;
        if (ch) break;
-       recip.len = 0; stage = 3; break;
-     case 3:
+       recip.len = 0; stage = 4; break;
+     case 4:
        if (!stralloc_append(&recip,&ch)) flagabort = 1;
        if (ch) break;
        docmd();
@@ -202,7 +206,8 @@ char **argv;
 
  initialize(argc,argv);
 
- ch = auto_spawn; substdio_putflush(&ssout,&ch,1);
+ ch = auto_spawn; substdio_put(&ssout,&ch,1);
+ ch = auto_spawn >> 8; substdio_putflush(&ssout,&ch,1);
 
  for (i = 0;i < auto_spawn;++i) { d[i].used = 0; d[i].output.s = 0; }
 
@@ -237,7 +242,8 @@ char **argv;
 	   continue; /* read error on a readable pipe? be serious */
 	 if (r == 0)
 	  {
-           ch = i; substdio_put(&ssout,&ch,1);
+           char ch; ch = i; substdio_put(&ssout,&ch,1);
+           ch = i >> 8; substdio_put(&ssout,&ch,1);
 	   report(&ssout,d[i].wstat,d[i].output.s,d[i].output.len);
 	   substdio_put(&ssout,"",1);
 	   substdio_flush(&ssout);

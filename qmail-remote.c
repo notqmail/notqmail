@@ -351,8 +351,10 @@ void smtp()
          out("\n");
          zerodie();}
 
+      SSL_CTX_use_RSAPrivateKey_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
       SSL_CTX_use_certificate_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
-
+      /*SSL_CTX_set_options(ctx, SSL_OP_NO_TLSv1);*/
+ 
       if(!(ssl=SSL_new(ctx)))
         {out("ZTLS not available: error initializing ssl");
 #ifdef DEBUG

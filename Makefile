@@ -263,7 +263,7 @@ makelib cdbmake_pack.o cdbmake_hash.o cdbmake_add.o
 	cdbmake_add.o
 
 cdbmake_add.o: \
-compile cdbmake_add.c cdbmake.h uint32.h
+compile cdbmake_add.c cdbmake.h alloc.h uint32.h
 	./compile cdbmake_add.c
 
 cdbmake_hash.o: \
@@ -1892,7 +1892,7 @@ trylsock.c compile load
 
 spawn.o: \
 compile chkspawn spawn.c sig.h wait.h substdio.h byte.h str.h \
-stralloc.h gen_alloc.h select.h exit.h coe.h open.h error.h \
+stralloc.h gen_alloc.h select.h exit.h alloc.h coe.h open.h error.h \
 auto_qmail.h auto_uids.h auto_spawn.h
 	./chkspawn
 	./compile spawn.c

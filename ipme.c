@@ -46,6 +46,11 @@ int ipme_init()
   ipme.len = 0;
   ix.pref = 0;
  
+  /* 0.0.0.0 is a special address which always refers to 
+   * "this host, this network", according to RFC 1122, Sec. 3.2.1.3a.
+  */
+  byte_copy(&ix.ip,4,"\0\0\0\0");
+  if (!ipalloc_append(&ipme,&ix)) { return 0; }
   if ((s = socket(AF_INET,SOCK_STREAM,0)) == -1) return -1;
  
   len = 256;

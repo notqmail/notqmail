@@ -1,3 +1,17 @@
+20031027 version: netqmail 1.04.
+20031027 doc: INSTALL points to http://lifewithqmail.org/lwq.html
+20031027 doc: qmail.7 identifies installation as netqmail and points to
+         http://qmail.org/
+20031027 doc: qmail-queue.8 adds explanation of $QMAILQUEUE
+20031027 doc: qmail-log.5 adds reference to errors from $QMAILQUEUE script
+20031027 doc: FAQ also points to http://cr.yp.to/qmail/faq.html and
+         http://qmail.org/
+20031027 code: qmail-smtpd identifies itself as netqmail
+20031027 code: if $QMAILQUEUE is set, it's invoked instead of qmail-queue
+20031024 code: changed errno from int to #include.
+20031024 code: fixed .qmail parsing bug.
+20031024 code: recognize 0.0.0.0 as a local address.
+20031024 code: sendmail's -f flag now overrides environment variables.
 19980615 version: qmail 1.03.
 19980614 doc: eliminated BIN.setup in favor of a web page.
 19980614 code: added other auto* to qmail-showctl output.

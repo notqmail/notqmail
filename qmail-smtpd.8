@@ -65,6 +65,13 @@ A list of Certifying Authority (CA) certificates that are used to verify
 the client-presented certificates during a TLS-encrypted session.
 
 .TP 5
+.I clientcrl.pem
+A list of Certificate Revocation Lists (CRLs). If present it
+should contain the CRLs of the CAs in 
+.I clientca.pem 
+and client certs will be checked for revocation.
+
+.TP 5
 .I databytes
 Maximum number of bytes allowed in a message,
 or 0 for no limit.
@@ -91,6 +98,18 @@ If the environment variable
 .B DATABYTES
 is set, it overrides
 .IR databytes .
+
+.TP 5
+.I dh1024.pem
+If these 1024 bit DH parameters are provided,
+.B qmail-smtpd
+will use them for TLS sessions instead of generating one on-the-fly 
+(which is very timeconsuming).
+.TP 5
+.I dh512.pem
+512 bit counterpart for 
+.B dh1024.pem. 
+
 .TP 5
 .I localiphost
 Replacement host name for local IP addresses.
@@ -169,9 +188,9 @@ always allowed through.
 
 .TP 5
 .I rsa512.pem
-If this 512 RSA key is provided,
+If this 512 bit RSA key is provided,
 .B qmail-smtpd
-will use it for TLS sessions instead of generaring one on-the-fly.
+will use it for TLS sessions instead of generating one on-the-fly.
 
 .TP 5
 .I servercert.pem

@@ -95,7 +95,7 @@ void smtp_greet(code) char *code;
 }
 void smtp_help()
 {
-  out("214 qmail home page: http://pobox.com/~djb/qmail.html\r\n");
+  out("214 netqmail home page: http://qmail.org/netqmail\r\n");
 }
 void smtp_quit()
 {
@@ -464,6 +464,35 @@ RSA *tmp_rsa_cb(SSL *ssl, int export, int keylen)
   return RSA_generate_key(keylen, RSA_F4, NULL, NULL);
 }
 
+DH *tmp_dh_cb(SSL *ssl, int export, int keylen)
+{
+  DSA *dsa = NULL;
+  DH *dh = NULL;
+
+  if (!export) keylen = 1024;
+  if (keylen == 512) {
+    BIO *in = BIO_new_file("control/dh512.pem", "r");
+    if (in) {
+      dh = PEM_read_bio_DHparams(in, NULL, NULL, NULL);
+      BIO_free(in);
+      if (dh) return dh;
+    }
+  }
+  if (keylen == 1024) {
+    BIO *in = BIO_new_file("control/dh1024.pem", "r");
+    if (in) {
+      dh = PEM_read_bio_DHparams(in, NULL, NULL, NULL);
+      BIO_free(in);
+      if (dh) return dh;
+    }
+  }
+
+  /* faster than DH_generate_parameters(keylen, 2, NULL, NULL); */
+  dsa = DSA_generate_parameters(1024, NULL, 0, NULL, NULL, 0, NULL);
+  dh = DSA_dup_DH(dsa); DSA_free(dsa);
+  return dh; 
+} 
+
 /* don't want to fail handshake if cert isn't verifiable */
 int verify_cb(int preverify_ok, X509_STORE_CTX *ctx) { return 1; }
 
@@ -483,6 +512,7 @@ void tls_out(const char *s1, const char *s2)
 void tls_err(const char *s) { tls_out(s, ssl_error()); if (smtps) die_read(); }
 
 # define CLIENTCA "control/clientca.pem"
+# define CLIENTCRL "control/clientcrl.pem"
 # define SERVERCERT "control/servercert.pem"
 
 int tls_verify()
@@ -499,7 +529,7 @@ int tls_verify()
   {
   case 1:
     if (constmap_init(&mapclients, clients.s, clients.len, 0)) {
-      /* if CLIENTCA contains all the standart root certificates, a
+      /* if CLIENTCA contains all the standard root certificates, a
        * 0.9.6b client might fail with SSL_R_EXCESSIVE_MESSAGE_SIZE;
        * it is probably due to 0.9.6b supporting only 8k key exchange
        * data while the 0.9.6c release increases that limit to 100k */
@@ -545,8 +575,9 @@ int tls_verify()
     else {
       /* add the cert email to the proto if it helped allow relaying */
       --proto.len;
-      if (!stralloc_cats(&proto, "\n  cert ") /* continuation line */
+      if (!stralloc_cats(&proto, "\n  (cert ") /* continuation line */
         || !stralloc_catb(&proto, email.s, email.len)
+        || !stralloc_cats(&proto, ")")
         || !stralloc_0(&proto)) die_nomem();
       relayclient = "";
       protocol = proto.s;
@@ -569,6 +600,8 @@ void tls_init()
   SSL_CTX *ctx;
   const char *ciphers;
   stralloc saciphers = {0};
+  X509_STORE *store;
+  X509_LOOKUP *lookup;
 
   SSL_library_init();
 
@@ -579,6 +612,16 @@ void tls_init()
   if (!SSL_CTX_use_certificate_chain_file(ctx, SERVERCERT))
     { SSL_CTX_free(ctx); tls_err("missing certificate"); return; }
   SSL_CTX_load_verify_locations(ctx, CLIENTCA, NULL);
+
+#if OPENSSL_VERSION_NUMBER >= 0x00907000L
+  /* crl checking */
+  store = SSL_CTX_get_cert_store(ctx);
+  if ((lookup = X509_STORE_add_lookup(store, X509_LOOKUP_file())) &&
+      (X509_load_crl_file(lookup, CLIENTCRL, X509_FILETYPE_PEM) == 1))
+    X509_STORE_set_flags(store, X509_V_FLAG_CRL_CHECK |
+                                X509_V_FLAG_CRL_CHECK_ALL);
+#endif
+
   /* set the callback here; SSL_set_verify didn't work before 0.9.6c */
   SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_cb);
 
@@ -587,7 +630,7 @@ void tls_init()
   SSL_CTX_free(ctx);
   if (!myssl) { tls_err("unable to initialize ssl"); return; }
 
-  /* this will also check whether publc and private keys match */
+  /* this will also check whether public and private keys match */
   if (!SSL_use_RSAPrivateKey_file(myssl, SERVERCERT, SSL_FILETYPE_PEM))
     { SSL_free(myssl); tls_err("no valid RSA private key"); return; }
 
@@ -607,6 +650,7 @@ void tls_init()
   alloc_free(saciphers.s);
 
   SSL_set_tmp_rsa_callback(myssl, tmp_rsa_cb);
+  SSL_set_tmp_dh_callback(myssl, tmp_dh_cb);
   SSL_set_rfd(myssl, ssl_rfd = substdio_fileno(&ssin));
   SSL_set_wfd(myssl, ssl_wfd = substdio_fileno(&ssout));
 
@@ -620,9 +664,9 @@ void tls_init()
   ssl = myssl;
 
   /* populate the protocol string, used in Received */
-  if (!stralloc_copys(&proto, SSL_get_cipher(ssl))
-    || !stralloc_cats(&proto, " encrypted SMTP")) die_nomem();
-  if (smtps) if (!stralloc_append(&proto, "S")) die_nomem();
+  if (!stralloc_copys(&proto, "(")
+    || !stralloc_cats(&proto, SSL_get_cipher(ssl))
+    || !stralloc_cats(&proto, " encrypted) SMTP")) die_nomem();
   if (!stralloc_0(&proto)) die_nomem();
   protocol = proto.s;
 

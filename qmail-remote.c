@@ -466,7 +466,7 @@ int tls_init()
         if (gn->type == GEN_DNS)
           if (match_partner(gn->d.ia5->data, gn->d.ia5->length)) break;
       }
-      sk_GENERAL_NAME_free(gens);
+      sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
     }
 
     /* no alternative name matched, look up commonName */

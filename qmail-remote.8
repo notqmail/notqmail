@@ -127,6 +127,16 @@ if that is supplied;
 otherwise
 .B qmail-remote
 refuses to run.
+
+.TP 5
+.I notlshosts/<FQDN>
+.B qmail-remote
+will not try TLS on servers for which this file exists
+.RB ( <FQDN>
+is the fully-qualified domain name of the server). 
+.IR (tlshosts/<FQDN>.pem 
+takes precedence over this file however).
+
 .TP 5
 .I smtproutes
 Artificial SMTP routes.
@@ -210,7 +220,7 @@ contained in a string should be separated by a colon.
 .TP 5
 .I tlshosts/<FQDN>.pem
 .B qmail-remote
-requires authentication from servers for which this certificate exists
+requires TLS authentication from servers for which this certificate exists
 .RB ( <FQDN>
 is the fully-qualified domain name of the server). One of the
 .I dNSName
@@ -220,6 +230,13 @@ attributes have to match.
 
 .B WARNING:
 this option may cause mail to be delayed, bounced, doublebounced, or lost.
+
+.TP 5
+.I tlshosts/exhaustivelist
+if this file exists
+no TLS will be tried on hosts other than those for which a file
+.B tlshosts/<FQDN>.pem
+exists.
 
 .SH "SEE ALSO"
 addresses(5),

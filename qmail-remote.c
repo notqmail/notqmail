@@ -366,7 +366,19 @@ int tls_init()
     if (!stralloc_copys(&tmp, "control/tlshosts/")
       || !stralloc_catb(&tmp, partner_fqdn, str_len(partner_fqdn))
       || !stralloc_catb(&tmp, ".pem", 5)) temp_nomem();
-    if (stat(tmp.s, &st)) alloc_free(tmp.s); else servercert = tmp.s;
+    if (stat(tmp.s, &st) == 0) 
+      servercert = tmp.s;
+    else {
+      if (!stralloc_copys(&tmp, "control/notlshosts/")
+        || !stralloc_catb(&tmp, partner_fqdn, str_len(partner_fqdn)+1))
+        temp_nomem();
+      if ((stat("control/tlshosts/exhaustivelist", &st) == 0) ||
+	  (stat(tmp.s, &st) == 0)) {
+         alloc_free(tmp.s);
+         return 0;
+      }
+      alloc_free(tmp.s);
+    }
   }
  
   if (!smtps) {

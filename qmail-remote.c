@@ -249,8 +249,6 @@ char *append;
    out("; issuer="); out(str);
    Free(str);
    X509_free(peer);
-   Free(str);
-   X509_free(peer);
   }
   out(";\n");
  }
@@ -414,6 +412,7 @@ void smtp()
 #endif
         zerodie();}
       if (needtlsauth)
+       /* should also check alternate names */
        {char commonName[256];
         X509_NAME_get_text_by_NID(X509_get_subject_name(
                                    SSL_get_peer_certificate(ssl)),

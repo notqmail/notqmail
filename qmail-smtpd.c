@@ -1,4 +1,3 @@
-#define TLS
 #include "sig.h"
 #include "readwrite.h"
 #include "stralloc.h"

@@ -275,40 +275,55 @@ int fd;
 
 #ifdef TLS
  i = 0; 
- while(i = str_chr(smtptext.s+i,'S'))
-  if (*(smtptext.s+i+1) == 'T')
-   if (*(smtptext.s+i+2) == 'A')
-    if (*(smtptext.s+i+3) == 'R')
-     if (*(smtptext.s+i+4) == 'T')
-      if (*(smtptext.s+i+5) == 'T')
-       if (*(smtptext.s+i+6) == 'L')
-        if (*(smtptext.s+i+7) == 'S')
+ while((i += str_chr(smtptext.s+i,'S') + 1) && (smtptext.len-8 > i))
   {
-   if (substdio_puts(&ssto,"STARTTLS\r\n") == -1) writeerr();
-   if (substdio_flush(&ssto) == -1) writeerr();
-   if (smtpcode(&ssfrom) == 220)
+   if (*(smtptext.s+i) == 'T')
+    if (*(smtptext.s+i+1) == 'A')
+     if (*(smtptext.s+i+2) == 'R')
+      if (*(smtptext.s+i+3) == 'T')
+       if (*(smtptext.s+i+4) == 'T')
+        if (*(smtptext.s+i+5) == 'L')
+         if (*(smtptext.s+i+6) == 'S')
     {
-     SSLeay_add_ssl_algorithms();
-     if(!(ctx=SSL_CTX_new(SSLv23_client_method())))
-       {out("ZTLS not available: error initializing ctx\n");
-        quit(&ssto,&ssfrom);}
- 
-     SSL_CTX_use_RSAPrivateKey_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
-     SSL_CTX_use_certificate_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
-     if(SSL_CTX_need_tmp_RSA(ctx))
-      if(!SSL_CTX_set_tmp_rsa(ctx,RSA_generate_key(512,RSA_F4,NULL,NULL)))
-       {out("ZTLS not available: error generating RSA temp key\n");
-        quit(&ssto,&ssfrom);}
+     i = smtptext.len;
 
-     if(!(ssl=SSL_new(ctx)))
-       {out("ZTLS not available: error initializing ctx\n");
-        quit(&ssto,&ssfrom);}
-     SSL_set_fd(ssl,fd);
-     if(SSL_connect(ssl)<=0) 
-       {out("ZTLS not available: connect failed\n");
-        quit(&ssto,&ssfrom);}
-     substdio_fdbuf(&ssto,ssl_timeoutwrite,ssl,smtptobuf,sizeof(smtptobuf));
-     substdio_fdbuf(&ssfrom,ssl_timeoutread,ssl,smtpfrombuf,sizeof(smtpfrombuf));
+     if (substdio_puts(&ssto,"STARTTLS\r\n") == -1) writeerr();
+     if (substdio_flush(&ssto) == -1) writeerr();
+     if (smtpcode(&ssfrom) == 220)
+      {
+       SSLeay_add_ssl_algorithms();
+       if(!(ctx=SSL_CTX_new(SSLv23_client_method())))
+         {out("ZTLS not available: error initializing ctx\n");
+          quit(&ssto,&ssfrom);}
+ 
+       SSL_CTX_use_RSAPrivateKey_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
+       SSL_CTX_use_certificate_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
+       if(SSL_CTX_need_tmp_RSA(ctx))
+        if(!SSL_CTX_set_tmp_rsa(ctx,RSA_generate_key(512,RSA_F4,NULL,NULL)))
+         {out("ZTLS not available: error generating RSA temp key\n");
+          quit(&ssto,&ssfrom);}
+
+       if(!(ssl=SSL_new(ctx)))
+         {out("ZTLS not available: error initializing ctx\n");
+          quit(&ssto,&ssfrom);}
+       SSL_set_fd(ssl,fd);
+       if(SSL_connect(ssl)<=0) 
+         {out("ZTLS not available: connect failed\n");
+          quit(&ssto,&ssfrom);}
+       substdio_fdbuf(&ssto,ssl_timeoutwrite,ssl,smtptobuf,sizeof(smtptobuf));
+       substdio_fdbuf(&ssfrom,ssl_timeoutread,ssl,smtpfrombuf,sizeof(smtpfrombuf));
+
+       if (substdio_puts(&ssto,"EHLO ") == -1) writeerr();
+       if (substdio_put(&ssto,helohost.s,helohost.len) == -1) writeerr();
+       if (substdio_puts(&ssto,"\r\n") == -1) writeerr();
+       if (substdio_flush(&ssto) == -1) writeerr();
+
+       if (smtpcode(&ssfrom) != 250)
+        {
+         out("ZTLS connected to "); outhost(); out(" but my name was rejected.\n");
+         quit(&ssto,&ssfrom);
+        }
+      } 
     }
   }
 #endif

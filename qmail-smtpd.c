@@ -385,8 +385,12 @@ void smtp_data() {
   }
 }
 #ifdef TLS
-void smtp_tls() {
+void smtp_tls(arg) char *arg; {
  SSL_CTX *ctx;
+
+ if (arg)
+  {out("501 Syntax error (no parameters allowed) (#5.5.4)\r\n"); 
+   return;}
 
  SSLeay_add_ssl_algorithms();
  if(!(ctx=SSL_CTX_new(SSLv23_server_method())))
@@ -409,6 +413,10 @@ void smtp_tls() {
  SSL_set_fd(ssl,0);
  if(SSL_accept(ssl)<=0) die();
  substdio_fdbuf(&ssout,SSL_write,ssl,ssoutbuf,sizeof(ssoutbuf));
+
+ remotehost = env_get("TCPREMOTEHOST");
+ if (!remotehost) remotehost = "unknown";
+ dohelo(remotehost);
 }
 #endif
 

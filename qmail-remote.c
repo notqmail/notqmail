@@ -32,11 +32,11 @@
 #define TLS
 #ifdef TLS
 #include "select.h" /*timeval*/
-#include <stdio.h> /* this is a SSLeay bug */
-#include <ssl.h>
-#include <err.h>
-#include <bio.h>
-#include <pem.h>
+/*#include <stdio.h> this was a SSLeay bug */
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/bio.h>
+#include <openssl/pem.h>
 SSL *ssl = NULL;
 int ssl_timeoutread();
 int ssl_timeoutwrite();

@@ -47,7 +47,10 @@ int ssl_timeoutread(timeout,fd,buf,n) int timeout; int fd; char *buf; int n;
  int r; int saveerrno;
  if (flagtimedout) { errno = error_timeout; return -1; }
  alarm(timeout);
- if (ssl) r = SSL_read(ssl,buf,n); else r = read(fd,buf,n);
+ if (ssl) {
+   while(((r = SSL_read(ssl,buf,n)) <= 0)
+         && (SSL_get_error(ssl, r) == SSL_ERROR_WANT_READ));
+ }else r = read(fd,buf,n);
  saveerrno = errno;
  alarm(0);
  if (flagtimedout) { errno = error_timeout; return -1; }
@@ -59,7 +62,10 @@ int ssl_timeoutwrite(timeout,fd,buf,n) int timeout; int fd; char *buf; int n;
  int r; int saveerrno;
  if (flagtimedout) { errno = error_timeout; return -1; }
  alarm(timeout);
- if (ssl) r = SSL_write(ssl,buf,n); else r = write(fd,buf,n);
+ if (ssl) { 
+   while(((r = SSL_write(ssl,buf,n)) <= 0)
+         && (SSL_get_error(ssl, r) == SSL_ERROR_WANT_WRITE));
+ }else r = write(fd,buf,n);
  saveerrno = errno;
  alarm(0);
  if (flagtimedout) { errno = error_timeout; return -1; }
@@ -300,6 +306,12 @@ void smtp_mail(arg) char *arg;
   if (!stralloc_0(&mailfrom)) die_nomem();
   out("250 ok\r\n");
 }
+#ifdef TLS
+static int verify_cb(int ok, X509_STORE_CTX * ctx)
+{
+  return (1);
+}
+#endif
 void smtp_rcpt(arg) char *arg; {
   if (!seenmail) { err_wantmail(); return; }
   if (!addrparse(arg)) { err_syntax(); return; }
@@ -320,10 +332,11 @@ void smtp_rcpt(arg) char *arg; {
         X509 *peercert;
         stralloc tlsclients = {0};
         struct constmap maptlsclients;
- 
+        int r;
+
         SSL_set_verify(ssl,
                        SSL_VERIFY_PEER|SSL_VERIFY_CLIENT_ONCE,
-                       NULL);
+                       verify_cb);
         if ((sk = SSL_load_client_CA_file("control/clientca.pem")) == NULL)
          { err_nogateway(); return; }
         SSL_set_client_CA_list(ssl, sk);
@@ -335,8 +348,14 @@ void smtp_rcpt(arg) char *arg; {
         SSL_do_handshake(ssl);
         ssl->state = SSL_ST_ACCEPT;
         SSL_do_handshake(ssl);
-        if ((SSL_get_verify_result(ssl) == X509_V_OK) &&
-             (peercert = SSL_get_peer_certificate(ssl)))
+        if ((r = SSL_get_verify_result(ssl)) != X509_V_OK)
+         {out("553 no valid cert for gatewaying: ");
+          out(X509_verify_cert_error_string(r));
+          out(" (#5.7.1)\r\n");
+          return;
+         }
+  
+        if (peercert = SSL_get_peer_certificate(ssl))
          {char emailAddress[256];
 
           X509_NAME_get_text_by_NID(X509_get_subject_name(
@@ -508,7 +527,7 @@ void smtp_data() {
 }
 
 #ifdef TLS
-RSA *tmp_rsa_cb(ssl,export,keylength) SSL *ssl; int export; int keylength; 
+static RSA *tmp_rsa_cb(ssl,export,keylength) SSL *ssl; int export; int keylength; 
 {
   RSA* rsa;
   BIO* in;
@@ -529,18 +548,19 @@ void smtp_tls(arg) char *arg;
    {out("501 Syntax error (no parameters allowed) (#5.5.4)\r\n");
     return;}
 
-  SSLeay_add_ssl_algorithms();
+  SSL_library_init();
   if(!(ctx=SSL_CTX_new(SSLv23_server_method())))
    {out("454 TLS not available: unable to initialize ctx (#4.3.0)\r\n"); 
     return;}
   if(!SSL_CTX_use_RSAPrivateKey_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM))
    {out("454 TLS not available: missing RSA private key (#4.3.0)\r\n"); 
     return;}
-  if(!SSL_CTX_use_certificate_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM))
+  if(!SSL_CTX_use_certificate_chain_file(ctx, "control/cert.pem"))
    {out("454 TLS not available: missing certificate (#4.3.0)\r\n"); 
     return;}
   SSL_CTX_set_tmp_rsa_callback(ctx, tmp_rsa_cb);
   SSL_CTX_load_verify_locations(ctx, "control/clientca.pem",NULL);
+  SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_cb);
  
   out("220 ready for tls\r\n"); flush();
 
@@ -574,7 +594,9 @@ struct commands smtpcommands[] = {
 
 void main()
 {
+#ifdef TLS
   sig_alarmcatch(sigalrm);
+#endif
   sig_pipeignore();
   if (chdir(auto_qmail) == -1) die_control();
   setup();

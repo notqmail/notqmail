@@ -121,29 +121,70 @@ void sigalrm()
 {
  flagtimedout = 1;
 }
+
 int ssl_timeoutread(timeout,fd,buf,n) int timeout; int fd; char *buf; int n;
 {
  int r; int saveerrno;
  if (flagtimedout) { errno = error_timeout; return -1; }
  alarm(timeout);
- if (ssl) r = SSL_read(ssl,buf,n); else r = read(fd,buf,n);
+ if (ssl) {
+   while(((r = SSL_read(ssl,buf,n)) <= 0)
+         && (SSL_get_error(ssl, r) == SSL_ERROR_WANT_READ));
+   if (SSL_get_error(ssl, r) != SSL_ERROR_NONE)
+    {out("ZTLS connection to "); outhost(); out(" died: ");
+     SSL_load_error_strings();
+     out(ERR_error_string(ERR_get_error(), buf)); out("\n");
+     SSL_shutdown(ssl);
+     zerodie();
+    }
+ }else r = read(fd,buf,n);
  saveerrno = errno;
  alarm(0);
  if (flagtimedout) { errno = error_timeout; return -1; }
  errno = saveerrno;
  return r;
 }
+
 int ssl_timeoutwrite(timeout,fd,buf,n) int timeout; int fd; char *buf; int n;
 {
  int r; int saveerrno;
  if (flagtimedout) { errno = error_timeout; return -1; }
  alarm(timeout);
- if (ssl) r = SSL_write(ssl,buf,n); else r = write(fd,buf,n);
+ if (ssl) {
+   while(((r = SSL_write(ssl,buf,n)) <= 0)
+         && (SSL_get_error(ssl, r) == SSL_ERROR_WANT_WRITE));
+   if (SSL_get_error(ssl, r) != SSL_ERROR_NONE)
+    {out("ZTLS connection to "); outhost(); out(" died: ");
+     SSL_load_error_strings();
+     out(ERR_error_string(ERR_get_error(), buf)); out("\n");
+     SSL_shutdown(ssl);
+     zerodie();
+    }
+ }else r = write(fd,buf,n);
  saveerrno = errno;
  alarm(0);
  if (flagtimedout) { errno = error_timeout; return -1; }
  errno = saveerrno;
  return r;
+}
+
+static int client_cert_cb(SSL *s,X509 **x509, EVP_PKEY **pkey)
+{
+  SSL_CTX *ctx;
+
+  ctx = SSL_get_SSL_CTX(s);
+
+  if(!SSL_CTX_use_RSAPrivateKey_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM)||
+     !SSL_CTX_use_certificate_chain_file(ctx, "control/cert.pem") ||
+     (SSL_CTX_check_private_key(ctx) < 0))
+    {out("ZTLS not available: error in control/cert.pem\n");
+     zerodie(NULL,NULL);}
+  return (1);
+}
+
+static int verify_cb(int ok, X509_STORE_CTX * ctx)
+{
+  return (1);
 }
 #endif 
 
@@ -356,7 +397,7 @@ void smtp()
 #ifdef DEBUG
       SSL_load_error_strings();
 #endif
-      SSLeay_add_ssl_algorithms();
+      SSL_library_init();
       if(!(ctx=SSL_CTX_new(SSLv23_client_method())))
 #ifdef DEBUG
        {out("ZTLS not available: error initializing ctx");
@@ -368,15 +409,14 @@ void smtp()
 #endif
          zerodie();}
 
-      SSL_CTX_use_RSAPrivateKey_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
-      SSL_CTX_use_certificate_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
+      SSL_CTX_set_client_cert_cb(ctx, client_cert_cb);
       /*SSL_CTX_set_options(ctx, SSL_OP_NO_TLSv1);*/
 
       if (needtlsauth){
         if (!SSL_CTX_load_verify_locations(ctx, servercert.s, NULL))
           {out("ZTLS unable to load "); out(servercert.s); out("\n");
            zerodie();}
-        SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
+        SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, verify_cb);
       }
      
       if(!(ssl=SSL_new(ctx)))

@@ -227,6 +227,14 @@ void quit(prepend,append)
 char *prepend;
 char *append;
 {
+  substdio_putsflush(&smtpto,"QUIT\r\n");
+  /* waiting for remote side is just too ridiculous */
+  out(prepend);
+  outhost();
+  out(append);
+  out(".\n");
+  outsmtptext();
+
 /* TAG */
 #if defined(TLS) && defined(DEBUG)
 #define ONELINE_NAME(X) X509_NAME_oneline(X,NULL,0)
@@ -254,13 +262,6 @@ char *append;
  }
 #endif
 
-  substdio_putsflush(&smtpto,"QUIT\r\n");
-  /* waiting for remote side is just too ridiculous */
-  out(prepend);
-  outhost();
-  out(append);
-  out(".\n");
-  outsmtptext();
   zerodie();
 }
 
@@ -311,12 +312,13 @@ void smtp()
 
   stralloc servercert = {0};
   struct stat st;
-
-  if(!stralloc_copys(&servercert, "control/tlshosts/")) temp_nomem();
-  if(!stralloc_catb(&servercert, fqdn, str_len(fqdn))) temp_nomem();
-  if(!stralloc_catb(&servercert, ".pem", 4)) temp_nomem();
-  if(!stralloc_0(&servercert)) temp_nomem();
-  if (stat(servercert.s,&st) == 0)  needtlsauth = 1;
+  if(fqdn){
+   if(!stralloc_copys(&servercert, "control/tlshosts/")) temp_nomem();
+   if(!stralloc_catb(&servercert, fqdn, str_len(fqdn))) temp_nomem();
+   if(!stralloc_catb(&servercert, ".pem", 4)) temp_nomem();
+   if(!stralloc_0(&servercert)) temp_nomem();
+   if (stat(servercert.s,&st) == 0)  needtlsauth = 1;
+  }
 #endif
 
   if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");

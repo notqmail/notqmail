@@ -338,6 +338,9 @@ unsigned long random;
    ix.pref = 0;
    if (!glue.s[ip_scan(glue.s,&ix.ip)] || !glue.s[ip_scanbracket(glue.s,&ix.ip)])
     {
+#ifdef TLS
+     ix.fqdn = NULL;
+#endif
      if (!ipalloc_append(ia,&ix)) return DNS_MEM;
      return 0;
     }

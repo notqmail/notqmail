@@ -434,6 +434,7 @@ void smtp()
 
       r = case_diffs(partner_fqdn,commonName);
       /* we also match if the cert has commonName *.domainname */
+      /* instead, i would like an implementation of RFC2595, part2.4 */
       if (r && commonName[0] == '*' && commonName[1] == '.') {
         char *partner_domain = partner_fqdn + str_chr(partner_fqdn,'.');
         if (*partner_domain) r = case_diffs(partner_domain+1,commonName+2);

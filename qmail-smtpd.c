@@ -535,6 +535,10 @@ void smtp_data() {
 #ifdef TLS
 void smtp_tls(arg) char *arg; 
 {
+  if (ssl) {
+    err_unimpl();
+    return;
+  }
   if (*arg) {
     out("501 Syntax error (no parameters allowed) (#5.5.4)\r\n");
     return;
@@ -559,8 +563,6 @@ static RSA *tmp_rsa_cb(ssl,export,keylen) SSL *ssl; int export; int keylen;
 void init_tls()
 {
   SSL_CTX *ctx;
-
-  if (ssl) return;
 
   SSL_library_init();
 

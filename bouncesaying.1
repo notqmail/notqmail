@@ -1,35 +1,34 @@
-.TH condredirect 1
+.TH bouncesaying 1
 .SH NAME
-condredirect \- perhaps redirect mail to another address
+bouncesaying \- perhaps bounce each incoming message
 .SH SYNOPSIS
 in
 .BR .qmail :
-.B |condredirect
-.I newaddress
+.B |bouncesaying
+.I error
+[
 .I program
 [
 .I arg ...
 ]
+]
 .SH DESCRIPTION
-.B condredirect
+.B bouncesaying
 feeds each new mail message to
 .I program
 with the given arguments.
 If
 .I program
 exits 0,
-.B condredirect
-forwards the mail message to
-.IR newaddress ,
-and then exits 99,
-so further commands in
-.B .qmail
-are ignored.
+.B bouncesaying
+prints
+.I error
+and bounces the message.
 
 If
 .I program
 exits 111,
-.B condredirect
+.B bouncesaying
 exits 111,
 so delivery will be retried later.
 
@@ -37,7 +36,7 @@ If
 .I program
 exits anything else
 (or does not exist),
-.B condredirect
+.B bouncesaying
 exits 0,
 so the rest of
 .B .qmail
@@ -49,15 +48,24 @@ it is not safe for
 to fork a child that
 reads the message in the background.
 
+If
+.I program
+is not supplied,
+.B bouncesaying
+always bounces the message:
+
+.EX
+   |bouncesaying 'This address no longer accepts mail.'
+.EE
+
 .B WARNING:
 If you create a
 .B .qmail
 file to enable
-.BR condredirect ,
+.BR bouncesaying ,
 make sure to also add a line specifying delivery to your normal mailbox.
 .SH "SEE ALSO"
-bouncesaying(1),
+condredirect(1),
 except(1),
 dot-qmail(5),
-qmail-command(8),
-qmail-queue(8)
+qmail-command(8)

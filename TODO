@@ -1,6 +1,3 @@
-test qmail-qmqpc
-test qmail-qmqpd
-
 consider stripping vdoms for VERPs; tnx PJH
 consider ~ in qmail-local for doing defaultdelivery (not recursively)
 consider POP bulletins
@@ -16,10 +13,10 @@ test for linux fifo close bug at compile time
 
 eliminate qsmhook
 finish OTBS conversion
-use lib822 in qmail-inject
-use lib822 in qreceipt
-use lib822 in qbiff
-use lib822 in maildirwatch
+use mess822 in qmail-inject
+use mess822 in qreceipt
+use mess822 in qbiff
+use mess822 in maildirwatch
 eliminate token822, headerbody, hfield
 replace INTERNALS and THOUGHTS with a real paper describing qmail
 handle IPv6

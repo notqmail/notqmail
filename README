@@ -1,5 +1,5 @@
-qmail 1.02
-19980430
+qmail 1.03
+19980615
 Copyright 1998
 D. J. Bernstein, qmail@pobox.com
 
@@ -8,8 +8,8 @@ It is meant as a replacement for the entire sendmail-binmail system on
 typical Internet-connected UNIX hosts. See BLURB, BLURB2, BLURB3, and
 BLURB4 for more detailed advertisements.
 
-INSTALL says how to set up and test qmail. If you're upgrading from
-1.01, read UPGRADE instead.
+INSTALL says how to set up and test qmail. If you're upgrading from a
+previous version, read UPGRADE instead.
 
 See PIC.* for some ``end-to-end'' pictures of mail flowing through the
 qmail system.

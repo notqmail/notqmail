@@ -83,7 +83,7 @@ Local delivery (qmail-local):
 *  user-controlled program delivery: procmail etc. (qmail-command)
 *  optional new-mail notification (qbiff)
 *  optional NRUDT return receipts (qreceipt)
-*  conditional filtering (condredirect)
+*  conditional filtering (condredirect, bouncesaying)
 
 POP3 service (qmail-popup, qmail-pop3d):
 *  RFC 1939

@@ -1,0 +1,33 @@
+.TH except 1
+.SH NAME
+except \- reverse the exit code of a program
+.SH SYNOPSIS
+.B except
+.I program
+[
+.I arg ...
+]
+.SH DESCRIPTION
+.B except
+runs
+.I program
+with the given arguments.
+
+If
+.I program
+exits 0,
+.B except
+exits 100.
+If
+.I program
+exits 111,
+.B except
+exits 111.
+If
+.I program
+exits anything else,
+.B except
+exits 0.
+.SH "SEE ALSO"
+bouncesaying(1),
+condredirect(1)

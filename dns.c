@@ -271,17 +271,16 @@ int pref;
  int r;
  struct ip_mx ix;
 
- if (sa->len && (sa->s[0] == '['))
-  {
-   if (!stralloc_copy(&glue,sa)) return DNS_MEM;
-   if (!stralloc_0(&glue)) return DNS_MEM;
+ if (!stralloc_copy(&glue,sa)) return DNS_MEM;
+ if (!stralloc_0(&glue)) return DNS_MEM;
+ if (glue.s[0]) {
    ix.pref = 0;
-   if (!glue.s[ip_scanbracket(glue.s,&ix.ip)])
+   if (!glue.s[ip_scan(glue.s,&ix.ip)] || !glue.s[ip_scanbracket(glue.s,&ix.ip)])
     {
      if (!ipalloc_append(ia,&ix)) return DNS_MEM;
      return 0;
     }
-  }
+ }
 
  switch(resolve(sa,T_A))
   {
@@ -316,6 +315,7 @@ unsigned long random;
 {
  int r;
  struct mx { stralloc sa; unsigned short p; } *mx;
+ struct ip_mx ix;
  int nummx;
  int i;
  int j;
@@ -324,18 +324,16 @@ unsigned long random;
  if (!ipalloc_readyplus(ia,0)) return DNS_MEM;
  ia->len = 0;
 
- if (sa->len && (sa->s[0] == '['))
-  {
-   struct ip_mx ix;
-   if (!stralloc_copy(&glue,sa)) return DNS_MEM;
-   if (!stralloc_0(&glue)) return DNS_MEM;
+ if (!stralloc_copy(&glue,sa)) return DNS_MEM;
+ if (!stralloc_0(&glue)) return DNS_MEM;
+ if (glue.s[0]) {
    ix.pref = 0;
-   if (!glue.s[ip_scanbracket(glue.s,&ix.ip)])
+   if (!glue.s[ip_scan(glue.s,&ix.ip)] || !glue.s[ip_scanbracket(glue.s,&ix.ip)])
     {
      if (!ipalloc_append(ia,&ix)) return DNS_MEM;
      return 0;
     }
-  }
+ }
 
  switch(resolve(sa,T_MX))
   {

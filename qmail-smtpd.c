@@ -149,12 +149,14 @@ char *arg;
  
   terminator = '>';
   i = str_chr(arg,'<');
-  if (!arg[i]) { /* partner should go read rfc 821 */
+  if (arg[i])
+    arg += i + 1;
+  else { /* partner should go read rfc 821 */
     terminator = ' ';
-    i = str_chr(arg,':');
-    if (!arg[i]) return 0;
+    arg += str_chr(arg,':');
+    if (*arg == ':') ++arg;
+    while (*arg == ' ') ++arg;
   }
-  arg += i + 1;
 
   /* strip source route */
   if (*arg == '@') while (*arg) if (*arg++ == ':') break;
@@ -209,7 +211,7 @@ int bmfcheck()
 int addrallowed()
 {
   int r;
-  r = rcpthosts(addr.s + 1,addr.len - 2);
+  r = rcpthosts(addr.s,str_len(addr.s));
   if (r == -1) die_control();
   return r;
 }
@@ -221,6 +223,11 @@ stralloc mailfrom = {0};
 stralloc rcptto = {0};
 
 void smtp_helo(arg) char *arg;
+{
+  smtp_greet("250 "); out("\r\n");
+  seenmail = 0; dohelo(arg);
+}
+void smtp_ehlo(arg) char *arg;
 {
   smtp_greet("250-"); out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
   seenmail = 0; dohelo(arg);
@@ -393,7 +400,7 @@ struct commands smtpcommands[] = {
 , { "data", smtp_data, flush }
 , { "quit", smtp_quit, flush }
 , { "helo", smtp_helo, flush }
-, { "ehlo", smtp_helo, flush }
+, { "ehlo", smtp_ehlo, flush }
 , { "rset", smtp_rset, 0 }
 , { "help", smtp_help, flush }
 , { "noop", err_noop, flush }

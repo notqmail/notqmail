@@ -1,6 +1,7 @@
 1. Controlling the appearance of outgoing messages
 1.1. How do I set up host masquerading?
 1.2. How do I set up user masquerading?
+1.3. How do I set up Mail-Followup-To automatically?
 
 2. Routing outgoing messages
 2.1. How do I send local messages to another host?
@@ -32,6 +33,7 @@
 5.3. How do I set up qmail-pop3d?
 5.4. How do I allow selected clients to use this host as a relay?
 5.5. How do I fix up messages from broken SMTP clients?
+5.6. How do I set up qmail-qmqpd?
 
 6. Configuring MUAs to work with qmail
 6.1. How do I make BSD mail generate a Date with the local time zone?
@@ -73,6 +75,14 @@ show boss@af.mil rather than god@heaven.af.mil.
 Answer: Add MAILHOST=af.mil and MAILUSER=boss to your environment. To
 override From lines supplied by your MUA, add QMAILINJECT=f to your
 environment.
+
+
+1.3. How do I set up Mail-Followup-To automatically? When I send a
+message to the sos@heaven.af.mil mailing list, I'd like to include
+``Mail-Followup-To: sos@heaven.af.mil''.
+
+Answer: Add QMAILMFTFILE=$HOME/.lists to your environment, and put
+sos@heaven.af.mil into ~/.lists.
 
 
 
@@ -226,8 +236,8 @@ Answer: Put
 
 into ~/.qmail. You'll have to use a full path for procmail unless
 procmail is in the system's startup PATH. Note that procmail will try to
-deliver to /usr/spool/mail/$USER by default; to change this, change
-SYSTEM_MBOX in procmail's config.h.
+deliver to /var/spool/mail/$USER by default; to change this, see
+INSTALL.mbox.
 
 
 4.5. How do I use elm's filter with qmail?
@@ -333,7 +343,7 @@ If you have tcpserver installed, skip the inetd step, and set up
    tcpserver -u 7770 -g 2108 0 qmtp /var/qmail/bin/qmail-qmtpd &
 
 replacing 7770 and 2108 with the qmaild uid and nofiles gid. See
-question 5.1 for more details.
+question 5.1 for more details on tcpserver.
 
 
 5.3. How do I set up qmail-pop3d? My old POP server works with mbox
@@ -362,7 +372,7 @@ lines)
    /bin/checkpassword /var/qmail/bin/qmail-pop3d Maildir &
 
 replacing YOURHOST with your host's fully qualified domain name. See
-question 5.1 for more details.
+question 5.1 for more details on tcpserver.
 
 Security note: pop3d should be used only within a secure network;
 otherwise an eavesdropper can steal passwords.
@@ -411,7 +421,7 @@ after tcpserver in your qmail-smtpd invocation.
 
 Answer: Three steps. First, put
 
-   | [ "@$HOST" = "@fixme" ] || ( echo Permission denied; exit 100 )
+   | bouncesaying 'Permission denied' [ "@$HOST" != "@fixme" ]
    | qmail-inject -f "$SENDER" -- "$DEFAULT"
 
 into ~alias/.qmail-fixup-default. Second, put
@@ -431,6 +441,28 @@ tcpserver instead of inetd and tcpd, put
    1.2.3.7:allow,RELAYCLIENT="@fixme"
 
 into /etc/tcp.smtp, and run tcprules as in question 5.4.
+
+
+5.6. How do I set up qmail-qmqpd? I'd like to allow fast queueing of
+outgoing mail from authorized clients.
+
+Answer: Make sure you have installed tcpserver 0.80 or above. Create
+/etc/qmqp.tcp in tcprules format to allow connections from authorized
+hosts. For example, if queueing is allowed from 1.2.3.*:
+
+   1.2.3.:allow
+   :deny
+
+Convert /etc/qmqp.tcp to /etc/qmqp.cdb:
+
+   tcprules /etc/qmqp.cdb /etc/qmqp.tmp < /etc/qmqp.tcp
+
+Finally, set up
+
+   tcpserver -x /etc/qmqp.cdb -u 7770 -g 2108 0 628 /var/qmail/bin/qmail-qmqpd &
+
+replacing 7770 and 2108 with the qmaild uid and nofiles gid. See
+question 5.1 for more details on tcpserver.
 
 
 

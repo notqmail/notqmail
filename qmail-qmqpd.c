@@ -1,5 +1,3 @@
-/* EXPERIMENTAL! Use at your own risk. */
-
 #include "auto_qmail.h"
 #include "qmail.h"
 #include "received.h"
@@ -167,9 +165,7 @@ main()
   if (!flagok)
     result = "Dsorry, I can't accept addresses like that (#5.1.3)";
 
-  fmt_ulong(strnum,str_len(result));
-
-  substdio_puts(&ssout,strnum);
+  substdio_put(&ssout,strnum,fmt_ulong(strnum,(unsigned long) str_len(result)));
   substdio_puts(&ssout,":");
   substdio_puts(&ssout,result);
   substdio_puts(&ssout,",");

@@ -1,5 +1,3 @@
-/* EXPERIMENTAL! Use at your own risk. */
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

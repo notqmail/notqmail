@@ -1,3 +1,42 @@
+19980615 version: qmail 1.03.
+19980614 doc: eliminated BIN.setup in favor of a web page.
+19980614 code: added other auto* to qmail-showctl output.
+19980614 doc: added pointer to immhf.html in qmail-header.5.
+19980614 doc: added note to TEST.receive about SMTP command format.
+19980614 doc: added FAQ 5.6 on qmail-qmqpd.
+19980614 code: removed unused variables in idedit.c.
+19980613 code: changed conf-patrn to 002.
+19980613 doc: moved SENDMAIL lower in INSTALL.
+19980612 code: added install-big.
+19980612 code: added BIN.Makefile.
+19980612 doc: added BIN.README, BIN.setup.
+19980612 code: switched to new install.
+19980611 code: added idedit.
+19980611 doc: added FAQ 1.3 on $QMAILMFTFILE.
+19980611 doc: used bouncesaying in FAQ 5.5.
+19980611 code: added except.
+19980611 code: added bouncesaying.
+19980611 code: allowed unbracketed IP addresses in dns_ipplus() and
+         dns_mxip().
+19980611 code: allowed spaces after colon in non-bracketed addresses in
+         qmail-smtpd.
+19980611 doc: cleaned up UPGRADE.
+19980528 bug: qmail-smtpd skips first character in rcpthosts() call.
+         tnx NND. impact: qmail-smtpd crashes on empty address; and it
+	 allows relaying to ""@any.host. fix: use addr.s.
+19980515 doc: expanded flock discussion in INSTALL.mbox.
+19980515 doc: eliminated flock warning from INSTALL.maildir.
+19980515 doc: split REMOVE.binmail out of INSTALL.
+19980515 doc: split REMOVE.sendmail out of INSTALL.
+19980515 doc: split TEST.deliver and TEST.receive out of INSTALL and
+         UPGRADE.
+19980515 doc: integrated INSTALL.boot into INSTALL.
+19980515 code: cleaned up final output in qmail-qmqpd.c.
+19980514 doc: updated procmail notes in INSTALL.mbox. tnx JRM.
+19980514 doc: changed FAQ 4.4 to point to INSTALL.mbox for procmail.
+         tnx JRM.
+19980514 code: separated HELO and EHLO; single-line response for HELO.
+         tnx to various people.
 19980430 version: qmail 1.02.
 19980430 doc: updated SECURITY.
 19980430 doc: fixed FAQ 4.9. tnx KB.

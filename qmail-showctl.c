@@ -9,8 +9,12 @@
 #include "constmap.h"
 #include "stralloc.h"
 #include "direntry.h"
-#include "auto_qmail.h"
 #include "auto_uids.h"
+#include "auto_qmail.h"
+#include "auto_break.h"
+#include "auto_patrn.h"
+#include "auto_spawn.h"
+#include "auto_split.h"
 
 stralloc me = {0};
 int meok;
@@ -139,11 +143,27 @@ void main()
   struct stat stmrh;
   struct stat stmrhcdb;
 
-  substdio_puts(subfdout,"The qmail control files are stored in ");
+  substdio_puts(subfdout,"qmail home directory: ");
   substdio_puts(subfdout,auto_qmail);
-  substdio_puts(subfdout,"/control.\n");
+  substdio_puts(subfdout,".\n");
 
-  substdio_puts(subfdout,"The uids and gids are ");
+  substdio_puts(subfdout,"user-ext delimiter: ");
+  substdio_puts(subfdout,auto_break);
+  substdio_puts(subfdout,".\n");
+
+  substdio_puts(subfdout,"paternalism (in decimal): ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_patrn));
+  substdio_puts(subfdout,".\n");
+
+  substdio_puts(subfdout,"silent concurrency limit: ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_spawn));
+  substdio_puts(subfdout,".\n");
+
+  substdio_puts(subfdout,"subdirectory split: ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_split));
+  substdio_puts(subfdout,".\n");
+
+  substdio_puts(subfdout,"user ids: ");
   substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_uida));
   substdio_puts(subfdout,", ");
   substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_uidd));
@@ -159,7 +179,9 @@ void main()
   substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_uidr));
   substdio_puts(subfdout,", ");
   substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_uids));
-  substdio_puts(subfdout,", ");
+  substdio_puts(subfdout,".\n");
+
+  substdio_puts(subfdout,"group ids: ");
   substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_gidn));
   substdio_puts(subfdout,", ");
   substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_gidq));

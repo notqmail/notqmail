@@ -2,16 +2,17 @@ The qmail package includes a local delivery agent, qmail-local, which
 provides user-controlled mailing lists, cross-host alias loop detection,
 and many other important qmail features.
 
-There's one part of qmail-local that you need to know about right now:
-qmail-local delivers mail by default into ~user/Mailbox (in mbox format,
-using flock), rather than /var/spool/mail/user.
+There's one important difference between qmail-local and binmail:
+qmail-local delivers mail by default into ~user/Mailbox, rather than
+/var/spool/mail/user. It uses mbox format, with lockf locking on systems
+that don't have flock (HP/UX, Solaris), and flock locking otherwise.
 
-For an explanation of the problems with /var/spool/mail, and a list of
-options if you want to continue delivering to /var/spool/mail, see
-INSTALL.vsm.
+This file explains how to switch your system to ~user/Mailbox. You
+aren't required to do this; for further discussion of /var/spool/mail,
+and an explanation of how to continue using binmail for local
+deliveries, see INSTALL.vsm.
 
-This file explains how to handle the change to ~user/Mailbox. The basic
-procedure is simple:
+The basic procedure for switching to ~user/Mailbox is simple:
 
    * Move each /var/spool/mail/user to ~user/Mailbox. For safety, do
      this in single-user mode.
@@ -20,11 +21,17 @@ procedure is simple:
      ~user/Mailbox for each user. /var/spool/mail should be mode 1777,
      so users will not be able to accidentally remove these links.
 
+A few mail programs are unable to handle symbolic links, so you will
+have to configure them to look at ~user/Mailbox directly:
+
+   * procmail: Change SYSTEM_MBOX in config.h and recompile; or, with
+     recent versions, define MAILSPOOLHOME in src/authenticate.c.
+
 An alternative to symbolic links is hlfsd. Consult the documentation for
 hlfsd if it is included in your operating system.
 
 If /var/spool/mail is large, you can gain extra speed by configuring
-your mail software to look at ~user/Mailbox directly:
+all your mail software to look at ~user/Mailbox directly:
 
    * Most MUAs: Put ``setenv MAIL $HOME/Mailbox'' in your system-wide
      .cshrc and ``MAIL=$HOME/Mailbox; export MAIL'' in your system-wide
@@ -36,8 +43,6 @@ your mail software to look at ~user/Mailbox directly:
 
    * pine: Put ``inbox-path=Mailbox'' in your system-wide pine.conf.
      (For pine versions more recent than 3.91, see also FAQ 6.2.)
-
-   * procmail: Change SYSTEM_MBOX in config.h and recompile.
 
    * qpopper 2.2: Change /.mail to /Mailbox in pop_dropcopy.c and
      recompile with -DHOMEDIRMAIL in CFLAGS.

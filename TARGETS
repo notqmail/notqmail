@@ -288,6 +288,10 @@ preline.o
 preline
 condredirect.o
 condredirect
+bouncesaying.o
+bouncesaying
+except.o
+except
 maildirmake.o
 maildirmake
 maildir2mbox.o
@@ -297,9 +301,12 @@ maildirwatch
 qail
 elq
 pinq
-qmail-hier.o
-qmail-hier
+idedit.o
+idedit
+install-big.o
 install.o
+install-big
+hier.o
 install
 instcheck.o
 instcheck
@@ -352,6 +359,8 @@ qbiff.0
 forward.0
 preline.0
 condredirect.0
+bouncesaying.0
+except.0
 maildirmake.0
 maildir2mbox.0
 maildirwatch.0

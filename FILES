@@ -6,12 +6,15 @@ README
 FAQ
 INSTALL
 INSTALL.alias
-INSTALL.boot
 INSTALL.ctl
 INSTALL.ids
 INSTALL.maildir
 INSTALL.mbox
 INSTALL.vsm
+REMOVE.sendmail
+REMOVE.binmail
+TEST.deliver
+TEST.receive
 UPGRADE
 THOUGHTS
 TODO
@@ -34,6 +37,9 @@ VERSION
 SYSDEPS
 TARGETS
 Makefile
+BIN.README
+BIN.Makefile
+idedit.c
 conf-break
 auto_break.h
 conf-spawn
@@ -49,6 +55,8 @@ auto_uids.h
 auto_usera.h
 extra.h
 addresses.5
+except.1
+bouncesaying.1
 condredirect.1
 dot-qmail.9
 envelopes.5
@@ -99,7 +107,6 @@ config.sh
 config-fast.sh
 qmail-clean.c
 qmail-getpw.c
-qmail-hier.c
 qmail-inject.c
 qmail-local.c
 qmail-lspawn.c
@@ -138,6 +145,8 @@ qbiff.c
 forward.c
 preline.c
 predate.c
+except.c
+bouncesaying.c
 condredirect.c
 maildirmake.c
 maildir2mbox.c
@@ -202,8 +211,10 @@ auto-int.c
 auto-int8.c
 auto-gid.c
 auto-uid.c
+hier.c
 install.c
 instcheck.c
+install-big.c
 alloc.3
 alloc.h
 alloc.c

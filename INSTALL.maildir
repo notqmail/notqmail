@@ -25,11 +25,6 @@ default. Nevertheless, I encourage you to start asking for maildir
 versions of your favorite MUAs, and to switch over to maildir as soon as
 you can.
 
-WARNING: qmail uses flock() to lock ~user/Mailbox. This agrees with the
-modern mail.local locking choice. If your MUA doesn't use flock(), your
-best bet is to switch to maildir, and to set up synchronous maildir2mbox
-execution, as described below.
-
 
 2. Sun's Network F_ail_u_re System
 

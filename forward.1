@@ -1,0 +1,24 @@
+.TH forward 1
+.SH NAME
+forward \- forward new mail to one or more addresses
+.SH SYNOPSIS
+in
+.BR .qmail :
+.B |forward
+.I address ...
+.SH DESCRIPTION
+.B forward
+forwards each new mail message to the specified list of addresses.
+It is a simple wrapper around
+.BR qmail-queue .
+It achieves the same results as listing each
+.I address
+separately in
+.BR .qmail ,
+but it is more programmable since
+.I address
+can be constructed on the fly.
+.SH "SEE ALSO"
+dot-qmail(5),
+qmail-command(8),
+qmail-queue(8)

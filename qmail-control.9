@@ -1,0 +1,74 @@
+.TH qmail-control 5
+.SH "NAME"
+qmail-control \- qmail configuration files
+.SH "INTRODUCTION"
+You can change the behavior of the
+.B qmail
+system by modifying
+.BR qmail 's
+.I control files
+in
+.BR QMAILHOME/control .
+
+.B qmail
+can survive with just one control file,
+.IR me ,
+containing the
+fully-qualified name of the current host.
+This file is used as the default for
+other hostname-related control files.
+
+Comments are allowed
+in
+.IR badmailfrom ,
+.IR locals ,
+.IR percenthack ,
+.IR rcpthosts ,
+.IR smtproutes ,
+and
+.IR virtualdomains .
+Trailing spaces and tabs are allowed in any control file.
+
+The following table lists all control files
+other than
+.IR me .
+See the corresponding man pages for further details.
+
+.RS
+.nf
+.ta 5c 10c
+control	default	used by
+
+.I badmailfrom	\fR(none)	\fRqmail-smtpd
+.I bouncefrom	\fRMAILER-DAEMON	\fRqmail-send
+.I bouncehost	\fIme	\fRqmail-send
+.I concurrencylocal	\fR10	\fRqmail-send
+.I concurrencyremote	\fR20	\fRqmail-send
+.I defaultdomain	\fIme	\fRqmail-inject
+.I defaulthost	\fIme	\fRqmail-inject
+.I doublebouncehost	\fIme	\fRqmail-send
+.I doublebounceto	\fRpostmaster	\fRqmail-send
+.I envnoathost	\fIme	\fRqmail-send
+.I helohost	\fIme	\fRqmail-remote
+.I idhost	\fIme	\fRqmail-inject
+.I localiphost	\fIme	\fRqmail-smtpd
+.I locals	\fIme	\fRqmail-send
+.I percenthack	\fR(none)	\fRqmail-send
+.I plusdomain	\fIme	\fRqmail-inject
+.I queuelifetime	\fR604800	\fRqmail-send
+.I rcpthosts	\fR(none)	\fRqmail-smtpd
+.I recipientmap	\fR(none)	\fRqmail-send
+.I smtpgreeting	\fIme	\fRqmail-smtpd
+.I smtproutes	\fR(none)	\fRqmail-remote
+.I timeoutconnect	\fR60	\fRqmail-remote
+.I timeoutremote	\fR1200	\fRqmail-remote
+.I timeoutsmtpd	\fR1200	\fRqmail-smtpd
+.I virtualdomains	\fR(none)	\fRqmail-send
+.fi
+.RE
+.SH "SEE ALSO"
+qmail-inject(8),
+qmail-remote(8),
+qmail-send(8),
+qmail-showctl(8),
+qmail-smtpd(8)

@@ -1,0 +1,31 @@
+.TH qbiff 1
+.SH NAME
+qbiff \- announce new mail the moment it arrives
+.SH SYNOPSIS
+in
+.BR .qmail :
+.B |qbiff
+.SH DESCRIPTION
+.B qbiff
+writes a message to your screen
+whenever a new mail message is delivered,
+if you ran
+.B biff y
+after logging in.
+
+.B WARNING:
+If you create a
+.B .qmail
+file to enable
+.BR qbiff ,
+make sure to also add a line specifying delivery to your normal mailbox.
+For example:
+
+.EX
+     /home/joe/Mailbox
+.br
+     |qbiff
+.EE
+.SH "SEE ALSO"
+biff(1),
+dot-qmail(5)

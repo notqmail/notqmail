@@ -1,0 +1,51 @@
+.TH getln 3
+.SH NAME
+getln \- read one line of data
+.SH SYNTAX
+.B #include <getln.h>
+
+int \fBgetln\fP(&\fIss\fR,&\fIsa\fR,&\fImatch\fR,\fIsep\fR);
+
+substdio \fIss\fR;
+.br
+stralloc \fIsa\fR;
+.br
+int \fImatch\fR;
+.br
+int \fIsep\fR;
+.SH DESCRIPTION
+.B getln
+reads a line of characters, terminated by a 
+.I sep
+character,
+from
+.IR ss .
+It returns the line in
+.I sa
+and sets
+.I match
+to 1.
+
+If
+.B getln
+sees end-of-input before it sees
+.IR sep ,
+it returns the partial line in
+.I sa
+and sets
+.I match
+to 0.
+
+.B getln
+normally returns 0.
+If it runs out of memory,
+or encounters an error from
+.IR ss ,
+it returns -1,
+setting
+.B errno
+appropriately.
+.SH "SEE ALSO"
+stralloc(3),
+substdio(3),
+getln2(3)

@@ -1,0 +1,93 @@
+.TH wait 3
+.SH NAME
+wait \- check child process status
+.SH SYNTAX
+.B #include <wait.h>
+
+int \fBwait_nohang\fP(&\fIwstat\fR);
+.br
+int \fBwait_stop\fP(&\fIwstat\fR);
+.br
+int \fBwait_stopnohang\fP(&\fIwstat\fR);
+.br
+int \fBwait_pid\fP(&\fIwstat\fR,\fIpid\fR);
+
+int \fBwait_exitcode\fP(\fIwstat\fR);
+.br
+int \fBwait_crashed\fP(\fIwstat\fR);
+.br
+int \fBwait_stopped\fP(\fIwstat\fR);
+.br
+int \fBwait_stopsig\fP(\fIwstat\fR);
+
+int \fIpid\fR;
+.br
+int \fIwstat\fR;
+.SH DESCRIPTION
+.B wait_nohang
+looks for zombies (child processes that have exited).
+If it sees a zombie,
+it eliminates the zombie,
+puts the zombie's exit status into
+.IR wstat ,
+and returns the zombie's process ID.
+If there are several zombies,
+.B wait_nohang
+picks one.
+If there are children but no zombies,
+.B wait_nohang
+returns 0.
+If there are no children,
+.B wait_nohang
+returns -1,
+setting
+.B errno
+appropriately.
+
+.B wait_stopnohang
+is similar to
+.BR wait_nohang ,
+but it also looks for children that have stopped.
+
+.B wait_stop
+is similar to
+.BR wait_stopnohang ,
+but if there are children it will pause waiting for one of them
+to stop or exit.
+
+.B wait_pid
+waits for child process
+.I pid
+to exit.
+It eliminates any zombie that shows up in the meantime,
+discarding the exit status.
+
+.B wait_stop
+and
+.B wait_pid
+retry upon
+.BR error_intr .
+.SH "STATUS PARSING"
+If the child stopped,
+.B wait_stopped
+is nonzero;
+.B wait_stopsig
+is the signal that caused the child to stop.
+
+If the child exited by crashing,
+.B wait_stopped
+is zero;
+.B wait_crashed
+is nonzero.
+
+If the child exited normally,
+.B wait_stopped
+is zero;
+.B wait_crashed
+is zero;
+and
+.B wait_exitcode
+is the child's exit code.
+.SH "SEE ALSO"
+wait(2),
+error(3)

@@ -1,0 +1,100 @@
+.TH case 3
+.SH NAME
+case \- convert ASCII uppercase bytes to lowercase
+.SH SYNTAX
+.B #include <case.h>
+
+void \fBcase_lowers\fP(\fIs\fR);
+.br
+void \fBcase_lowerb\fP(\fIs\fR,\fIlen\fR);
+
+int \fBcase_diffs\fP(\fIs\fR,\fIt\fR);
+.br
+int \fBcase_equals\fP(\fIs\fR,\fIt\fR);
+.br
+int \fBcase_starts\fP(\fIs\fR,\fIt\fR);
+
+int \fBcase_diffb\fP(\fIs\fR,\fIlen\fR,\fIt\fR);
+.br
+int \fBcase_startb\fP(\fIs\fR,\fIlen\fR,\fIt\fR);
+
+char *\fIs\fR;
+.br
+char *\fIt\fR;
+.br
+unsigned int \fIlen\fR;
+.SH DESCRIPTION
+.B case_lowers
+converts each uppercase byte in the string
+.I s
+to lowercase.
+.I s
+must be 0-terminated.
+
+.B case_lowerb
+converts each uppercase byte in the buffer
+.IR s ,
+of length
+.IR len ,
+to lowercase.
+
+.B case_diffs
+lexicographically compares lowercase versions of the strings
+.I s
+and
+.IR t .
+It returns something positive, negative, or zero
+when the first is larger than, smaller than, or equal to the second.
+.I s
+and
+.I t
+must be 0-terminated.
+
+.B case_equals
+means
+.BR !case_diffs .
+
+.B case_starts
+returns 1 if a lowercase version of
+.I s
+starts with a lowercase version of
+.IR t .
+.I s
+and
+.I t
+must be 0-terminated.
+
+.B case_diffb
+lexicographically compares lowercase versions of the buffers
+.I s
+and
+.IR t ,
+each of length
+.IR len .
+It returns something positive, negative, or zero
+when the first is larger than, smaller than, or equal to the second.
+
+.B case_startb
+returns 1 if a lowercase version of the buffer
+.IR s ,
+of length
+.IR len ,
+starts with a lowercase version of the string
+.IR t .
+.I t
+must be 0-terminated.
+
+The
+.B case
+routines
+are ASCII-specific.
+They are suitable for programs that handle
+case-independent networking protocols.
+
+All comparisons are performed on unsigned bytes.
+.SH "SEE ALSO"
+byte_diff(3),
+byte_equal(3),
+str_diff(3),
+str_equal(3),
+str_start(3)

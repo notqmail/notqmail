@@ -1,0 +1,394 @@
+.TH dot-qmail 5
+.SH NAME
+dot-qmail \- control the delivery of mail messages
+.SH DESCRIPTION
+Normally the
+.B qmail-local
+program delivers each incoming message to your system mailbox,
+.IR homedir\fB/Mailbox ,
+where
+.I homedir
+is your home directory.
+
+It can instead
+write the mail to a different file or directory,
+forward it to another address,
+distribute it to a mailing list,
+or even execute programs,
+all under your control.
+.SH "THE QMAIL FILE"
+To change
+.BR qmail-local 's
+behavior, set up a
+.B .qmail
+file in your home directory.
+
+.B .qmail
+contains one or more lines.
+Each line is a delivery instruction.
+.B qmail-local
+follows each instruction in turn.
+There are five types of delivery instructions:
+(1) comment; (2) program; (3) forward; (4) mbox; (5) maildir.
+.TP 5
+(1)
+A comment line begins with a number sign:
+
+.EX
+     # this is a comment
+.EE
+
+.B qmail-local
+ignores the line.
+.TP 5
+(2)
+A program line begins with a vertical bar:
+
+.EX
+     |/usr/ucb/vacation djb
+.EE
+
+.B qmail-local
+takes the rest of the line as a command to supply to
+.BR sh .
+See
+.B qmail-command(8)
+for further information.
+.TP 5
+(3)
+A forward line begins with an ampersand:
+
+.EX
+     &me@new.job.com
+.EE
+
+.B qmail-local
+takes the rest of the line as a mail address;
+it uses
+.B qmail-queue
+to forward the message to that address.
+The address must contain a fully qualified domain name;
+it must not contain extra spaces, angle brackets, or comments:
+
+.EX
+     # the following examples are WRONG
+.br
+     &me@new
+.br
+     &<me@new.job.com>
+.br
+     & me@new.job.com
+.br
+     &me@new.job.com (New Address)
+.EE
+
+If the address begins with a letter or number,
+you may leave out the ampersand:
+
+.EX
+     me@new.job.com
+.EE
+
+Note that
+.B qmail-local
+omits its new
+.B Return-Path
+line when forwarding messages.
+.TP 5
+(4)
+An 
+.I mbox
+line begins with a slash or dot,
+and does not end with a slash:
+
+.EX
+     /home/djb/Mailbox.sos
+.EE
+
+.B qmail-local
+takes the entire line as a filename.
+It appends the mail message to that file,
+using
+.BR flock -style
+file locking if possible.
+.B qmail-local
+stores the mail message in
+.I mbox
+format, as described in
+.BR mbox(5) .
+
+.B WARNING:
+On many systems,
+anyone who can read a file can
+.B flock
+it, and thus hold up
+.BR qmail-local 's
+delivery forever.
+Do not deliver mail to a publicly accessible file!
+
+If
+.B qmail-local
+is able to lock the file, but has trouble writing to it
+(because, for example, the disk is full),
+it will truncate the file back to its original length.
+However, it cannot prevent mailbox corruption if the system
+crashes during delivery.
+.TP 5
+(5)
+A
+.I maildir
+line begins with a slash or dot,
+and ends with a slash:
+
+.EX
+     /home/djb/Maildir/
+.EE
+
+.B qmail-local
+takes the entire line as the name of a directory in
+.I maildir
+format.
+It reliably stores the incoming message in that directory.
+See
+.B maildir(5)
+for more details.
+.PP
+If
+.B .qmail
+has the execute bit set,
+it must not contain any
+program lines,
+.I mbox
+lines,
+or
+.I maildir
+lines.
+If
+.B qmail-local
+sees any such lines,
+it will stop and indicate a temporary failure.
+
+If
+.B .qmail
+is completely empty (0 bytes long), or does not exist,
+.B qmail-local
+follows the
+.I aliasempty
+instructions set by your system administrator;
+normally
+.I aliasempty
+is
+.BR ./Mailbox ,
+so
+.B qmail-local
+appends the mail message to
+.B Mailbox
+in
+.I mbox
+format.
+
+.B .qmail
+may contain extra spaces and tabs at the end of a line.
+Blank lines are allowed, but not for the first line of
+.BR .qmail .
+
+If
+.B .qmail
+is world-writable or group-writable,
+.B qmail-local
+stops and indicates a temporary failure.
+.SH "SAFE QMAIL EDITING"
+Incoming messages can arrive at any moment.
+If you want to safely edit your
+.B .qmail
+file, first set the sticky bit on your home directory:
+
+.EX
+     chmod +t $HOME
+.EE
+
+.B qmail-local
+will temporarily defer delivery of any message to you
+if your home directory is sticky
+(or group-writable or other-writable,
+which should never happen).
+Make sure to
+
+.EX
+     chmod -t $HOME
+.EE
+
+when you are done!
+It's a good idea to test your new
+.B .qmail
+file as follows:
+
+.EX
+     qmail-local -n $USER $HOME $USER '' '' '' ''
+.EE
+.SH "EXTENSION ADDRESSES"
+In the
+.B qmail
+system,
+you control all local addresses of the form
+.IR user\fBBREAK\fIanything ,
+as well as the address
+.I user
+itself,
+where
+.I user
+is your account name.
+Delivery to
+.I user\fBBREAK\fIanything
+is controlled by the file
+.IR homedir/\fB.qmail\-\fIanything .
+(These rules may be changed by the system administrator;
+see
+.BR qmail-users (5).)
+
+The
+.B alias
+user controls all other addresses.
+Delivery to
+.I local
+is controlled by the file
+.IR homedir/\fB.qmail\-\fIlocal ,
+where
+.I homedir
+is
+.BR alias 's
+home directory.
+
+In the following description,
+.B qmail-local
+is handling a message addressed to
+.IR local@domain ,
+where
+.I local
+is controlled by
+.BR .qmail\-\fIext .
+Here is what it does.
+
+If
+.B .qmail\-\fIext
+is completely empty,
+.B qmail-local
+follows the
+.I aliasempty
+instructions set by your system administrator.
+
+If
+.B .qmail\-\fIext
+doesn't exist,
+.B qmail-local
+will try some default
+.B .qmail
+files.
+For example,
+if
+.I ext
+is
+.BR foo-bar ,
+.B qmail-local
+will try first
+.BR .qmail-foo-bar ,
+then
+.BR .qmail-foo-default ,
+and finally
+.BR .qmail-default .
+If none of these exist,
+.B qmail-local
+will bounce the message.
+(Exception: for the basic
+.I user
+address,
+.B qmail-local
+treats a nonexistent
+.B .qmail
+the same as an empty
+.BR .qmail .)
+
+.B WARNING:
+For security,
+.B qmail-local
+replaces any dots in
+.I ext
+with colons before checking
+.BR .qmail\-\fIext .
+For convenience,
+.B qmail-local
+converts any uppercase letters in
+.I ext
+to lowercase.
+
+When
+.B qmail-local
+forwards a message as instructed in
+.B .qmail\-\fIext
+(or
+.BR .qmail-default ),
+it checks whether
+.B .qmail\-\fIext\fB-owner\fP
+exists.
+If so,
+it uses
+.I local\fB-owner@\fIdomain
+as the envelope sender for the forwarded message.
+Otherwise it retains the envelope sender of the original message.
+Exception:
+.B qmail-local
+always retains the original envelope sender
+if it is the empty address or
+.BR #@[] ,
+i.e., if this is a bounce message.
+
+.B qmail-local
+also supports
+.B variable envelope return paths
+(VERPs):
+if
+.B .qmail\-\fIext\fB-owner\fP
+and
+.B .qmail\-\fIext\fB-owner-default\fP
+both exist, it uses
+.I local\fB\-owner\-@\fIdomain\fB-@[]
+as the envelope sender.
+This will cause a recipient
+.I recip\fB@\fIreciphost
+to see an envelope sender of
+.IR local\fB\-owner\-\fIrecip\fB=\fIreciphost\fB@\fIdomain .
+.SH "ERROR HANDLING"
+If a delivery instruction fails,
+.B qmail-local
+stops immediately and reports failure.
+.B qmail-local
+handles forwarding after all other instructions,
+so any error in another type of delivery will prevent all forwarding.
+
+If a program returns exit code 99,
+.B qmail-local
+ignores all succeeding lines in
+.BR .qmail ,
+but it still pays attention to previous forward lines.
+
+To set up independent instructions,
+where a temporary or permanent failure in one instruction
+does not affect the others,
+move each instruction into a separate
+.B .qmail\-\fIext
+file, and set up a central
+.B .qmail
+file that forwards to all of the
+.BR .qmail\-\fIext s.
+Note that
+.B qmail-local
+can handle any number of forward lines simultaneously.
+.SH "SEE ALSO"
+envelopes(5),
+maildir(5),
+mbox(5),
+qmail-users(5),
+qmail-local(8),
+qmail-command(8),
+qmail-queue(8),
+qmail-lspawn(8)

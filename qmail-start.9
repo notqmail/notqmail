@@ -1,0 +1,91 @@
+.TH qmail-start 8
+.SH NAME
+qmail-start \- turn on mail delivery
+.SH SYNOPSIS
+.B qmail-start
+[
+.I aliasempty
+[
+.I logger arg ...
+]
+]
+.SH DESCRIPTION
+.B qmail-start
+invokes
+.BR qmail-send ,
+.BR qmail-lspawn ,
+.BR qmail-rspawn ,
+and
+.BR qmail-clean .
+These four daemons cooperate to deliver messages from the queue.
+
+.B qmail-start
+arranges for
+.BR qmail-send 's
+activity record to be sent to
+.BR qmail-start 's
+output.
+See
+.B qmail-log(5)
+for the format of the activity record.
+Other than this,
+.B qmail-start
+does not print anything, even on failure.
+
+If
+.I aliasempty
+is supplied,
+.B qmail-start
+passes it to
+.BR qmail-lspawn .
+
+If
+.I logger
+is supplied,
+.B qmail-start
+invokes
+.I logger
+with the given arguments,
+and feeds
+.BR qmail-send 's
+activity record through
+.IR logger .
+
+Environment variables given to
+.B qmail-start
+will eventually be passed on to
+.BR qmail-local ,
+so make sure to clean up the environment if you run
+.B qmail-start
+manually:
+
+.EX
+   # env - PATH="QMAILHOME/bin:$PATH"
+.br
+   qmail-start ./Mailbox splogger qmail &
+.br
+   (all on one line)
+.EE
+
+.B qmail-start
+sets the uid and gid of each daemon properly.
+
+Note that
+.B qmail-send
+normally juggles several simultaneous deliveries.
+To reduce
+.BR qmail-send 's
+impact on other programs,
+you can run
+.B qmail-start
+with a low priority.
+.SH "SEE ALSO"
+logger(1),
+splogger(1),
+nice(1),
+qmail-log(5),
+qmail-local(8),
+qmail-clean(8),
+qmail-lspawn(8),
+qmail-rspawn(8),
+qmail-send(8)

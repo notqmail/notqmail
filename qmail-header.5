@@ -1,0 +1,331 @@
+.TH qmail-header 5
+.SH NAME
+qmail-header \- format of a mail message
+.SH OVERVIEW
+At the top of every mail message is a
+highly structured
+.BR header .
+Many programs expect the header to carry certain information,
+as described below.
+The main function of
+.B qmail-inject
+is to make sure that each outgoing message has an appropriate header.
+
+For more detailed information, see RFC 822 and RFC 1123.
+.SH "MESSAGE STRUCTURE"
+A message contains a series of
+.I header fields\fR,
+a blank line,
+and a
+.IR body :
+
+.EX
+     Received: (qmail-queue invoked by uid 666);
+.br
+	     30 Jul 1996 11:54:54 -0000
+.br
+     From: djb@silverton.berkeley.edu (D. J. Bernstein)
+.br
+     To: fred@silverton.berkeley.edu
+.br
+     Date: 30 Jul 1996 11:54:54 -0000
+.br
+     Subject: Go, Bears!
+.br
+
+.br
+     I've got money on this one.  How about you?
+.br
+
+.br
+     ---Dan   (this is the third line of the body)
+.EE
+
+Each header field has a
+.IR name ,
+a colon,
+some
+.IR contents ,
+and a newline:
+
+.EX
+     Subject: Go, Bears!
+.EE
+
+The field contents may be folded across several lines.
+Each line past the first must begin with a space or tab:
+
+.EX
+     Received: (qmail-queue invoked by uid 666);
+.br
+	     30 Jul 1996 11:54:54 -0000
+.EE
+
+The field name must not contain spaces, tabs, or colons.
+Also, an empty field name is illegal.
+.B qmail-inject
+does not allow field names with unprintable characters.
+
+Case is irrelevant in field names:
+.B subject
+and
+.B SUBJECT
+and
+.B SuBjEcT
+have the same meaning.
+.SH "ADDRESS LISTS"
+Certain fields, such as
+.BR To ,
+contain
+.I address lists\fR.
+
+An address list contains some number of
+.I addresses
+or
+.I address groups\fR,
+separated by commas:
+
+.EX
+     a@b, c@d (Somebody), A Person <e@f>,
+.br
+        random group: g@h, i@j;, k@l
+.EE
+
+An
+.I address group
+has some text, a colon, a list of addresses,
+and a semicolon:
+
+.EX
+        random group: g@h, i@j;
+.EE
+
+An address can appear in several forms.
+The most common form is
+.IR box@host .
+
+Every address must include a host name.
+If
+.B qmail-inject
+sees a lone box name
+it adds the
+.I default host name\fR.
+
+All host names should be fully qualified.
+.B qmail-inject
+appends the
+.I default domain name
+to any name without dots:
+
+.EX
+     djb@silverton  ->  djb@silverton.berkeley.edu
+.EE
+
+It appends the
+.I plus domain name
+to any name
+that ends with a plus sign:
+
+.EX
+     eric@mammoth.cs+  ->  eric@mammoth.cs.berkeley.edu
+.EE
+
+A host name may be a dotted-decimal address:
+
+.EX
+     djb@[128.32.183.163]
+.EE
+
+RFC 822 allows mailbox names inside angle brackets
+to include
+.I source routes\fR,
+but
+.B qmail-inject
+strips all source routes out of addresses.
+.SH "SENDER ADDRESSES"
+.B qmail-inject
+looks for sender address lists in the following fields:
+.BR Sender ,
+.BR From ,
+.BR Reply-To ,
+.BR Return-Path ,
+.BR Return-Receipt-To ,
+.BR Errors-To ,
+.BR Resent-Sender ,
+.BR Resent-From ,
+.BR Resent-Reply-To .
+
+If there is no
+.B From
+field,
+.B qmail-inject
+adds a new
+.B From
+field with the name of the user invoking
+.B qmail-inject.
+
+RFC 822 requires that certain sender fields contain
+only a single address, but
+.B qmail-inject
+does not enforce this restriction.
+.SH "RECIPIENT ADDRESSES"
+.B qmail-inject
+looks for recipient address lists in the following fields:
+.BR To ,
+.BR Cc ,
+.BR Bcc ,
+.BR Apparently-To ,
+.BR Resent-To ,
+.BR Resent-Cc ,
+.BR Resent-Bcc .
+
+Every message must contain at least one
+.B To
+or
+.B Cc
+or
+.BR Bcc .
+.B qmail-inject
+deletes any
+.B Bcc
+field.
+If there is no
+.B To
+or
+.B Cc
+field,
+.B qmail-inject
+adds a line
+
+.EX
+     Cc: recipient list not shown: ;
+.EE
+
+This complies with RFC 822;
+it also works around some strange
+.B sendmail
+behavior, in case the message is passed through
+.B sendmail
+on another machine.
+.SH STAMPS
+Every message must contain a
+.B Date
+field, with the date in a strict format defined by RFC 822.
+If necessary
+.B qmail-inject
+creates a new
+.B Date
+field with the current date (in GMT).
+
+Every message should contain a
+.B Message-Id
+field.
+The field contents are a unique worldwide identifier for this message.
+If necessary
+.B qmail-inject
+creates a new
+.B Message-Id
+field.
+
+Another important field is
+.BR Received .
+Every time the message is sent from one system to another,
+a new
+.B Received
+field is added to the top of the message.
+.B qmail-inject
+does not create any
+.B Received
+fields.
+.SH "RESENT MESSAGES"
+A message is
+.I forwarded
+if it contains any of the following fields:
+.BR Resent-Sender ,
+.BR Resent-From ,
+.BR Resent-Reply-To ,
+.BR Resent-To ,
+.BR Resent-Cc ,
+.BR Resent-Bcc ,
+.BR Resent-Date ,
+.BR Resent-Message-ID .
+
+If a message is forwarded,
+.B qmail-inject
+changes its behavior as follows.
+
+It deletes any
+.B Resent-Bcc
+field (as well as any
+.B Bcc
+field);
+if there are no
+.B Resent-To
+or
+.B Resent-Cc
+fields,
+.B qmail-inject
+adds an appropriate
+.B Resent-Cc
+line.
+It does
+.I not
+add a
+.B Cc
+line,
+even if neither
+.B To
+nor
+.B Cc
+is present.
+
+If there is no
+.B Resent-From
+field,
+.B qmail-inject
+adds a new
+.B Resent-From
+field.
+It does
+.I not
+add a new
+.B From
+field.
+
+.B qmail-inject
+adds
+.B Resent-Date
+if one is not already present;
+same for
+.BR Resent-Message-Id .
+It does
+.I not
+add new
+.B Date
+or
+.B Message-Id
+fields.
+.SH "OTHER FEATURES"
+Addresses are separated by commas, not spaces.
+When
+.B qmail-inject
+sees an illegal space,
+it inserts a comma:
+
+.EX
+     djb fred  ->  djb, fred
+.EE
+
+.B qmail-inject
+removes all
+.B Return-Path
+header fields.
+
+.B qmail-inject
+also removes any
+.B Content-Length
+fields.
+.SH "SEE ALSO"
+addresses(5),
+envelopes(5),
+qmail-inject(8)

@@ -1,0 +1,62 @@
+.TH cdb 3
+.SH NAME
+cdb \- read from a constant database
+.SH SYNTAX
+.B #include <cdb.h>
+
+int \fBcdb_seek(\fP\fIfd,key,len,dlen\fR\fB)\fP;
+
+int \fIfd\fR;
+.br
+char *\fIkey\fR;
+.br
+unsigned int \fIlen\fR;
+.br
+uint32 *\fIdlen\fR;
+.SH DESCRIPTION
+.B cdb_seek
+looks up
+.I key
+in a constant database.
+It returns 1 if 
+.I key
+is present,
+0 if 
+.I key
+is not present,
+or \-1 if there was a read error.
+.I key
+is an array of
+.I len
+characters.
+
+.B cdb_seek
+needs an open file descriptor,
+.IR fd ,
+pointing to the database.
+If
+.B cdb_seek
+returns 1,
+it points
+.I fd
+at the beginning of the data portion of the first record
+indexed by
+.IR key ,
+and it stores the data length in
+.IR dlen.
+.B cdb_seek
+does not provide a way to read subsequent records with the same key.
+
+It's fine to do several
+.B cdb_seek
+lookups with the same open file descriptor.
+Beware, however, that two simultaneous
+.B cdb_seek
+lookups can fail horribly;
+separate processes should not share the same database descriptor.
+Furthermore, any updates after the database was opened
+will be invisible.
+It's rarely a good idea for a long-running program
+to hold a database open.
+.SH "SEE ALSO"
+cdbget(1)

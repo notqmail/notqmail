@@ -1,0 +1,17 @@
+VERSION
+systype
+hasshsgr.h
+hasnpbg1.h
+select.h
+hasflock.h
+hassalen.h
+fork.h
+hassgact.h
+direntry.h
+hassgprm.h
+haswaitp.h
+hasmkffo.h
+uint32.h
+dns.lib
+socket.lib
+syslog.lib

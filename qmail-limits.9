@@ -1,0 +1,30 @@
+.TH qmail-limits 7
+.SH "NAME"
+qmail-limits \- artificial limits in the qmail system
+.SH "DESCRIPTION"
+The
+.B qmail
+system is able to handle messages of any size,
+addresses of any size, mailing lists of any size, and so on,
+except as limited by the available memory and disk space.
+
+However, it imposes certain artificial limits:
+.TP 5
+1.
+.B qmail-lspawn
+silently limits the number of simultaneous local deliveries to SPAWN.
+.B qmail-rspawn
+silently limits the number of simultaneous remote deliveries to SPAWN.
+.TP 5
+2.
+.B qmail-queue
+rejects any message with an envelope address longer than 1000 characters.
+.TP 5
+3.
+.B qmail-lspawn
+truncates any overly long error report from a delivery program.
+It appends a note saying that it did so.
+.SH "SEE ALSO"
+qmail-lspawn(8),
+qmail-queue(8),
+qmail-rspawn(8)

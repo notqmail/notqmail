@@ -1,0 +1,99 @@
+.TH qmail-local 8
+.SH NAME
+qmail-local \- deliver or forward a mail message
+.SH SYNOPSIS
+.B qmail-local
+[
+.B \-nN
+]
+.I user
+.I homedir
+.I local
+.I dash
+.I ext
+.I domain
+.I sender
+.I aliasempty
+.SH DESCRIPTION
+.B qmail-local
+reads a mail message
+and delivers it to
+.I user
+by the procedure described in
+.BR dot-qmail(5) .
+
+The message's envelope recipient is
+.IR local@domain .
+.B qmail-local
+records
+.I local@domain
+in a new
+.B Delivered-To
+header field.
+If exactly the same
+.B Delivered-To: \fIlocal@domain
+already appears in the header,
+.B qmail-local
+bounces the message,
+to prevent mail forwarding loops.
+
+The message's envelope sender is
+.IR sender .
+.B qmail-local
+records
+.I sender
+in a new
+.B Return-Path
+header field.
+
+.I homedir
+is the user's home directory.
+It must be an absolute directory name.
+
+.I dash
+and
+.I ext
+identify the
+.B .qmail\fIdashext
+file used by
+.BR qmail-local ;
+see
+.BR dot-qmail(5) .
+Normally
+.I dash
+is either empty or a lone hyphen.
+If it is empty,
+.B qmail-local
+treats a nonexistent
+.B .qmail\fIext
+the same way as an empty
+.BR .qmail\fIext :
+namely, following the delivery instructions in
+.IR aliasempty .
+
+The standard input for
+.B qmail-local
+must be a seekable file,
+so that
+.B qmail-local
+can read it more than once.
+.SH "OPTIONS"
+.TP
+.B \-n
+Instead of reading and delivering the message,
+print a description of the delivery instructions.
+.TP
+.B \-N
+(Default.) Read and deliver the message.
+.SH "EXIT CODES"
+0 if the delivery is completely successful;
+nonzero if any delivery instruction failed.
+Exit code 111
+indicates temporary failure.
+.SH "SEE ALSO"
+dot-qmail(5),
+envelopes(5),
+qmail-command(8),
+qmail-queue(8),
+qmail-send(8),
+qmail-lspawn(8)

@@ -1,0 +1,27 @@
+.TH error_temp 3
+.SH NAME
+error_temp \- identify soft syscall error codes
+.SH SYNTAX
+.B #include <error.h>
+
+int \fBerror_temp\fP(\fIe\fR);
+
+int \fIe\fR;
+.SH DESCRIPTION
+.B error_temp
+returns 1 if syscall error code
+.I e
+is a soft error, 0 if it is a hard error.
+Normally
+.I e
+is
+.BR errno .
+
+A hard error is persistent:
+file not found, read-only file system, symbolic link loop, etc.
+
+A soft error is usually transient:
+out of memory, out of disk space, I/O error, disk quota exceeded,
+connection refused, host unreachable, etc.
+.SH "SEE ALSO"
+error(3)

@@ -1,0 +1,46 @@
+.TH qmail-lspawn 8
+.SH NAME
+qmail-lspawn \- schedule local deliveries
+.SH SYNOPSIS
+.B qmail-lspawn
+.I aliasempty
+.SH DESCRIPTION
+.B qmail-lspawn
+reads a series of local delivery commands from descriptor 0,
+invokes
+.B qmail-local
+to perform the deliveries,
+and prints the results to descriptor 1.
+It passes
+.I aliasempty
+to
+.B qmail-local
+as the default delivery instruction.
+
+.B qmail-lspawn
+invokes
+.B qmail-local
+asynchronously,
+so the results may not be in the same order as the commands.
+
+For each recipient address,
+.B qmail-lspawn
+finds out which local user controls that address.
+It first checks the
+.B qmail-users
+mechanism; if the address is not listed there, it invokes
+.BR qmail-getpw .
+.B qmail-lspawn
+then runs
+.B qmail-local
+under the user's uid and gid.
+It does not set up any supplementary groups.
+
+.B qmail-lspawn
+treats an empty mailbox name as a trash address.
+.SH "SEE ALSO"
+envelopes(5),
+qmail-users(5),
+qmail-getpw(8),
+qmail-send(8),
+qmail-local(8)

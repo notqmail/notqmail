@@ -1,0 +1,73 @@
+.TH datetime 3
+.SH NAME
+datetime \- convert between TAI labels and seconds
+.SH SYNTAX
+.B #include <datetime.h>
+
+void \fBdatetime_tai\fP(&\fIdt\fR,\fIt\fR);
+
+datetime_sec \fBdatetime_untai\fP(&\fIdt\fR);
+
+struct datetime \fIdt\fR;
+.br
+datetime_sec \fIt\fR;
+.SH DESCRIPTION
+International Atomic Time, TAI,
+is the fundamental unit for time measurements.
+TAI has one label for every second of real time,
+without complications such as leap seconds.
+
+A
+struct datetime
+variable,
+such as
+.IR dt ,
+stores a TAI label.
+.I dt\fB.year
+is the year number minus 1900;
+.I dt\fB.mon
+is the month number, from 0 (January) through 11 (December);
+.I dt\fB.mday
+is the day of the month, from 1 through 31;
+.I dt\fB.hour
+is the hour, from 0 through 23;
+.I dt\fB.min
+is the minute, from 0 through 59;
+.I dt\fB.sec
+is the second, from 0 through 59;
+.I dt\fB.wday
+is the day of the week, from 0 (Sunday) through 6 (Saturday);
+.I dt\fB.yday
+is the day of the year, from 0 through 365.
+
+The
+.B datetime
+library supports more convenient TAI manipulation with
+the datetime_sec type.
+A datetime_sec value, such as
+.IR t ,
+is an integer referring to the
+.IR t th
+second after the beginning of 1970 TAI.
+The first second of 1970 TAI was 0;
+the next second was 1;
+the last second of 1969 TAI was -1.
+The difference between two datetime_sec values is a number
+of real-time seconds.
+
+.B datetime_tai
+converts a datetime_sec to a TAI label.
+
+.B datetime_untai
+reads a TAI label
+(specifically
+.IR dt\fB.year ,
+.IR dt\fB.mon ,
+.IR dt\fB.mday ,
+.IR dt\fB.hour ,
+.IR dt\fB.min ,
+and
+.IR dt\fB.sec )
+and returns a datetime_sec.
+.SH "SEE ALSO"
+now(3)

@@ -1,0 +1,62 @@
+.TH tcp-environ 5
+.SH NAME
+tcp-environ \- TCP-related environment variables
+.SH DESCRIPTION
+The following environment variables
+describe a TCP connection.
+They are set up by
+.BR tcp-env ,
+.BR tcpclient ,
+and
+.BR tcpserver .
+Note that
+.BR TCPLOCALHOST ,
+.BR TCPREMOTEHOST ,
+and
+.B TCPREMOTEINFO
+can contain arbitrary characters.
+.TP 5
+PROTO
+The string
+.BR TCP .
+.TP 5
+TCPLOCALHOST
+The domain name of the local host,
+with uppercase letters converted to lowercase.
+If there is no currently available domain name
+for the local IP address,
+.B TCPLOCALHOST
+is not set.
+.TP 5
+TCPLOCALIP
+The IP address of the local host, in dotted-decimal form.
+.TP 5
+TCPLOCALPORT
+The local TCP port number, in decimal.
+.TP 5
+TCPREMOTEHOST
+The domain name of the remote host,
+with uppercase letters converted to lowercase.
+If there is no currently available domain name
+for the remote IP address,
+.B TCPREMOTEHOST
+is not set.
+.TP 5
+TCPREMOTEINFO
+A connection-specific string, perhaps a username,
+supplied by the remote host
+via 931/1413/IDENT/TAP.
+If the remote host did not supply connection information,
+.B TCPREMOTEINFO
+is not set.
+.TP 5
+TCPREMOTEIP
+The IP address of the remote host.
+.TP 5
+TCPREMOTEPORT
+The remote TCP port number.
+.SH "SEE ALSO"
+tcpclient(1),
+tcpserver(1),
+tcp-env(1),
+tcp(4)

@@ -1,0 +1,54 @@
+.TH condredirect 1
+.SH NAME
+condredirect \- perhaps redirect mail to another address
+.SH SYNOPSIS
+in
+.BR .qmail :
+.B |condredirect
+.I newaddress
+.I program
+[
+.I arg ...
+]
+.SH DESCRIPTION
+.B condredirect
+feeds each new mail message to
+.I program
+with the given arguments.
+If
+.I program
+exits 0,
+.B condredirect
+forwards the mail message to
+.IR newaddress ,
+and then exits 99,
+so further commands in
+.B .qmail
+are ignored.
+
+If
+.I program
+exits 111,
+.B condredirect
+exits 111,
+so delivery will be retried later.
+
+If
+.I program
+exits anything else
+(or does not exist),
+.B condredirect
+exits 0,
+so the rest of
+.B .qmail
+will be processed as usual.
+
+Note that
+it is not safe for
+.I program
+to fork a child that
+reads the message in the background.
+.SH "SEE ALSO"
+dot-qmail(5),
+qmail-command(8),
+qmail-queue(8)

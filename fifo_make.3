@@ -1,0 +1,24 @@
+.TH fifo_make 3
+.SH NAME
+fifo_make \- create a named pipe
+.SH SYNTAX
+.B #include <fifo.h>
+
+int \fBfifo_make\fP(\fIfn\fR,\fImode\fR);
+
+char *\fIfn\fR;
+.br
+int \fImode\fR;
+.SH DESCRIPTION
+.B fifo_make
+creates a new named pipe
+with name
+.I fn
+and mode
+.I mode
+(modified by the process umask).
+
+.B fifo_make
+returns 0 on success, -1 on error.
+.SH "SEE ALSO"
+mkfifo(2)

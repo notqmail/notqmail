@@ -1,0 +1,294 @@
+.TH qmail-inject 8
+.SH NAME
+qmail-inject \- preprocess and send a mail message
+.SH SYNOPSIS
+.B qmail-inject
+[
+.B \-nNaAhH
+] [
+.B \-f\fIsender
+] [
+.I recip ...
+]
+.SH DESCRIPTION
+.B qmail-inject
+reads a mail message from its standard input,
+adds appropriate information to the message header,
+and invokes
+.B qmail-queue
+to send the message
+to one or more recipients.
+
+See
+.B qmail-header(5)
+for information on how
+.B qmail-inject
+rewrites header fields.
+
+.B qmail-inject
+normally exits 0.
+It exits 100 if it was invoked improperly
+or if there is a severe syntax error in the message.
+It exits 111 for temporary errors.
+.SH "ENVIRONMENT VARIABLES"
+For the convenience of users who do not run
+.B qmail-inject
+directly,
+.B qmail-inject
+takes many options through environment variables.
+
+The user name in the
+.B From
+header field is set by
+.BR QMAILUSER ,
+.BR MAILUSER ,
+.BR USER ,
+or
+.BR LOGNAME ,
+whichever comes first.
+
+The host name is normally set by the
+.I defaulthost
+control
+but can be overridden with
+.B QMAILHOST
+or
+.BR MAILHOST .
+
+The personal name is
+.BR QMAILNAME ,
+.BR MAILNAME ,
+or
+.BR NAME .
+
+The default envelope sender address is the same as the
+default
+.B From
+address,
+but it can be overridden with
+.B QMAILSUSER
+and
+.BR QMAILSHOST .
+It may also be modified by the
+.B r
+and
+.B m
+letters described below.
+Bounces will be sent to this address.
+
+The
+.B QMAILINJECT
+environment variable
+can contain any of the following letters:
+.TP
+.B c
+Use address-comment style for the
+.B From
+field.
+Normally
+.B qmail-inject
+uses name-address style.
+.TP
+.B s
+Do not look at any incoming
+.B Return-Path
+field.
+Normally, if
+.B Return-Path
+is supplied, it sets the envelope sender address,
+overriding all environment variables.
+.B Return-Path
+is deleted in any case.
+.TP
+.B f
+Delete any incoming
+.B From
+field.
+Normally, if
+.B From
+is supplied, it overrides the usual
+.B From
+field created by
+.BR qmail-inject .
+.TP
+.B i
+Delete any incoming
+.B Message-ID
+field.
+Normally, if
+.B Message-ID
+is supplied, it overrides the usual
+.B Message-ID
+field created by
+.BR qmail-inject .
+.TP
+.B r
+Use a per-recipient VERP.
+.B qmail-inject
+will append each recipient address to the envelope sender
+of the copy going to that recipient.
+.TP
+.B m
+Use a per-message VERP.
+.B qmail-inject
+will append the current date and process ID to the envelope sender.
+.SH OPTIONS
+.TP
+.B \-a
+Send the message to all addresses given as
+.I recip
+arguments;
+do not use header recipient addresses.
+.TP
+.B \-h
+Send the message to all header recipient addresses.
+For non-forwarded messages, this means
+the addresses listed under
+.BR To ,
+.BR Cc ,
+.BR Bcc ,
+.BR Apparently-To .
+For forwarded messages, this means
+the addresses listed under
+.BR Resent-To ,
+.BR Resent-Cc ,
+.BR Resent-Bcc .
+Do not use any
+.I recip
+arguments.
+.TP
+.B \-A
+(Default.)
+Send the message to all addresses given as
+.I recip
+arguments.
+If no
+.I recip
+arguments are supplied,
+send the message to all header recipient addresses.
+.TP
+.B \-H
+Send the message to all header recipient addresses,
+and to all addresses given as
+.I recip
+arguments.
+.TP
+.B \-f\fIsender
+Pass
+.I sender
+to
+.B qmail-queue
+as the envelope sender address.
+This overrides
+.B Return-Path
+and all environment variables.
+.TP
+.B \-N
+(Default.)
+Feed the resulting message to
+.BR qmail-queue .
+.TP
+.B \-n
+Print the message rather than feeding it to
+.BR qmail-queue .
+.SH "CONTROL FILES"
+.TP 5
+.I defaultdomain
+Default domain name.
+Default:
+.IR me ,
+if that is supplied;
+otherwise the literal name
+.BR defaultdomain ,
+which is probably not what you want.
+.B qmail-inject
+adds this name to any host name without dots,
+including
+.I defaulthost
+if
+.I defaulthost
+does not have dots.
+(Exception: see
+.IR plusdomain .)
+
+The
+.B QMAILDEFAULTDOMAIN
+environment variable
+overrides
+.IR defaultdomain .
+.TP 5
+.I defaulthost
+Default host name.
+Default:
+.IR me ,
+if that is supplied;
+otherwise the literal name
+.BR defaulthost ,
+which is probably not what you want.
+.B qmail-inject
+adds this name to any address without a host name.
+.I defaulthost
+need not be the current host's name.
+For example,
+you may prefer that outgoing mail show
+just your domain name.
+
+The
+.B QMAILDEFAULTHOST
+environment variable overrides
+.IR defaulthost .
+.TP 5
+.I idhost
+Host name for Message-IDs.
+Default:
+.IR me ,
+if that is supplied;
+otherwise the literal name
+.BR idhost ,
+which is certainly not what you want.
+.I idhost
+need not be the current host's name.
+For example, you may prefer to use fake
+host names in Message-IDs.
+However,
+.I idhost
+must be a fully-qualified name within your domain,
+and each host in your domain should use a different
+.IR idhost .
+
+The
+.B QMAILIDHOST
+environment variable overrides
+.IR idhost .
+.TP 5
+.I plusdomain
+Plus domain name.
+Default:
+.IR me ,
+if that is supplied;
+otherwise the literal name
+.BR plusdomain ,
+which is probably not what you want.
+.B qmail-inject
+adds this name to any host name that ends with a plus sign,
+including
+.I defaulthost
+if
+.I defaulthost
+ends with a plus sign.
+If a host name does not have dots but ends with a plus sign,
+.B qmail-inject
+uses
+.IR plusdomain ,
+not
+.IR defaultdomain .
+
+The
+.B QMAILPLUSDOMAIN
+environment variable overrides
+.IR plusdomain .
+.SH "SEE ALSO"
+addresses(5),
+qmail-control(5),
+qmail-header(5),
+qmail-queue(8)

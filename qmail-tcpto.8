@@ -1,0 +1,29 @@
+.TH qmail-tcpto 8
+.SH NAME
+qmail-tcpto \- print TCP timeout table
+.SH SYNOPSIS
+.B qmail-tcpto
+.SH DESCRIPTION
+After an SMTP connection attempt times out,
+.B qmail-remote
+records the relevant IP address.
+If the same address fails again (after at least two minutes with
+no intervening successful connections),
+.B qmail-remote
+assumes that further attempts will fail for at least another hour.
+
+.B qmail-tcpto
+prints
+.BR qmail-remote 's
+current list of timeouts.
+
+.B qmail-tcpto
+must be run either as 
+.B root
+or with user id
+.B qmailr
+and group id
+.BR qmail .
+.SH "SEE ALSO"
+qmail-qread(8),
+qmail-remote(8)

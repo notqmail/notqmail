@@ -1,0 +1,57 @@
+.TH preline 1
+.SH NAME
+preline \- prepend lines to message
+.SH SYNOPSIS
+in
+.BR .qmail\fIext :
+.B | preline \fIcommand
+.SH DESCRIPTION
+.B preline
+feeds each incoming mail message through
+.IR command .
+At the top of each message it inserts
+a UUCP-style
+.B From_
+line, a
+.B Return-Path
+line, and a
+.B Delivered-To
+line.
+
+.B preline
+is useful for
+.B procmail
+and
+ELM's
+.BR filter ,
+which
+do not understand the
+.B qmail-command
+environment variables.
+.SH OPTIONS
+.TP
+.B \-d
+Do not include the
+.B Delivered-To
+line. You should use this option when the
+recipient of the incoming mail message is actually under remote control,
+but was sent here through
+.B control/virtualdomains
+for manual routing.
+.TP
+.B \-f
+Do not include the
+.B From_
+line. You should use this option except for
+.IR command s
+that create
+.I mbox
+files.
+.TP
+.B \-r
+Do not include the
+.B Return-Path
+line.
+.SH "SEE ALSO"
+mbox(5),
+qmail-command(8)

@@ -1,0 +1,104 @@
+.TH forgeries 7
+.SH "NAME"
+forgeries \- how easy it is to forge mail
+.SH "SUMMARY"
+An electronic mail message can easily be forged.
+Almost everything in it,
+including the return address,
+is completely under the control of the sender.
+
+An electronic mail message can be manually traced to its origin
+if (1) all system administrators of intermediate machines
+are both cooperative and competent,
+(2) the sender did not break low-level TCP/IP security,
+and
+(3) all intermediate machines are secure.
+
+Users of
+.I cryptography
+can automatically ensure the integrity and secrecy
+of their mail messages, as long as
+the sending and receiving machines are secure.
+.SH "FORGERIES"
+Like postal mail,
+electronic mail can be created entirely at the whim of the sender.
+.BR From ,
+.BR Sender ,
+.BR Return-Path ,
+and
+.BR Message-ID
+can all contain whatever information the sender wants.
+
+For example, if you inject a message through
+.B sendmail
+or
+.B qmail-inject
+or
+.BR SMTP ,
+you can simply type in a
+.B From
+field.
+In fact,
+.B qmail-inject
+lets you set up
+.BR MAILUSER ,
+.BR MAILHOST ,
+and
+.B MAILNAME
+environment variables
+to produce your desired
+.B From
+field on every message.
+.SH "TRACING FORGERIES"
+Like postal mail,
+electronic mail is postmarked when it is sent.
+Each machine that receives an electronic mail message
+adds a
+.B Received
+line to the top.
+
+A modern
+.B Received
+line contains quite a bit of information.
+In conjunction with the machine's logs,
+it lets a competent system administrator
+determine where the machine received the message from,
+as long as the sender did not break low-level TCP/IP security
+or security on that machine.
+
+Large multi-user machines often come with inadequate logging software.
+Fortunately, a system administrator can easily obtain a copy of a
+931/1413/Ident/TAP server, such as
+.BR pidentd .
+Unfortunately,
+many incompetent system administrators fail to do this,
+and are thus unable to figure out which local user
+was responsible for generating a message.
+
+If all intermediate system administrators are competent,
+and the sender did not break machine security or low-level TCP/IP security,
+it is possible to trace a message backwards.
+Unfortunately, some traces are stymied by intermediate system
+administrators who are uncooperative or untrustworthy.
+.SH "CRYPTOGRAPHY"
+The sender of a mail message may place his message into a
+.I cryptographic
+envelope stamped with his seal.
+Strong cryptography guarantees that any two messages with the same seal
+were sent by the same cryptographic entity:
+perhaps a single person, perhaps a group of cooperating people,
+but in any case somebody who knows a secret originally held
+only by the creator of the seal.
+The seal is called a
+.I public key\fR.
+
+Unfortunately, the creator of the seal is often an insecure machine,
+or an untrustworthy central agency,
+but most of the time seals are kept secure.
+
+One popular cryptographic program is
+.BR pgp .
+.SH "SEE ALSO"
+pgp(1),
+identd(8),
+qmail-header(8)

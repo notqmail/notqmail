@@ -1,0 +1,125 @@
+.TH qmail-smtpd 8
+.SH NAME
+qmail-smtpd \- receive mail via SMTP
+.SH SYNOPSIS
+.B qmail-smtpd
+.SH DESCRIPTION
+.B qmail-smtpd
+receives mail messages via the Simple Mail Transfer Protocol (SMTP)
+and invokes
+.B qmail-queue
+to deposit them into the outgoing queue.
+.B qmail-smtpd
+must be supplied several environment variables;
+see
+.BR tcp-environ(5) .
+
+.B qmail-smtpd
+is responsible for counting hops.
+It rejects any message with 100 or more 
+.B Received
+or
+.B Delivered-To
+header fields.
+
+.B qmail-smtpd
+supports ESMTP, including the 8BITMIME and PIPELINING options.
+.SH TRANSPARENCY
+.B qmail-smtpd
+converts the SMTP newline convention into the UNIX newline convention
+by converting CR LF into LF.
+
+.B qmail-smtpd
+accepts messages that contain long lines or non-ASCII characters,
+even though such messages violate the SMTP protocol.
+.SH "CONTROL FILES"
+.TP 5
+.I badmailfrom
+Unacceptable envelope sender addresses.
+.B qmail-smtpd
+will reject every recipient address for a message
+if the envelope sender address is listed in
+.IR badmailfrom .
+A line in
+.I badmailfrom
+may be of the form
+.BR @\fIhost ,
+meaning every address at
+.IR host .
+.TP 5
+.I localiphost
+Replacement host name for local IP addresses.
+Default:
+.IR me ,
+if that is supplied.
+.B qmail-smtpd
+is responsible for recognizing dotted-decimal addresses for the
+current host.
+When it sees a recipient address of the form
+.IR box@[d.d.d.d] ,
+where
+.I d.d.d.d
+is a local IP address,
+it replaces
+.IR [d.d.d.d]
+with
+.IR localiphost .
+This is done before
+.IR rcpthosts .
+.TP 5
+.I rcpthosts
+Allowed RCPT domains.
+If
+.I rcpthosts
+is supplied,
+.B qmail-smtpd
+will reject
+any envelope recipient address with a domain not listed in
+.IR rcpthosts .
+
+Exception:
+If the environment variable
+.B RELAYCLIENT
+is set,
+.B qmail-smtpd
+will ignore
+.IR rcpthosts ,
+and will append the value of
+.B RELAYCLIENT
+to each incoming recipient address.
+
+.I rcpthosts
+may include wildcards:
+
+.EX
+   heaven.af.mil
+   .heaven.af.mil
+.EE
+
+Envelope recipient addresses without @ signs are
+always allowed through.
+.TP 5
+.I smtpgreeting
+SMTP greeting message.
+Default:
+.IR me ,
+if that is supplied;
+otherwise
+.B qmail-smtpd
+will refuse to run.
+The first word of
+.I smtpgreeting
+should be the current host's name.
+.TP 5
+.I timeoutsmtpd
+Number of seconds
+.B qmail-smtpd
+will wait for each new buffer of data from the remote SMTP client.
+Default: 1200.
+.SH "SEE ALSO"
+tcp-env(1),
+tcp-environ(5),
+qmail-control(5),
+qmail-inject(8),
+qmail-queue(8),
+qmail-remote(8)

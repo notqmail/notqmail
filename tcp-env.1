@@ -1,0 +1,67 @@
+.TH tcp-env 1
+.SH NAME
+tcp-env \- set up TCP-related environment variables
+.SH SYNOPSIS
+.B tcp-env
+[
+.B \-rR
+]
+[
+.B \-t\fItimeout
+]
+.I program
+[
+.I arg ...
+]
+.SH DESCRIPTION
+The input for
+.B tcp-env
+must be a TCP connection.
+.B tcp-env
+finds out information about that connection,
+puts the information into several environment variables
+as described in
+.B tcp-environ(5),
+and runs
+.I program
+with the given arguments.
+
+Usually
+.B tcp-env
+is run from
+.BR inetd .
+It might instead be run from another server
+that already sets up the right environment variables;
+if
+.B PROTO
+is set to
+.B TCP
+when
+.B tcp-env
+is invoked,
+.B tcp-env
+assumes that all the other variables are set up properly,
+and it does not check whether the input is a TCP connection.
+.SH OPTIONS
+.TP
+.B \-r
+(Default.)
+Attempt to obtain
+.B TCPREMOTEINFO
+from the remote host.
+.TP
+.B \-R
+Do not attempt to obtain
+.B TCPREMOTEINFO
+from the remote host.
+.TP
+.B \-t\fItimeout
+Give up on the
+.B TCPREMOTEINFO
+connection attempt after
+.I timeout
+seconds.
+Default: 30.
+.SH "SEE ALSO"
+tcp-environ(5),
+inetd(8)

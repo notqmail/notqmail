@@ -1,0 +1,64 @@
+.TH getln2 3
+.SH NAME
+getln2 \- read one line of data
+.SH SYNTAX
+.B #include <getln.h>
+
+int \fBgetln2\fP(&\fIss\fR,&\fIsa\fR,&\fIcont\fR,&\fIclen\fR,\fIsep\fR);
+
+substdio \fIss\fR;
+.br
+stralloc \fIsa\fR;
+.br
+char *\fIcont\fR;
+.br
+unsigned int \fIclen\fR;
+.br
+int \fIsep\fR;
+.SH DESCRIPTION
+.B getln2
+reads a line of characters, terminated by a 
+.I sep
+character,
+from
+.IR ss .
+
+The line is returned in two pieces.
+The first piece is stored in
+.IR sa .
+The second piece is
+.IR cont ,
+a pointer to
+.I clen
+characters inside the
+.I ss
+buffer.
+The second piece must be copied somewhere else
+before
+.I ss
+is used again.
+
+If
+.B getln2
+sees end-of-input before it sees
+.IR sep ,
+it sets
+.I clen
+to 0 and does not set
+.IR cont .
+It puts the partial line into
+.IR sa .
+
+.B getln2
+normally returns 0.
+If it runs out of memory,
+or encounters an error from
+.IR ss ,
+it returns -1,
+setting
+.B errno
+appropriately.
+.SH "SEE ALSO"
+stralloc(3),
+substdio(3),
+getln(3)

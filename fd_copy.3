@@ -1,0 +1,44 @@
+.TH fd_copy 3
+.SH NAME
+fd_copy \- duplicate a descriptor
+.SH SYNTAX
+.B #include <fd.h>
+
+int \fBfd_copy\fP(\fIto\fR,\fIfrom\fR);
+
+int \fIto\fR;
+.br
+int \fIfrom\fR;
+.SH DESCRIPTION
+.B fd_copy
+copies 
+descriptor
+.I from
+to descriptor
+.IR to .
+If
+.I to
+was already open,
+.B fd_copy
+closes it.
+.B fd_copy
+always leaves
+.I from
+intact;
+if
+.I to
+and
+.I from
+are the same number,
+.B fd_copy
+does nothing.
+
+.B fd_copy
+returns 0 on success, -1 on error.
+.B fd_copy
+does not guarantee that
+.I to
+will remain open, if it was open, in case of error.
+.SH "SEE ALSO"
+dup(2),
+fd_move(3)

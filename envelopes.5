@@ -1,0 +1,231 @@
+.TH envelopes 5
+.SH "NAME"
+envelopes \- sender/recipient lists attached to messages
+.SH "INTRODUCTION"
+Electronic mail messages are delivered in
+.IR envelopes .
+
+An envelope lists a
+.I sender
+and one or more
+.IR recipients .
+Usually these
+envelope addresses are the same
+as the addresses listed in the message header:
+
+.EX
+   (envelope) from djb to root
+.br
+   From: djb
+.br
+   To: root
+.EE
+
+In more complicated situations, though,
+the envelope addresses may differ from the header addresses.
+.SH "ENVELOPE EXAMPLES"
+When a message is delivered to
+several people at different locations,
+it is first photocopied
+and placed into several envelopes:
+
+.EX
+   (envelope) from djb to root
+.br
+   From: djb                          Copy #1 of message
+.br
+   To: root, god@brl.mil
+.EE
+
+.EX
+   (envelope) from djb to god@brl.mil
+.br
+   From: djb                          Copy #2 of message
+.br
+   To: root, god@brl.mil
+.EE
+
+When a message is delivered
+to several people at the same location,
+the sender doesn't have to photocopy it.
+He can instead stuff it into
+one envelope with several addresses;
+the recipients will make the photocopy:
+
+.EX
+   (envelope) from djb to god@brl.mil, angel@brl.mil
+.br
+   From: djb
+.br
+   To: god@brl.mil, angel@brl.mil, joe, frde
+.EE
+
+Bounced mail is sent back to the envelope sender address.
+The bounced mail doesn't list an envelope sender,
+so bounce loops are impossible:
+
+.EX
+   (envelope) from <> to djb
+.br
+   From: MAILER-DAEMON
+.br
+   To: djb
+.br
+   Subject: unknown user frde
+.EE
+
+The recipient of a message may make another copy
+and forward it in a new envelope:
+
+.EX
+   (envelope) from djb to joe
+.br
+   From: djb                          Original message
+.br
+   To: joe
+.EE
+
+.EX
+   (envelope) from joe to fred
+.br
+   From: djb                          Forwarded message
+.br
+   To: joe
+.EE
+
+A mailing list works almost the same way:
+
+.EX
+   (envelope) from djb to sos-list
+.br
+   From: djb                          Original message
+.br
+   To: sos-list
+.EE
+
+.EX
+   (envelope) from sos-owner to god@brl.mil
+.br
+   From: djb                          Forwarded message
+.br
+   To: sos-list                       to recipient #1
+.EE
+
+.EX
+   (envelope) from sos-owner to frde
+.br
+   From: djb                          Forwarded message
+.br
+   To: sos-list                       to recipient #2
+.EE
+
+Notice that the mailing list is set up
+to replace the envelope sender with something new,
+.BR sos-owner .
+So bounces will come back to
+.BR sos-owner :
+
+.EX
+   (envelope) from <> to sos-owner
+.br
+   From: MAILER-DAEMON
+.br
+   To: sos-owner
+.br
+   Subject: unknown user frde
+.EE
+
+It's a good idea to set up an extra address,
+.BR sos-owner ,
+like this:
+the original envelope sender (\fBdjb\fP)
+has no way to fix bad
+.B sos-list
+addresses,
+and of course bounces must not be sent to 
+.B sos-list
+itself.
+.SH "HOW ENVELOPE ADDRESSES ARE STORED"
+Envelope sender and envelope recipient addresses
+are transmitted and recorded in several ways.
+
+When a user injects mail through
+.BR qmail-inject ,
+he can supply a
+.B Return-Path
+line or a
+.B \-f
+option for the envelope sender;
+by default the envelope sender is his login name.
+The envelope recipient addresses can be taken
+from the command line or from various header fields,
+depending on the options to
+.BR qmail-inject .
+Similar comments apply to
+.BR sendmail .
+
+When a message is transferred from one machine to another through SMTP,
+the envelope sender is given in a
+.B MAIL FROM
+command,
+the envelope recipients are given in 
+.B RCPT TO
+commands,
+and the message is supplied separately by a 
+.B DATA
+command.
+
+When a message is delivered by
+.B qmail
+to a single local recipient,
+.B qmail-local
+records the recipient in
+.B Delivered-To
+and the envelope sender in
+.BR Return-Path .
+It uses
+.B Delivered-To
+to detect mail forwarding loops.
+
+.B sendmail
+normally records the envelope sender in
+.BR Return-Path .
+It does not record envelope recipient addresses,
+on the theory that they are redundant:
+you received the mail,
+so you must have been one of the envelope recipients.
+
+Note that,
+if the header doesn't have any recipient addresses,
+.B sendmail
+will move envelope recipient addresses back into the header.
+This situation occurs if all addresses were originally listed as
+.BR Bcc ,
+since
+.B Bcc
+is automatically removed.
+When
+.B sendmail
+sees this, it creates a new
+.B Apparently-To
+header field with the envelope recipient addresses.
+This has the strange effect that each blind-carbon-copy recipient will see
+a list of all recipients on the same machine.
+
+When a message is stored in
+.B mbox
+format,
+the envelope sender is recorded at the top of the message
+as a UUCP-style
+.B From
+(no colon) line.
+Note that this line is less reliable than the
+.B Return-Path
+line added by
+.B qmail-local
+or
+.B sendmail\fP.
+.SH "SEE ALSO"
+qmail-header(5),
+qmail-local(8),
+qmail-inject(8)

@@ -1,0 +1,270 @@
+.TH qmail-log 5
+.SH NAME
+qmail-log \- the qmail activity record
+.SH DESCRIPTION
+.B qmail-send
+prints a series of lines describing its activities.
+Each possible line is described below.
+.SH "STARTING AND STOPPING"
+.TP 
+.B running
+.B qmail-send
+is ready to deliver messages.
+.TP
+.B local deliveries will be put on hold
+The local concurrency limit is 0, so
+.B qmail-send
+will not perform any local deliveries.
+.TP
+.B remote deliveries will be put on hold
+The remote concurrency limit is 0, so
+.B qmail-send
+will not perform any remote deliveries.
+.TP
+.B number of deliveries left before exiting: ...
+.B qmail-send
+wants to exit as soon as possible,
+usually because it was sent a
+TERM signal,
+but it has to wait for some deliveries to finish.
+It will not start any new deliveries.
+.TP
+.B exiting
+.B qmail-send
+is done.
+.SH "FATAL PROBLEMS"
+.TP
+.B alert: cannot start: ...
+.B qmail-send
+is unable to prepare itself for delivering messages;
+it is giving up.
+This normally indicates a serious configuration error,
+but it can be caused by a temporary lack of resources.
+.TP
+.B alert: oh no! lost ...
+One of the other daemons has died.
+.B qmail-send
+will exit as soon as possible.
+.SH "SERIOUS PROBLEMS"
+.TP
+.B alert: unable to append to bounce message...
+.B qmail-send
+is unable to record a permanent failure,
+usually because the disk is full.
+This is a very serious problem;
+.B qmail-send
+cannot proceed without recording the results.
+It will try again in ten seconds.
+.TP
+.B alert: out of memory...
+.B qmail-send
+tried to allocate more memory and failed.
+It will try again in ten seconds.
+.TP
+.B alert: unable to opendir...
+.B qmail-send
+is having trouble reading a file list from disk,
+usually because the system's file descriptor table is full,
+but possibly because permissions are set incorrectly.
+It will try again in ten seconds.
+.TP
+.B alert: unable to switch back...
+.B qmail-send
+was sent SIGHUP,
+and it is unable to reenter the queue directory.
+This is a very serious problem;
+.B qmail-send
+cannot proceed outside the queue directory.
+It will try again in ten seconds.
+.TP
+.B alert: unable to reread...
+.B qmail-send
+was sent SIGHUP,
+but it is unable to read the new controls.
+It will continue operating with the original controls.
+.SH "MESSAGES"
+.TP
+.B new msg \fIm\fB
+.B qmail-send
+is going to preprocess a queued message.
+The message number,
+.IR m ,
+is its disk inode number.
+After a message is removed from the queue,
+its number can be reused immediately.
+.TP
+.B info msg \fIm\fB: bytes \fIb\fB from <\fIs\fB> qp \fIq\fB uid \fIu\fB
+Message
+.I m
+contains
+.I b
+bytes;
+its envelope sender is
+.IR s ;
+it was queued by a user with user ID
+.IR u .
+.I q
+is a long-term queue identifier,
+the process ID of the
+.B qmail-queue
+that queued the message.
+.TP
+.B bounce msg \fIm\fB qp \fIq\fB
+Message
+.I m
+had some delivery failures.
+The long-term queue identifier of the bounce (or double-bounce) message
+is
+.IR q .
+.TP
+.B triple bounce: discarding ...
+Message
+.I m
+had some delivery failures,
+but it is already a double-bounce message,
+so it must be thrown away.
+Triple-bounce messages do not exist.
+.TP
+.B end msg \fIm\fB
+.B qmail-send
+is about to remove
+message
+.I m
+from the queue.
+.SH "DELIVERIES"
+.TP
+.B starting delivery \fId\fB: msg \fIm\fB to ...
+.B qmail-send
+is telling
+.B qmail-lspawn
+or
+.B qmail-rspawn
+to deliver message
+.I m
+to one recipient.
+The delivery number,
+.IR d ,
+starts at 1 and increases by 1 for each new delivery.
+.TP
+.B delivery \fId\fB: success: ...
+Delivery
+.I d
+was successful.
+.TP
+.B delivery \fId\fB: failure: ...
+Delivery
+.I d
+failed permanently.
+The message will bounce.
+.TP
+.B delivery \fId\fB: deferral: ...
+Delivery
+.I d
+failed temporarily.
+This recipient will be retried later.
+.TP
+.B delivery \fId\fB: report mangled, will defer
+There is a serious bug in
+.B qmail-lspawn
+or
+.BR qmail-rspawn .
+This recipient will be retried later.
+.SH "WARNINGS"
+.TP
+.B internal error: delivery report out of range
+.B qmail-lspawn
+or
+.B qmail-rspawn
+has supplied a report on a nonexistent delivery.
+This is a serious bug.
+.TP
+.B qmail-clean unable to clean up ...
+For some reason
+.B qmail-clean
+is unable to remove the indicated file.
+It will try again later.
+.TP
+.B trouble fsyncing ...
+.B qmail-send
+was unable to write to disk the results of preprocessing a queued message.
+It will try again later.
+.TP
+.B trouble in select
+There is an operating system bug.
+.TP
+.B trouble injecting bounce message...
+.B qmail-send
+was unable to queue a bounce message,
+usually because the disk is full.
+It will try again later.
+.TP
+.B trouble marking ...
+.B qmail-send
+was unable to record the result of a successful or permanently
+unsuccessful delivery.
+This means that the delivery will be tried again later.
+.TP
+.B trouble opening ...
+.B qmail-send
+was unable to open the list of local or remote recipients
+for a message.
+It will try again later.
+.TP
+.B trouble reading ...
+Either
+.B qmail-send
+is unable to read a recipient list,
+or it is unable to read the envelope of a queued
+message, or it is out of memory.
+Whatever it was doing, it will try again later.
+.TP
+.B trouble writing to ...
+.B qmail-send
+was unable to preprocess a queued message,
+usually because the disk is full.
+It will try again later.
+.TP
+.B unable to create ...
+.B qmail-send
+was unable to preprocess a queued message,
+usually because the disk is out of inodes.
+It will try again later.
+.TP
+.B unable to open ...
+.B qmail-send
+is unable to read the envelope of a queued message
+for preprocessing.
+It will try again later.
+.TP
+.B unable to start qmail-queue...
+.B qmail-send
+is unable to queue a bounce message,
+usually because the machine is almost out of memory.
+It will try again later.
+.TP
+.B unable to stat ...
+.B qmail-send
+is unable to obtain information about a file that should exist.
+It will try again later.
+.TP
+.B unable to unlink ...
+.B qmail-send
+is unable to remove a file.
+It will try again later.
+.TP
+.B unable to utime ...
+.B qmail-send
+is about to exit,
+and it is unable to record on disk
+the next scheduled delivery time for a message.
+The message will be retried as soon as
+.B qmail-send
+is restarted.
+.TP
+.B unknown record type in ...
+There is a serious bug in either
+.B qmail-queue
+or
+.BR qmail-send .
+.SH "SEE ALSO"
+qmail-send(8)

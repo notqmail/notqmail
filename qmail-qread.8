@@ -1,0 +1,24 @@
+.TH qmail-qread 8
+.SH NAME
+qmail-qread \- list outgoing messages and recipients
+.SH SYNOPSIS
+.B qmail-qread
+.SH DESCRIPTION
+.B qmail-qread
+scans the outgoing queue of messages.
+For each message it prints various human-readable information,
+including the date the message entered the queue,
+the number of bytes in the message,
+the message sender,
+and all the recipients still under consideration.
+
+.B qmail-qread
+must be run either as 
+.B root
+or with user id
+.B qmails
+and group id
+.BR qmail .
+.SH "SEE ALSO"
+qmail-qstat(8),
+qmail-send(8)

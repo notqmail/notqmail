@@ -1,0 +1,45 @@
+.TH error 3
+.SH NAME
+error \- syscall error codes
+.SH SYNTAX
+.B #include <error.h>
+
+extern int \fBerrno\fP;
+
+extern int \fBerror_intr\fP;
+.br
+extern int \fBerror_nomem\fP;
+.br
+extern int \fBerror_noent\fP;
+.br
+extern int \fBerror_txtbsy\fP;
+.br
+extern int \fBerror_io\fP;
+.br
+extern int \fBerror_exist\fP;
+.br
+extern int \fBerror_timeout\fP;
+.br
+extern int \fBerror_inprogress\fP;
+.br
+extern int \fBerror_wouldblock\fP;
+.br
+extern int \fBerror_again\fP;
+.br
+extern int \fBerror_pipe\fP;
+.br
+extern int \fBerror_perm\fP;
+.br
+extern int \fBerror_acces\fP;
+.SH DESCRIPTION
+UNIX syscalls provide detailed error codes in the
+.B errno
+variable.
+The
+.B error
+library provides portable names for a variety of possible
+.B errno
+values.
+.SH "SEE ALSO"
+error_str(3),
+error_temp(3)

@@ -1,0 +1,4 @@
+/var/qmail
+
+This is the qmail home directory. It must be a local directory, not
+shared among machines. This is where qmail queues all mail messages. 

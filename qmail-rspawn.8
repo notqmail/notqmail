@@ -1,0 +1,21 @@
+.TH qmail-rspawn 8
+.SH NAME
+qmail-rspawn \- schedule remote deliveries
+.SH SYNOPSIS
+.B qmail-rspawn
+.SH DESCRIPTION
+.B qmail-rspawn
+reads a series of remote delivery commands from descriptor 0,
+invokes
+.B qmail-remote
+to perform the deliveries,
+and prints the results to descriptor 1.
+
+.B qmail-rspawn
+invokes
+.B qmail-remote
+asynchronously,
+so the results may not be in the same order as the commands.
+.SH "SEE ALSO"
+qmail-send(8),
+qmail-remote(8)

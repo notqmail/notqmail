@@ -1,0 +1,357 @@
+.TH subgetopt 3
+.SH NAME
+subgetopt \- get option character from command line
+.SH SYNTAX
+.B #include <subgetopt.h>
+
+char *\fBsgoptarg\fP;
+.br
+int \fBsgoptind\fP;
+.br
+int \fBsgoptpos\fP;
+.br
+int \fBsgoptdone\fP;
+.br
+int \fBsgoptproblem\fP;
+
+int \fBsgopt(\fP\fIargc,argv,opts\fR\fB)\fP;
+
+int \fIargc\fR;
+.br
+char **\fIargv\fR;
+.br
+char *\fIopts\fR;
+.SH DESCRIPTION
+.B sgopt
+returns the next valid command-line option character
+from
+.IR argv .
+
+Valid option characters are listed in the
+.I opts
+string.
+.I opts
+may be empty.
+A character in
+.I opts
+may be followed by a colon,
+in which case it
+takes an
+.I option argument\fR.
+Avoid using the characters ?, :, and \- as option characters.
+
+Below
+.I option argument
+is abbreviated
+as
+.I optarg
+and
+.I command-line argument
+is abbreviated as
+.IR cmdarg .
+
+Options are listed in cmdargs which begin with
+a minus sign.
+Several options which do not take optargs may be combined
+into one cmdarg.
+
+An option which takes an optarg may be handled in two ways.
+If it appears at the very end of a cmdarg,
+then the entire next cmdarg is the optarg.
+But if there are any characters in the cmdarg
+after the option character,
+then those characters form the optarg.
+The optarg is returned in
+.BR sgoptarg .
+Next time
+.B sgopt
+looks at the cmdarg which follows the optarg.
+
+If a cmdarg does not begin with a hyphen,
+or if it is a lone hyphen not followed by any characters,
+or if it begins with two hyphens,
+then it terminates option processing,
+and
+.B sgopt
+returns an appropriate code.
+If there are two hyphens,
+.B sgopt
+will advance attention to the next cmdarg,
+so it can be called again to read further options.
+.SH "PROPER USAGE"
+.B sgoptproblem
+should be used only when
+.B sgopt
+returns ?.
+.B sgoptind
+and
+.B sgoptpos
+are defined all the time.
+.B sgoptarg
+is defined all the time;
+it is null unless
+.B sgopt
+has just returned an option with optarg.
+
+.B sgopt
+is typically used as follows.
+
+.EX
+#include <subgetopt.h>
+
+main(argc,argv) int argc; char **argv; { int opt;
+
+while ((opt = sgopt(argc,argv,"a:s")) != sgoptdone)
+.br
+  switch(opt) {
+.br
+    case 'a':
+.br
+      printf("opt a with optarg %s\\n",sgoptarg); break;
+.br
+    case 's':
+.br
+      printf("opt s with no optarg\\n"); break;
+.br
+    case '?':
+.br
+      if (argv[sgoptind] && (sgoptind < argc))
+.br
+        printf("illegal opt %c\\n",sgoptproblem);
+.br
+      else
+.br
+        printf("missing arg, opt %c\\n",sgoptproblem);
+.br
+      exit(1);
+.br
+  }
+
+argv += sgoptind;
+.br
+while (*argv) printf("argument %s\\n",*argv++);
+.br
+exit(0);
+.br
+}
+.EE
+
+The end of the command line is
+marked by either
+.IR argc ,
+or a null pointer in
+.IR argv ,
+whichever comes first.
+Normally
+these two markers coincide,
+so it is redundant
+to test for
+both
+.I argv\fB[sgoptind]
+and
+.B sgoptind < \fIargc\fR.
+The above code shows both tests as an illustration.
+
+.B Multiple option sets:
+One useful technique is to call
+.B sgopt
+with a primary
+.I opts
+until it returns EOF,
+then call
+.B sgopt
+with a secondary
+.I opts
+until it returns EOF.
+The user can provide primary options, then a double hyphen,
+and then secondary options.
+No special handling is needed if some or all of the options are
+omitted.
+The same technique can be used for any number of option sets
+in series.
+
+.B Multiple command lines:
+Before parsing a new
+.BR argv ,
+make sure to
+set
+.B sgoptind
+and
+.B sgoptpos
+back to
+1 and 0.
+.SH "PARSING STAGES"
+.B sgopt
+keeps track of its position in
+.I argv
+with
+.B sgoptind
+and
+.BR sgoptpos ,
+which are initialized to 1 and 0.
+It looks at
+.I argv\fB[sgoptind][sgoptpos]
+and following characters.
+
+.B sgopt
+indicates
+that no more options are available by
+returning
+.BR sgoptdone ,
+which is initialized to
+.BR SUBGETOPTDONE ,
+which is defined as \-1.
+
+.B sgopt
+begins by setting
+.B optarg
+to null.
+
+.B Ending conditions:
+If
+.I argv
+is null, or
+.B sgoptind
+is larger than
+.IR argc ,
+or the current cmdarg
+.I argv\fB[sgoptind]
+is null,
+then
+.B sgopt
+returns
+.BR optdone .
+
+.B Stage one:
+If the current character
+is zero,
+.B sgopt
+moves to the beginning of the next cmdarg.
+It then checks the ending conditions again.
+
+.B Stage two:
+If
+the current position is the begining of the cmdarg,
+.B sgopt
+checks whether
+the current character
+is a minus sign.
+If not it returns
+.BR optdone .
+It then
+moves
+to the next character.
+If that character is zero,
+.B sgopt
+moves
+back to the beginning of the cmdarg,
+and returns
+.BR sgoptdone .
+If the character is a minus sign,
+.B sgopt
+moves to the beginning of the next cmdarg,
+and returns
+.BR sgoptdone .
+
+.B Stage three:
+.B sgopt
+records the current character,
+.IR c ,
+and moves to the next character.
+There are three possibilities:
+(1)
+.I c
+is an option character without optarg in
+.IR opts ,
+or
+(2)
+.I c
+is an option character with optarg in
+.IR opts ,
+or
+(3)
+.I c
+does not appear in
+.IR opts .
+
+(1)
+If
+.I c
+appears as an option character without optarg in
+.IR opts ,
+.B sgopt
+returns
+.IR c .
+
+(2)
+If
+.I c
+appears as an option character with optarg in
+.IR opts ,
+.B sgopt
+sets
+.B sgoptarg
+to the current position,
+and moves to the next cmdarg.
+If
+.B sgoptarg
+is nonempty,
+.B sgopt
+returns
+.IR c .
+
+Then
+.B sgopt
+sets
+.B sgoptarg
+to
+the current cmdarg.
+If
+the current cmdarg is null,
+or past
+.IR argc ,
+.B sgopt
+sets
+.B sgoptproblem
+to
+.I c
+and returns ?.
+Otherwise
+.B sgopt
+moves to the next
+argument
+and returns
+.IR c .
+
+(2)
+If
+.I c
+does not appear in
+.IR opts ,
+.B sgopt
+sets
+.B sgoptproblem
+to
+.I c
+and returns ?.
+.SH "SYNTAX NOTE"
+.B sgopt
+is actually a macro abbreviation for
+.BR subgetopt .
+The external
+.B sg
+variables are also macros
+for
+.BR subget .
+These macros are defined in
+.BR <subgetopt.h> ,
+unless
+.B SUBGETOPTNOSHORT
+is defined
+when
+.B <subgetopt.h>
+is included.
+.SH VERSION
+subgetopt version 0.9, 931129.
+.SH AUTHOR
+Placed into the public domain by Daniel J. Bernstein.

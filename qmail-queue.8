@@ -1,0 +1,58 @@
+.TH qmail-queue 8
+.SH NAME
+qmail-queue \- queue a mail message for delivery
+.SH SYNOPSIS
+.B qmail-queue
+.SH DESCRIPTION
+.B qmail-queue
+reads a mail message from descriptor 0.
+It then reads envelope information from descriptor 1.
+It places the message into the outgoing queue
+for future delivery by
+.BR qmail-send .
+
+The envelope information is
+an envelope sender address
+followed by a list of envelope recipient addresses.
+The sender address is preceded by the letter F
+and terminated by a 0 byte.
+Each recipient address is preceded by the letter T
+and terminated by a 0 byte.
+The list of recipient addresses is terminated by an extra 0 byte.
+If
+.B qmail-queue
+sees end-of-file before the extra 0 byte,
+it aborts without placing the message into the queue.
+
+Every envelope recipient address
+must contain a username,
+an @ sign,
+and a fully qualified domain name.
+
+.B qmail-queue
+always adds a
+.B Received
+line to the top of the message.
+Other than this,
+.B qmail-queue
+does not inspect the message
+and does not enforce any restrictions on its contents.
+However, the recipients probably expect to see a proper header,
+as described in
+.BR qmail-header(5) .
+.SH "EXIT CODES"
+0 if
+.B qmail-queue
+has successfully queued the message,
+nonzero if
+.B qmail-queue
+has failed to queue the message.
+.B qmail-queue
+does not print diagnostics.
+.SH "SEE ALSO"
+addresses(5),
+envelopes(5),
+qmail-header(5),
+qmail-inject(8),
+qmail-send(8),
+qmail-smtpd(8)

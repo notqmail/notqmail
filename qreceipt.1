@@ -1,0 +1,33 @@
+.TH qreceipt 1
+.SH NAME
+qreceipt \- respond to delivery notice requests
+.SH SYNOPSIS
+in
+.BR .qmail :
+.B |qreceipt
+.I youraddress
+.SH DESCRIPTION
+When a mail message arrives with 
+.I youraddress
+listed in a
+.B Notice-Requested-Upon-Delivery-To
+header field,
+.B qreceipt
+sends a success notice back to the envelope sender.
+
+.B WARNING:
+If you create a
+.B .qmail
+file to enable
+.BR qreceipt ,
+make sure to also add a line specifying delivery to your normal mailbox.
+For example:
+
+.EX
+     /home/joe/Mailbox
+.br
+     |qreceipt joe@nowhere.mil
+.EE
+.SH "SEE ALSO"
+dot-qmail(5),
+envelopes(5)

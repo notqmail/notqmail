@@ -1,0 +1,43 @@
+.TH qmail-newu 8
+.SH NAME
+qmail-newu \- prepare address assignments for qmail-lspawn
+.SH SYNOPSIS
+.B qmail-newu
+.SH DESCRIPTION
+.B qmail-newu
+reads the assignments in
+.B QMAILHOME/users/assign
+and writes them into
+.B QMAILHOME/users/cdb
+in a binary format suited
+for quick access by
+.BR qmail-lspawn .
+
+If there is a problem with
+.BR users/assign ,
+.B qmail-newu
+complains and leaves
+.B users/cdb
+alone.
+
+.B qmail-newu
+ensures that
+.B users/cdb
+is updated atomically,
+so
+.B qmail-lspawn
+never has to wait for
+.B qmail-newu
+to finish.
+However,
+.B qmail-newu
+makes no attempt to protect against two simultaneous updates of
+.BR users/cdb .
+
+The binary
+.B users/cdb
+format is portable across machines.
+.SH "SEE ALSO"
+qmail-users(5),
+qmail-lspawn(8),
+qmail-pw2u(8)

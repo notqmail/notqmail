@@ -1,0 +1,41 @@
+.TH fd_move 3
+.SH NAME
+fd_move \- renumber a descriptor
+.SH SYNTAX
+.B #include <fd.h>
+
+int \fBfd_move\fP(\fIto\fR,\fIfrom\fR);
+
+int \fIto\fR;
+.br
+int \fIfrom\fR;
+.SH DESCRIPTION
+.B fd_move
+moves
+descriptor
+.I from
+to descriptor
+.IR to .
+If
+.I to
+was already open,
+.B fd_move
+closes it.
+If the move is successful,
+.B fd_move
+closes
+.IR from .
+Exception:
+if
+.I to
+and
+.I from
+are the same number,
+.B fd_move
+does nothing.
+
+.B fd_move
+returns 0 on success, -1 on error.
+.SH "SEE ALSO"
+dup(2),
+fd_copy(3)

@@ -1,0 +1,60 @@
+.TH splogger 8
+.SH NAME
+splogger \- make entries in syslog
+.SH SYNOPSIS
+.B splogger
+[
+.I tag
+[
+.I fac
+]
+]
+.SH DESCRIPTION
+.B splogger
+reads a series of messages and feeds them to
+.BR syslog .
+At the front of each message it puts
+.I tag
+(default:
+.BR splogger )
+and a numerical timestamp.
+
+.B splogger
+checks for
+.B alert:
+or
+.B warning:
+at the beginning of each message.
+It selects a priority of
+LOG_ALERT, LOG_WARNING, or LOG_INFO accordingly.
+
+.B splogger
+logs messages with facility
+.IR fac .
+.I fac
+(default: 2)
+must be numeric.
+
+.B splogger
+converts unprintable characters to question marks.
+
+.B splogger
+does not log blank lines.
+
+.B splogger
+folds messages after 800 characters,
+since
+.B syslog
+can't handle long messages.
+.B splogger
+uses a + after the timestamp
+to mark folded lines.
+
+Note that the
+.B syslog
+mechanism is inherently unreliable:
+it does not guarantee that messages will be logged.
+It is also very slow.
+.SH "SEE ALSO"
+syslog(3),
+logger(8)

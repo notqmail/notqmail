@@ -1,0 +1,67 @@
+.TH qmail 7
+.SH "NAME"
+qmail \- overview of qmail documentation
+.SH "INTRODUCTION"
+.B qmail
+is a secure, reliable, efficient, simple message transfer agent.
+
+Users who want to control incoming messages
+should read
+.BR dot-qmail (5).
+Available commands for the
+.B .qmail
+file include
+.BR qbiff (1),
+.BR qlist (1),
+.BR qreceipt (1),
+.BR forward (1),
+and (for advanced users)
+.BR condredirect (1).
+Other helpful commands include
+.BR maildirmake (1),
+.BR maildir2mbox (1),
+and
+.BR maildirwatch (1).
+
+System administrators who want to control the entire
+.B qmail
+system should start with
+.BR qmail-control (5)
+and
+.BR qmail-start (8).
+There are three queue-monitoring tools:
+.BR qmail-qread (8),
+.BR qmail-qstat (8),
+and
+.BR qmail-tcpto (8).
+Incoming SMTP connections are handled by
+.BR qmail-smtpd (8).
+
+.B qmail
+offers two command-line message-sending interfaces:
+.BR qmail-inject (8)
+and
+.BR mailsubj (1).
+For background information on Internet mail messages,
+see
+.BR addresses (5),
+.BR envelopes (5),
+.BR qmail-header (5),
+and
+.BR forgeries (7).
+
+Miscellaneous documentation includes
+.BR qmail-upgrade (7),
+.BR qmail-limits (7),
+and
+.BR qmail-pop3d (8).
+
+This documentation describes version
+1.01
+of
+.BR qmail .
+See
+.B http://pobox.com/~djb/qmail.html
+for other
+.BR qmail -related
+software.

@@ -1,0 +1,53 @@
+.TH maildir2mbox 1
+.SH NAME
+maildir2mbox \- move mail from a maildir to an mbox
+.SH SYNOPSIS
+.B maildir2mbox
+.SH DESCRIPTION
+.B maildir2mbox
+moves mail from a
+.IR maildir -format
+directory to an
+.IR mbox -format
+file.
+
+You must supply three environment variables to
+.BR maildir2mbox :
+.B MAILDIR
+is the name of your
+.I maildir
+directory;
+.B MAIL
+is the name of your
+.I mbox
+file;
+and
+.B MAILTMP
+is a temporary file that
+.B maildir2mbox
+can overwrite.
+.B MAILTMP
+and
+.B MAIL
+must be on the same filesystem.
+
+.B maildir2mbox
+is reliable:
+it will not remove messages
+from
+.B MAILDIR
+until the messages have been successfully appended to
+.BR MAIL .
+
+.B maildir2mbox
+locks
+.B MAIL
+to protect against simultaneous access by a mail reader.
+This locking system does not protect against simultaneous access
+by another
+.BR maildir2mbox ;
+you should run only one
+.B maildir2mbox
+at a time.
+.SH "SEE ALSO"
+maildir(5)

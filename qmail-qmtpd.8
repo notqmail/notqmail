@@ -1,0 +1,29 @@
+.TH qmail-qmtpd 8
+.SH NAME
+qmail-qmtpd \- receive mail via QMTP
+.SH SYNOPSIS
+.B qmail-qmtpd
+.SH DESCRIPTION
+.B qmail-qmtpd
+receives mail messages via the Quick Mail Transfer Protocol (QMTP)
+and invokes
+.B qmail-queue
+to deposit them into the outgoing queue.
+.B qmail-qmtpd
+must be supplied several environment variables;
+see
+.BR tcp-environ(5) .
+
+.B qmail-qmtpd
+supports the
+.I rcpthosts
+and
+.B RELAYCLIENT
+mechanisms described in
+.BR qmail-smtpd(8) .
+.SH "SEE ALSO"
+tcp-env(1),
+tcp-environ(5),
+qmail-control(5),
+qmail-queue(8),
+qmail-smtpd(8)

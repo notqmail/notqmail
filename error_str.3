@@ -1,0 +1,19 @@
+.TH error_str 3
+.SH NAME
+error_str \- names for syscall error codes
+.SH SYNTAX
+.B #include <error.h>
+
+char *\fBerror_str\fP(\fIe\fR);
+
+int \fIe\fR;
+.SH DESCRIPTION
+.B error_str
+returns a printable string describing syscall error code
+.IR e .
+Normally
+.I e
+is
+.BR errno .
+.SH "SEE ALSO"
+error(3)

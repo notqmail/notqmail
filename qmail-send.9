@@ -1,0 +1,264 @@
+.TH qmail-send 8
+.SH NAME
+qmail-send \- deliver mail messages from the queue
+.SH SYNOPSIS
+.B qmail-send
+.SH DESCRIPTION
+.B qmail-send
+handles messages placed into the outgoing queue by
+.BR qmail-queue .
+It uses
+.B qmail-lspawn
+to deliver messages to local recipients and
+.B qmail-rspawn
+to deliver messages to remote recipients.
+If a message is temporarily undeliverable to one or more addresses,
+.B qmail-send
+leaves it in the queue and tries the addresses again later.
+
+.B qmail-send
+prints a readable record of its activities to descriptor 0.
+It writes commands to
+.BR qmail-lspawn ,
+.BR qmail-rspawn ,
+and
+.B qmail-clean
+on descriptors 1, 3, and 5,
+and reads responses from descriptors 2, 4, and 6.
+.B qmail-send
+is responsible for avoiding deadlock.
+
+If
+.B qmail-send
+receives a TERM signal,
+it will exit cleanly, after waiting
+(possibly more than a minute)
+for current delivery attempts to finish.
+
+If
+.B qmail-send
+receives an ALRM signal,
+it will reschedule every message in the queue for immediate delivery.
+.SH "CONTROL FILES"
+.B WARNING:
+.B qmail-send
+reads its control files only when it starts.
+If you change the control files,
+you must stop and restart
+.BR qmail-send .
+Exception:
+If
+.B qmail-send
+receives a HUP signal,
+it will reread
+.I locals
+and
+.IR virtualdomains .
+.TP 5
+.I bouncefrom
+Bounce username.
+Default:
+.BR MAILER-DAEMON .
+.TP 5
+.I bouncehost
+Bounce host.
+Default:
+.IR me ,
+if that is supplied;
+otherwise the literal name
+.BR bouncehost ,
+which is probably not what you want.
+If a message is permanently undeliverable,
+.B qmail-send
+sends a
+.B single-bounce
+notice back to the message's envelope sender.
+The notice is
+.B From: \fIbouncefrom\fB@\fIbouncehost\fR,
+although its envelope sender is empty.
+.TP 5
+.I concurrencylocal
+Maximum number of simultaneous local delivery attempts.
+Default: 10.
+If 0, local deliveries will be put on hold.
+.I concurrencylocal
+is limited at compile time to
+SPAWN.
+.TP 5
+.I concurrencyremote
+Maximum number of simultaneous remote delivery attempts.
+Default: 20.
+If 0, remote deliveries will be put on hold.
+.I concurrencyremote
+is limited at compile time to
+SPAWN.
+.TP 5
+.I doublebouncehost
+Double-bounce host.
+Default:
+.IR me ,
+if that is supplied;
+otherwise the literal name
+.BR doublebouncehost ,
+which is probably not what you want.
+.TP 5
+.I doublebounceto
+User to receive double-bounces.
+Default:
+.BR postmaster .
+If a single-bounce notice is permanently undeliverable,
+.B qmail-send
+sends a
+.B double-bounce
+notice to
+.IR doublebounceto\fB@\fIdoublebouncehost .
+(If that bounces,
+.B qmail-send
+gives up.)
+.TP 5
+.I envnoathost
+Presumed domain name for addresses without @ signs.
+Default:
+.IR me ,
+if that is supplied;
+otherwise the literal name
+.BR envnoathost ,
+which is probably not what you want.
+If
+.B qmail-send
+sees an envelope recipient address without an @ sign,
+it appends
+.B @\fIenvnoathost\fR.
+.TP 5
+.I locals
+List of domain names that the current host
+receives mail for,
+one per line.
+Default:
+.IR me ,
+if that is supplied;
+otherwise
+.B qmail-send
+refuses to run.
+An address 
+.I user@domain
+is considered local if
+.I domain
+is listed in
+.IR locals .
+.TP 5
+.I percenthack
+List of domain names where the percent hack is applied.
+If
+.I domain
+is listed in
+.IR percenthack ,
+any address of the form
+.I user%fqdn@domain
+is rewritten as
+.IR user@fqdn .
+.I user
+may contain %,
+so the percent hack may be applied repeatedly.
+.B qmail-send
+handles
+.I percenthack
+before
+.IR recipientmap .
+.TP 5
+.I queuelifetime
+Number of seconds
+a message can stay in the queue.
+Default: 604800 (one week).
+After this time expires,
+.B qmail-send
+will try the message once more,
+but it will treat any temporary delivery failures as
+permanent failures.
+.TP 5
+.I recipientmap
+List of redirections, one per line.
+Each redirection has the form
+.IR recipient\fB:\fIrewritten ,
+without any extra spaces.
+When
+.B qmail-send
+sees the address
+.IR recipient ,
+it replaces it with
+.IR rewritten .
+Both
+.I recipient
+and
+.I rewritten
+must include domain names.
+.B qmail-send
+handles
+.I recipientmap
+before
+.IR locals .
+.TP 5
+.I virtualdomains
+List of virtual domains, one per line.
+Each virtual domain has the form
+.IR domain\fB:\fIprepend ,
+without any extra spaces.
+When
+.B qmail-send
+sees a recipient address at
+.IR domain ,
+say
+.IR user\fB@\fIdomain ,
+it converts it to
+.I prepend\fB-\fIuser\fB@\fIdomain
+and treats it as local.
+For example, if
+
+.EX
+     nowhere.mil:joeBREAKfoo
+.EE
+
+is in
+.IR virtualdomains ,
+and a message arrives for
+.BR info@nowhere.mil ,
+.B qmail-send
+will rewrite the recipient address as
+.B joeBREAKfoo-info@nowhere.mil
+and deliver the message locally.
+.I virtualdomains
+may contain wildcards:
+
+.EX
+     .fax:uucpBREAKfax
+     :aliasBREAKcatchall
+     .nowhere.mil:joeBREAKfoo-host
+.EE
+
+.I virtualdomains
+may also contain exceptions:
+an empty
+.I prepend
+means that
+.I domain
+is not a virtual domain.
+
+.B qmail-send
+handles
+.I virtualdomains
+after
+.IR locals :
+if a domain is listed in
+.IR locals ,
+.I virtualdomains
+does not apply.
+.SH "SEE ALSO"
+nice(1),
+addresses(5),
+envelopes(5),
+qmail-control(5),
+qmail-log(5),
+qmail-queue(8),
+qmail-clean(8),
+qmail-lspawn(8),
+qmail-rspawn(8)

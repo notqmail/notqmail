@@ -1,0 +1,65 @@
+.TH qmail-popup 8
+.SH NAME
+qmail-popup \- read a POP username and password
+.SH SYNOPSIS
+.B qmail-popup
+.I hostname
+.I subprogram
+.SH DESCRIPTION
+.B qmail-popup
+reads a POP username and password from the network.
+It then runs
+.IR subprogram .
+
+.B qmail-popup
+is most commonly invoked from
+.B inetd
+as
+
+.EX
+   qmail-popup CHANGEME checkpassword qmail-pop3d Maildir
+.EE
+
+with
+CHANGEME
+replaced by the fully qualified domain name of the local host.
+
+.B qmail-popup
+expects descriptor 0 to read from the network
+and descriptor 1 to write to the network.
+It reads a username and password from descriptor 0
+in POP's USER-PASS style or APOP style.
+It invokes
+.IR subprogram ,
+with the same descriptors 0 and 1;
+descriptor 2 writing to the network;
+and descriptor 3 reading the username, a 0 byte, the password,
+another 0 byte, 
+an APOP timestamp derived from
+.IR hostname ,
+and a final 0 byte.
+.B qmail-popup
+then waits for
+.I subprogram
+to finish.
+It prints an error message if
+.I subprogram
+crashes or exits nonzero.
+
+.B qmail-popup
+should be used only within
+a secure network.
+Otherwise an eavesdropper can steal passwords.
+Even if you use APOP,
+an active attacker can still take over the connection
+and wreak havoc.
+
+.B qmail-popup
+has a 20-minute idle timeout.
+
+.B qmail-popup
+is based on a program contributed by Russ Nelson.
+.SH "SEE ALSO"
+maildir(5),
+qmail-local(8),
+qmail-pop3d(8)

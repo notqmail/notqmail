@@ -1,0 +1,28 @@
+.TH sgetopt 3
+.SH NAME
+sgetopt \- get option character from command line
+.SH SYNTAX
+.B #include <sgetopt.h>
+.SH DESCRIPTION
+The
+.B sgetopt
+library is just like the
+.B getopt
+library,
+except that it prints errors using
+.B substdio
+rather than
+.BR stdio .
+
+See
+.B getopt(3)
+for interface details.
+.SH VERSION
+sgetopt version 1.9, 931201.
+.SH AUTHOR
+Placed into the public domain by Daniel J. Bernstein.
+.SH "SEE ALSO"
+getopt(3),
+subgetopt(3),
+subfd(3),
+substdio(3)

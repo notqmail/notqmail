@@ -1,0 +1,109 @@
+.TH qmail-getpw 8
+.SH NAME
+qmail-getpw \- give addresses to users
+.SH SYNOPSIS
+.B qmail-getpw
+.I local
+.SH DESCRIPTION
+In
+.BR qmail ,
+each user controls a vast array of local addresses.
+.B qmail-getpw
+finds the user that controls a particular address,
+.IR local .
+It prints six pieces of information,
+each terminated by NUL:
+.IR user ;
+.IR uid ;
+.IR gid ;
+.IR homedir ;
+.IR dash ;
+and
+.IR ext .
+The user's account name is
+.IR user ;
+the user's uid and gid in decimal are
+.I uid
+and
+.IR gid ;
+the user's home directory is
+.IR homedir ;
+and messages to
+.I local
+will be handled by
+.IR homedir\fB/.qmail\fIdashext .
+
+In case of trouble,
+.B qmail-getpw
+exits nonzero without printing anything.
+
+.B WARNING:
+The operating system's
+.B getpwnam
+function, which is at the heart of
+.BR qmail-getpw ,
+is inherently unreliable.
+.SH "RULES"
+.B qmail-getpw
+considers an account in
+.B /etc/passwd
+to be a user if
+(1) the account has a nonzero uid,
+(2) the account's home directory exists (and is visible to
+.BR qmail-getpw ),
+and
+(3) the account owns its home directory.
+.B qmail-getpw
+ignores account names containing uppercase letters.
+.B qmail-getpw
+also assumes that all account names are shorter than 32 characters.
+
+.B qmail-getpw
+gives each user
+control over the basic
+.I user
+address and
+all addresses of the form
+.IR user\fBBREAK\fIanything .
+When
+.I local
+is
+.IR user ,
+.I dash
+and
+.I ext
+are both empty.
+When
+.I local
+is
+.IR user\fBBREAK\fIanything ,
+.I dash
+is a hyphen and
+.I ext
+is
+.IR anything .
+.I user
+may appear in any combination of uppercase and lowercase letters
+at the front of
+.IR local .
+
+A catch-all user,
+.BR alias ,
+controls all other addresses.
+In this case
+.I ext
+is
+.I local
+and
+.I dash
+is a hyphen.
+
+You can override all of
+.BR qmail-getpw 's
+decisions with the
+.B qmail-users
+mechanism, which is reliable, highly configurable, and much faster than
+.BR qmail-getpw .
+.SH "SEE ALSO"
+qmail-users(5),
+qmail-lspawn(8)

@@ -1,0 +1,113 @@
+.TH qmail-users 5
+.SH NAME
+qmail-users \- assign mail addresses to users
+.SH OVERVIEW
+The file
+.B QMAILHOME/users/assign
+assigns addresses to users. For example,
+
+.EX
+   =joe.shmoe:joe:503:78:/home/joe:::
+.EE
+
+says that mail for
+.B joe.shmoe
+should be delivered to user
+.BR joe ,
+with uid 503 and gid 78,
+as specified by
+.BR /home/joe/.qmail .
+
+Assignments fed to
+.B qmail-newu
+will be used by
+.B qmail-lspawn
+to control
+.BR qmail-local 's
+deliveries.
+See
+.BR qmail-newu (8).
+A change to
+.B QMAILHOME/users/assign
+will have no effect until
+.B qmail-newu
+is run.
+.SH STRUCTURE
+.B QMAILHOME/users/assign
+is a series of assignments, one per line.
+It ends with a line containing a single dot.
+Lines must not contain NUL.
+.SH "SIMPLE ASSIGNMENTS"
+A simple assignment is a line of the form
+
+.EX
+   =local:user:uid:gid:homedir:dash:ext:
+.EE
+
+Here
+.I local
+is an address;
+.IR user ,
+.IR uid ,
+and
+.I gid
+are the account name, uid, and gid
+of the user in charge of
+.IR local ;
+and messages to
+.I local
+will be controlled by
+.IR homedir\fB/.qmail\fIdashext .
+
+If there are several assignments for the same
+.I local
+address,
+.B qmail-lspawn
+will use the first one.
+
+.I local
+is interpreted without regard to case.
+.SH "WILDCARD ASSIGNMENTS"
+A wildcard assignment is a line of the form
+
+.EX
+   +loc:user:uid:gid:homedir:dash:pre:
+.EE
+
+This assignment applies to any address beginning with
+.IR loc ,
+including
+.I loc
+itself.
+It means the same as
+
+.EX
+   =locext:user:uid:gid:homedir:dash:preext:
+.EE
+
+for every string
+.IR ext .
+
+A more specific wildcard assignment overrides a less specific
+assignment, and a simple assignment overrides any wildcard assignment.
+For example:
+
+.EX
+   +:alias:7790:2108:QMAILHOME/alias:-::
+   +joe-:joe:507:100:/home/joe:-::
+   =joe:joe:507:100:/home/joe:::
+.EE
+
+The address
+.B joe
+is handled by the third line;
+the address
+.B joe-direct
+is handled by the second line;
+the address
+.B bill
+is handled by the first line.
+.SH "SEE ALSO"
+qmail-pw2u(8),
+qmail-newu(8),
+qmail-lspawn(8)

@@ -1,0 +1,25 @@
+.TH coe 3
+.SH NAME
+coe \- set close-on-exec flag for a descriptor
+.SH SYNTAX
+.B #include <coe.h>
+
+int \fBcoe\fP(\fIfd\fR);
+
+int \fIfd\fR;
+.SH DESCRIPTION
+.B coe
+sets the close-on-exec flag for
+file descriptor
+.IR fd ,
+returning 0 if it was successful
+or -1 on error.
+If
+.B coe
+is successful,
+.I fd
+will be closed when the process calls
+.BR execve .
+.SH "SEE ALSO"
+execve(2),
+fcntl(2)

@@ -1,0 +1,5 @@
+022
+
+These stat bits are not allowed in ~ and ~/.qmail.
+
+Note that ~ftp, ~www, ~uucp, etc. should be owned by root.

@@ -1,0 +1,123 @@
+.TH qmail-command 8
+.SH NAME
+qmail-command \- user-specified mail delivery program
+.SH SYNOPSIS
+in
+.BR .qmail\fIext :
+.B |\fIcommand
+.SH DESCRIPTION
+.B qmail-local
+will, upon your request,
+feed each incoming mail message through a program of your choice.
+
+When a mail message arrives,
+.B qmail-local
+runs
+.B sh -c \fIcommand
+in your home directory.
+It makes the message available on 
+.IR command 's
+standard input.
+
+.B WARNING:
+The mail message does not begin with
+.BR qmail-local 's
+usual
+.B Return-Path
+and
+.B Delivered-To
+lines.
+
+Note that
+.B qmail-local
+uses the same file descriptor for every delivery
+in your
+.B .qmail
+file, so it is not safe for
+.I command
+to fork a child that
+reads the message in the background while the parent exits.
+
+.IR command 's
+exit codes are interpreted as follows:
+0 means that the delivery was successful;
+99 means that the delivery was successful,
+but that
+.B qmail-local
+should ignore all further delivery instructions;
+100 means that the delivery failed permanently (hard error);
+111 means that the delivery failed but should be tried again
+in a little while (soft error).
+Currently 64, 65, 70, 76, 77, 78, and 112 are considered hard errors,
+and all other codes are considered soft errors,
+but
+.I command
+should avoid relying on this.
+
+.B qmail-local
+supplies several useful environment variables to
+.IR command .
+.B SENDER
+is the envelope sender address.
+.B NEWSENDER
+is the forwarding envelope sender address,
+as described in
+.BR dot-qmail(5) .
+.B RECIPIENT
+is the envelope recipient address,
+.IR local@domain .
+.B USER
+is
+.IR user .
+.B HOME
+is your home directory,
+.IR homedir .
+.B HOST
+is the
+.I domain
+part of the recipient address.
+.B LOCAL
+is the
+.I local
+part.
+.B EXT
+is the
+.B .qmail
+extension,
+.IR ext .
+.B EXT2
+is the portion of
+.B EXT
+following the first dash;
+.B EXT3
+is the portion
+following the second dash;
+.B EXT4
+is the portion
+following the third dash.
+.B DTLINE
+and
+.B RPLINE
+are the usual
+.B Delivered-To
+and
+.B Return-Path
+lines,
+including newlines.
+.B UFLINE
+is the UUCP-style
+.B From_
+line that
+.B qmail-local
+adds to
+.IR mbox -format
+files.
+
+.B WARNING:
+These environment variables are not quoted.
+They may contain special characters.
+They are under the control of a possibly malicious remote user.
+.SH "SEE ALSO"
+dot-qmail(5),
+envelopes(5),
+qmail-local(8)

@@ -1,0 +1,36 @@
+.TH direntry 3
+.SH NAME
+direntry \- read directory entries
+.SH SYNTAX
+.B #include <direntry.h>
+
+DIR *\fBopendir\fP(\fIfn\fR);
+
+struct direntry *\fBreaddir\fP(\fIdir\fP);
+
+void \fBclosedir\fP(\fIdir\fP);
+
+DIR *\fIdir\fR;
+.br
+char *\fIfn\fR;
+.SH DESCRIPTION
+The point of
+.B direntry.h
+is to provide a uniform interface to BSD's
+.B sys/dir.h
+and POSIX's
+.BR dirent.h .
+
+The
+.B readdir
+interface is highly unsatisfactory.
+It does not distinguish between I/O errors and end-of-directory.
+It uses
+.BR malloc .
+The return type for
+.B closedir
+varies: some implementations return the
+.B close
+return value.
+.SH "SEE ALSO"
+readdir(3)

@@ -1,0 +1,9 @@
+do some serious coverage testing, preferably under Purify, without alloc slop
+replace INTERNALS and THOUGHTS with a real paper describing qmail
+reorganize qmail-inject to do most rw on characters, not tokens
+allow concurrency over 255
+handle IPv6
+turn qmail-upq into a more serious queue-moving utility
+expand strerr coverage
+rewrite everything from scratch
+maybe allow root to clear tcpto on the fly

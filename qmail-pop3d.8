@@ -1,0 +1,43 @@
+.TH qmail-pop3d 8
+.SH NAME
+qmail-pop3d \- distribute mail via POP
+.SH SYNOPSIS
+.B qmail-pop3d
+.I maildirname
+.SH DESCRIPTION
+.B qmail-pop3d
+lets a user read and delete his mail through the network.
+
+Mail is stored in a
+.B maildir
+called
+.IR maildirname ,
+normally
+.BR Maildir ,
+in the user's home directory.
+
+.B qmail-pop3d
+is normally invoked
+under
+.BR qmail-popup ,
+which reads a username and password,
+and
+.BR /bin/checkpassword ,
+which checks the password and sets up environment variables.
+
+.B qmail-pop3d
+has a 20-minute idle timeout.
+
+.B qmail-pop3d
+supports UIDL and TOP.
+
+.B qmail-pop3d
+appends an extra blank line to every message
+to work around serious bugs in certain clients.
+
+.B qmail-pop3d
+is based on a program contributed by Russ Nelson.
+.SH "SEE ALSO"
+maildir(5),
+qmail-local(8),
+qmail-popup(8)

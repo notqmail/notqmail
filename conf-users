@@ -1,0 +1,15 @@
+alias
+qmaild
+qmaill
+root
+qmailp
+qmailq
+qmailr
+qmails
+
+The qmail system is heavily partitioned for security; it does almost
+nothing as root.
+
+The first eight lines of this file are the alias user, the daemon user,
+the log user, the owner of miscellaneous files such as binaries, the
+passwd user, the queue user, the remote user, and the send user.

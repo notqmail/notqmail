@@ -1,0 +1,235 @@
+.TH qmail-pw2u 8
+.SH NAME
+qmail-pw2u \- build address assignments from a passwd file
+.SH SYNOPSIS
+.B qmail-pw2u
+[
+.B \-ohHuUC
+]
+[
+.B \-c\fIchar
+]
+.SH DESCRIPTION
+.B qmail-pw2u
+reads a V7-format passwd file from standard input
+and prints a
+.BR qmail-users -format
+assignment file.
+
+A V7-format passwd file is a series of lines.
+Each line has the format
+
+.EX
+   user:password:uid:gid:gecos:home:shell
+.EE
+
+where
+.I user
+is an account name,
+.I uid
+and
+.I gid
+are the user id and group id of that account,
+and
+.I home
+is the account's home directory.
+.IR password ,
+.IR gecos ,
+and
+.I shell
+are ignored by
+.BR qmail-pw2u .
+
+If you put the output of
+.B qmail-pw2u
+into
+.BR QMAILHOME/users/assign ,
+and then run
+.BR qmail-newu ,
+.B qmail-lspawn
+will obey the assignments printed by
+.BR qmail-pw2u .
+.B WARNING:
+After changing any users, uids, gids, or home directories
+in your passwd file,
+you must run
+.B qmail-pw2u
+and
+.B qmail-newu
+again if you want
+.B qmail-lspawn
+to see the changes.
+.SH RULES
+By default,
+.B qmail-pw2u
+follows the same rules as
+.BR qmail-getpw .
+It skips
+.I user
+if (1)
+.I uid
+is zero,
+(2)
+.I home
+does not exist,
+(3)
+.I user
+does not own
+.IR home ,
+or
+(4)
+.I user
+contains uppercase letters.
+It then gives each remaining
+.I user
+control over the basic
+.I user
+address and
+all addresses of the form
+.IR user\fBBREAK\fIanything .
+A catch-all user,
+.BR alias ,
+controls all other addresses.
+
+You may change these rules by setting up files in
+.BR QMAILHOME/users :
+.TP
+.B include
+Allowed users, one per line.
+If
+.B include
+exists, and
+.I user
+is not listed in
+.BR include ,
+.I user
+is ignored.
+.TP
+.B exclude
+Ignored users, one per line.
+If
+.B exclude
+exists, and
+.I user
+is listed in
+.BR exclude ,
+.I user
+is ignored.
+.TP
+.B mailnames
+Replacement names for users.
+Each line has the form
+
+.EX
+   user:mailname1:mailname2:...
+.EE
+
+The addresses
+.I mailname1
+and
+.I mailname1\fBBREAK\fIext
+and
+.I mailname2
+and so on will be delivered
+to
+.IR user .
+
+.B WARNING:
+The addresses
+.I user
+and
+.I user\fBBREAK\fIext
+will not be delivered to
+.I user
+unless
+.I user
+is listed as one of the
+.IR mailname s.
+
+A line in
+.B mailnames
+is silently ignored if the user does not exist.
+.TP
+.B subusers
+Extra addresses.
+Each line has the form
+
+.EX
+   sub:user:pre:
+.EE
+
+.I sub
+will be handled by
+.IR home\fB/.qmail-\fIpre ,
+where
+.I home
+is
+.IR user 's
+home directory;
+.I sub\fBBREAK\fIext
+will be handled by
+.IR home\fB/.qmail-\fIpre\fB-\fIext .
+.TP
+.B append
+Extra assignments,
+printed at the end of
+.BR qmail-pw2u 's
+output.
+.SH OPTIONS
+.TP
+.B \-o
+(Default.)
+Skip
+.I user
+if
+.I home
+does not exist (or is not visible to
+.BR qmail-pw2u ).
+Skip
+.I user
+if
+.I home
+is not owned by
+.IR user .
+.TP
+.B \-h
+Stop if
+.I home
+does not exist.
+This is appropriate if every user is supposed to have a home directory.
+Skip
+.I user
+if
+.I home
+is not owned by
+.IR user .
+.TP
+.B \-H
+Do not check the existence or ownership of
+.IR home .
+.TP
+.B \-U
+(Default.)
+Skip
+.I user
+if there are any uppercase letters in
+.IR user .
+.TP
+.B \-u
+Allow uppercase letters in
+.IR user .
+.TP
+.B \-c\fIchar
+Use
+.I char
+as the user-extension delimiter
+in place of
+.BR BREAK .
+.TP
+.B \-C
+Disable the user-extension mechanism.
+.SH "SEE ALSO"
+qmail-users(5),
+qmail-lspawn(8),
+qmail-newu(8),
+qmail-getpw(8)

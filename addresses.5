@@ -1,0 +1,260 @@
+.TH addresses 5
+.SH "NAME"
+addresses \- formats for Internet mail addresses
+.SH "INTRODUCTION"
+A
+.B mail address
+is a string of characters containing @.
+
+Every mail address has a
+.B local part
+and a
+.B domain part\fR.
+The domain part is everything after the final @.
+The local part is everything before.
+
+For example, the mail addresses
+
+.EX
+   God@heaven.af.mil
+   @heaven.af.mil
+   @at@@heaven.af.mil
+.EE
+
+all have domain part
+.BR heaven.af.mil .
+The local parts are
+.BR God ,
+empty,
+and
+.BR @at@ .
+
+Some domains have owners.
+It is up to the owner of
+.B heaven.af.mil
+to say how mail messages will be delivered to addresses with domain part
+.BR heaven.af.mil .
+
+The domain part of an address is interpreted without regard to case, so
+
+.EX
+   God@heaven.af.mil
+.br
+   God@HEAVEN.AF.MIL
+.br
+   God@Heaven.AF.Mil
+.EE
+
+all refer to the same domain.
+
+There is one exceptional address that does not contain an @:
+namely, the empty string.
+The empty string cannot be used as a recipient address.
+It can be used as a sender address so that
+the real sender doesn't receive bounces.
+.SH "QMAIL EXTENSIONS"
+The
+.B qmail
+system allows several further types of addresses in mail envelopes.
+
+First, an envelope recipient address without an @ is interpreted as being at
+.IR envnoathost .
+For example, if
+.I envnoathost
+is
+.BR heaven.af.mil ,
+the address
+.B God
+will be rewritten as
+.BR God@heaven.af.mil .
+
+Second, the address
+.B #@[]
+is used as an envelope sender address for double bounces.
+
+Third, envelope sender addresses of the form
+.I pre\fB@\fIhost\fB-@[]
+are used to support variable envelope return paths (VERPs).
+.B qmail-send
+will rewrite 
+.I pre\fB@\fIhost\fB-@[]
+as
+.I prerecip\fB=\fIdomain\fB@\fIhost
+for deliveries to
+.IR recip\fB@\fIdomain .
+Bounces directly from
+.B qmail-send
+will come back to
+.IR pre\fB@\fIhost .
+.SH "CHOOSING MAIL ADDRESSES"
+Here are some suggestions on choosing mail addresses for the Internet.
+
+Do not use non-ASCII characters.
+Under RFC 822 and RFC 821,
+these characters cannot be used in mail headers or in SMTP commands.
+In practice, they are regularly corrupted.
+
+Do not use ASCII control characters.
+NUL is regularly corrupted.
+CR and LF cannot be used in some combinations
+and are corrupted in all.
+None of these characters are usable on business cards.
+
+Avoid spaces and the characters
+
+.EX
+   \\"<>()[],;:
+.EE
+
+These all require quoting in mail headers and in SMTP.
+Many existing mail programs do not handle quoting properly.
+
+Do not use @ in a local part.
+@ requires quoting in mail headers and in SMTP.
+Many programs incorrectly look for the first @,
+rather than the last @,
+to find the domain part of an address.
+
+In a local part,
+do not use two consecutive dots, a dot at the beginning, or a dot at the end.
+Any of these would require quoting in mail headers.
+
+Do not use an empty local part; it cannot appear in SMTP commands.
+
+Avoid local parts longer than 64 characters.
+
+Be wary of uppercase letters in local parts.
+Some mail programs (and users!) will incorrectly convert
+.B God@heaven.af.mil
+to
+.BR god@heaven.af.mil .
+
+Be wary of the following characters:
+
+.EX
+   $&!#~`'^*|{}
+.EE
+
+Some users will not know
+how to feed these characters safely to their mail programs.
+
+In domain names, stick to letters, digits, dash, and dot.
+One popular DNS resolver has,
+under the banner of security,
+recently begun destroying domain names
+that contain certain other characters,
+including underscore.
+Exception: A dotted-decimal IP address in brackets,
+such as
+.BR [127.0.0.1] ,
+identifies a domain owned by whoever owns the host at that IP address,
+and can be used safely.
+
+In a domain name,
+do not use two consecutive dots,
+a dot at the beginning,
+or a dot at the end.
+This means that,
+when a domain name is broken down into components separated by dots,
+there are no empty components.
+
+Always use at least one dot in a domain name.
+If you own the
+.B mil
+domain,
+don't bother using the address
+.BR root@mil ;
+most users will be unable to send messages to that address.
+Same for the root domain.
+
+Avoid domain names longer than 64 characters.
+.SH "ENCODED ADDRESSES IN SMTP COMMANDS"
+RFC 821 defines an encoding of mail addresses in SMTP.
+For example, the addresses
+
+.EX
+   God@heaven.af.mil
+.br
+   a"quote@heaven.af.mil
+.br
+   The Almighty.One@heaven.af.mil
+.EE
+
+could be encoded in RCPT commands as
+
+.EX
+   RCPT TO:<God@heaven.af.mil>
+.br
+   RCPT TO:<a\\"quote@heaven.af.mil>
+.br
+   RCPT TO:<The\\ Almighty.One@heaven.af.mil>
+.EE
+
+There are several restrictions in RFC 821
+on the mail addresses that can be used over SMTP.
+Non-ASCII characters are prohibited.
+The local part must not be empty.
+The domain part must be a sequence of elements separated by dots,
+where each element is either a component,
+a sequence of digits preceded by #,
+or a dotted-decimal IP address surrounded by brackets.
+The only allowable characters in components are
+letters, digits, and dashes.
+Every component must (believe it or not)
+have at least three characters;
+the first character must be a letter;
+the last character must not be a hyphen.
+.SH "ENCODED ADDRESSES IN MAIL HEADERS"
+RFC 822 defines an encoding of mail addresses
+in certain header fields in a mail message.
+For example, the addresses
+
+.EX
+   God@heaven.af.mil
+.br
+   a"quote@heaven.af.mil
+.br
+   The Almighty.One@heaven.af.mil
+.EE
+
+could be encoded in a
+.B To
+field as
+
+.EX
+   To: God@heaven.af.mil,
+.br
+	<@brl.mil:"a\\"quote"@heaven.af.mil>,
+.br
+	  "The Almighty".One@heaven.af.mil
+.EE
+
+or perhaps
+
+.EX
+   To: < "God"@heaven .af.mil>,
+.br
+     "a\\"quote" (Who?) @ heaven . af.  mil
+.br
+     , God<"The Almighty.One"@heaven.af.mil>
+.EE
+
+There are several restrictions on the mail addresses that can
+be used in these header fields.
+Non-ASCII characters are prohibited.
+The domain part must be a sequence of elements separated by dots,
+where each element either (1) begins with [ and ends with ]
+or (2) is a nonempty string of printable ASCII characters
+not including any of
+
+.EX
+   \\".<>()[],;:
+.EE
+
+and not including space.
+.SH "SEE ALSO"
+envelopes(5),
+qmail-header(5),
+qmail-inject(8),
+qmail-remote(8),
+qmail-smtpd(8)

@@ -1,0 +1,206 @@
+.TH qmail-remote 8
+.SH NAME
+qmail-remote \- send mail via SMTP
+.SH SYNOPSIS
+.B qmail-remote
+.I host
+.I sender
+.I recip
+[
+.I recip ...
+]
+.SH DESCRIPTION
+.B qmail-remote
+reads a mail message from its input
+and sends the message
+to one or more recipients
+at a remote host.
+
+The remote host is
+.BR qmail-remote 's
+first argument,
+.IR host .
+.B qmail-remote
+sends the message to
+.IR host ,
+or to a mail exchanger for
+.I host
+listed in the Domain Name System,
+via the Simple Mail Transfer Protocol (SMTP).
+.I host
+can be either a fully-qualified domain name:
+
+.EX
+     silverton.berkeley.edu
+.EE
+
+or an IP address enclosed in brackets:
+
+.EX
+     [128.32.183.163]
+.EE
+
+The envelope recipient addresses are listed as
+.I recip
+arguments to
+.BR qmail-remote .
+The envelope sender address is listed as
+.I sender\fP.
+
+Note that
+.B qmail-remote
+does not take options
+and does not follow the
+.B getopt
+standard.
+.SH TRANSPARENCY
+End-of-file in SMTP is encoded as dot CR LF.
+A dot at the beginning of a line is encoded as dot dot.
+It is impossible in SMTP to send a message that does not end with a newline.
+.B qmail-remote
+converts the UNIX newline convention into the SMTP newline convention
+by inserting CR before each LF.
+
+It is a violation of the SMTP protocol
+to send a message that contains long lines or non-ASCII characters.
+However,
+.B qmail-remote
+will happily send such messages.
+It is the user's responsibility to avoid generating illegal messages.
+.SH "RESULTS"
+.B qmail-remote
+prints some number of 
+.I recipient reports\fP,
+followed by a
+.I message report\fR.
+Each report is terminated by a 0 byte.
+Each report begins with a single letter:
+.TP 5
+r
+Recipient report: acceptance.
+.TP 5
+h
+Recipient report: permanent rejection.
+.TP 5
+s
+Recipient report: temporary rejection.
+.TP 5
+K
+Message report: success.
+.I host
+has taken responsibility for delivering the message to each
+acceptable recipient.
+.TP 5
+Z
+Message report: temporary failure.
+.TP 5
+D
+Message report: permanent failure.
+.PP
+After this letter comes a human-readable description of
+what happened.
+
+The recipient reports will always be printed in the same order as
+.BR qmail-remote 's
+.I recip
+arguments.
+Note that in failure cases there may be fewer
+recipient reports
+than
+.I recip
+arguments.
+
+.B qmail-remote
+always exits zero.
+.SH "CONTROL FILES"
+.TP 5
+.I helohost
+Current host name,
+for use solely in saying hello to the remote SMTP server.
+Default:
+.IR me ,
+if that is supplied;
+otherwise
+.B qmail-remote
+refuses to run.
+.TP 5
+.I smtproutes
+Artificial SMTP routes.
+Each route has the form
+.IR domain\fB:\fIrelay ,
+without any extra spaces.
+If
+.I domain
+matches
+.IR host ,
+.B qmail-remote
+will connect to
+.IR relay ,
+as if
+.I host
+had
+.I relay
+as its only MX.
+(It will also avoid doing any CNAME lookups on
+.I sender
+and
+.IR recip .)
+.I host
+may include a colon and a port number to use instead of the
+normal SMTP port, 25:
+
+.EX
+   inside.af.mil:firewall.af.mil:26
+.EE
+
+.I relay
+may be empty;
+this tells
+.B qmail-remote
+to look up MX records as usual.
+.I smtproutes
+may include wildcards:
+
+.EX
+   .af.mil:
+   :heaven.af.mil
+.EE
+
+Here
+any address ending with
+.B .af.mil
+(but not
+.B af.mil
+itself)
+is routed by its MX records;
+any other address is artificially routed to
+.BR heaven.af.mil .
+
+The
+.B qmail
+system does not protect you if you create an artificial
+mail loop between machines.
+However,
+you are always safe using
+.I smtproutes
+if you do not accept mail from the network.
+.TP 5
+.I timeoutconnect
+Number of seconds
+.B qmail-remote
+will wait for the remote SMTP server to accept a connection.
+Default: 60.
+The kernel normally imposes a 75-second upper limit.
+.TP 5
+.I timeoutremote
+Number of seconds
+.B qmail-remote
+will wait for each response from the remote SMTP server.
+Default: 1200.
+.SH "SEE ALSO"
+addresses(5),
+envelopes(5),
+qmail-control(5),
+qmail-send(8),
+qmail-smtpd(8),
+qmail-tcpto(8)

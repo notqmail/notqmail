@@ -1,0 +1,38 @@
+.TH mailsubj 1
+.SH NAME
+mailsubj \- send a mail message with a subject line
+.SH SYNOPSIS
+.B mailsubj
+.I subject
+.I recip ...
+.SH DESCRIPTION
+.B mailsubj
+inserts
+.I subject
+and the list of
+.IR recip s
+into a mail message:
+
+.EX
+   Subject: subject
+.br
+   To: recip ...
+.br
+
+.br
+   body
+.EE
+
+.B mailsubj
+reads the body of the message from its standard input.
+Then it sends the message.
+
+Note that
+.I subject
+and
+.I recip
+must be quoted properly for the message header.
+.SH "SEE ALSO"
+addresses(5),
+qmail-header(8),
+qmail-inject(8)

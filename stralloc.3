@@ -1,0 +1,160 @@
+.TH stralloc 3
+.SH NAME
+stralloc \- dynamically allocated strings
+.SH SYNTAX
+.B #include <stralloc.h>
+
+int \fBstralloc_ready\fP(&\fIsa\fR,\fIlen\fR);
+.br
+int \fBstralloc_readyplus\fP(&\fIsa\fR,\fIlen\fR);
+
+int \fBstralloc_copy\fP(&\fIsa\fR,&\fIsa2\fR);
+.br
+int \fBstralloc_copys\fP(&\fIsa\fR,\fIbuf\fR);
+.br
+int \fBstralloc_copyb\fP(&\fIsa\fR,\fIbuf\fR,\fIlen\fR);
+
+int \fBstralloc_cat\fP(&\fIsa\fR,&\fIsa2\fR);
+.br
+int \fBstralloc_cats\fP(&\fIsa\fR,\fIbuf\fR);
+.br
+int \fBstralloc_catb\fP(&\fIsa\fR,\fIbuf\fR,\fIlen\fR);
+
+int \fBstralloc_append\fP(&\fIsa\fR,\fIbuf\fR);
+.br
+int \fBstralloc_0\fP(&\fIsa\fR);
+
+int \fBstralloc_starts\fP(&\fIsa\fR,\fIbuf\fR);
+
+stralloc \fIsa\fR = {0};
+.br
+stralloc \fIsa2\fR = {0};
+.br
+unsigned int \fIlen\fR;
+.br
+char *\fIbuf\fR;
+.SH DESCRIPTION
+A
+.B stralloc
+variable holds a string in dynamically allocated space.
+String length is limited only by memory.
+String contents are unrestricted.
+
+The
+.B stralloc
+structure has three components:
+.I sa\fB.s
+is a pointer to the string, or 0 if it is not allocated;
+.I sa\fB.len
+is the number of bytes in the string, if it is allocated;
+.I sa\fB.a
+is the number of bytes allocated for the string, if it is allocated.
+A
+.B stralloc
+variable should be initialized to {0},
+meaning unallocated.
+
+.B stralloc_ready
+makes sure that
+.I sa
+has enough space allocated for
+.I len
+characters.
+It allocates extra space if necessary.
+
+.B stralloc_readyplus
+makes sure that
+.I sa
+has enough space allocated for
+.I len
+characters more than its current length.
+If
+.I sa
+is unallocated,
+.B stralloc_readyplus
+is the same as
+.BR stralloc_ready .
+
+.B stralloc_copy
+copies
+.I sa2
+to
+.IR sa ,
+allocating space if necessary.
+Here
+.I sa2
+is an allocated
+.B stralloc
+variable.
+
+.B stralloc_copys
+copies a 0-terminated string,
+.IR buf ,
+to
+.IR sa ,
+without the 0.
+
+.B stralloc_copyb
+copies
+.I len
+characters from
+.I buf
+to
+.IR sa .
+
+.B stralloc_cat
+appends
+.I sa2
+to
+.IR sa ,
+allocating space if necessary.
+If
+.I sa
+is unallocated,
+.B stralloc_cat
+is the same as
+.BR stralloc_copy .
+
+.B stralloc_cats
+and
+.B stralloc_catb
+are analogous to
+.B stralloc_copys
+and
+.BR stralloc_copyb .
+
+.B stralloc_append
+adds a single character,
+.IR *buf ,
+to
+.IR sa ,
+allocating space if necessary.
+
+.B stralloc_0
+adds a single 0 character
+to
+.IR sa .
+
+.B stralloc_starts
+returns 1 if the 0-terminated string
+.IR buf ,
+without the 0,
+is a prefix of
+.IR sa .
+.SH "ERROR HANDLING"
+If a
+.B stralloc
+routine runs out of memory,
+it leaves
+.I sa
+alone and returns 0,
+setting
+.B errno
+appropriately.
+On success it returns 1;
+this guarantees that
+.I sa
+is allocated.
+.SH "SEE ALSO"
+alloc(3),
+error(3)

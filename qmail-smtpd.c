@@ -25,6 +25,7 @@
 #include "timeoutwrite.h"
 #include "commands.h"
 #include "wait.h"
+#include "strerr.h"
 
 #define MAXHOPS 100
 unsigned int databytes = 0;
@@ -49,6 +50,7 @@ void die_rcpt2() { out("421 unable to execute recipient check (#4.3.0)\r\n"); fl
 void straynewline() { out("451 See https://cr.yp.to/docs/smtplf.html.\r\n"); flush(); _exit(1); }
 
 void err_bmf() { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
+void err_brt() { out("553 sorry, this recipient is in my badrecipientto list (#5.7.1)\r\n"); }
 void err_nogateway() { out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n"); }
 void err_unimpl(arg) char *arg; { out("502 unimplemented (#5.5.1)\r\n"); }
 void err_syntax() { out("555 syntax error (#5.5.4)\r\n"); }
@@ -96,6 +98,9 @@ stralloc liphost = {0};
 int bmfok = 0;
 stralloc bmf = {0};
 struct constmap mapbmf;
+int brtok = 0;
+stralloc brt = {0};
+struct constmap mapbrt;
 
 void setup()
 {
@@ -117,6 +122,11 @@ void setup()
   if (bmfok)
     if (!constmap_init(&mapbmf,bmf.s,bmf.len,0)) die_nomem();
 
+  brtok = control_readfile(&brt,"control/badrcptto",0);
+  if (brtok == -1) die_control();
+  if (brtok)
+    if (!constmap_init(&mapbrt,brt.s,brt.len,0)) die_nomem();
+  
   if (control_readint(&databytes,"control/databytes") == -1) die_control();
   x = env_get("DATABYTES");
   if (x) { scan_ulong(x,&u); databytes = u; }
@@ -209,6 +219,17 @@ int bmfcheck()
   return 0;
 }
 
+int brtcheck()
+{
+  int j;
+  if (!brtok) return 0;
+  if (constmap(&mapbrt,addr.s,addr.len - 1)) return 1;
+  j = byte_rchr(addr.s,addr.len,'@');
+  if (j < addr.len)
+    if (constmap(&mapbrt,addr.s + j,addr.len - j - 1)) return 1;
+  return 0;
+}
+
 int addrallowed()
 {
   int r;
@@ -283,6 +304,11 @@ void smtp_rcpt(arg) char *arg; {
   }
   else {
     if (!addrallowed()) { err_nogateway(); return; }
+    if (!env_get("RELAYCLIENT") && brtcheck()) {
+      strerr_warn4("qmail-smtpd: badrcptto: ",addr.s," at ",remoteip,0);
+      err_brt();
+      return;
+    }
     if (!addrvalid()) { err_badrcpt(); return; }
   }
   if (!stralloc_cats(&rcptto,"T")) die_nomem();

@@ -1491,13 +1491,13 @@ qmail-smtpd: \
 load qmail-smtpd.o rcpthosts.o commands.o timeoutread.o \
 timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
 date822fmt.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
-open.a sig.a case.a env.a stralloc.a substdio.a error.a str.a \
+open.a sig.a case.a env.a stralloc.a strerr.a substdio.a error.a str.a \
 fs.a auto_qmail.o socket.lib
 	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
 	received.o date822fmt.o qmail.o cdb.a fd.a wait.a \
 	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
-	substdio.a error.a str.a fs.a auto_qmail.o  `cat \
+	strerr.a substdio.a error.a str.a fs.a auto_qmail.o  `cat \
 	socket.lib`
 
 qmail-smtpd.0: \

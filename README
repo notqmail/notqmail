@@ -12,6 +12,22 @@ the official qmail-1.03.tar.gz and patches approved by the community.
 D. J. Bernstein did not participate in, nor has he been asked to
 approve of this distribution.
 
+netqmail 1.05
+20040121
+James Craig Burley claims copyright on the qmail-isoc patch. For
+more details, see the COPYRIGHTS file shipped with the netqmail-1.05
+distribution.
+
+James' patch has been combined with the original netqmail-1.04 patch
+and the result incorporated into a unified netqmail-1.05 patch.
+Apart from James' copyrights, no other copyright is claimed by the
+distributors of netqmail for changes from qmail 1.03 to netqmail 1.05.
+
+NOTE: netqmail 1.05 is a community-assembled distribution of qmail from
+the official qmail-1.03.tar.gz and patches approved by the community.
+D. J. Bernstein did not participate in, nor has he been asked to
+approve of this distribution.
+
 qmail is a secure, reliable, efficient, simple message transfer agent.
 It is meant as a replacement for the entire sendmail-binmail system on
 typical Internet-connected UNIX hosts. See BLURB, BLURB2, BLURB3, and

@@ -131,7 +131,9 @@ int ssl_timeoutread(timeout,fd,buf,n) int timeout; int fd; char *buf; int n;
    while(((r = SSL_read(ssl,buf,n)) <= 0)
          && (SSL_get_error(ssl, r) == SSL_ERROR_WANT_READ));
    if (SSL_get_error(ssl, r) != SSL_ERROR_NONE)
-    {out("ZTLS connection to "); outhost(); out(" died: ");
+    {char buf[1024];
+ 
+     out("ZTLS connection to "); outhost(); out(" died: ");
      SSL_load_error_strings();
      out(ERR_error_string(ERR_get_error(), buf)); out("\n");
      SSL_shutdown(ssl);
@@ -154,7 +156,9 @@ int ssl_timeoutwrite(timeout,fd,buf,n) int timeout; int fd; char *buf; int n;
    while(((r = SSL_write(ssl,buf,n)) <= 0)
          && (SSL_get_error(ssl, r) == SSL_ERROR_WANT_WRITE));
    if (SSL_get_error(ssl, r) != SSL_ERROR_NONE)
-    {out("ZTLS connection to "); outhost(); out(" died: ");
+    {char buf[1024];
+
+     out("ZTLS connection to "); outhost(); out(" died: ");
      SSL_load_error_strings();
      out(ERR_error_string(ERR_get_error(), buf)); out("\n");
      SSL_shutdown(ssl);
@@ -347,9 +351,6 @@ void smtp()
   int needtlsauth = 0;
   SSL_CTX *ctx;
   int saveerrno, r;
-#ifdef DEBUG
-  char buf[1024];
-#endif
 
   stralloc servercert = {0};
   struct stat st;
@@ -394,20 +395,17 @@ void smtp()
     substdio_flush(&smtpto);
     if (smtpcode() == 220)
      {
-#ifdef DEBUG
-      SSL_load_error_strings();
-#endif
       SSL_library_init();
       if(!(ctx=SSL_CTX_new(SSLv23_client_method())))
-#ifdef DEBUG
-       {out("ZTLS not available: error initializing ctx");
-        out(": ");
+       {char buf[1024];
+
+        out("ZTLS not available: error initializing ctx: ");
+        SSL_load_error_strings();
         out(ERR_error_string(ERR_get_error(), buf));
         out("\n");
-#else
-       {out("ZTLS not available: error initializing ctx\n");
-#endif
-         zerodie();}
+        SSL_shutdown(ssl);
+        zerodie();
+      }
 
       SSL_CTX_set_client_cert_cb(ctx, client_cert_cb);
       /*SSL_CTX_set_options(ctx, SSL_OP_NO_TLSv1);*/
@@ -420,15 +418,15 @@ void smtp()
       }
      
       if(!(ssl=SSL_new(ctx)))
-#ifdef DEBUG
-        {out("ZTLS not available: error initializing ssl");
-         out(": ");
+        {char buf[1024];
+
+         out("ZTLS not available: error initializing ssl: "); 
+         SSL_load_error_strings();
          out(ERR_error_string(ERR_get_error(), buf));
          out("\n");
-#else
-        {out("ZTLS not available: error initializing ssl\n");
-#endif
-         zerodie();}
+         SSL_shutdown(ssl);
+         zerodie();
+        }
       SSL_set_fd(ssl,smtpfd);
 
       alarm(timeout);
@@ -439,23 +437,25 @@ void smtp()
         zerodie();}
       errno = saveerrno;
       if (r<=0)
-       {if (needtlsauth && (r=SSL_get_verify_result(ssl)) != X509_V_OK)
-         {out("ZTLS unable to verify server with ");
-          out(servercert.s); out(": ");
-          out(X509_verify_cert_error_string(r)); out("\n");}
-        else
-#ifdef DEBUG
-         {out("ZTLS not available: connect failed");
-          out(": ");
-          out(ERR_error_string(ERR_get_error(), buf));
-          out("\n");}
-#else
-         out("ZTLS not available: connect failed\n");
-#endif
-        zerodie();}
+        {char buf[1024];
+
+         out("ZTLS not available: connect failed: ");
+         SSL_load_error_strings();
+         out(ERR_error_string(ERR_get_error(), buf));
+         out("\n");
+         SSL_shutdown(ssl);
+         zerodie();
+        }
       if (needtlsauth)
        /* should also check alternate names */
        {char commonName[256];
+
+        if ((r=SSL_get_verify_result(ssl)) != X509_V_OK)
+         {out("ZTLS unable to verify server with ");
+          out(servercert.s); out(": ");
+          out(X509_verify_cert_error_string(r)); out("\n");
+          zerodie();
+         }
         X509_NAME_get_text_by_NID(X509_get_subject_name(
                                    SSL_get_peer_certificate(ssl)),
                                    NID_commonName, commonName, 256);

@@ -37,7 +37,7 @@ file, so it is not safe for
 .I command
 to fork a child that
 reads the message in the background while the parent exits.
-
+.SH "EXIT CODES"
 .IR command 's
 exit codes are interpreted as follows:
 0 means that the delivery was successful;
@@ -48,15 +48,21 @@ should ignore all further delivery instructions;
 100 means that the delivery failed permanently (hard error);
 111 means that the delivery failed but should be tried again
 in a little while (soft error).
+
 Currently 64, 65, 70, 76, 77, 78, and 112 are considered hard errors,
 and all other codes are considered soft errors,
 but
 .I command
 should avoid relying on this.
-
+.SH "ENVIRONMENT VARIABLES"
 .B qmail-local
 supplies several useful environment variables to
 .IR command .
+.B WARNING:
+These environment variables are not quoted.
+They may contain special characters.
+They are under the control of a possibly malicious remote user.
+
 .B SENDER
 is the envelope sender address.
 .B NEWSENDER
@@ -82,9 +88,22 @@ is the
 part.
 .B EXT
 is the
-.B .qmail
-extension,
+address extension,
 .IR ext .
+
+.B HOST2
+is the portion of
+.B HOST
+preceding the last dot;
+.B HOST3
+is the portion of
+.B HOST
+preceding the second-to-last dot;
+.B HOST4
+is the portion of
+.B HOST
+preceding the third-to-last dot.
+
 .B EXT2
 is the portion of
 .B EXT
@@ -95,6 +114,18 @@ following the second dash;
 .B EXT4
 is the portion
 following the third dash.
+.B DEFAULT
+is the portion
+corresponding to the
+.B default
+part of the
+.BR .qmail\- ...
+file name;
+.B DEFAULT
+is not set if
+the file name does not end with
+.BR default .
+
 .B DTLINE
 and
 .B RPLINE
@@ -112,11 +143,6 @@ line that
 adds to
 .IR mbox -format
 files.
-
-.B WARNING:
-These environment variables are not quoted.
-They may contain special characters.
-They are under the control of a possibly malicious remote user.
 .SH "SEE ALSO"
 dot-qmail(5),
 envelopes(5),

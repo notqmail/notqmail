@@ -3,56 +3,58 @@
 #include "exit.h"
 #include "env.h"
 #include "qmail.h"
-#include "stralloc.h"
-#include "subfd.h"
+#include "strerr.h"
 #include "substdio.h"
+#include "fmt.h"
 
-void die_success() { _exit(0); }
-void die_perm(s) char *s; { substdio_putsflush(subfderr,s); _exit(100); }
-void die_temp(s) char *s; { substdio_putsflush(subfderr,s); _exit(111); }
-void die_nomem() { die_temp("forward: fatal: out of memory\n"); }
+#define FATAL "forward: fatal: "
+
+void die_nomem() { strerr_die2x(111,FATAL,"out of memory"); }
 
 struct qmail qqt;
 
 int mywrite(fd,buf,len) int fd; char *buf; int len;
 {
- qmail_put(&qqt,buf,len);
- return len;
+  qmail_put(&qqt,buf,len);
+  return len;
 }
 
-substdio ssin;
-substdio ssout;
 char inbuf[SUBSTDIO_INSIZE];
-char outbuf[16];
+char outbuf[1];
+substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof inbuf);
+substdio ssout = SUBSTDIO_FDBUF(mywrite,-1,outbuf,sizeof outbuf);
+
+char num[FMT_ULONG];
 
 void main(argc,argv)
 int argc;
 char **argv;
 {
- char *sender;
- char *dtline;
+  char *sender;
+  char *dtline;
+  char *qqx;
+ 
+  sig_pipeignore();
+ 
+  sender = env_get("NEWSENDER");
+  if (!sender)
+    strerr_die2x(100,FATAL,"NEWSENDER not set");
+  dtline = env_get("DTLINE");
+  if (!dtline)
+    strerr_die2x(100,FATAL,"DTLINE not set");
+ 
+  if (qmail_open(&qqt) == -1)
+    strerr_die2sys(111,FATAL,"unable to fork: ");
+  qmail_puts(&qqt,dtline);
+  if (substdio_copy(&ssout,&ssin) != 0)
+    strerr_die2sys(111,FATAL,"unable to read message: ");
+  substdio_flush(&ssout);
 
- sig_pipeignore();
-
- sender = env_get("NEWSENDER");
- if (!sender) die_perm("forward: fatal: NEWSENDER not set\n");
- dtline = env_get("DTLINE");
- if (!dtline) die_perm("forward: fatal: DTLINE not set\n");
-
- if (qmail_open(&qqt) == -1) die_temp("forward: fatal: unable to fork\n");
- qmail_puts(&qqt,dtline);
- substdio_fdbuf(&ssin,read,0,inbuf,sizeof(inbuf));
- substdio_fdbuf(&ssout,mywrite,-1,outbuf,sizeof(outbuf));
- if (substdio_copy(&ssout,&ssin) != 0)
-   die_temp("forward: fatal: error while reading message\n");
- substdio_flush(&ssout);
-
- qmail_from(&qqt,sender);
- while (*++argv) qmail_to(&qqt,*argv);
- switch(qmail_close(&qqt))
-  {
-   case 0: die_success();
-   case QMAIL_TOOLONG: die_perm("forward: fatal: permanent qmail-queue error\n");
-   default: die_temp("forward: fatal: temporary qmail-queue error\n");
-  }
+  num[fmt_ulong(num,qmail_qp(&qqt))] = 0;
+ 
+  qmail_from(&qqt,sender);
+  while (*++argv) qmail_to(&qqt,*argv);
+  qqx = qmail_close(&qqt);
+  if (*qqx) strerr_die2x(*qqx == 'D' ? 100 : 111,FATAL,qqx + 1);
+  strerr_die2x(0,"forward: qp ",num);
 }

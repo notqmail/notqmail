@@ -1,6 +1,7 @@
 Here's how to set up the qmail groups and the qmail users.
 
-On some systems there are commands that make this easy. Solaris:
+On some systems there are commands that make this easy. Solaris and
+Linux:
 
    # groupadd nofiles
    # useradd -g nofiles -d /var/qmail/alias alias
@@ -11,6 +12,18 @@ On some systems there are commands that make this easy. Solaris:
    # useradd -g qmail -d /var/qmail qmailq
    # useradd -g qmail -d /var/qmail qmailr
    # useradd -g qmail -d /var/qmail qmails
+
+FreeBSD 2.2:
+
+   # pw groupadd nofiles
+   # pw useradd alias -g nofiles -d /var/qmail/alias -s /nonexistent
+   # pw useradd qmaild -g nofiles -d /var/qmail -s /nonexistent
+   # pw useradd qmaill -g nofiles -d /var/qmail -s /nonexistent
+   # pw useradd qmailp -g nofiles -d /var/qmail -s /nonexistent
+   # pw groupadd qmail
+   # pw useradd qmailq -g qmail -d /var/qmail -s /nonexistent
+   # pw useradd qmailr -g qmail -d /var/qmail -s /nonexistent
+   # pw useradd qmails -g qmail -d /var/qmail -s /nonexistent
 
 BSDI 2.0:
 

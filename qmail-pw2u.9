@@ -4,7 +4,7 @@ qmail-pw2u \- build address assignments from a passwd file
 .SH SYNOPSIS
 .B qmail-pw2u
 [
-.B \-ohHuUC
+.B \-/ohHuUC
 ]
 [
 .B \-c\fIchar
@@ -160,7 +160,7 @@ Each line has the form
 
 .I sub
 will be handled by
-.IR home\fB/.qmail-\fIpre ,
+.IR home\fB/.qmail\-\fIpre ,
 where
 .I home
 is
@@ -168,7 +168,7 @@ is
 home directory;
 .I sub\fBBREAK\fIext
 will be handled by
-.IR home\fB/.qmail-\fIpre\fB-\fIext .
+.IR home\fB/.qmail\-\fIpre\fB\-\fIext .
 .TP
 .B append
 Extra assignments,
@@ -228,6 +228,12 @@ in place of
 .TP
 .B \-C
 Disable the user-extension mechanism.
+.TP
+.B \-/
+Use
+.IR home\fB/.qmail\-/ ...
+instead of
+.IR home\fB/.qmail\- ...
 .SH "SEE ALSO"
 qmail-users(5),
 qmail-lspawn(8),

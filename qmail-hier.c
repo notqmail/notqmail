@@ -78,8 +78,42 @@ void main()
   dir(auto_uido,"755","/man/man5");
   dir(auto_uido,"755","/man/man7");
   dir(auto_uido,"755","/man/man8");
+  dir(auto_uido,"755","/doc");
+  dir(auto_uido,"755","/boot");
 
-  dir(auto_uida,"755","/alias");
+  copy(auto_uido,"755","/boot/","home");
+  copy(auto_uido,"755","/boot/","home+df");
+  copy(auto_uido,"755","/boot/","proc");
+  copy(auto_uido,"755","/boot/","proc+df");
+  copy(auto_uido,"755","/boot/","binm1");
+  copy(auto_uido,"755","/boot/","binm1+df");
+  copy(auto_uido,"755","/boot/","binm2");
+  copy(auto_uido,"755","/boot/","binm2+df");
+  copy(auto_uido,"755","/boot/","binm3");
+  copy(auto_uido,"755","/boot/","binm3+df");
+
+  copy(auto_uido,"644","/doc/","FAQ");
+  copy(auto_uido,"644","/doc/","UPGRADE");
+  copy(auto_uido,"644","/doc/","SENDMAIL");
+  copy(auto_uido,"644","/doc/","INSTALL");
+  copy(auto_uido,"644","/doc/","INSTALL.alias");
+  copy(auto_uido,"644","/doc/","INSTALL.boot");
+  copy(auto_uido,"644","/doc/","INSTALL.ctl");
+  copy(auto_uido,"644","/doc/","INSTALL.ids");
+  copy(auto_uido,"644","/doc/","INSTALL.maildir");
+  copy(auto_uido,"644","/doc/","INSTALL.mbox");
+  copy(auto_uido,"644","/doc/","INSTALL.vsm");
+  copy(auto_uido,"644","/doc/","PIC.local2alias");
+  copy(auto_uido,"644","/doc/","PIC.local2ext");
+  copy(auto_uido,"644","/doc/","PIC.local2local");
+  copy(auto_uido,"644","/doc/","PIC.local2rem");
+  copy(auto_uido,"644","/doc/","PIC.local2virt");
+  copy(auto_uido,"644","/doc/","PIC.nullclient");
+  copy(auto_uido,"644","/doc/","PIC.relaybad");
+  copy(auto_uido,"644","/doc/","PIC.relaygood");
+  copy(auto_uido,"644","/doc/","PIC.rem2local");
+
+  dir(auto_uida,"2755","/alias");
   dir(auto_uidq,"750","/queue");
   dir(auto_uidq,"700","/queue/pid");
   dir(auto_uidq,"700","/queue/intd");
@@ -115,6 +149,7 @@ void main()
   copy(auto_uido,"711","/bin/","qmail-send");
   copy(auto_uido,"711","/bin/","splogger");
   copy(auto_uido,"700","/bin/","qmail-newu");
+  copy(auto_uido,"700","/bin/","qmail-newmrh");
   copy(auto_uido,"711","/bin/","qmail-pw2u");
   copy(auto_uido,"755","/bin/","qmail-inject");
   copy(auto_uido,"755","/bin/","predate");
@@ -124,14 +159,15 @@ void main()
   copy(auto_uido,"755","/bin/","qmail-qread");
   copy(auto_uido,"755","/bin/","qmail-qstat");
   copy(auto_uido,"755","/bin/","qmail-tcpto");
+  copy(auto_uido,"755","/bin/","qmail-tcpok");
   copy(auto_uido,"755","/bin/","qmail-pop3d");
-  copy(auto_uido,"700","/bin/","qmail-popup");
+  copy(auto_uido,"711","/bin/","qmail-popup");
+  copy(auto_uido,"755","/bin/","qmail-qmqpc");
+  copy(auto_uido,"755","/bin/","qmail-qmqpd");
   copy(auto_uido,"755","/bin/","qmail-qmtpd");
   copy(auto_uido,"755","/bin/","qmail-smtpd");
   copy(auto_uido,"755","/bin/","sendmail");
   copy(auto_uido,"755","/bin/","tcp-env");
-  copy(auto_uido,"755","/bin/","qlist");
-  copy(auto_uido,"755","/bin/","qlist2");
   copy(auto_uido,"755","/bin/","qreceipt");
   copy(auto_uido,"755","/bin/","qsmhook");
   copy(auto_uido,"755","/bin/","qbiff");
@@ -170,8 +206,6 @@ void main()
   copy(auto_uido,"644","/man/cat7/","forgeries.0");
   copy(auto_uido,"644","/man/man7/","qmail-limits.7");
   copy(auto_uido,"644","/man/cat7/","qmail-limits.0");
-  copy(auto_uido,"644","/man/man7/","qmail-upgrade.7");
-  copy(auto_uido,"644","/man/cat7/","qmail-upgrade.0");
   copy(auto_uido,"644","/man/man7/","qmail.7");
   copy(auto_uido,"644","/man/cat7/","qmail.0");
 
@@ -187,8 +221,6 @@ void main()
   copy(auto_uido,"644","/man/cat1/","maildirwatch.0");
   copy(auto_uido,"644","/man/man1/","mailsubj.1");
   copy(auto_uido,"644","/man/cat1/","mailsubj.0");
-  copy(auto_uido,"644","/man/man1/","qlist.1");
-  copy(auto_uido,"644","/man/cat1/","qlist.0");
   copy(auto_uido,"644","/man/man1/","qreceipt.1");
   copy(auto_uido,"644","/man/cat1/","qreceipt.0");
   copy(auto_uido,"644","/man/man1/","qbiff.1");
@@ -222,6 +254,8 @@ void main()
   copy(auto_uido,"644","/man/cat8/","qmail-inject.0");
   copy(auto_uido,"644","/man/man8/","qmail-showctl.8");
   copy(auto_uido,"644","/man/cat8/","qmail-showctl.0");
+  copy(auto_uido,"644","/man/man8/","qmail-newmrh.8");
+  copy(auto_uido,"644","/man/cat8/","qmail-newmrh.0");
   copy(auto_uido,"644","/man/man8/","qmail-newu.8");
   copy(auto_uido,"644","/man/cat8/","qmail-newu.0");
   copy(auto_uido,"644","/man/man8/","qmail-pw2u.8");
@@ -230,12 +264,18 @@ void main()
   copy(auto_uido,"644","/man/cat8/","qmail-qread.0");
   copy(auto_uido,"644","/man/man8/","qmail-qstat.8");
   copy(auto_uido,"644","/man/cat8/","qmail-qstat.0");
+  copy(auto_uido,"644","/man/man8/","qmail-tcpok.8");
+  copy(auto_uido,"644","/man/cat8/","qmail-tcpok.0");
   copy(auto_uido,"644","/man/man8/","qmail-tcpto.8");
   copy(auto_uido,"644","/man/cat8/","qmail-tcpto.0");
   copy(auto_uido,"644","/man/man8/","qmail-pop3d.8");
   copy(auto_uido,"644","/man/cat8/","qmail-pop3d.0");
   copy(auto_uido,"644","/man/man8/","qmail-popup.8");
   copy(auto_uido,"644","/man/cat8/","qmail-popup.0");
+  copy(auto_uido,"644","/man/man8/","qmail-qmqpc.8");
+  copy(auto_uido,"644","/man/cat8/","qmail-qmqpc.0");
+  copy(auto_uido,"644","/man/man8/","qmail-qmqpd.8");
+  copy(auto_uido,"644","/man/cat8/","qmail-qmqpd.0");
   copy(auto_uido,"644","/man/man8/","qmail-qmtpd.8");
   copy(auto_uido,"644","/man/cat8/","qmail-qmtpd.0");
   copy(auto_uido,"644","/man/man8/","qmail-smtpd.8");

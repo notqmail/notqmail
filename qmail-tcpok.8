@@ -1,0 +1,24 @@
+.TH qmail-tcpok 8
+.SH NAME
+qmail-tcpok \- clear TCP timeout table
+.SH SYNOPSIS
+.B qmail-tcpok
+.SH DESCRIPTION
+.B qmail-tcpok
+erases
+.BR qmail-remote 's
+current list of timeouts,
+so that
+.B qmail-remote
+does not make any assumptions about failing addresses. 
+
+.B qmail-tcpok
+must be run either as 
+.B root
+or with user id
+.B qmailr
+and group id
+.BR qmail .
+.SH "SEE ALSO"
+qmail-remote(8),
+qmail-tcpto(8)

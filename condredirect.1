@@ -48,6 +48,13 @@ it is not safe for
 .I program
 to fork a child that
 reads the message in the background.
+
+.B WARNING:
+If you create a
+.B .qmail
+file to enable
+.BR condredirect ,
+make sure to also add a line specifying delivery to your normal mailbox.
 .SH "SEE ALSO"
 dot-qmail(5),
 qmail-command(8),

@@ -32,6 +32,7 @@ extern int hfield_valid();
 #define H_CONTENTTYPE 25
 #define H_CONTENTTRANSFERENCODING 26
 #define H_NOTICEREQUESTEDUPONDELIVERYTO 27
-#define H_NUM 28
+#define H_MAILFOLLOWUPTO 28
+#define H_NUM 29
 
 #endif

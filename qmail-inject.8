@@ -76,6 +76,21 @@ and
 letters described below.
 Bounces will be sent to this address.
 
+If
+.B QMAILMFTFILE
+is set,
+.B qmail-inject
+reads a list of mailing list addresses,
+one per line,
+from that file.
+If To+Cc includes one of those addresses (without regard to case),
+.B qmail-inject
+adds a Mail-Followup-To field
+with all the To+Cc addresses.
+.B qmail-inject
+does not add Mail-Followup-To
+to a message that already has one.
+
 The
 .B QMAILINJECT
 environment variable

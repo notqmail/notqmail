@@ -2,12 +2,12 @@ qmail lets each user control all addresses of the form user-anything.
 Addresses that don't start with a username are controlled by a special
 user, alias. Delivery instructions for foo go into ~alias/.qmail-foo;
 delivery instructions for user-foo go into ~user/.qmail-foo. See
-qmail-upgrade.0 and dot-qmail.0 for the full story.
+dot-qmail.0 for the full story.
 
 qmail doesn't have any built-in support for /etc/aliases. If you have a
-big /etc/aliases and you'd like to keep it, install the qmsmac package,
-available separately. /etc/aliases should already include the aliases
-discussed below---Postmaster, MAILER-DAEMON, and root.
+big /etc/aliases and you'd like to keep it, install the fastforward
+package, available separately. /etc/aliases should already include the
+aliases discussed below---Postmaster, MAILER-DAEMON, and root.
 
 If you don't have a big /etc/aliases, you'll find it easier to use
 qmail's native alias mechanism. Here's a checklist of aliases you should

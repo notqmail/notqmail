@@ -25,7 +25,7 @@ sees end-of-file before the extra 0 byte,
 it aborts without placing the message into the queue.
 
 Every envelope recipient address
-must contain a username,
+should contain a username,
 an @ sign,
 and a fully qualified domain name.
 
@@ -40,19 +40,116 @@ and does not enforce any restrictions on its contents.
 However, the recipients probably expect to see a proper header,
 as described in
 .BR qmail-header(5) .
+.SH "FILESYSTEM RESTRICTIONS"
+.B qmail-queue
+imposes two constraints on the queue structure:
+each
+.B mess
+subdirectory must be in the same filesystem as the
+.B pid
+directory; and each
+.B todo
+subdirectory must be in the same filesystem as the
+.B intd
+directory.
 .SH "EXIT CODES"
-0 if
-.B qmail-queue
-has successfully queued the message,
-nonzero if
-.B qmail-queue
-has failed to queue the message.
 .B qmail-queue
 does not print diagnostics.
+It exits
+0 if
+it has successfully queued the message.
+It exits between 1 and 99 if
+it has failed to queue the message.
+
+All
+.B qmail-queue
+error codes between 11 and 40
+indicate permanent errors:
+.TP 5
+.B 11
+Address too long.
+.TP
+.B 31
+Mail server permanently refuses to send the message to any recipients.
+(Not used by
+.BR qmail-queue ,
+but can be used by programs offering the same interface.)
+.PP
+All other
+.B qmail-queue
+error codes indicate temporary errors:
+.TP 5
+.B 51
+Out of memory.
+.TP
+.B 52
+Timeout.
+.TP
+.B 53
+Write error; e.g., disk full.
+.TP
+.B 54
+Unable to read the message or envelope.
+.TP
+.B 55
+Unable to read a configuration file.
+(Not used by
+.BR qmail-queue .)
+.TP
+.B 56
+Problem making a network connection from this host.
+(Not used by
+.BR qmail-queue .)
+.TP
+.B 61
+Problem with the qmail home directory.
+.TP
+.B 62
+Problem with the queue directory.
+.TP
+.B 63
+Problem with queue/pid.
+.TP
+.B 64
+Problem with queue/mess.
+.TP
+.B 65
+Problem with queue/intd.
+.TP
+.B 66
+Problem with queue/todo.
+.TP
+.B 71
+Mail server temporarily refuses to send the message to any recipients.
+(Not used by
+.BR qmail-queue .)
+.TP
+.B 72
+Connection to mail server timed out.
+(Not used by
+.BR qmail-queue .)
+.TP
+.B 73
+Connection to mail server rejected.
+(Not used by
+.BR qmail-queue .)
+.TP
+.B 74
+Connection to mail server succeeded,
+but communication failed.
+(Not used by
+.BR qmail-queue .)
+.TP
+.B 81
+Internal bug; e.g., segmentation fault.
+.TP
+.B 91
+Envelope format error.
 .SH "SEE ALSO"
 addresses(5),
 envelopes(5),
 qmail-header(5),
 qmail-inject(8),
+qmail-qmqpc(8),
 qmail-send(8),
 qmail-smtpd(8)

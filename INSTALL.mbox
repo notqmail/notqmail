@@ -3,110 +3,46 @@ provides user-controlled mailing lists, cross-host alias loop detection,
 and many other important qmail features.
 
 There's one part of qmail-local that you need to know about right now:
-qmail-local doesn't support an insecure central mail spool. It delivers
-mail by default into ~user/Mailbox (in mbox format).
+qmail-local delivers mail by default into ~user/Mailbox (in mbox format,
+using flock), rather than /var/spool/mail/user.
 
-This file explains what you should do to deal with this change. It also
-points out some reasons that you might want to make an even bigger
-change, switching from mbox format to a new format, maildir.
+For an explanation of the problems with /var/spool/mail, and a list of
+options if you want to continue delivering to /var/spool/mail, see
+INSTALL.vsm.
 
-If you desperately don't want to change anything, see INSTALL.qsmhook.
+This file explains how to handle the change to ~user/Mailbox. The basic
+procedure is simple:
 
+   * Move each /var/spool/mail/user to ~user/Mailbox. For safety, do
+     this in single-user mode.
 
-Contents:
-1. Throw away /usr/spool/mail!
-2. The trouble with mbox
-3. Sun's Network F_ail_u_re System
+   * As root, set up a symbolic link from /var/spool/mail/user to
+     ~user/Mailbox for each user. /var/spool/mail should be mode 1777,
+     so users will not be able to accidentally remove these links.
 
+An alternative to symbolic links is hlfsd. Consult the documentation for
+hlfsd if it is included in your operating system.
 
-1. Throw away /usr/spool/mail!
+If /var/spool/mail is large, you can gain extra speed by configuring
+your mail software to look at ~user/Mailbox directly:
 
-/usr/spool/mail, often called /var/spool/mail or /var/mail, is a
-security disaster. A user's mailbox belongs in his home directory, not a
-shared directory. Even if you don't install qmail, you should destroy
-/usr/spool/mail. This takes four steps:
+   * Most MUAs: Put ``setenv MAIL $HOME/Mailbox'' in your system-wide
+     .cshrc and ``MAIL=$HOME/Mailbox; export MAIL'' in your system-wide
+     .profile.
 
-   A. Convince your local mailer to deliver to ~user/Mailbox. If you're
-   using something like procmail, this is easy---just change SYSTEM_MBOX
-   in config.h. If you're installing qmail, you don't have to do
-   anything. Otherwise, take a look at hlfsd from
-   ftp.cs.columbia.edu/pub/amd.
+   * elm: Change "mailbox" to "Mailbox" around line 388 of newmbox.c and
+     recompile. (elm looks at $MAIL, but without this change elm will
+     fail if two users try to read mail simultaneously.)
 
-   B. Move each /usr/spool/mail/user to ~user/Mailbox. For safety, do
-   this in single-user mode---you don't want to risk corrupting
-   mailboxes. (qmail makes it easy to turn off deliveries temporarily:
-   just kill the qmail-send daemon. But you aren't running qmail yet.)
-   When you're done, remove /usr/spool/mail.
+   * pine: Put ``inbox-path=Mailbox'' in your system-wide pine.conf.
+     (For pine versions more recent than 3.91, see also FAQ 6.2.)
 
-   C. Put ``setenv MAIL $HOME/Mailbox'' in your system-wide .cshrc,
-   ``MAIL=$HOME/Mailbox; export MAIL'' in your system-wide .profile,
-   ``inbox-path=Mailbox'' in your system-wide pine.conf. If you're using
-   qpopper 2.2, you'll have to recompile with -DHOMEDIRMAIL in CFLAGS
-   and with /.mail changed to /Mailbox in pop_dropcopy.c. If you're
-   using elm on a multiuser system, you'll have to recompile elm with
-   "mailbox" changed to "Mailbox" around line 388 of newmbox.c.
+   * procmail: Change SYSTEM_MBOX in config.h and recompile.
 
-   D. Announce the change.
+   * qpopper 2.2: Change /.mail to /Mailbox in pop_dropcopy.c and
+     recompile with -DHOMEDIRMAIL in CFLAGS.
 
 Some vendors, in a misguided attempt to solve the security problems of
-/usr/spool/mail, have made all MUAs (e.g., /usr/ucb/Mail) setgid mail.
-After you get rid of /usr/spool/mail, you can also disable those
-setgid-mail bits.
-
-
-2. The trouble with mbox
-
-The mbox format---the format of ~user/Mailbox, understood by BSD Mail
-and lots of other MUAs---is inherently unreliable.
-
-Think about it: what happens if the system crashes while a program is
-appending a new message to ~user/Mailbox? The message will be truncated.
-Even worse, if it was truncated in the middle of a line, it will end up
-being merged with the next message! Sure, the mailer understands that it
-wasn't successful, so it'll try delivering the message again later, but
-it can't fix your corrupted mbox.
-
-Other formats, such as mh folders, are just as unreliable.
-
-qmail supports maildir, a crashproof format for incoming mail messages.
-maildir is fast and easy for MUAs to use. Even better, maildir works
-wonders over NFS---see below.
-
-I don't want to cram maildir down people's throats, so it's not the
-default. Nevertheless, I encourage you to start asking for maildir
-versions of your favorite MUAs, and to switch over to maildir as soon as
-you can.
-
-WARNING: qmail uses flock() to lock ~user/Mailbox. This agrees with the
-modern mail.local locking choice. If your MUA doesn't use flock(), your
-best bet is to switch to maildir, and to set up synchronous maildir2mbox
-execution, as described below.
-
-
-3. Sun's Network F_ail_u_re System
-
-Anyone who tells you that mail can be safely delivered in mbox format
-over NFS is pulling your leg---as explained above, mbox format is
-inherently unreliable even on a single machine.
-
-Anyway, NFS is the most unreliable computing environment ever invented,
-and qmail doesn't even pretend to support mbox over NFS.
-
-You should switch to maildir, which works fine over NFS without any
-locking. You can safely read your mail over NFS if it's in maildir
-format. Any number of machines can deliver mail to you at the same time.
-(On the other hand, for efficiency, it's better to get NFS out of the
-picture---your mail should be delivered on the server that contains your
-home directory.)
-
-Here's how to set up qmail to use maildir for your incoming mail:
-
-   % maildirmake $HOME/Maildir
-   % echo ./Maildir/ > ~/.qmail
-
-Make sure you include the trailing slash on Maildir/.
-
-Until your MUA supports maildir, you'll probably want to convert maildir
-format to (gaaack) mbox format. I've supplied a maildir2mbox utility
-that does the trick, along with some tiny qail and elq and pinq wrappers
-that call maildir2mbox before calling Mail or elm or pine.
+/var/spool/mail, have made all their mail software setgid mail. After
+you move the mailboxes, you can---and, for security, should---remove
+those setgid-mail bits.

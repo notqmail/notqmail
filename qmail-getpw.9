@@ -42,7 +42,12 @@ The operating system's
 .B getpwnam
 function, which is at the heart of
 .BR qmail-getpw ,
-is inherently unreliable.
+is inherently unreliable:
+it fails to distinguish between temporary errors and nonexistent users.
+Future versions of
+.B getpwnam
+should return ETXTBSY to indicate temporary errors
+and ESRCH to indicate nonexistent users.
 .SH "RULES"
 .B qmail-getpw
 considers an account in

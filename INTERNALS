@@ -96,7 +96,8 @@ qmail-send may at its leisure try to deliver a message to a NOT DONE
 address. If the message is successfully delivered, qmail-send marks the
 address as DONE. If the delivery attempt meets with permanent failure,
 qmail-send first appends a note to bounce/457, creating bounce/457 if
-necessary; then it marks the address as DONE.
+necessary; then it marks the address as DONE. Note that bounce/457 is
+not crashproof.
 
 qmail-send may handle bounce/457 at any time, as follows: it (1) injects
 a new bounce message, created from bounce/457 and mess/457; (2) deletes

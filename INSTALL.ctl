@@ -10,13 +10,22 @@ But this is all optional---if control/smtpgreeting doesn't exist, qmail
 will do something reasonable by default. You shouldn't worry much about
 configuration right now. You can always come back and tune things later.
 
-There's one big exception. You MUST tell qmail your hostname. The easy
-way to do this is to run the qmail-config script:
+There's one big exception. You MUST tell qmail your hostname. Just run
+the config-fast script:
 
-   # ./qmail-config
+   # ./config-fast your.full.host.name
 
-qmail-config finds your fully-qualified hostname in DNS and puts it into
-control/me. It also selects good defaults for a few other controls.
+config-fast puts your.full.host.name into control/me. It also puts it
+into control/locals and control/rcpthosts, so that qmail will accept
+mail for your.full.host.name.
+
+You can instead use the config script, which looks up your host name in
+DNS:
+
+   # ./config
+
+config also looks up your local IP addresses in DNS to decide which
+hosts to accept mail for.
 
 (Why doesn't qmail do these lookups on the fly? This was a deliberate
 design decision. qmail does all its local functions---header rewriting,

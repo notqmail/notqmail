@@ -3,8 +3,7 @@
 
 typedef unsigned long constmap_hash;
 
-struct constmap
- {
+struct constmap {
   int num;
   constmap_hash mask;
   constmap_hash *hash;
@@ -12,8 +11,7 @@ struct constmap
   int *next;
   char **input;
   int *inputlen;
- }
-;
+} ;
 
 extern int constmap_init();
 extern void constmap_free();

@@ -4,7 +4,7 @@ qmail-start \- turn on mail delivery
 .SH SYNOPSIS
 .B qmail-start
 [
-.I aliasempty
+.I defaultdelivery
 [
 .I logger arg ...
 ]
@@ -16,7 +16,8 @@ invokes
 .BR qmail-lspawn ,
 .BR qmail-rspawn ,
 and
-.BR qmail-clean .
+.BR qmail-clean ,
+under the proper uids and gids.
 These four daemons cooperate to deliver messages from the queue.
 
 .B qmail-start
@@ -33,7 +34,7 @@ Other than this,
 does not print anything, even on failure.
 
 If
-.I aliasempty
+.I defaultdelivery
 is supplied,
 .B qmail-start
 passes it to
@@ -67,8 +68,10 @@ manually:
    (all on one line)
 .EE
 
+Resource limits, controlling ttys, et al. are also passed from
 .B qmail-start
-sets the uid and gid of each daemon properly.
+to
+.BR qmail-local .
 
 Note that
 .B qmail-send

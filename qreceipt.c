@@ -60,6 +60,8 @@ stralloc quoted = {0};
 
 void finishheader()
 {
+ char *qqx;
+
  if (!flagreceipt) die_noreceipt();
  if (str_equal(returnpath,"")) die_noreceipt();
  if (str_equal(returnpath,"#@[]")) die_noreceipt();
@@ -88,13 +90,11 @@ following address: ");
 
  qmail_from(&qqt,"");
  qmail_to(&qqt,returnpath);
+ qqx = qmail_close(&qqt);
 
- switch(qmail_close(&qqt))
-  {
-   case 0: break;
-   case QMAIL_TOOLONG: die_qqperm();
-   default: die_qqtemp();
-  }
+ if (*qqx)
+   if (*qqx == 'D') die_qqperm();
+   else die_qqtemp();
 }
 
 stralloc hfbuf = {0};

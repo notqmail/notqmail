@@ -45,7 +45,7 @@ unsigned int n;
 {
  unsigned char uch;
  int i;
- if (!n) return 0;
+ if (!n) return 1;
  for (i = 0;i < n;++i)
   {
    uch = s[i];
@@ -73,6 +73,7 @@ stralloc *sa;
 char *s;
 {
  int j;
+ if (!*s) return stralloc_copys(sa,s);
  j = str_rchr(s,'@');
  if (!stralloc_copys(&foo,s)) return 0;
  if (!s[j]) return quote(sa,&foo);

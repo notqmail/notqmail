@@ -36,6 +36,12 @@ extern void substdio_seek();
 #define substdio_PEEK(s) ( (s)->x + (s)->n )
 #define substdio_SEEK(s,len) ( ( (s)->p -= (len) ) , ( (s)->n += (len) ) )
 
+#define substdio_BPUTC(s,c) \
+  ( ((s)->n != (s)->p) \
+    ? ( (s)->x[(s)->p++] = (c), 0 ) \
+    : substdio_bput((s),&(c),1) \
+  )
+
 extern int substdio_copy();
 
 #endif

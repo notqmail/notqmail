@@ -1,3 +1,5 @@
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "substdio.h"
 #include "subfd.h"
 #include "exit.h"
@@ -8,6 +10,7 @@
 #include "stralloc.h"
 #include "direntry.h"
 #include "auto_qmail.h"
+#include "auto_uids.h"
 
 stralloc me = {0};
 int meok;
@@ -93,7 +96,7 @@ char *pre;
   }
 }
 
-void do_lst(fn,def,pre,post)
+int do_lst(fn,def,pre,post)
 char *fn;
 char *def;
 char *pre;
@@ -110,7 +113,7 @@ char *post;
       substdio_puts(subfdout,"(Default.) ");
       substdio_puts(subfdout,def);
       substdio_puts(subfdout,"\n");
-      break;
+      return 0;
     case 1:
       substdio_puts(subfdout,"\n");
       i = 0;
@@ -122,10 +125,10 @@ char *post;
           substdio_puts(subfdout,"\n");
 	  i = j + 1;
 	}
-      break;
+      return 1;
     default:
       substdio_puts(subfdout,"Oops! Trouble reading this file.\n");
-      break;
+      return -1;
   }
 }
 
@@ -133,10 +136,34 @@ void main()
 {
   DIR *dir;
   direntry *d;
+  struct stat stmrh;
+  struct stat stmrhcdb;
 
   substdio_puts(subfdout,"The qmail control files are stored in ");
   substdio_puts(subfdout,auto_qmail);
   substdio_puts(subfdout,"/control.\n");
+
+  substdio_puts(subfdout,"The uids and gids are ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_uida));
+  substdio_puts(subfdout,", ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_uidd));
+  substdio_puts(subfdout,", ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_uidl));
+  substdio_puts(subfdout,", ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_uido));
+  substdio_puts(subfdout,", ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_uidp));
+  substdio_puts(subfdout,", ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_uidq));
+  substdio_puts(subfdout,", ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_uidr));
+  substdio_puts(subfdout,", ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_uids));
+  substdio_puts(subfdout,", ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_gidn));
+  substdio_puts(subfdout,", ");
+  substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_gidq));
+  substdio_puts(subfdout,".\n");
 
   if (chdir(auto_qmail) == -1) {
     substdio_puts(subfdout,"Oops! Unable to chdir to ");
@@ -170,6 +197,7 @@ void main()
   do_str("bouncehost",1,"bouncehost","Bounce host name is ");
   do_int("concurrencylocal","10","Local concurrency is ","");
   do_int("concurrencyremote","20","Remote concurrency is ","");
+  do_int("databytes","0","SMTP DATA limit is "," bytes");
   do_str("defaultdomain",1,"defaultdomain","Default domain name is ");
   do_str("defaulthost",1,"defaulthost","Default host name is ");
   do_str("doublebouncehost",1,"doublebouncehost","2B recipient host: ");
@@ -182,9 +210,29 @@ void main()
   do_str("me",0,"undefined! Uh-oh","My name is ");
   do_lst("percenthack","The percent hack is not allowed.","The percent hack is allowed for user%host@",".");
   do_str("plusdomain",1,"plusdomain","Plus domain name is ");
+  do_lst("qmqpservers","No QMQP servers.","QMQP server: ",".");
   do_int("queuelifetime","604800","Message lifetime in the queue is "," seconds");
-  do_lst("rcpthosts","SMTP clients may send messages to any recipient.","SMTP clients may send messages to recipients at ",".");
-  do_lst("recipientmap","No redirections.","Redirection: ","");
+
+  if (do_lst("rcpthosts","SMTP clients may send messages to any recipient.","SMTP clients may send messages to recipients at ","."))
+    do_lst("morercpthosts","No effect.","SMTP clients may send messages to recipients at ",".");
+  else
+    do_lst("morercpthosts","No rcpthosts; morercpthosts is irrelevant.","No rcpthosts; doesn't matter that morercpthosts has ",".");
+  /* XXX: check morercpthosts.cdb contents */
+  substdio_puts(subfdout,"\nmorercpthosts.cdb: ");
+  if (stat("morercpthosts",&stmrh) == -1)
+    if (stat("morercpthosts.cdb",&stmrhcdb) == -1)
+      substdio_puts(subfdout,"(Default.) No effect.\n");
+    else
+      substdio_puts(subfdout,"Oops! morercpthosts.cdb exists but morercpthosts doesn't.\n");
+  else
+    if (stat("morercpthosts.cdb",&stmrhcdb) == -1)
+      substdio_puts(subfdout,"Oops! morercpthosts exists but morercpthosts.cdb doesn't.\n");
+    else
+      if (stmrh.st_mtime > stmrhcdb.st_mtime)
+        substdio_puts(subfdout,"Oops! morercpthosts.cdb is older than morercpthosts.\n");
+      else
+        substdio_puts(subfdout,"Modified recently enough; hopefully up to date.\n");
+
   do_str("smtpgreeting",1,"smtpgreeting","SMTP greeting: 220 ");
   do_lst("smtproutes","No artificial SMTP routes.","SMTP route: ","");
   do_int("timeoutconnect","60","SMTP client connection timeout is "," seconds");
@@ -202,6 +250,7 @@ void main()
     if (str_equal(d->d_name,"bouncehost")) continue;
     if (str_equal(d->d_name,"concurrencylocal")) continue;
     if (str_equal(d->d_name,"concurrencyremote")) continue;
+    if (str_equal(d->d_name,"databytes")) continue;
     if (str_equal(d->d_name,"defaultdomain")) continue;
     if (str_equal(d->d_name,"defaulthost")) continue;
     if (str_equal(d->d_name,"doublebouncehost")) continue;
@@ -212,11 +261,13 @@ void main()
     if (str_equal(d->d_name,"localiphost")) continue;
     if (str_equal(d->d_name,"locals")) continue;
     if (str_equal(d->d_name,"me")) continue;
+    if (str_equal(d->d_name,"morercpthosts")) continue;
+    if (str_equal(d->d_name,"morercpthosts.cdb")) continue;
     if (str_equal(d->d_name,"percenthack")) continue;
     if (str_equal(d->d_name,"plusdomain")) continue;
+    if (str_equal(d->d_name,"qmqpservers")) continue;
     if (str_equal(d->d_name,"queuelifetime")) continue;
     if (str_equal(d->d_name,"rcpthosts")) continue;
-    if (str_equal(d->d_name,"recipientmap")) continue;
     if (str_equal(d->d_name,"smtpgreeting")) continue;
     if (str_equal(d->d_name,"smtproutes")) continue;
     if (str_equal(d->d_name,"timeoutconnect")) continue;

@@ -16,80 +16,100 @@ Installation steps that won't interfere with sendmail:
 
  1. Create the qmail home directory:
        # mkdir /var/qmail
+
  2. Read INSTALL.ids. You must set up the qmail group and the qmail
     users before compiling the programs.
- 3. Compile the programs:
-       # make
- 4. Create the formatted man pages, *.0:
-       # make man
- 5. Create the qmail directory tree:
+
+ 3. Compile the programs and create the qmail directory tree:
        # make setup
- 6. Run instcheck to make sure it doesn't print any warnings:
+
+ 4. Run instcheck to make sure it doesn't print any warnings:
        # make check
- 7. Read INSTALL.ctl and FAQ. Minimal survival command:
-       # ./qmail-config
- 8. Read INSTALL.alias. Minimal survival command:
+
+ 5. Read INSTALL.ctl and FAQ. Minimal survival command:
+       # ./config
+
+ 6. Read INSTALL.alias. Minimal survival command:
        # (cd ~alias; touch .qmail-postmaster .qmail-mailer-daemon .qmail-root)
        # chmod 644 ~alias/.qmail*
- 9. Read INSTALL.mbox.
-10. Read qmail-upgrade.0. This is what your users will need to know
-    about the switch from sendmail to qmail.
+
+ 7. Read INSTALL.mbox and INSTALL.vsm.
+
+ 8. Read INSTALL.maildir.
+
+ 9. Read SENDMAIL. This is what your users will want to know about the
+    switch from sendmail to qmail.
+
+10. Copy /var/qmail/boot/home (or proc) to /var/qmail/rc.
 
 
 Pre-upgrade tests:
 
 11. Enable deliveries of messages injected into qmail:
-       # env - PATH="/var/qmail/bin:$PATH" \
-       qmail-start ./Mailbox splogger qmail &
-    Make sure to include the ./ in ./Mailbox.
+       # /var/qmail/rc &
+
 12. Look for a
-            qmail: running
+            qmail: status: local 0/10 remote 0/20
     line in syslog. qmail-send always prints either ``cannot start'' or
-    ``running''. (The big number is a splogger timestamp.)
+    ``status''. (The big number is a splogger timestamp.)
+
 13. Do a ps and look for the qmail daemons. There should be four of
     them, all idle: qmail-send, running as qmails; qmail-lspawn, running
     as root; qmail-rspawn, running as qmailr; and qmail-clean, running
-    as qmailq. You will also see the splogger process.
+    as qmailq. You will also see splogger, running as qmaill.
+
 14. Local-local test: Send yourself an empty message. (Replace ``me''
     with your username. Make sure to include the ``to:'' colon.)
        % echo to: me | /var/qmail/bin/qmail-inject
-    The message will show up immediately in ~/Mailbox, and syslog will
-    show something like this:
+    The message will show up immediately in your mailbox, and syslog
+    will show something like this:
             qmail: new msg 53 
             qmail: info msg 53: bytes 246 from <me@domain> qp 20345 uid 666
             qmail: starting delivery 1: msg 53 to local me@domain 
+	    qmail: status: local 1/10 remote 0/20
             qmail: delivery 1: success: did_1+0+0/
+	    qmail: status: local 0/10 remote 0/20
             qmail: end msg 53 
     (53 is an inode number; 20345 is a process ID; your numbers will
     probably be different.)
+
 15. Local-error test: Send a message to a nonexistent local address.
        % echo to: nonexistent | /var/qmail/bin/qmail-inject
             qmail: new msg 53 
             qmail: info msg 53: bytes 246 from <me@domain> qp 20351 uid 666
             qmail: starting delivery 2: msg 53 to local nonexistent@domain
+	    qmail: status: local 1/10 remote 0/20
             qmail: delivery 2: failure: No_such_address.__#5.1.1_/
+	    qmail: status: local 0/10 remote 0/20
 	    qmail: bounce msg 53 qp 20357
             qmail: end msg 53 
             qmail: new msg 54 
             qmail: info msg 54: bytes 743 from <> qp 20357 uid 666
             qmail: starting delivery 3: msg 54 to local me@domain
+	    qmail: status: local 1/10 remote 0/20
             qmail: delivery 3: success: did_1+0+0/
+	    qmail: status: local 0/10 remote 0/20
             qmail: end msg 54 
-    You will now have a bounce message in ~/Mailbox.
+    You will now have a bounce message in your mailbox.
+
 16. Local-remote test: Send an empty message to your account on another
     machine.
        % echo to: me@wherever | /var/qmail/bin/qmail-inject
             qmail: new msg 53 
             qmail: info msg 53: bytes 246 from <me@domain> qp 20372 uid 666
             qmail: starting delivery 4: msg 53 to remote me@wherever
+	    qmail: status: local 0/10 remote 1/20
             qmail: delivery 4: success: 1.2.3.4_accepted_message./...
+	    qmail: status: local 0/10 remote 0/20
             qmail: end msg 53 
     There will be a pause between ``starting delivery'' and ``success'';
     SMTP is slow. Check that the message is in your mailbox on the other
     machine.
+
 17. Local-postmaster test: Send mail to postmaster, any capitalization.
        % echo to: POSTmaster | /var/qmail/bin/qmail-inject
-    Look for the message in ~alias/Mailbox.
+    Look for the message in the alias mailbox, normally ~alias/Mailbox.
+
 18. Double-bounce test: Send a message with a completely bad envelope.
        % /var/qmail/bin/qmail-inject -f nonexistent
        To: unknownuser
@@ -98,7 +118,8 @@ Pre-upgrade tests:
        This is a test. This is only a test.
        %
     (Use end-of-file, not dot, to end the message.) Look for the double
-    bounce in ~alias/Mailbox.
+    bounce in the alias mailbox.
+
 19. Group membership test:
        % cat > ~me/.qmail-groups
        |groups >> MYGROUPS; exit 0
@@ -112,28 +133,35 @@ Upgrading from sendmail to qmail:
 
 20. Read INSTALL.boot. You must replace the sendmail invocation in your
     boot scripts with an appropriate qmail invocation.
+
 21. Kill the sendmail daemon. You should first kill -STOP the daemon; if
     any children are running, you should kill -CONT, wait, kill -STOP
     again, and repeat ad nauseam. If there aren't any children, kill
     -TERM and then kill -CONT.
+
 22. Replace sendmail with a link to qmail's ``sendmail'' wrapper:
        # mv /usr/lib/sendmail /usr/lib/sendmail.bak
        # ln -s /var/qmail/bin/sendmail /usr/lib/sendmail
+
 23. Set up qmail-smtpd in /etc/inetd.conf (all on one line):
             smtp stream tcp nowait qmaild /var/qmail/bin/tcp-env
 	    tcp-env /var/qmail/bin/qmail-smtpd
     Also comment out comsat in /etc/inetd.conf.
+
 24. Reboot. (Or kill -HUP your inetd and make sure the qmail daemons
     are running.)
+
 25. Try to flush the sendmail queue:
        # /usr/lib/sendmail.bak -q
     You can safely run sendmail.bak -q (or even sendmail.bak -q15m)
     while qmail is running. Do this until the sendmail queue is empty.
     This may take several days.
+
 26. Disable all the sendmail and binmail programs in your system. The
     safest approach is to chmod 0 everything. Some locations to check:
     /usr/sbin/sendmail, /usr/lib/sendmail.bak, /usr/lib/sendmail.mx,
     /bin/mail, /usr/libexec/mail.local.
+
 27. Make sure that ``mail'' still invokes a reasonable mailer. Under
     SVR4 you may want to link mail to mailx.
 
@@ -166,16 +194,20 @@ Post-upgrade tests (can be done immediately after step 24):
        Connection closed by foreign host.
        %
     Look for the message in your mailbox.
+
 29. Remote-local test: Send yourself some mail from another machine.
+
 30. Remote-error test: I think you can figure this one out.
+
 31. UA test: Try sending mail, first to a local account, then to a
     remote account, with your normal user agent.
+
 32. Remote-postmaster test: Send mail from another machine to
-    PoStMaStEr@domain. Look for the message in ~alias/Mailbox.
+    PoStMaStEr@domain. Look for the message in the alias mailbox.
 
 
 That's it! To report success:
        % ( echo 'First M. Last'; cat `cat SYSDEPS` ) \
-         | mail djb-qst@koobera.math.uic.edu
+         | mail djb-qst@cr.yp.to
 Replace First M. Last with your name. If you have questions about qmail,
-contact qmail@pobox.com.
+join the qmail mailing list; see http://pobox.com/~djb/qmail.html.

@@ -33,7 +33,9 @@ int userext()
 	byte_copy(username,extension - local,local);
 	username[extension - local] = 0;
 	case_lowers(username);
+	errno = 0;
 	pw = getpwnam(username);
+	if (errno == error_txtbsy) _exit(QLX_SYS);
 	if (pw)
 	  if (pw->pw_uid)
 	    if (stat(pw->pw_dir,&st) == 0) {

@@ -5,6 +5,11 @@ discovered; sendmail's design means that any minor bug in 46000 lines of
 code is a major security risk. Other popular mailers, such as Smail, and
 even mailing-list managers, such as Majordomo, seem nearly as bad.
 
+Note added in 1998: I wrote the above paragraph in December 1995, when
+the latest version of sendmail was 8.6.12 (with 41000 lines of code).
+Fourteen security holes were discovered from sendmail 8.6.12 through
+8.8.5. See http://pobox.com/~djb/docs/maildisasters/sendmail.html.
+
 I started working on qmail because I was sick of this cycle of doom.
 Here are some of the things I did to make sure that qmail will never let
 an intruder into your machine.
@@ -38,7 +43,7 @@ timers, signals, and more. Even worse, the list of controlled items
 varies from one vendor's UNIX to the next, so it is very difficult to
 write portable code that cleans up everything.
 
-Of the twelve most recent sendmail security holes, six worked only
+Of the twenty most recent sendmail security holes, eleven worked only
 because the entire sendmail system is setuid.
 
 Only one qmail program is setuid: qmail-queue. Its only purpose is to
@@ -95,7 +100,7 @@ and the quoter both misinterpret the interface in the same way.
 When the original data is controlled by a malicious user, many of these
 bugs translate into security holes. Some examples: the Linux login
 -froot security hole; the classic find | xargs rm security hole; the
-recent Majordomo security hole. Even a simple parser like getopt is
+Majordomo injection security hole. Even a simple parser like getopt is
 complicated enough for people to screw up the quoting.
 
 In qmail, all the internal file structures are incredibly simple: text0
@@ -106,11 +111,6 @@ interfaces don't take options.
 All the complexity of parsing RFC 822 address lists and rewriting
 headers is in the qmail-inject program, which runs without privileges
 and is essentially part of the UA.
-
-The only nasty case is .qmail, qmail's answer to .forward. I tried to
-make this as simple as possible, but unfortunately it still has to be
-edited by users. As a result, the qlist mailing-list-management program
-has to be careful to exclude subscriber addresses that contain newlines.
 
 
 6. Keep it simple, stupid.
@@ -127,5 +127,5 @@ I've mostly given up on the standard C library. Many of its facilities,
 particularly stdio, seem designed to encourage bugs. A big chunk of
 qmail is stolen from a basic C library that I've been developing for
 several years for a variety of applications. The stralloc concept and
-getline2() make it very easy to avoid buffer overruns, memory leaks,
-and artificial line length limits.
+getln() make it very easy to avoid buffer overruns, memory leaks, and
+artificial line length limits.

@@ -12,6 +12,16 @@
 #include "remoteinfo.h"
 
 static char line[999];
+static int t;
+
+static int mywrite(fd,buf,len) int fd; char *buf; int len;
+{
+  return timeoutwrite(t,fd,buf,len);
+}
+static int myread(fd,buf,len) int fd; char *buf; int len;
+{
+  return timeoutread(t,fd,buf,len);
+}
 
 char *remoteinfo_get(ipr,rp,ipl,lp,timeout)
 struct ip_address *ipr;
@@ -28,6 +38,8 @@ int timeout;
   unsigned int len;
   int numcolons;
   char ch;
+
+  t = timeout;
  
   s = socket(AF_INET,SOCK_STREAM,0);
   if (s == -1) return 0;
@@ -46,10 +58,10 @@ int timeout;
   len += fmt_ulong(line + len,lp);
   len += fmt_str(line + len,"\r\n");
  
-  substdio_fdbuf(&ss,timeoutwrite,TIMEOUTWRITE(timeout,s),buf,sizeof(buf));
+  substdio_fdbuf(&ss,mywrite,s,buf,sizeof buf);
   if (substdio_putflush(&ss,line,len) == -1) { close(s); return 0; }
  
-  substdio_fdbuf(&ss,timeoutread,TIMEOUTREAD(timeout,s),buf,sizeof(buf));
+  substdio_fdbuf(&ss,myread,s,buf,sizeof buf);
   x = line;
   numcolons = 0;
   for (;;) {

@@ -3,7 +3,7 @@ Here are some of qmail's features.
 Setup:
 *  automatic adaptation to your UNIX variant---no configuration needed
 *  AIX, BSD/OS, FreeBSD, HP/UX, Irix, Linux, OSF/1, SunOS, Solaris, and more
-*  automatic per-host configuration (qmail-config)
+*  automatic per-host configuration (config, config-fast)
 *  quick installation---no big list of decisions to make
 
 Security:
@@ -16,11 +16,12 @@ Security:
 Message construction (qmail-inject):
 *  RFC 822, RFC 1123
 *  full support for address groups
-*  automatic conversion of old-style headers to RFC 822 format
+*  automatic conversion of old-style address lists to RFC 822 format
+*  sendmail hook for compatibility with current user agents
 *  header line length limited only by memory
 *  host masquerading (control/defaulthost)
-*  user masquerading (MAILUSER, MAILHOST)
-*  sendmail hook for compatibility with current user agents
+*  user masquerading ($MAILUSER, $MAILHOST)
+*  automatic Mail-Followup-To creation ($QMAILMFTFILE)
 
 SMTP service (qmail-smtpd):
 *  RFC 821, RFC 1123, RFC 1651, RFC 1652, RFC 1854
@@ -67,11 +68,13 @@ SMTP delivery (qmail-remote):
 
 Forwarding and mailing lists (qmail-local):
 *  address wildcards (.qmail-default, .qmail-foo-default, etc.)
-*  sendmail/smail /etc/aliases compatibility (qmsmac, available separately)
+*  sendmail .forward compatibility (dot-forward, available separately)
+*  fast forwarding databases (fastforward, available separately)
+*  sendmail /etc/aliases compatibility (fastforward/newaliases)
 *  mailing list owners---automatically divert bounces and vacation messages
 *  VERPs---automatic recipient identification for mailing list bounces
 *  Delivered-To---automatic loop prevention, even across hosts
-*  automatic subscription management (qlist)
+*  automatic mailing list management (ezmlm, available separately)
 
 Local delivery (qmail-local):
 *  user-controlled address hierarchy---fred controls fred-anything

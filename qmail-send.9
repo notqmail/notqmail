@@ -164,7 +164,7 @@ so the percent hack may be applied repeatedly.
 handles
 .I percenthack
 before
-.IR recipientmap .
+.IR locals .
 .TP 5
 .I queuelifetime
 Number of seconds
@@ -176,42 +176,23 @@ will try the message once more,
 but it will treat any temporary delivery failures as
 permanent failures.
 .TP 5
-.I recipientmap
-List of redirections, one per line.
-Each redirection has the form
-.IR recipient\fB:\fIrewritten ,
-without any extra spaces.
-When
-.B qmail-send
-sees the address
-.IR recipient ,
-it replaces it with
-.IR rewritten .
-Both
-.I recipient
-and
-.I rewritten
-must include domain names.
-.B qmail-send
-handles
-.I recipientmap
-before
-.IR locals .
-.TP 5
 .I virtualdomains
-List of virtual domains, one per line.
-Each virtual domain has the form
-.IR domain\fB:\fIprepend ,
+List of virtual users or domains, one per line.
+A virtual user has the form
+.IR user\fB@\fIdomain\fB:\fIprepend ,
 without any extra spaces.
 When
 .B qmail-send
-sees a recipient address at
-.IR domain ,
-say
+sees the recipient address
 .IR user\fB@\fIdomain ,
 it converts it to
 .I prepend\fB-\fIuser\fB@\fIdomain
 and treats it as local.
+
+A virtual domain has the form
+.IR domain\fB:\fIprepend .
+It applies to any recipient address at
+.IR domain .
 For example, if
 
 .EX
@@ -226,6 +207,7 @@ and a message arrives for
 will rewrite the recipient address as
 .B joeBREAKfoo-info@nowhere.mil
 and deliver the message locally.
+
 .I virtualdomains
 may contain wildcards:
 

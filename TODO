@@ -1,9 +1,26 @@
-do some serious coverage testing, preferably under Purify, without alloc slop
-replace INTERNALS and THOUGHTS with a real paper describing qmail
-reorganize qmail-inject to do most rw on characters, not tokens
-allow concurrency over 255
-handle IPv6
+test qmail-qmqpc
+test qmail-qmqpd
+
+consider stripping vdoms for VERPs; tnx PJH
+consider ~ in qmail-local for doing defaultdelivery (not recursively)
+consider POP bulletins
 turn qmail-upq into a more serious queue-moving utility
+consider fast-greeting option in qmail-smtpd
+build a returnmail package
+
 expand strerr coverage
+redo control interface
+allow concurrency over 255
+allow more channels at compile time
+test for linux fifo close bug at compile time
+
+eliminate qsmhook
+finish OTBS conversion
+use lib822 in qmail-inject
+use lib822 in qreceipt
+use lib822 in qbiff
+use lib822 in maildirwatch
+eliminate token822, headerbody, hfield
+replace INTERNALS and THOUGHTS with a real paper describing qmail
+handle IPv6
 rewrite everything from scratch
-maybe allow root to clear tcpto on the fly

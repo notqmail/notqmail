@@ -1,3 +1,220 @@
+19980430 version: qmail 1.02.
+19980430 doc: updated SECURITY.
+19980430 doc: fixed FAQ 4.9. tnx KB.
+19980430 code: changed quote2() to avoid quoting <>.
+19980429 code: changed quote_need() to quote empty local parts. tnx HHO.
+19980428 doc: added status notes to INSTALL and UPGRADE.
+19980428 code: skip setting environment in sendmail.c if PROTO is set.
+19980428 code: eliminated recipientmap.
+19980428 code: added virtual users to qmail-send.c. tnx RN.
+19980428 code: eliminated domain from rewrite() in qmail-send.c.
+19980428 code: added binm1, binm1+df, binm2, binm2+df, binm3, binm3+df.
+19980428 doc: eliminated most Mailbox references from INSTALL, UPGRADE.
+19980428 code: added config-fast.
+19980428 code: renamed qmail-config as config.
+19980428 code: supported QMAILMFTFILE in qmail-inject.c.
+19980428 code: recognized Mail-Followup-To in hfield.c.
+19980428 code: replaced rwrecip() with rwappend() in qmail-inject.c.
+19980428 code: cleaned up doheaderfile() in qmail-inject.c.
+19980426 code: eliminated -type test from qmail-qstat to speed it up.
+         tnx FT.
+19980421 doc: eliminated remove-rcpthosts comments from FAQ.
+19980421 doc: updated FAQ 4.3 to point to Russ Allbery's FAQ. 
+19980421 doc: took account of /var/qmail/boot in INSTALL, UPGRADE, and
+         INSTALL.vsm.
+19980421 code: added /var/qmail/boot, with home, home+df, proc, proc+df.
+19980421 doc: skipped make and make man in INSTALL.
+19980420 doc: cleaned up mbox description in SENDMAIL.
+19980420 code: changed QMQP port to official port 628.
+19980402 doc: updated qmsmac references to fastforward.
+19980402 doc: replaced qmail-upgrade man page with doc/SENDMAIL.
+19980402 code: added qmqpservers output to qmail-showctl.
+19980402 code: added qmail-qmqpd.
+19980402 code: added qmail-qmqpc.
+19980304 code: eliminated del_saywhynoexit in qmail-send.c.
+19980304 code: eliminated concurrencynodel in qmail-send.c.
+19980222 code: added status() to qmail-send.c.
+19980222 code: added concurrencyused to qmail-send.c.
+19980128 doc: added note to qmail-getpw.9 about ETXTBSY.
+19980127 code: eliminated err_seenmail() in qmail-smtpd.c. tnx PO.
+19980126 doc: used $DEFAULT in FAQ where possible.
+19980126 code: added DEFAULT in qmail-local.
+19980126 code: added -/ to qmail-pw2u.
+19980126 code: revamped qmeopen() as qmesearch() with more sensible
+         semantics, separating dash from ext cleanly.
+19980126 code: split qmeexists() out of qmeopen() in qmail-local.c.
+19980126 code: introduced safeext in qmail-local.c.
+19980126 code: changed ~alias to mode 2755, to put files into group
+         qmail rather than group nofiles under System V.
+19980126 doc: switched to /var/qmail/rc in INSTALL*, UPGRADE, FAQ.
+19980126 code: added rc.
+19980119 doc: added .qmail creation warning to condredirect.1.
+19980118 code: made auto_uids.c creation atomic in Makefile. tnx HHO.
+19980118 doc: added PIC.*.
+19980117 portability problem: Solaris 2.5.1 incorrectly converts
+         O_NDELAY into O_NONBLOCK for sockets, so that ndelay_off()
+	 fails to undo ndelay_on(). impact: none, since all the network
+	 readers here use select() via timeoutread(). fix: use
+	 O_NONBLOCK if it is defined.
+19980115 code: reformatted qmail-qmtpd.c.
+19980115 doc: changed tcpcontrol references in FAQ.
+19980115 doc: documented morercpthosts in qmail-qmtpd.9.
+19980115 code: eliminated unused datetime in qmail-qmtpd.c.
+19980115 code: eliminated sigalrm() in qmail-qmtpd.c.
+19980115 code: used rcpthosts() in qmail-smtpd.c, qmail-qmtpd.c.
+19980115 code: introduced rcpthosts.c.
+19980115 code: added morercpthosts.cdb support to qmail-showctl.
+19980115 code: added morercpthosts support to qmail-showctl.
+19980115 code: do_lst now returns file-exists in qmail-showctl.
+19980112 doc: documented morercpthosts in qmail-smtpd.9.
+19980112 code: added qmail-newmrh.
+19980112 code: used commands.c in qmail-popup.
+19980112 code: used commands.c in qmail-pop3d.
+19980112 code: introduced fakehelo in qmail-smtpd.
+19980112 code: moved flagbarf setting out of bmfcheck().
+19980112 code: allowed more address misformatting in qmail-smtpd.
+19980112 code: eliminated qmail@pobox.com help address in qmail-smtpd.
+19980112 code: reorganized qmail-smtpd.
+19980112 code: reformatted qmail-smtpd.
+19980112 code: used commands.c in qmail-smtpd.
+19980112 code: switched from 0 to "" for no arg in commands().
+19980112 code: added commands.c.
+19971230 doc: added -s to FreeBSD commands in INSTALL.ids. tnx TM.
+19971224 doc: added pointer to qmail pictures in README.
+19971223 doc: added note in FAQ about qmail-pop3d using maildir.
+19971219 code: added HOST2, HOST3, HOST4.
+19971219 code: renamed extx as x in qmail-local.c.
+19971219 doc: partitioned qmail-command.0.
+19971219 doc: updated FAQ 4.3 to point to newer majordomo patches.
+19971219 doc: eliminated qlist2 from FAQ.
+19971219 doc: eliminated qlist discussion from SECURITY.
+19971219 code: moved qlist, qlist2 to separate package.
+19971213 doc: added FAQ 4.10 on qmail-users generally.
+19971213 doc: added FAQ 4.9 on dealing with NFS outages.
+19971031 doc: added Linux and FreeBSD commands to INSTALL.ids. tnx TM.
+19971026 doc: added note about smtplf in qmail-smtpd.8. tnx S2S.
+19971014 doc: some tweaks to THOUGHTS.
+19971012 doc: used MAILER-DAEMON in UUCP example in INSTALL.
+19971003 code: eliminated dataline and getln() from qmail-remote.c.
+19971003 code: revamped blast() in qmail-remote.c.
+19971002 doc: added FAQ entries for .forward and /etc/aliases.
+19971002 doc: rewrote INSTALL.mbox and INSTALL.vsm.
+19971002 doc: renamed INSTALL.qsmhook as INSTALL.vsm.
+19971002 doc: emphasized the qmail-popup argv0 in FAQ.
+19971001 doc: added dot-forward note to BLURB3.
+19971001 doc: added more configuration notes to qmail-upgrade.9.
+19971001 doc: added note in INSTALL.qsmhook about dot-forward.
+19970930 code: token822_parse() now supports backslash as a quoting
+         character in atoms.
+19970929 doc: suggested symbolic links in INSTALL.mbox.
+19970925 doc: added note to INTERNALS about bounce stability.
+19970925 doc: added section to THOUGHTS discussing CNAME lookups.
+19970925 code: qmail-remote no longer does CNAME lookup on sender. tnx
+         C2F.
+19970923 portability problem: under SCO OSR5, splogger needs socket
+         libraries. impact: couldn't compile. fix: socket.lib. tnx RB.
+19970906 portability problem: under RISC/OS, Mail invokes sendmail -bm.
+         impact: can't send mail using Mail on RISC/OS. fix: ignore -bm.
+	 tnx NW.
+19970813 code: implemented databytes in qmail-qmtpd.
+19970813 code: implemented databytes. tnx M4S for sample code.
+19970813 code: replaced execvp() with execv() for sh in qmail-local.
+19970813 doc: said in qmail-control.9 that recipientmap allows comments.
+19970813 code: used strerr in qmail-local.c.
+19970813 code: changed timeoutread(), timeoutwrite() interface.
+19970813 code: eliminated shutdown() in timeoutread(), timeoutwrite().
+19970813 code: revamped I/O in qmail-smtpd.c.
+19970813 code: used timeoutread(), timeoutwrite() in qmail-smtpd.c.
+19970813 code: simplified getcontrol() logic in qmail-remote.c; some
+         out-of-memory messages are now cannot-read-control messages.
+19970813 code: eliminated scan_nbblong().
+19970813 code: reformatted qmail-remote.c.
+19970813 code: renamed flaganyrecipok as flagbother in qmail-remote.c.
+19970813 code: integrated status report into quit() in qmail-remote.c.
+19970813 code: revamped smtpcode() in qmail-remote.c.
+19970813 code: added flagcritical in qmail-remote.c. eliminates
+         possible-duplicate warning if dot has not yet been sent.
+19970813 code: revamped I/O in qmail-remote.c.
+19970813 code: quit immediately after sending QUIT in qmail-remote.c.
+19970813 code: made many more globals in qmail-remote.c.
+19970813 code: switched qmail-remote.c from subfdin to home-grown.
+19970813 code: switched qmail-remote.c from subfdout to subfdoutsmall.
+19970813 code: added LAST support to qmail-pop3d.
+19970812 code: changed qmail_close() success return from 0 to "".
+19970812 code: revamped I/O in qmail-qmtpd.c.
+19970812 code: added qmail-tcpok.
+19970812 code: used strerr in maildirmake.c.
+19970812 code: reformatted maildirmake.c.
+19970812 code: printed qp in condredirect.c.
+19970812 code: printed qqx in condredirect.c.
+19970812 code: revamped I/O in condredirect.c.
+19970812 code: reformatted condredirect.c.
+19970812 code: used strerr in preline.c.
+19970812 code: revamped I/O in preline.c.
+19970812 code: reformatted preline.c.
+19970812 code: printed qp in forward.c.
+19970812 code: printed qqx in forward.c.
+19970812 code: revamped I/O in forward.c.
+19970812 code: used strerr in forward.c.
+19970812 code: reformatted forward.c.
+19970812 code: used strerr in predate.c.
+19970812 code: forced failure in qmail-qmtpd if no recipients; saves
+         time for qmail-send.
+19970812 code: added smtpd() to sendmail.c.
+19970812 code: added mailq() to sendmail.c.
+19970812 code: added die_usage() to sendmail.c.
+19970812 code: reformatted sendmail.c.
+19970812 code: used byte_zero() in qmail-popup.c.
+19970812 code: reformatted qmail-popup.c.
+19970812 code: eliminated unused header files in qmail-popup.c.
+19970812 code: changed I/O system in qmail-popup.c to match qmail-pop3d. 
+19970812 doc: pointed people to the mailing list in INSTALL and UPGRADE.
+19970810 code: added TXTBSY check to qmail-getpw.c. this gives vendors
+         the opportunity to make getpwnam() reliable.
+19970810 code: moved non-deleted messages from new/ to cur/ in
+         qmail-pop3d. tnx to various people.
+19970810 code: introduced list() in qmail-pop3d.c.
+19970810 code: reformatted qmail-pop3d.c.
+19970810 code: merged dataline and newname into line in qmail-pop3d.c.
+19970810 code: chopped filenames in qmail-pop3d at colons for UIDL. tnx
+         to various people.
+19970810 code: eliminated printint(), printlong() in qmail-pop3d.c.
+19970810 code: revamped I/O in qmail-pop3d.c.
+19970810 code: used timeoutread(), timeoutwrite() in qmail-pop3d.c.
+19970810 code: eliminated die_prot() in qmail-pop3d.c.
+19970810 code: eliminated unused header files in qmail-pop3d.c.
+19970810 code: switched qmail-pop3d to use maildir.c. tnx MD.
+19970809 code: added uid/gid printing to qmail-showctl. tnx PGF.
+19970808 code: switched control.c from scan_nbblong to scan_ulong.
+19970808 code: cleaned up wait_pid to use waitpid() when possible, and
+         to support at least one extra child otherwise.
+19970807 code: in qmail-smtpd, treat long envelope addresses as a syntax
+         error, instead of waiting for qmail-queue to reject them.
+19970803 code: changed condredirect, forward, qlist, qmail-inject,
+         qmail-local, qmail-qmtpd, qmail-send, qmail-smtpd, qreceipt for
+	 new qmail_close() interface.
+19970803 code: revised qmail_close() to handle qmail-queue exit codes.
+19970802 doc: documented SMTP-related exit codes in qmail-queue.8.
+19970802 doc: documented qmail-queue exit codes in qmail-queue.8.
+19970802 code: revamped qmail-queue exit codes.
+19970802 doc: noted linking restrictions in qmail-queue.8.
+19970802 doc: rewrote INSTALL.mbox.
+19970802 doc: split INSTALL.maildir off of INSTALL.mbox.
+19970802 code: added /var/qmail/doc/ creation to qmail-hier.
+19970802 doc: added ezmlm note to FAQ.
+19970802 doc: replaced qlist blurbs with ezmlm blurbs in BLURB*.
+19970802 doc: added various notes to qmail-start.9.
+19970728 doc: eliminated RFC*.
+19970714 doc: added daemontools notes to FAQ.
+19970714 code: eliminated ESMTP parameter syntax checking.
+19970701 doc: changed ``forwarded'' to ``resent'' in qmail-header.5.
+19970629 code: reformatted constmap.c.
+19970628 code: changed straynewline() message in qmail-smtpd.c to point
+         to http://pobox.com/~djb/smtplf.html. tnx RDM.
+19970609 doc: added preline to vacation example in dot-qmail.9. tnx C2S.
+19970421 code: cleaned up slurpclose to handle interrupts.
+19970421 code: set qmail-popup to mode 711. tnx MD.
+19970421 doc: fixed qmail-local -n example in dot-qmail.9.
 19970415 version: qmail 1.01.
 19970414 doc: tightened up qmail-upgrade.7.
 19970414 code: rewrote rewrite().

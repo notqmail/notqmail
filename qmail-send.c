@@ -48,8 +48,6 @@ stralloc percenthack = {0};
 struct constmap mappercenthack;
 stralloc locals = {0};
 struct constmap maplocals;
-stralloc redir = {0};
-struct constmap mapredir;
 stralloc vdoms = {0};
 struct constmap mapvdoms;
 stralloc envnoathost = {0};
@@ -63,10 +61,7 @@ char strnum3[FMT_ULONG];
 
 #define CHANNELS 2
 char *chanaddr[CHANNELS] = { "local/", "remote/" };
-char *channodelmsg[CHANNELS] = {
-  "local deliveries will be put on hold\n"
-, "remote deliveries will be put on hold\n"
-};
+char *chanstatusmsg[CHANNELS] = { " local ", " remote " };
 char *tochan[CHANNELS] = { " to local ", " to remote " };
 int chanfdout[CHANNELS] = { 1, 3 };
 int chanfdin[CHANNELS] = { 2, 4 };
@@ -124,7 +119,7 @@ char *recip;
   int j;
   char *x;
   static stralloc addr = {0};
-  static stralloc domain = {0};
+  int at;
 
   if (!stralloc_copys(&rwline,"T")) return 0;
   if (!stralloc_copys(&addr,recip)) return 0;
@@ -143,38 +138,26 @@ char *recip;
     addr.s[i] = '@';
   }
 
-  if (x = constmap(&mapredir,addr.s,addr.len))
-    if (x[str_chr(x,'@')])
-      if (!stralloc_copys(&addr,x)) return 0;
+  at = byte_rchr(addr.s,addr.len,'@');
 
-  i = byte_rchr(addr.s,addr.len,'@');
-  if (!stralloc_copyb(&domain,addr.s + i + 1,addr.len - i - 1)) return 0;
-  addr.len = i;
-
-  if (constmap(&maplocals,domain.s,domain.len)) {
+  if (constmap(&maplocals,addr.s + at + 1,addr.len - at - 1)) {
     if (!stralloc_cat(&rwline,&addr)) return 0;
-    if (!stralloc_cats(&rwline,"@")) return 0;
-    if (!stralloc_cat(&rwline,&domain)) return 0;
     if (!stralloc_0(&rwline)) return 0;
     return 1;
   }
 
-  for (i = 0;i <= domain.len;++i)
-    if ((i == 0) || (i == domain.len) || (domain.s[i] == '.'))
-      if (x = constmap(&mapvdoms,domain.s + i,domain.len - i)) {
+  for (i = 0;i <= addr.len;++i)
+    if (!i || (i == at + 1) || (i == addr.len) || ((i > at) && (addr.s[i] == '.')))
+      if (x = constmap(&mapvdoms,addr.s + i,addr.len - i)) {
         if (!*x) break;
         if (!stralloc_cats(&rwline,x)) return 0;
         if (!stralloc_cats(&rwline,"-")) return 0;
         if (!stralloc_cat(&rwline,&addr)) return 0;
-        if (!stralloc_cats(&rwline,"@")) return 0;
-        if (!stralloc_cat(&rwline,&domain)) return 0;
         if (!stralloc_0(&rwline)) return 0;
         return 1;
       }
  
   if (!stralloc_cat(&rwline,&addr)) return 0;
-  if (!stralloc_cats(&rwline,"@")) return 0;
-  if (!stralloc_cat(&rwline,&domain)) return 0;
   if (!stralloc_0(&rwline)) return 0;
   return 2;
 }
@@ -767,7 +750,7 @@ I tried to deliver a bounce message to this address, but the bounce bounced!\n\
 
    qmail_from(&qqt,bouncesender);
    qmail_to(&qqt,bouncerecip);
-   if (qmail_close(&qqt))
+   if (*qmail_close(&qqt))
     { log1("warning: trouble injecting bounce message, will try later\n"); return 0; }
 
    strnum2[fmt_ulong(strnum2,id)] = 0;
@@ -798,9 +781,25 @@ struct del
 
 unsigned long masterdelid = 1;
 unsigned int concurrency[CHANNELS] = { 10, 20 };
+unsigned int concurrencyused[CHANNELS] = { 0, 0 };
 struct del *d[CHANNELS];
 stralloc dline[CHANNELS];
 char delbuf[2048];
+
+void del_status()
+{
+  int c;
+
+  log1("status:");
+  for (c = 0;c < CHANNELS;++c) {
+    strnum2[fmt_ulong(strnum2,(unsigned long) concurrencyused[c])] = 0;
+    strnum3[fmt_ulong(strnum3,(unsigned long) concurrency[c])] = 0;
+    log2(chanstatusmsg[c],strnum2);
+    log2("/",strnum3);
+  }
+  if (flagexitasap) log1(" exitasap");
+  log1("\n");
+}
 
 void del_init()
 {
@@ -816,49 +815,22 @@ void del_init()
    dline[c].s = 0;
    while (!stralloc_copys(&dline[c],"")) nomem();
   }
+ del_status();
 }
 
 int del_canexit()
 {
- int i;
  int c;
  for (c = 0;c < CHANNELS;++c)
    if (flagspawnalive[c]) /* if dead, nothing we can do about its jobs */
-     for (i = 0;i < concurrency[c];++i)
-       if (d[c][i].used) return 0;
+     if (concurrencyused[c]) return 0;
  return 1;
-}
-
-static int del_lastsaid = 0;
-
-void del_saywhynoexit()
-{
- int i;
- int c;
- int n;
- n = 0;
- for (c = 0;c < CHANNELS;++c)
-   if (flagspawnalive[c])
-     for (i = 0;i < concurrency[c];++i)
-       if (d[c][i].used)
-	 ++n;
- if (!del_lastsaid || (n < del_lastsaid))
-  {
-   strnum2[fmt_ulong(strnum2,(unsigned long) n)] = 0;
-   log3("number of deliveries left before exiting: ",strnum2,"\n");
-   del_lastsaid = n;
-  }
 }
 
 int del_avail(c)
 int c;
 {
- int i;
-
- if (!flagspawnalive[c]) return 0;
- if (!comm_canwrite(c)) return 0;
- for (i = 0;i < concurrency[c];++i) if (!d[c][i].used) return 1;
- return 0;
+  return flagspawnalive[c] && comm_canwrite(c) && (concurrencyused[c] < concurrency[c]);
 }
 
 void del_start(j,mpos,recip)
@@ -881,7 +853,7 @@ char *recip;
  d[c][i].j = j; ++jo[j].refs;
  d[c][i].delid = masterdelid++;
  d[c][i].mpos = mpos;
- d[c][i].used = 1;
+ d[c][i].used = 1; ++concurrencyused[c];
 
  comm_write(c,i,jo[j].id,jo[j].sender.s,recip);
 
@@ -891,6 +863,7 @@ char *recip;
  log3(": msg ",strnum3,tochan[c]);
  logsafe(recip);
  log1("\n");
+ del_status();
 }
 
 void markdone(c,id,pos)
@@ -975,7 +948,8 @@ int c;
 	   log3("delivery ",strnum3,": report mangled, will defer\n");
 	}
        job_close(d[c][delnum].j);
-       d[c][delnum].used = 0;
+       d[c][delnum].used = 0; --concurrencyused[c];
+       del_status();
       }
      dline[c].len = 0;
     }
@@ -1487,12 +1461,6 @@ int getcontrols() { if (control_init() == -1) return 0;
    case 0: if (!constmap_init(&mappercenthack,"",0,0)) return 0; break;
    case 1: if (!constmap_init(&mappercenthack,percenthack.s,percenthack.len,0)) return 0; break;
   }
- switch(control_readfile(&redir,"control/recipientmap",0))
-  {
-   case -1: return 0;
-   case 0: if (!constmap_init(&mapredir,"",0,1)) return 0; break;
-   case 1: if (!constmap_init(&mapredir,redir.s,redir.len,1)) return 0; break;
-  }
  switch(control_readfile(&vdoms,"control/virtualdomains",0))
   {
    case -1: return 0;
@@ -1589,13 +1557,7 @@ void main()
    numjobs += concurrency[c];
   }
 
- log1("running\n");
-
  fnmake_init();
-
- for (c = 0;c < CHANNELS;++c)
-   if (!concurrency[c])
-     log1(channodelmsg[c]);
 
  comm_init();
 
@@ -1608,8 +1570,6 @@ void main()
 
  while (!flagexitasap || !del_canexit())
   {
-   if (flagexitasap) del_saywhynoexit();
-
    recent = now();
 
    if (flagrunasap) { flagrunasap = 0; pqrun(); }
@@ -1647,6 +1607,6 @@ void main()
     }
   }
  pqfinish();
- log1("exiting\n");
+ log1("status: exiting\n");
  _exit(0);
 }

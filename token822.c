@@ -306,6 +306,7 @@ stralloc *buf;
      default:
        do
 	{
+	 if (sa->s[i] == '\\') if (++i >= salen) break;
 	 ++numchars;
 	 if (++i >= salen)
 	   break;
@@ -384,6 +385,7 @@ stralloc *buf;
        t->type = TOKEN822_ATOM; t->s = cbuf; t->slen = 0;
        do
 	{
+	 if (sa->s[i] == '\\') if (++i >= salen) break;
 	 *cbuf++ = sa->s[i]; ++t->slen;
 	 if (++i >= salen)
 	   break;

@@ -1,9 +1,9 @@
+#define TLS
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "sig.h"
-#include "getln.h"
 #include "stralloc.h"
 #include "substdio.h"
 #include "subfd.h"
@@ -25,21 +25,16 @@
 #include "exit.h"
 #include "constmap.h"
 #include "tcpto.h"
+#include "readwrite.h"
 #include "timeoutconn.h"
+#ifndef TLS
 #include "timeoutread.h"
 #include "timeoutwrite.h"
+#endif
 
-#define TLS
 #ifdef TLS
-#include "select.h" /*timeval*/
-/*#include <stdio.h> this was a SSLeay bug */
 #include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/bio.h>
-#include <openssl/pem.h>
 SSL *ssl = NULL;
-int ssl_timeoutread();
-int ssl_timeoutwrite();
 #endif
 
 #define HUGESMTPTEXT 5000
@@ -61,14 +56,13 @@ saa reciplist = {0};
 
 struct ip_address partner;
 
-void out(s) char *s; { if (substdio_puts(subfdout,s) == -1) _exit(0); }
-void zero() { if (substdio_put(subfdout,"\0",1) == -1) _exit(0); }
-void zerodie() { zero(); substdio_flush(subfdout); _exit(0); }
-
+void out(s) char *s; { if (substdio_puts(subfdoutsmall,s) == -1) _exit(0); }
+void zero() { if (substdio_put(subfdoutsmall,"\0",1) == -1) _exit(0); }
+void zerodie() { zero(); substdio_flush(subfdoutsmall); _exit(0); }
 void outsafe(sa) stralloc *sa; { int i; char ch;
 for (i = 0;i < sa->len;++i) {
 ch = sa->s[i]; if (ch < 33) ch = '?'; if (ch > 126) ch = '?';
-if (substdio_put(subfdout,&ch,1) == -1) _exit(0); } }
+if (substdio_put(subfdoutsmall,&ch,1) == -1) _exit(0); } }
 
 void temp_nomem() { out("ZOut of memory. (#4.3.0)\n"); zerodie(); }
 void temp_oserr() { out("Z\
@@ -100,319 +94,345 @@ Sorry. Although I'm listed as a best-preference MX or A for that host,\n\
 it isn't in my control/locals file, so I don't treat it as local. (#5.4.6)\n");
 zerodie(); }
 
-int timeout = 1200;
-int timeoutconnect = 60;
-
-void getcontrols()
+void outhost()
 {
- int r;
- if (control_init() == -1)
-  { if (errno == error_nomem) temp_nomem(); temp_control(); }
-
- if (control_readint(&timeout,"control/timeoutremote") == -1)
-  { if (errno == error_nomem) temp_nomem(); temp_control(); }
- if (control_readint(&timeoutconnect,"control/timeoutconnect") == -1)
-  { if (errno == error_nomem) temp_nomem(); temp_control(); }
-
- r = control_rldef(&helohost,"control/helohost",1,(char *) 0);
- if (r == -1) if (errno == error_nomem) temp_nomem();
- if (r != 1) temp_control();
-
- switch(control_readfile(&routes,"control/smtproutes",0))
-  {
-   case -1:
-     if (errno == error_nomem) temp_nomem(); temp_control();
-   case 0:
-     if (!constmap_init(&maproutes,"",0,1)) temp_nomem(); break;
-   case 1:
-     if (!constmap_init(&maproutes,routes.s,routes.len,1)) temp_nomem(); break;
-  }
+  char x[IPFMT];
+  if (substdio_put(subfdoutsmall,x,ip_fmt(x,&partner)) == -1) _exit(0);
 }
 
+int flagcritical = 0;
+
+void dropped() {
+  out("ZConnected to ");
+  outhost();
+  out(" but connection died. ");
+  if (flagcritical) out("Possible duplicate! ");
+  out("(#4.4.2)\n");
+  zerodie();
+}
+
+int timeoutconnect = 60;
+int smtpfd;
+int timeout = 1200;
+
+#ifdef TLS
+int flagtimedout = 0;
+void sigalrm()
+{
+ flagtimedout = 1;
+}
+int ssl_timeoutread(timeout,fd,buf,n) int timeout; int fd; char *buf; int n;
+{
+ int r; int saveerrno;
+ if (flagtimedout) { errno = error_timeout; return -1; }
+ alarm(timeout);
+ if (ssl) r = SSL_read(ssl,buf,n); else r = read(fd,buf,n);
+ saveerrno = errno;
+ alarm(0);
+ if (flagtimedout) { errno = error_timeout; return -1; }
+ errno = saveerrno;
+ return r;
+}
+int ssl_timeoutwrite(timeout,fd,buf,n) int timeout; int fd; char *buf; int n;
+{
+ int r; int saveerrno;
+ if (flagtimedout) { errno = error_timeout; return -1; }
+ alarm(timeout);
+ if (ssl) r = SSL_write(ssl,buf,n); else r = write(fd,buf,n);
+ saveerrno = errno;
+ alarm(0);
+ if (flagtimedout) { errno = error_timeout; return -1; }
+ errno = saveerrno;
+ return r;
+}
+#endif 
+
+int saferead(fd,buf,len) int fd; char *buf; int len;
+{
+  int r;
+#ifdef TLS
+  r = ssl_timeoutread(timeout,smtpfd,buf,len);
+#else
+  r = timeoutread(timeout,smtpfd,buf,len);
+#endif
+  if (r <= 0) dropped();
+  return r;
+}
+int safewrite(fd,buf,len) int fd; char *buf; int len;
+{
+  int r;
+#ifdef TLS
+  r = ssl_timeoutwrite(timeout,smtpfd,buf,len);
+#else
+  r = timeoutwrite(timeout,smtpfd,buf,len);
+#endif
+  if (r <= 0) dropped();
+  return r;
+}
+
+char inbuf[1024];
+substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof inbuf);
 char smtptobuf[1024];
+substdio smtpto = SUBSTDIO_FDBUF(safewrite,-1,smtptobuf,sizeof smtptobuf);
 char smtpfrombuf[128];
-stralloc smtpline = {0};
+substdio smtpfrom = SUBSTDIO_FDBUF(saferead,-1,smtpfrombuf,sizeof smtpfrombuf);
+
 stralloc smtptext = {0};
+
+void get(ch)
+char *ch;
+{
+  substdio_get(&smtpfrom,ch,1);
+  if (*ch != '\r')
+    if (smtptext.len < HUGESMTPTEXT)
+     if (!stralloc_append(&smtptext,ch)) temp_nomem();
+}
+
+unsigned long smtpcode()
+{
+  unsigned char ch;
+  unsigned long code;
+
+  if (!stralloc_copys(&smtptext,"")) temp_nomem();
+
+  get(&ch); code = ch - '0';
+  get(&ch); code = code * 10 + (ch - '0');
+  get(&ch); code = code * 10 + (ch - '0');
+  for (;;) {
+    get(&ch);
+    if (ch != '-') break;
+    while (ch != '\n') get(&ch);
+    get(&ch);
+    get(&ch);
+    get(&ch);
+  }
+  while (ch != '\n') get(&ch);
+
+  return code;
+}
 
 void outsmtptext()
 {
- int i; 
- if (smtptext.s) if (smtptext.len) if (smtptext.len < HUGESMTPTEXT)
-  {
-   if (substdio_puts(subfdout,"Remote host said: ") == -1) _exit(0);
-   for (i = 0;i < smtptext.len;++i)
-     if (!smtptext.s[i]) smtptext.s[i] = '?';
-   if (substdio_put(subfdout,smtptext.s,smtptext.len) == -1) _exit(0);
-   smtptext.len = 0;
+  int i; 
+  if (smtptext.s) if (smtptext.len) {
+    out("Remote host said: ");
+    for (i = 0;i < smtptext.len;++i)
+      if (!smtptext.s[i]) smtptext.s[i] = '?';
+    if (substdio_put(subfdoutsmall,smtptext.s,smtptext.len) == -1) _exit(0);
+    smtptext.len = 0;
   }
 }
 
-unsigned long smtpcode(ss)
-substdio *ss;
+void quit(prepend,append)
+char *prepend;
+char *append;
 {
- int match;
- unsigned long code;
+/* TAG */
+#if defined(TLS) && defined(DEBUG)
+#define ONELINE_NAME(X) X509_NAME_oneline(X,NULL,0)
 
- if (!stralloc_copys(&smtptext,"")) return 421;
- do
-  {
-   if (getln(ss,&smtpline,&match,'\n') != 0) return 421;
-   if (!match) return 421;
-   if ((smtpline.len >= 2) && (smtpline.s[smtpline.len - 2] == '\r'))
-    {
-     smtpline.s[smtpline.len - 2] = '\n';
-     --smtpline.len;
+ if(ssl){
+ X509 *peer;
+
+  out("STARTTLS proto="); out(SSL_get_version(ssl));
+  out("; cipher="); out(SSL_CIPHER_get_name(SSL_get_current_cipher(ssl)));
+
+  /* we want certificate details */
+  peer=SSL_get_peer_certificate(ssl);
+  if (peer != NULL) {
+   char *str;
+
+   str=ONELINE_NAME(X509_get_subject_name(peer));
+   out("; subject="); out(str);
+   Free(str);
+   str=ONELINE_NAME(X509_get_issuer_name(peer));
+   out("; issuer="); out(str);
+   Free(str);
+   X509_free(peer);
+   Free(str);
+   X509_free(peer);
+  }
+  out(";\n");
+ }
+#endif
+
+  substdio_putsflush(&smtpto,"QUIT\r\n");
+  /* waiting for remote side is just too ridiculous */
+  out(prepend);
+  outhost();
+  out(append);
+  out(".\n");
+  outsmtptext();
+  zerodie();
+}
+
+void blast()
+{
+  int r;
+  char ch;
+
+  for (;;) {
+    r = substdio_get(&ssin,&ch,1);
+    if (r == 0) break;
+    if (r == -1) temp_read();
+    if (ch == '.')
+      substdio_put(&smtpto,".",1);
+    while (ch != '\n') {
+      substdio_put(&smtpto,&ch,1);
+      r = substdio_get(&ssin,&ch,1);
+      if (r == 0) perm_partialline();
+      if (r == -1) temp_read();
     }
-   if (!stralloc_cat(&smtptext,&smtpline)) return 421;
-   if (scan_nbblong(smtpline.s,smtpline.len,10,0,&code) != 3) return 421;
-   if (smtpline.len == 3) return code;
+    substdio_put(&smtpto,"\r\n",2);
   }
- while (smtpline.s[3] == '-');
-
- return code;
-}
-
-void outhost()
-{
- char x[IPFMT];
-
- x[ip_fmt(x,&partner)] = 0;
- out(x);
-}
-
-void writeerr()
-{
- out("ZConnected to "); outhost();
- out(" but communications failed. (#4.4.2)\n");
- zerodie();
-}
-
-void quit(ssto,ssfrom)
-substdio *ssto;
-substdio *ssfrom;
-{
- outsmtptext();
- if (substdio_putsflush(ssto,"QUIT\r\n") != -1)
-   smtpcode(ssfrom); /* protocol design stupidity */
- zerodie();
-}
-
-stralloc dataline = {0};
-
-void blast(ssto,ssfrom)
-substdio *ssto;
-substdio *ssfrom;
-{
- int match;
-
- for (;;)
-  {
-   if (getln(ssfrom,&dataline,&match,'\n') != 0) temp_read();
-   if (!match && !dataline.len) break;
-   if (!match) perm_partialline();
-   --dataline.len;
-   if (dataline.len && (dataline.s[0] == '.'))
-     if (substdio_put(ssto,".",1) == -1) writeerr();
-   if (substdio_put(ssto,dataline.s,dataline.len) == -1) writeerr();
-   if (substdio_put(ssto,"\r\n",2) == -1) writeerr();
-  }
- if (substdio_put(ssto,".\r\n",3) == -1) writeerr();
- if (substdio_flush(ssto) == -1) writeerr();
+ 
+  flagcritical = 1;
+  substdio_put(&smtpto,".\r\n",3);
+  substdio_flush(&smtpto);
 }
 
 stralloc recip = {0};
 
-void smtp(fd)
-int fd;
+void smtp()
 {
- substdio ssto;
- substdio ssfrom;
- unsigned long code;
- int flaganyrecipok;
- int i;
+  unsigned long code;
+  int flagbother;
+  int i;
 #ifdef TLS
- SSL_CTX *ctx;
+  SSL_CTX *ctx;
+  int saveerrno, r;
+#ifdef DEBUG
+  char buf[1024];
+#endif
 #endif
 
- substdio_fdbuf(&ssto,timeoutwrite,TIMEOUTWRITE(timeout,fd),smtptobuf,sizeof(smtptobuf));
- substdio_fdbuf(&ssfrom,timeoutread,TIMEOUTREAD(timeout,fd),smtpfrombuf,sizeof(smtpfrombuf));
-
- if (smtpcode(&ssfrom) != 220)
-  {
-   out("ZConnected to "); outhost(); out(" but greeting failed.\n");
-   quit(&ssto,&ssfrom);
-  }
-
+  if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
+ 
 #ifdef TLS
- if (substdio_puts(&ssto,"EHLO ") == -1) writeerr();
+  substdio_puts(&smtpto,"EHLO ");
 #else
- if (substdio_puts(&ssto,"HELO ") == -1) writeerr();
+  substdio_puts(&smtpto,"HELO ");
 #endif
- if (substdio_put(&ssto,helohost.s,helohost.len) == -1) writeerr();
- if (substdio_puts(&ssto,"\r\n") == -1) writeerr();
- if (substdio_flush(&ssto) == -1) writeerr();
-
- if (smtpcode(&ssfrom) != 250)
+  substdio_put(&smtpto,helohost.s,helohost.len);
+  substdio_puts(&smtpto,"\r\n");
+  substdio_flush(&smtpto);
 #ifdef TLS
-  {
-   if (substdio_puts(&ssto,"HELO ") == -1) writeerr();
-   if (substdio_put(&ssto,helohost.s,helohost.len) == -1) writeerr();
-   if (substdio_puts(&ssto,"\r\n") == -1) writeerr();
-   if (substdio_flush(&ssto) == -1) writeerr();
-   if (smtpcode(&ssfrom) != 250)
-    {
-     out("ZConnected to "); outhost(); out(" but my name was rejected.\n");
-     quit(&ssto,&ssfrom);
-    }
+  if (smtpcode() != 250){
+   substdio_puts(&smtpto,"HELO ");
+   substdio_put(&smtpto,helohost.s,helohost.len);
+   substdio_puts(&smtpto,"\r\n");
+   substdio_flush(&smtpto);
+   if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
   }
-
 #else
-  {
-   out("ZConnected to "); outhost(); out(" but my name was rejected.\n");
-   quit(&ssto,&ssfrom);
-  }
+  if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
 #endif
 
 #ifdef TLS
- i = 0; 
- while((i += str_chr(smtptext.s+i,'\n') + 1) && (i+12 < smtptext.len) &&
-       str_diffn(smtptext.s+i+4,"STARTTLS\n",9));
- if (i+12 < smtptext.len)
-  {
-   if (substdio_puts(&ssto,"STARTTLS\r\n") == -1) writeerr();
-   if (substdio_flush(&ssto) == -1) writeerr();
-   if (smtpcode(&ssfrom) == 220)
-    {
-     SSLeay_add_ssl_algorithms();
-     if(!(ctx=SSL_CTX_new(SSLv23_client_method())))
-       {out("ZTLS not available: error initializing ctx\n");
-        quit(&ssto,&ssfrom);}
+  i = 0; 
+  while((i += str_chr(smtptext.s+i,'\n') + 1) && (i+12 < smtptext.len) &&
+        str_diffn(smtptext.s+i+4,"STARTTLS\n",9));
+  if (i+12 < smtptext.len)
+   {
+    substdio_puts(&smtpto,"STARTTLS\r\n");
+    substdio_flush(&smtpto);
+    if (smtpcode() == 220)
+     {
+#ifdef DEBUG
+      SSL_load_error_strings();
+#endif
+      SSLeay_add_ssl_algorithms();
+      if(!(ctx=SSL_CTX_new(SSLv23_client_method())))
+        {out("ZTLS not available: error initializing ctx");
+#ifdef DEBUG
+         out(": ");
+         out(ERR_error_string(ERR_get_error(), buf));
+#endif
+         out("\n");
+         zerodie();}
 
-     SSL_CTX_use_RSAPrivateKey_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
-     SSL_CTX_use_certificate_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
-     if(SSL_CTX_need_tmp_RSA(ctx))
-      if(!SSL_CTX_set_tmp_rsa(ctx,RSA_generate_key(512,RSA_F4,NULL,NULL)))
-       {out("ZTLS not available: error generating RSA temp key\n");
-        quit(&ssto,&ssfrom);}
+      SSL_CTX_use_certificate_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
 
-     if(!(ssl=SSL_new(ctx)))
-       {out("ZTLS not available: error initializing ctx\n");
-        quit(&ssto,&ssfrom);}
-     SSL_set_fd(ssl,fd);
-     if(SSL_connect(ssl)<=0) 
-       {out("ZTLS not available: connect failed\n");
-        quit(&ssto,&ssfrom);}
-     substdio_fdbuf(&ssto,ssl_timeoutwrite,ssl,smtptobuf,sizeof(smtptobuf));
-     substdio_fdbuf(&ssfrom,ssl_timeoutread,ssl,smtpfrombuf,sizeof(smtpfrombuf));
+      if(!(ssl=SSL_new(ctx)))
+        {out("ZTLS not available: error initializing ssl");
+#ifdef DEBUG
+         out(": ");
+         out(ERR_error_string(ERR_get_error(), buf));
+#endif
+         out("\n");
+         zerodie();}
+      SSL_set_fd(ssl,smtpfd);
 
-     if (substdio_puts(&ssto,"EHLO ") == -1) writeerr();
-     if (substdio_put(&ssto,helohost.s,helohost.len) == -1) writeerr();
-     if (substdio_puts(&ssto,"\r\n") == -1) writeerr();
-     if (substdio_flush(&ssto) == -1) writeerr();
+      alarm(timeout);
+      r = SSL_connect(ssl); saveerrno = errno;
+      alarm(0); 
+      if (flagtimedout) 
+       {out("ZTLS not available: connect timed out\n");
+        zerodie();}
+      errno = saveerrno;
+      if (r<=0) 
+        {out("ZTLS not available: connect failed");
+#ifdef DEBUG
+         out(": ");
+         out(ERR_error_string(ERR_get_error(), buf));
+#endif
+         out("\n");
+         zerodie();}
 
-     if (smtpcode(&ssfrom) != 250)
-      {
-       out("ZTLS connected to "); outhost(); out(" but my name was rejected.\n");
-       quit(&ssto,&ssfrom);
-      }
-    } 
-  }
+      substdio_puts(&smtpto,"EHLO ");
+      substdio_put(&smtpto,helohost.s,helohost.len);
+      substdio_puts(&smtpto,"\r\n");
+      substdio_flush(&smtpto);
+
+      if (smtpcode() != 250)
+       {
+        quit("ZTLS connected to "," but my name was rejected");
+       }
+     } 
+   }
 #endif
 
- if (substdio_puts(&ssto,"MAIL FROM:<") == -1) writeerr();
- if (substdio_put(&ssto,sender.s,sender.len) == -1) writeerr();
- if (substdio_puts(&ssto,">\r\n") == -1) writeerr();
- if (substdio_flush(&ssto) == -1) writeerr();
-
- code = smtpcode(&ssfrom);
- if (code >= 500)
-  {
-   out("DConnected to "); outhost(); out(" but sender was rejected.\n");
-   quit(&ssto,&ssfrom);
-  }
- if (code >= 400)
-  {
-   out("ZConnected to "); outhost(); out(" but sender was rejected.\n");
-   quit(&ssto,&ssfrom);
-  }
-
- flaganyrecipok = 0;
- for (i = 0;i < reciplist.len;++i)
-  {
-   if (substdio_puts(&ssto,"RCPT TO:<") == -1) writeerr();
-   if (substdio_put(&ssto,reciplist.sa[i].s,reciplist.sa[i].len) == -1) writeerr();
-   if (substdio_puts(&ssto,">\r\n") == -1) writeerr();
-   if (substdio_flush(&ssto) == -1) writeerr();
-
-   code = smtpcode(&ssfrom);
-   if (code == 421)
-    {
-     out("ZConnected to "); outhost(); out(" but connection died.\n");
-     quit(&ssto,&ssfrom);
+  substdio_puts(&smtpto,"MAIL FROM:<");
+  substdio_put(&smtpto,sender.s,sender.len);
+  substdio_puts(&smtpto,">\r\n");
+  substdio_flush(&smtpto);
+  code = smtpcode();
+  if (code >= 500) quit("DConnected to "," but sender was rejected");
+  if (code >= 400) quit("ZConnected to "," but sender was rejected");
+ 
+  flagbother = 0;
+  for (i = 0;i < reciplist.len;++i) {
+    substdio_puts(&smtpto,"RCPT TO:<");
+    substdio_put(&smtpto,reciplist.sa[i].s,reciplist.sa[i].len);
+    substdio_puts(&smtpto,">\r\n");
+    substdio_flush(&smtpto);
+    code = smtpcode();
+    if (code >= 500) {
+      out("h"); outhost(); out(" does not like recipient.\n");
+      outsmtptext(); zero();
     }
-   if (code >= 500)
-    {
-     out("h"); outhost(); out(" does not like recipient.\n");
-     outsmtptext(); zero();
+    else if (code >= 400) {
+      out("s"); outhost(); out(" does not like recipient.\n");
+      outsmtptext(); zero();
     }
-   else if (code >= 400)
-    {
-     out("s"); outhost(); out(" does not like recipient.\n");
-     outsmtptext(); zero();
-    }
-   else
-    {
-     out("r"); zero();
-     flaganyrecipok = 1;
+    else {
+      out("r"); zero();
+      flagbother = 1;
     }
   }
-
- if (!flaganyrecipok)
-  {
-   out("DGiving up.\n");
-   quit(&ssto,&ssfrom);
-  }
-
- if (substdio_putsflush(&ssto,"DATA\r\n") == -1) writeerr();
-
- code = smtpcode(&ssfrom);
- if (code == 421)
-  {
-   out("ZConnected to "); outhost(); out(" but connection died.\n");
-   quit(&ssto,&ssfrom);
-  }
- if (code >= 500)
-  {
-   out("D"); outhost(); out(" failed on DATA command.\n");
-   quit(&ssto,&ssfrom);
-  }
- if (code >= 400)
-  {
-   out("Z"); outhost(); out(" failed on DATA command.\n");
-   quit(&ssto,&ssfrom);
-  }
-
- blast(&ssto,subfdin);
-
- code = smtpcode(&ssfrom);
- if (code == 421)
-  {
-   out("ZConnected to "); outhost(); out(" but connection died. Possible duplicate!\n");
-   quit(&ssto,&ssfrom);
-  }
- if (code >= 500)
-  {
-   out("D"); outhost(); out(" failed after I sent the message.\n");
-   quit(&ssto,&ssfrom);
-  }
- if (code >= 400)
-  {
-   out("Z"); outhost(); out(" failed after I sent the message.\n");
-   quit(&ssto,&ssfrom);
-  }
-
- out("K"); outhost(); out(" accepted message.\n");
- quit(&ssto,&ssfrom);
+  if (!flagbother) quit("DGiving up on ","");
+ 
+  substdio_putsflush(&smtpto,"DATA\r\n");
+  code = smtpcode();
+  if (code >= 500) quit("D"," failed on DATA command");
+  if (code >= 400) quit("Z"," failed on DATA command");
+ 
+  blast();
+  code = smtpcode();
+  flagcritical = 0;
+  if (code >= 500) quit("D"," failed after I sent the message");
+  if (code >= 400) quit("Z"," failed after I sent the message");
+  quit("K"," accepted message");
 }
 
 stralloc canonhost = {0};
@@ -424,182 +444,149 @@ char *s;
 int *flagalias;
 int flagcname;
 {
- int j;
-
- *flagalias = flagcname;
-
- j = str_rchr(s,'@');
- if (!s[j])
-  {
-   if (!stralloc_copys(saout,s)) temp_nomem();
-   return;
+  int j;
+ 
+  *flagalias = flagcname;
+ 
+  j = str_rchr(s,'@');
+  if (!s[j]) {
+    if (!stralloc_copys(saout,s)) temp_nomem();
+    return;
   }
- if (!stralloc_copys(&canonbox,s)) temp_nomem();
- canonbox.len = j;
- if (!quote(saout,&canonbox)) temp_nomem();
- if (!stralloc_cats(saout,"@")) temp_nomem();
-
- if (!stralloc_copys(&canonhost,s + j + 1)) temp_nomem();
- if (flagcname)
-   switch(dns_cname(&canonhost))
-    {
-     case 0: *flagalias = 0; break;
-     case DNS_MEM: temp_nomem();
-     case DNS_SOFT: temp_dnscanon();
-     case DNS_HARD: ; /* alias loop, not our problem */
+  if (!stralloc_copys(&canonbox,s)) temp_nomem();
+  canonbox.len = j;
+  if (!quote(saout,&canonbox)) temp_nomem();
+  if (!stralloc_cats(saout,"@")) temp_nomem();
+ 
+  if (!stralloc_copys(&canonhost,s + j + 1)) temp_nomem();
+  if (flagcname)
+    switch(dns_cname(&canonhost)) {
+      case 0: *flagalias = 0; break;
+      case DNS_MEM: temp_nomem();
+      case DNS_SOFT: temp_dnscanon();
+      case DNS_HARD: ; /* alias loop, not our problem */
     }
 
- if (!stralloc_cat(saout,&canonhost)) temp_nomem();
+  if (!stralloc_cat(saout,&canonhost)) temp_nomem();
+}
+
+void getcontrols()
+{
+  if (control_init() == -1) temp_control();
+  if (control_readint(&timeout,"control/timeoutremote") == -1) temp_control();
+  if (control_readint(&timeoutconnect,"control/timeoutconnect") == -1)
+    temp_control();
+  if (control_rldef(&helohost,"control/helohost",1,(char *) 0) != 1)
+    temp_control();
+  switch(control_readfile(&routes,"control/smtproutes",0)) {
+    case -1:
+      temp_control();
+    case 0:
+      if (!constmap_init(&maproutes,"",0,1)) temp_nomem(); break;
+    case 1:
+      if (!constmap_init(&maproutes,routes.s,routes.len,1)) temp_nomem(); break;
+  }
 }
 
 void main(argc,argv)
 int argc;
 char **argv;
 {
- static ipalloc ip = {0};
- int i;
- unsigned long random;
- char **recips;
- unsigned long prefme;
- int flagallaliases;
- int flagalias;
- char *relayhost;
-
- sig_pipeignore();
- if (argc < 4) perm_usage();
- if (chdir(auto_qmail) == -1) temp_chdir();
- getcontrols();
-
-
- if (!stralloc_copys(&host,argv[1])) temp_nomem();
-
- relayhost = 0;
- for (i = 0;i <= host.len;++i)
-   if ((i == 0) || (i == host.len) || (host.s[i] == '.'))
-     if (relayhost = constmap(&maproutes,host.s + i,host.len - i))
-       break;
- if (relayhost && !*relayhost) relayhost = 0;
-
- if (relayhost)
-  {
-   i = str_chr(relayhost,':');
-   if (relayhost[i])
-    {
-     scan_ulong(relayhost + i + 1,&port);
-     relayhost[i] = 0;
-    }
-   if (!stralloc_copys(&host,relayhost)) temp_nomem();
-  }
-
-
- addrmangle(&sender,argv[2],&flagalias,!relayhost);
-
- if (!saa_readyplus(&reciplist,0)) temp_nomem();
- if (ipme_init() != 1) temp_oserr();
-
- flagallaliases = 1;
- recips = argv + 3;
- while (*recips)
-  {
-   if (!saa_readyplus(&reciplist,1)) temp_nomem();
-   reciplist.sa[reciplist.len] = sauninit;
-   addrmangle(reciplist.sa + reciplist.len,*recips,&flagalias,!relayhost);
-   if (!flagalias) flagallaliases = 0;
-   ++reciplist.len;
-   ++recips;
-  }
-
-
- random = now() + (getpid() << 16);
- switch (relayhost ? dns_ip(&ip,&host) : dns_mxip(&ip,&host,random))
-  {
-   case DNS_MEM: temp_nomem();
-   case DNS_SOFT: temp_dns();
-   case DNS_HARD: perm_dns();
-   case 1:
-     if (ip.len <= 0) temp_dns();
-  }
-
- if (ip.len <= 0) perm_nomx();
-
- prefme = 100000;
- for (i = 0;i < ip.len;++i)
-   if (ipme_is(&ip.ix[i].ip))
-     if (ip.ix[i].pref < prefme)
-       prefme = ip.ix[i].pref;
-
- if (relayhost) prefme = 300000;
- if (flagallaliases) prefme = 500000;
-
- for (i = 0;i < ip.len;++i)
-   if (ip.ix[i].pref < prefme)
-     break;
-
- if (i >= ip.len)
-   perm_ambigmx();
-
- for (i = 0;i < ip.len;++i) if (ip.ix[i].pref < prefme)
-  {
-   int s;
-
-   if (tcpto(&ip.ix[i].ip)) continue;
-
-   s = socket(AF_INET,SOCK_STREAM,0);
-   if (s == -1) temp_oserr();
-
-   if (timeoutconn(s,&ip.ix[i].ip,(unsigned int) port,timeoutconnect) == 0)
-    {
-     tcpto_err(&ip.ix[i].ip,0);
-     partner = ip.ix[i].ip;
-     smtp(s); /* does not return */
-    }
-   tcpto_err(&ip.ix[i].ip,errno == error_timeout);
-   close(s);
-  }
- 
- temp_noconn();
-}
+  static ipalloc ip = {0};
+  int i;
+  unsigned long random;
+  char **recips;
+  unsigned long prefme;
+  int flagallaliases;
+  int flagalias;
+  char *relayhost;
 
 #ifdef TLS
-int ssl_timeoutread(ssl,buf,len) SSL *ssl; char *buf; int len;
-{
-  fd_set rfds;
-  struct timeval tv;
-  int fd;
-
-  tv.tv_sec = timeout;
-  tv.tv_usec = 0;
-
-  fd = SSL_get_fd(ssl);
-  FD_ZERO(&rfds);
-  FD_SET(fd,&rfds);
-
-  if (select(fd + 1,&rfds,(fd_set *) 0,(fd_set *) 0,&tv) == -1) return -1;
-  if (FD_ISSET(fd,&rfds)) return SSL_read(ssl,buf,len);
-
-  shutdown(fd,0);
-  errno = error_timeout;
-  return -1;
-}
-
-int ssl_timeoutwrite(ssl,buf,len) SSL *ssl; char *buf; int len;
-{
-  fd_set wfds;
-  struct timeval tv;
-  int fd;
-
-  tv.tv_sec = timeout;
-  tv.tv_usec = 0;
- 
-  fd = SSL_get_fd(ssl);
-  FD_ZERO(&wfds);
-  FD_SET(fd,&wfds);
-
-  if (select(fd + 1,(fd_set *) 0,&wfds,(fd_set *) 0,&tv) == -1) return -1;
-  if (FD_ISSET(fd,&wfds)) return SSL_write(ssl,buf,len);
-
-  shutdown(fd,1);
-  errno = error_timeout;
-  return -1;
-}
+  sig_alarmcatch(sigalrm);
 #endif
+  sig_pipeignore();
+  if (argc < 4) perm_usage();
+  if (chdir(auto_qmail) == -1) temp_chdir();
+  getcontrols();
+ 
+ 
+  if (!stralloc_copys(&host,argv[1])) temp_nomem();
+ 
+  relayhost = 0;
+  for (i = 0;i <= host.len;++i)
+    if ((i == 0) || (i == host.len) || (host.s[i] == '.'))
+      if (relayhost = constmap(&maproutes,host.s + i,host.len - i))
+        break;
+  if (relayhost && !*relayhost) relayhost = 0;
+ 
+  if (relayhost) {
+    i = str_chr(relayhost,':');
+    if (relayhost[i]) {
+      scan_ulong(relayhost + i + 1,&port);
+      relayhost[i] = 0;
+    }
+    if (!stralloc_copys(&host,relayhost)) temp_nomem();
+  }
+
+
+  addrmangle(&sender,argv[2],&flagalias,0);
+ 
+  if (!saa_readyplus(&reciplist,0)) temp_nomem();
+  if (ipme_init() != 1) temp_oserr();
+ 
+  flagallaliases = 1;
+  recips = argv + 3;
+  while (*recips) {
+    if (!saa_readyplus(&reciplist,1)) temp_nomem();
+    reciplist.sa[reciplist.len] = sauninit;
+    addrmangle(reciplist.sa + reciplist.len,*recips,&flagalias,!relayhost);
+    if (!flagalias) flagallaliases = 0;
+    ++reciplist.len;
+    ++recips;
+  }
+
+ 
+  random = now() + (getpid() << 16);
+  switch (relayhost ? dns_ip(&ip,&host) : dns_mxip(&ip,&host,random)) {
+    case DNS_MEM: temp_nomem();
+    case DNS_SOFT: temp_dns();
+    case DNS_HARD: perm_dns();
+    case 1:
+      if (ip.len <= 0) temp_dns();
+  }
+ 
+  if (ip.len <= 0) perm_nomx();
+ 
+  prefme = 100000;
+  for (i = 0;i < ip.len;++i)
+    if (ipme_is(&ip.ix[i].ip))
+      if (ip.ix[i].pref < prefme)
+        prefme = ip.ix[i].pref;
+ 
+  if (relayhost) prefme = 300000;
+  if (flagallaliases) prefme = 500000;
+ 
+  for (i = 0;i < ip.len;++i)
+    if (ip.ix[i].pref < prefme)
+      break;
+ 
+  if (i >= ip.len)
+    perm_ambigmx();
+ 
+  for (i = 0;i < ip.len;++i) if (ip.ix[i].pref < prefme) {
+    if (tcpto(&ip.ix[i].ip)) continue;
+ 
+    smtpfd = socket(AF_INET,SOCK_STREAM,0);
+    if (smtpfd == -1) temp_oserr();
+ 
+    if (timeoutconn(smtpfd,&ip.ix[i].ip,(unsigned int) port,timeoutconnect) == 0) {
+      tcpto_err(&ip.ix[i].ip,0);
+      partner = ip.ix[i].ip;
+      smtp(); /* does not return */
+    }
+    tcpto_err(&ip.ix[i].ip,errno == error_timeout);
+    close(smtpfd);
+  }
+  
+  temp_noconn();
+}

@@ -13,7 +13,7 @@ qmail-local \- deliver or forward a mail message
 .I ext
 .I domain
 .I sender
-.I aliasempty
+.I defaultdelivery
 .SH DESCRIPTION
 .B qmail-local
 reads a mail message
@@ -69,7 +69,7 @@ treats a nonexistent
 the same way as an empty
 .BR .qmail\fIext :
 namely, following the delivery instructions in
-.IR aliasempty .
+.IR defaultdelivery .
 
 The standard input for
 .B qmail-local

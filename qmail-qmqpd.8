@@ -1,0 +1,25 @@
+.TH qmail-qmqpd 8
+.SH NAME
+qmail-qmqpd \- receive mail via QMQP
+.SH SYNOPSIS
+.B qmail-qmqpd
+.SH DESCRIPTION
+.B qmail-qmqpd
+receives mail messages via the Quick Mail Queueing Protocol (QMQP)
+and invokes
+.B qmail-queue
+to deposit them into the outgoing queue.
+.B qmail-qmqpd
+must be supplied several environment variables;
+see
+.BR tcp-environ(5) .
+
+.B qmail-qmqpd
+will relay messages to any destination.
+It should be invoked only for connections from preauthorized users.
+.SH "SEE ALSO"
+tcp-env(1),
+tcpserver(1),
+tcp-environ(5),
+qmail-qmqpc(8),
+qmail-queue(8)

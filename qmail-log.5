@@ -5,31 +5,22 @@ qmail-log \- the qmail activity record
 .B qmail-send
 prints a series of lines describing its activities.
 Each possible line is described below.
-.SH "STARTING AND STOPPING"
-.TP 
-.B running
-.B qmail-send
-is ready to deliver messages.
+.SH "STATUS"
 .TP
-.B local deliveries will be put on hold
-The local concurrency limit is 0, so
+.B status: local \fIl\fB/\fIL\fB remote \fIr\fB/\fIR\fB ...
 .B qmail-send
-will not perform any local deliveries.
+is waiting for
+.I l
+local deliveries
+and
+.I r
+remote deliveries.
+The concurrency limits are
+.I L
+and
+.IR R .
 .TP
-.B remote deliveries will be put on hold
-The remote concurrency limit is 0, so
-.B qmail-send
-will not perform any remote deliveries.
-.TP
-.B number of deliveries left before exiting: ...
-.B qmail-send
-wants to exit as soon as possible,
-usually because it was sent a
-TERM signal,
-but it has to wait for some deliveries to finish.
-It will not start any new deliveries.
-.TP
-.B exiting
+.B status: exiting
 .B qmail-send
 is done.
 .SH "FATAL PROBLEMS"

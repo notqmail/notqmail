@@ -2,3 +2,10 @@
 
 This is the qmail home directory. It must be a local directory, not
 shared among machines. This is where qmail queues all mail messages. 
+
+The queue (except for bounce message contents) is crashproof, if the
+filesystem guarantees that single-byte writes are atomic and that
+directory operations are synchronous. These guarantees are provided by
+fixed-block filesystems such as UFS and by journaling filesystems. Under
+Linux, make sure that all mail-handling filesystems are mounted with
+synchronous metadata.

@@ -67,6 +67,7 @@ void die_user(s,len) char *s; unsigned int len;
   _exit(111);
 }
 
+char *dashcolon = "-:";
 int flagalias = 0;
 int flagnoupper = 1;
 int homestrategy = 2;
@@ -154,7 +155,8 @@ void doaccount()
   if (str_equal(user.s,auto_usera)) {
     if (substdio_puts(subfdout,"+") == -1) die_write();
     if (substdio_put(subfdout,uugh.s,uugh.len) == -1) die_write();
-    if (substdio_puts(subfdout,"-::\n") == -1) die_write();
+    if (substdio_puts(subfdout,dashcolon) == -1) die_write();
+    if (substdio_puts(subfdout,":\n") == -1) die_write();
     flagalias = 1;
   }
 
@@ -180,7 +182,8 @@ void doaccount()
       if (substdio_put(subfdout,mailnames,i) == -1) die_write();
       if (substdio_put(subfdout,auto_break,1) == -1) die_write();
       if (substdio_put(subfdout,uugh.s,uugh.len) == -1) die_write();
-      if (substdio_puts(subfdout,"-::\n") == -1) die_write();
+      if (substdio_puts(subfdout,dashcolon) == -1) die_write();
+      if (substdio_puts(subfdout,":\n") == -1) die_write();
     }
 
     mailnames += i;
@@ -206,7 +209,7 @@ void dosubuser()
   if (substdio_puts(subfdout,"=") == -1) die_write();
   if (substdio_put(subfdout,sub.s,sub.len) == -1) die_write();
   if (substdio_puts(subfdout,uugh) == -1) die_write();
-  if (substdio_puts(subfdout,"-:") == -1) die_write();
+  if (substdio_puts(subfdout,dashcolon) == -1) die_write();
   if (substdio_put(subfdout,x,i) == -1) die_write();
   if (substdio_puts(subfdout,":\n") == -1) die_write();
 
@@ -215,7 +218,7 @@ void dosubuser()
     if (substdio_put(subfdout,sub.s,sub.len) == -1) die_write();
     if (substdio_put(subfdout,auto_break,1) == -1) die_write();
     if (substdio_puts(subfdout,uugh) == -1) die_write();
-    if (substdio_puts(subfdout,"-:") == -1) die_write();
+    if (substdio_puts(subfdout,dashcolon) == -1) die_write();
     if (substdio_put(subfdout,x,i) == -1) die_write();
     if (substdio_puts(subfdout,"-:\n") == -1) die_write();
   }
@@ -232,8 +235,9 @@ char **argv;
   int opt;
   int match;
 
-  while ((opt = getopt(argc,argv,"ohHuUc:C")) != opteof)
+  while ((opt = getopt(argc,argv,"/ohHuUc:C")) != opteof)
     switch(opt) {
+      case '/': dashcolon = "-/:"; break;
       case 'o': homestrategy = 2; break;
       case 'h': homestrategy = 1; break;
       case 'H': homestrategy = 0; break;

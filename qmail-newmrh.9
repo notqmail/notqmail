@@ -1,0 +1,41 @@
+.TH qmail-newmrh 8
+.SH NAME
+qmail-newmrh \- prepare morercpthosts for qmail-smtpd
+.SH SYNOPSIS
+.B qmail-newmrh
+.SH DESCRIPTION
+.B qmail-newmrh
+reads the instructions in
+.B QMAILHOME/control/morercpthosts
+and writes them into
+.B QMAILHOME/control/morercpthosts.cdb
+in a binary format suited
+for quick access by
+.BR qmail-smtpd .
+
+If there is a problem with
+.BR control/morercpthosts ,
+.B qmail-newmrh
+complains and leaves
+.B control/morercpthosts.cdb
+alone.
+
+.B qmail-newmrh
+ensures that
+.B control/morercpthosts.cdb
+is updated atomically,
+so
+.B qmail-smtpd
+never has to wait for
+.B qmail-newmrh
+to finish.
+However,
+.B qmail-newmrh
+makes no attempt to protect against two simultaneous updates of
+.BR control/morercpthosts.cdb .
+
+The binary
+.B control/morercpthosts.cdb
+format is portable across machines.
+.SH "SEE ALSO"
+qmail-smtpd(8)

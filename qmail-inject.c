@@ -21,6 +21,7 @@
 #include "headerbody.h"
 #include "auto_qmail.h"
 #include "newfield.h"
+#include "constmap.h"
 
 #define LINELEN 80
 
@@ -63,13 +64,9 @@ void die_nomem() {
 void die_invalid(sa) stralloc *sa; {
  substdio_putsflush(subfderr,"qmail-inject: fatal: invalid header field: ");
  substdio_putflush(subfderr,sa->s,sa->len); perm(); }
-void die_exec() {
- substdio_putsflush(subfderr,"qmail-inject: fatal: unable to exec qmail-queue\n"); temp(); }
 void die_qqt() {
  substdio_putsflush(subfderr,"qmail-inject: fatal: unable to run qmail-queue\n"); temp(); }
 void die_chdir() {
- substdio_putsflush(subfderr,"qmail-inject: fatal: internal bug\n"); temp(); }
-void die_bug() {
  substdio_putsflush(subfderr,"qmail-inject: fatal: internal bug\n"); temp(); }
 void die_read() {
  if (errno == error_nomem) die_nomem();
@@ -79,19 +76,6 @@ void doordie(sa,r) stralloc *sa; int r; {
  substdio_putsflush(subfderr,"qmail-inject: fatal: unable to parse this line:\n");
  substdio_putflush(subfderr,sa->s,sa->len); perm(); }
 
-void die_comm() {
- substdio_putsflush(subfderr,"qmail-inject: fatal: qmail-queue lost communications link\n"); temp(); }
-void die_qq() {
- substdio_putsflush(subfderr,"qmail-inject: fatal: qmail-queue died\n"); temp(); }
-void die_qqwrite() {
- substdio_putsflush(subfderr,"qmail-inject: fatal: qmail-queue unable to write message to disk; disk full?\n"); temp(); }
-void die_qqsig() {
- substdio_putsflush(subfderr,"qmail-inject: fatal: qmail-queue was killed\n"); temp(); }
-void die_qqtimeout() {
- substdio_putsflush(subfderr,"qmail-inject: fatal: qmail-queue timed out\n"); temp(); }
-void die_qqtoolong() {
- substdio_putsflush(subfderr,"qmail-inject: fatal: qmail-queue unhappy with long addresses\n"); perm(); }
-
 GEN_ALLOC_typedef(saa,stralloc,sa,len,a)
 GEN_ALLOC_readyplus(saa,stralloc,sa,len,a,i,n,x,10,saa_readyplus)
 
@@ -99,12 +83,15 @@ static stralloc sauninit = {0};
 
 saa savedh = {0};
 saa hrlist = {0};
+saa tocclist = {0};
 saa hrrlist = {0};
 saa reciplist = {0};
 int flagresent;
 
 void exitnicely()
 {
+ char *qqx;
+
  if (!flagqueue) substdio_flush(subfdout);
 
  if (flagqueue)
@@ -133,19 +120,22 @@ void exitnicely()
 	 qmail_to(&qqt,hrlist.sa[i].s);
 	}
 
-   switch(qmail_close(&qqt))
-    {
-     case 0: break;
-     case QMAIL_CRASHED: die_qqsig();
-     case QMAIL_USAGE: case QMAIL_BUG: die_bug();
-     case QMAIL_EXECSOFT: die_exec();
-     case QMAIL_NOMEM: die_nomem();
-     case QMAIL_READ: die_comm();
-     case QMAIL_WRITE: die_qqwrite();
-     case QMAIL_TOOLONG: die_qqtoolong();
-     case QMAIL_TIMEOUT: die_qqtimeout();
-     default: die_qq();
-    }
+   qqx = qmail_close(&qqt);
+   if (*qqx)
+     if (*qqx == 'D') {
+       substdio_puts(subfderr,"qmail-inject: fatal: ");
+       substdio_puts(subfderr,qqx + 1);
+       substdio_puts(subfderr,"\n");
+       substdio_flush(subfderr);
+       perm();
+     }
+     else {
+       substdio_puts(subfderr,"qmail-inject: fatal: ");
+       substdio_puts(subfderr,qqx + 1);
+       substdio_puts(subfderr,"\n");
+       substdio_flush(subfderr);
+       temp();
+     }
   }
 
  _exit(0);
@@ -324,11 +314,10 @@ token822_alloc *addr;
  return 1;
 }
 
-void rwrecip(addr,xl)
+void rwappend(addr,xl)
 token822_alloc *addr;
 saa *xl;
 {
- rwgeneric(addr);
  token822_reverse(addr);
  if (!saa_readyplus(xl,1)) die_nomem();
  xl->sa[xl->len] = sauninit;
@@ -338,9 +327,11 @@ saa *xl;
 }
 
 int rwhrr(addr) token822_alloc *addr;
-{ rwrecip(addr,&hrrlist); return 1; }
+{ rwgeneric(addr); rwappend(addr,&hrrlist); return 1; }
 int rwhr(addr) token822_alloc *addr;
-{ rwrecip(addr,&hrlist); return 1; }
+{ rwgeneric(addr); rwappend(addr,&hrlist); return 1; }
+int rwtocc(addr) token822_alloc *addr;
+{ rwgeneric(addr); rwappend(addr,&hrlist); rwappend(addr,&tocclist); return 1; }
 
 int htypeseen[H_NUM];
 stralloc hfbuf = {0};
@@ -351,51 +342,47 @@ token822_alloc hfaddr = {0};
 void doheaderfield(h)
 stralloc *h;
 {
- int htype;
- int flagrewrite;
- int flagrecip;
- int flagrr;
-
- htype = hfield_known(h->s,h->len);
- if (flagdeletefrom) if (htype == H_FROM) return;
- if (flagdeletemessid) if (htype == H_MESSAGEID) return;
- if (flagdeletesender) if (htype == H_RETURNPATH) return;
-
- if (htype)
-   htypeseen[htype] = 1;
- else
-   if (!hfield_valid(h->s,h->len))
-     die_invalid(h);
-
- flagrewrite = 0;
- flagrecip = 0;
- flagrr = 0;
- switch(htype)
-  {
-   case H_R_TO: case H_R_CC: case H_R_BCC:
-     flagrr = 1;
-   case H_TO: case H_CC: case H_BCC: case H_APPARENTLYTO:
-     flagrecip = 1;
-   case H_SENDER: case H_FROM: case H_REPLYTO:
-   case H_RETURNRECEIPTTO: case H_ERRORSTO: case H_RETURNPATH:
-   case H_R_SENDER: case H_R_FROM: case H_R_REPLYTO:
-     flagrewrite = 1;
-     break;
+  int htype;
+  int (*rw)() = 0;
+ 
+  htype = hfield_known(h->s,h->len);
+  if (flagdeletefrom) if (htype == H_FROM) return;
+  if (flagdeletemessid) if (htype == H_MESSAGEID) return;
+  if (flagdeletesender) if (htype == H_RETURNPATH) return;
+ 
+  if (htype)
+    htypeseen[htype] = 1;
+  else
+    if (!hfield_valid(h->s,h->len))
+      die_invalid(h);
+ 
+  switch(htype) {
+    case H_TO: case H_CC:
+      rw = rwtocc; break;
+    case H_BCC: case H_APPARENTLYTO:
+      rw = rwhr; break;
+    case H_R_TO: case H_R_CC: case H_R_BCC:
+      rw = rwhrr; break;
+    case H_RETURNPATH:
+      rw = rwreturn; break;
+    case H_SENDER: case H_FROM: case H_REPLYTO:
+    case H_RETURNRECEIPTTO: case H_ERRORSTO:
+    case H_R_SENDER: case H_R_FROM: case H_R_REPLYTO:
+      rw = rwsender; break;
   }
 
- if (flagrewrite)
-  {
-   doordie(h,token822_parse(&hfin,h,&hfbuf));
-   doordie(h,token822_addrlist(&hfrewrite,&hfaddr,&hfin,(htype == H_RETURNPATH) ? rwreturn : (flagrecip ? (flagrr ? rwhrr : rwhr) : rwsender)));
-   if (token822_unparse(h,&hfrewrite,LINELEN) != 1)
-     die_nomem();
+  if (rw) {
+    doordie(h,token822_parse(&hfin,h,&hfbuf));
+    doordie(h,token822_addrlist(&hfrewrite,&hfaddr,&hfin,rw));
+    if (token822_unparse(h,&hfrewrite,LINELEN) != 1)
+      die_nomem();
   }
-
- if (htype == H_BCC) return;
- if (htype == H_R_BCC) return;
- if (htype == H_RETURNPATH) return;
- if (htype == H_CONTENTLENGTH) return; /* some things are just too stupid */
- savedh_append(h);
+ 
+  if (htype == H_BCC) return;
+  if (htype == H_R_BCC) return;
+  if (htype == H_RETURNPATH) return;
+  if (htype == H_CONTENTLENGTH) return; /* some things are just too stupid */
+  savedh_append(h);
 }
 
 void dobody(h)
@@ -421,7 +408,8 @@ char *s;
      perm();
   }
  token822_reverse(&tr);
- rwrecip(&tr,&reciplist);
+ rwgeneric(&tr);
+ rwappend(&tr,&reciplist);
 }
 
 stralloc defaultfrom = {0};
@@ -526,6 +514,53 @@ void dodefaultreturnpath()
  if (token822_unparse(&defaultreturnpath,&hfrewrite,LINELEN) != 1) die_nomem();
 }
 
+int flagmft = 0;
+stralloc mft = {0};
+struct constmap mapmft;
+
+void mft_init()
+{
+  char *x;
+  int r;
+
+  x = env_get("QMAILMFTFILE");
+  if (!x) return;
+
+  r = control_readfile(&mft,x,0);
+  if (r == -1) die_read(); /*XXX*/
+  if (!r) return;
+
+  if (!constmap_init(&mapmft,mft.s,mft.len,0)) die_nomem();
+  flagmft = 1;
+}
+
+void finishmft()
+{
+  int i;
+  static stralloc sa = {0};
+  static stralloc sa2 = {0};
+
+  if (!flagmft) return;
+  if (htypeseen[H_MAILFOLLOWUPTO]) return;
+
+  for (i = 0;i < tocclist.len;++i)
+    if (constmap(&mapmft,tocclist.sa[i].s,tocclist.sa[i].len))
+      break;
+
+  if (i == tocclist.len) return;
+
+  puts("Mail-Followup-To: ");
+  i = tocclist.len;
+  while (i--) {
+    if (!stralloc_copy(&sa,&tocclist.sa[i])) die_nomem();
+    if (!stralloc_0(&sa)) die_nomem();
+    if (!quote2(&sa2,sa.s)) die_nomem();
+    put(sa2.s,sa2.len);
+    if (i) puts(",\n  ");
+  }
+  puts("\n");
+}
+
 void finishheader()
 {
  flagresent =
@@ -596,6 +631,7 @@ void finishheader()
     }
    if (!htypeseen[H_TO] && !htypeseen[H_CC])
      puts("Cc: recipient list not shown: ;\n");
+   finishmft();
   }
 
  savedh_print();
@@ -606,6 +642,9 @@ void getcontrols()
  static stralloc sa = {0};
  char *x;
 
+ mft_init();
+
+ if (chdir(auto_qmail) == -1) die_chdir();
  if (control_init() == -1) die_read();
 
  if (control_rldef(&control_defaultdomain,"control/defaultdomain",1,"defaultdomain") != 1)
@@ -688,11 +727,10 @@ char **argv;
  recipstrategy = RECIP_DEFAULT;
  flagqueue = 1;
 
- if (chdir(auto_qmail) == -1)
-   die_chdir();
  getcontrols();
 
  if (!saa_readyplus(&hrlist,1)) die_nomem();
+ if (!saa_readyplus(&tocclist,1)) die_nomem();
  if (!saa_readyplus(&hrrlist,1)) die_nomem();
  if (!saa_readyplus(&reciplist,1)) die_nomem();
 

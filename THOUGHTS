@@ -45,9 +45,8 @@ smaller resolver library into qmail. (Bonus: I'd avoid system-specific
 problems with old resolvers.) The problem is that I'd then be writing a
 fundamentally insecure library. I'd no longer be able to blame the BIND
 authors and vendors for the fact that attackers can easily use DNS to
-steal mail. Possible solution: replace dns.c with something that passes
-requests (reliably!) to a local daemon; call the original resolver
-library from that daemon.
+steal mail. Solution: insist that the resolver run on the same host; the
+kernel can guarantee the security of low-numbered 127.0.0.1 UDP ports.
 
 NFS is the primary enemy of security partitioning under UNIX. Here's the
 story. Sun knew from the start that NFS was completely insecure. It
@@ -72,10 +71,10 @@ is, as far as I can tell, always wrong.
 
 2. Injecting mail locally (qmail-inject, sendmail-clone)
 
-RFC 822 section 3.4.9 prohibits certain visual effects in headers.
-qmail-inject doesn't waste the time to enforce this absurd restriction.
-If you will suffer from someone sending you ``flash mail,'' go find a
-better mail reader.
+RFC 822 section 3.4.9 prohibits certain visual effects in headers, and
+the 822bis draft prohibits even more. qmail-inject could enforce these
+absurd restrictions, but why waste the time? If you will suffer from
+someone sending you ``flash mail,'' go find a better mail reader.
 
 qmail-inject's ``Cc: recipient list not shown: ;'' successfully stops
 sendmail from adding Apparently-To. Unfortunately, old versions of
@@ -101,44 +100,47 @@ It is possible to extract non-unique Message-IDs out of qmail-inject.
 Here's how: stop qmail-inject before it gets to the third line of
 main(), then wait until the pids wrap around, then restart qmail-inject
 and blast the message through, then start another qmail-inject with the
-same pid in the same second. I'm not sure how to fix this. (Of course,
-the user could just type in his own non-unique Message-IDs.)
+same pid in the same second. I'm not sure how to fix this without
+system-supplied sequence numbers. (Of course, the user could just type
+in his own non-unique Message-IDs.)
 
 The bat book says: ``Rules that hide hosts in a domain should be applied
 only to sender addresses.'' Recipient masquerading works fine with
 qmail. None of sendmail's pitfalls apply, basically because qmail has a
 straight paper path.
 
-I expect to receive some pressure to make up for the failings of MUA
-writers who don't understand the concept of reliability. (``Like, duh,
-you mean I was supposed to check the sendmail exit code?'')
+I predicted that I would receive some pressure to make up for the
+failings of MUA writers who don't understand the concept of reliability.
+(``Like, duh, you mean I'm supposed to check the sendmail exit code?'')
+I was right.
 
 
 3. Receiving mail from the network (tcp-env, qmail-smtpd)
 
-RFC 1123 requires VRFY support, but says that it's okay if an
-implementation can be configured to not allow VRFY. qmail-smtpd doesn't
-allow VRFY. If you desperately want your SMTP server (i.e., inetd) to
-provide useful information for VRFY, just compile and install sendmail.
-Were the RFC 1123 writers aware of the as-if principle of interface
-specification? ... They say that VRFY and EXPN are important for
-tracking down cross-host mailing list loops. Catch up to the 1990s,
-guys: with Delivered-To, mailing list loops do absolutely no damage,
-_and_ one of the list administrators gets a bounce that shows exactly
-how the loop occurred. Solve the problem, not the symptom. ... There's a
-vastly superior alternative to EXPN. Hint: finger postmaster@ai.mit.edu.
+qmail-smtpd doesn't allow privacy-invading commands like VRFY and EXPN.
+If you really want to publish such information, use a mechanism that
+legitimate users actually know about, such as fingerd or httpd.
+
+RFC 1123 says that VRFY and EXPN are important to track down cross-host
+mailing list loops. With Delivered-To, mailing list loops do no damage,
+_and_ one of the list administrators gets a bounce message that shows
+exactly how the loop occurred. Solve the problem, not the symptom.
 
 Should dns.c make special allowances for 127.0.0.1/localhost?
 
 badmailfrom (like 8BITMIME) is a waste of code space.
+
+In theory a MAIL or RCPT argument can contain unquoted LFs. In practice
+there are a huge number of clients that terminate commands with just LF,
+even if they use CR properly inside DATA.
 
 
 4. Adding messages to the queue (qmail-queue)
 
 Should qmail-queue try to make sure enough disk space is free in
 advance? When qmail-queue is invoked by qmail-local or (with ESMTP)
-qmail-smtpd or qmail-qmtpd, it could be told a size in advance. I wish
-UNIX had an atomic allocate-disk-space routine... 
+qmail-smtpd or qmail-qmtpd or qmail-qmqpd, it could be told a size in
+advance. I wish UNIX had an atomic allocate-disk-space routine... 
 
 The qmail.h interface (reflecting the qmail-queue interface, which in
 turn reflects the current queue file structure) is constitutionally
@@ -152,11 +154,7 @@ Should qmail-queue not bother queueing a message with no recipients?
 
 The queue directory must be local. Mounting it over NFS is extremely
 dangerous---not that this stops people from running sendmail that way!
-Perhaps it is worth putting together a diskless-host qmail package with
-just qmail-inject and an SMTP client in place of qmail-queue. Sending
-mail to the server via SMTP is of course vastly better than trying to do
-anything over NFS. If the NFS server is up but the mail server is down,
-users will just have to wait.
+Diskless hosts should use mini-qmail instead.
 
 Queue reliability demands that single-byte writes be atomic. This is
 true for a fixed-block filesystem such as UFS, and for a logging
@@ -190,11 +188,8 @@ than one deliverable message at any given moment.
 Exception: Even with all the concurrency tricks, qmail-send can end up
 spending a few minutes on a mailing list with thousands of remote
 entries. A user might send a new message to a remote address in the
-meantime. Perhaps qmail-send should limit its time per message to,
-say, thirty recipients. This will require some way to mark recipients
-who were already done on this pass. Possible approach: Maintain two todo
-lists (for both L and R). Always work on the earlier todo list. Move
-deferrals to the other todo list.
+meantime. The simplest way to handle this would be to put big messages
+on a separate channel.
 
 qmail-send will never start a pass for a job that it already has. This
 means that, if one delivery takes longer than the retry interval, the
@@ -207,40 +202,26 @@ Some things that qmail-send does synchronously: queueing a bounce
 message; doing a cleanup via qmail-clean; classifying and rewriting all
 the addresses in a new message. As usual, making these asynchronous
 would require some housekeeping, but could speed things up a bit.
-(Making bounces asynchronous, without POSIX waitpid(), means that
-wait_pid() has to keep a buffer of previous wait()s. Ugh.)
+(I'm willing to assume POSIX waitpid() for asynchronous bounces; putting
+an unbounded buffer into wait_pid() for the sake of NeXTSTEP 3 is not
+worthwhile.)
 
-fsync() is a bottleneck. To make this asynchronous would require gobs of
-dedicated output processes whose only purpose in life is to watch data
-get written to the disk. Inconceivable! (``You keep using that word. I
-do not think that word means what you think it means.'')
+Disk I/O is a bottleneck; UFS is reliable but it isn't fast. A good
+logging filesystem offers much better performance, but logging
+filesystems aren't widely available. Solution: Keep a journal, separate
+from the queue, adequate to rebuild the queue (with at worst some
+duplicate deliveries). Compress the journal. This would dramatically
+reduce total disk I/O.
 
-On the other hand, I could survive without fsync()ing the local and
-remote and info files as long as I don't unlink todo. This would require
-redefining the queue states. I need to see how much speed can be gained.
+Bounce aggregation is a dubious feature. Bounce records aren't
+crashproof; there can be a huge delay between a failure and a bounce;
+the resulting bounce format is unnecessarily complicated. I'm tempted to
+scrap the bounce directory and send one bounce for each failing
+recipient, with appropriate modifications in the accompanying text.
 
-Currently qmail-send sends at most one bounce message for each incoming
-message. This means that the sender doesn't get flooded with copies of
-his own message. On the other hand, a single slow address can hold up
-bounces for a bunch of fast addresses. It would be easy to call
-injectbounce() more often. What is the best strategy? This feels like
-the TCP-buffering issue... don't want to pepper the other guy with
-little packets, but do want to get the data across.
-
-qmail-stop implementation: setuid to UID_SEND; kill -TERM -1. Given how
-simple this is, I'm not inclined to set up some tricky locking solution
-where qmail-send records its pid etc. But I just know that, if I provide
-this qmail-stop program, someone will screw himself by making another
-uid the same as UID_SEND, or making UID_SEND be root, or whatever.
-Aargh. Maybe use another named pipe... New solution: Run qmail-start
-under an external service controller---it runs in the foreground now.
-
-Bounce messages could include more statistical information in the first
-paragraph: when I received the message, how many recipients I was
-supposed to handle, how many I successfully dealt with, how many I
-already told you about, how many are still in the queue. Have to
-emphasize that the number of recipients _here_ is perhaps less than the
-number of recipients on the original message.
+qmail-stop implementation: setuid to UID_SEND; kill -TERM -1. Or run
+qmail-start under an external service controller, such as supervise;
+that's why it runs in the foreground.
 
 The readdir() interface hides I/O errors. Lower-level interfaces would
 lead me into a thicket of portability problems. I'm really not sure what
@@ -270,22 +251,17 @@ messages to multiple recipients at a single host? For typical hosts,
 multiple RCPTs per SMTP aren't an ``efficiency feature''; they're a
 _slowness_ feature. Separate SMTP transactions have much lower latency.
 
-The multiple-RCPT bandwidth gain _might_ be noticeable for a machine
-that sends most messages to a smarthost. It would be easy to have
-qmail-rspawn supply qmail-remote with all the addresses at once, as long
-as qmail-send says when it's about to block... Putting recipients into
-the right order is clearly the UA's job. One multiple-RCPT pitfall is
-that a remote host might not be able to deal with (say) 10 recipients,
-even though RFC 821 says everyone has to be able to handle 100;
-qmail-rspawn would have to notice this and back off. (Not that other
-mailers do. Sometimes I'm amazed Internet mail works at all.)
+I've heard three complaints about bandwidth use from masochists sending
+messages through a modem through a smarthost to thousands of users---
+without sublists! They can get much better performance with QMQP.
 
 In the opposite direction: It's tempting to remove the @host part of the
 qmail-remote recip argument. Or at least avoid double-dns_cname.
 
 There are lots of reasons that qmail-rspawn should take a more active
 role in qmail-remote's activities. It should call separate programs to
-do (1) MX lookups, (2) SMTP connections, (3) QMTP connections.
+do (1) MX lookups, (2) SMTP connections, (3) QMTP connections. (But this
+wouldn't be so important if the DNS library didn't burn so much memory.)
 
 I bounce ambiguous MXs. (An ``ambiguous MX'' is a best-preference MX
 record sending me mail for a host that I don't recognize as local.)
@@ -309,6 +285,15 @@ time across any number of MXs; this idea is due to Mark Delany.
 
 RFC 821 doesn't say what it means by ``text.'' qmail-remote assumes that
 the server's reply text doesn't contain bare LFs.
+
+RFC 821 and RFC 1123 prohibit host names in MAIL FROM and RCPT TO from
+being aliases. qmail-remote, like sendmail, rewrites aliases in RCPT;
+people who don't list aliases in control/locals or sendmail's Cw are
+implicitly relying on this conversion. It is course quite silly for an
+internal DNS detail to have such an effect on mail delivery, but that's
+how the Internet works. On the other hand, the compatibility arguments
+do not apply to MAIL FROM. qmail-remote no longer bothers with CNAME
+lookups for the envelope sender host.
 
 
 7. Delivering mail locally (qmail-lspawn, qmail-local)
@@ -347,7 +332,7 @@ Configurable user database: Yup.
 
 BIND support: Yup.
 
-Keyed files: Yes, in qmsmac.
+Keyed files: Yes, in fastforward.
 
 931/1413/Ident/TAP: Yup.
 
@@ -358,7 +343,9 @@ List-owner handling: Yup.
 
 Dynamic header allocation: Yup.
 
-Minimum number of disk blocks: Yes, via tunefs -m.
+Minimum number of disk blocks: Yes, via tunefs -m. (Or quotas; the right
+setup has qmailq with a small quota, qmails with a larger quota, so that
+qmail-send always has room to work.)
 
 Checkpointing: Yes, but not configurable---qmail always checkpoints.
 
@@ -419,12 +406,6 @@ I should clean up the bput/put choices.
 
 Some of the stralloc_0()s indicate that certain lower-level routines
 should grok stralloc.
-
-RN suggests having qlist smash the case of the incoming host name.
-
-K1J suggests that mailing list subscription managers should have
-a three-way handshake, to prevent person A from subscribing person B to
-a mailing list. qlist doesn't do this, but ezmlm does.
 
 qmail assumes that all times are positive; that pid_t, time_t and ino_t
 fit into unsigned long; that gid_t fits into int; that the character set

@@ -45,7 +45,7 @@ ignores the line.
 A program line begins with a vertical bar:
 
 .EX
-     |/usr/ucb/vacation djb
+     |preline /usr/ucb/vacation djb
 .EE
 
 .B qmail-local
@@ -173,10 +173,10 @@ If
 is completely empty (0 bytes long), or does not exist,
 .B qmail-local
 follows the
-.I aliasempty
+.I defaultdelivery
 instructions set by your system administrator;
 normally
-.I aliasempty
+.I defaultdelivery
 is
 .BR ./Mailbox ,
 so
@@ -224,7 +224,7 @@ It's a good idea to test your new
 file as follows:
 
 .EX
-     qmail-local -n $USER $HOME $USER '' '' '' ''
+     qmail-local -n $USER ~ $USER '' '' '' '' ./Mailbox
 .EE
 .SH "EXTENSION ADDRESSES"
 In the
@@ -274,7 +274,7 @@ If
 is completely empty,
 .B qmail-local
 follows the
-.I aliasempty
+.I defaultdelivery
 instructions set by your system administrator.
 
 If

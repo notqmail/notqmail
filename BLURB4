@@ -4,7 +4,7 @@ against the competition in five different speed measurements.
 
 * Scheduling: I sent a message to 8192 ``trash'' recipients on my home
 machine. All the deliveries were done in a mere 78 seconds---a rate of
-over 9 MILLION deliveries a day! Compare this to the speed advertised
+over 9 million deliveries a day! Compare this to the speed advertised
 for Zmailer's scheduling: 1.1 million deliveries a day on a
 SparcStation-10/50. (My home machine is a 16MB Pentium-100 under BSD/OS,
 with the default qmail configuration. qmail's logs were piped through
@@ -14,7 +14,7 @@ accustamp and written to disk as usual.)
 it physically writes the message to disk before it announces success---
 that way, mail doesn't get lost if the power goes out. I tried sending a
 message to 1024 local mailboxes on the same disk on my home machine; all
-the deliveries were done in 25.5 seconds. That's more than 3.4 MILLION
+the deliveries were done in 25.5 seconds. That's more than 3.4 million
 deliveries a day! Sending 1024 copies to a _single_ mailbox was just as
 fast. Compare these figures to Zmailer's advertised rate for throwing
 recipients away without even delivering the message---only 0.48 million

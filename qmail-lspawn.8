@@ -3,7 +3,7 @@
 qmail-lspawn \- schedule local deliveries
 .SH SYNOPSIS
 .B qmail-lspawn
-.I aliasempty
+.I defaultdelivery
 .SH DESCRIPTION
 .B qmail-lspawn
 reads a series of local delivery commands from descriptor 0,
@@ -12,7 +12,7 @@ invokes
 to perform the deliveries,
 and prints the results to descriptor 1.
 It passes
-.I aliasempty
+.I defaultdelivery
 to
 .B qmail-local
 as the default delivery instruction.

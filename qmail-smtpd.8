@@ -28,6 +28,9 @@ supports ESMTP, including the 8BITMIME and PIPELINING options.
 .B qmail-smtpd
 converts the SMTP newline convention into the UNIX newline convention
 by converting CR LF into LF.
+It returns a temporary error and drops the connection on bare LFs;
+see
+.BR http://pobox.com/~djb/docs/smtplf.html .
 
 .B qmail-smtpd
 accepts messages that contain long lines or non-ASCII characters,
@@ -46,6 +49,33 @@ may be of the form
 .BR @\fIhost ,
 meaning every address at
 .IR host .
+.TP 5
+.I databytes
+Maximum number of bytes allowed in a message,
+or 0 for no limit.
+Default: 0.
+If a message exceeds this limit,
+.B qmail-smtpd
+returns a permanent error code to the client;
+in contrast, if
+the disk is full or
+.B qmail-smtpd
+hits a resource limit,
+.B qmail-smtpd
+returns a temporary error code.
+
+.I databytes
+counts bytes as stored on disk, not as transmitted through the network.
+It does not count the
+.B qmail-smtpd
+Received line, the
+.B qmail-queue
+Received line, or the envelope.
+
+If the environment variable
+.B DATABYTES
+is set, it overrides
+.IR databytes .
 .TP 5
 .I localiphost
 Replacement host name for local IP addresses.
@@ -66,6 +96,29 @@ with
 .IR localiphost .
 This is done before
 .IR rcpthosts .
+.TP 5
+.I morercpthosts
+Extra allowed RCPT domains.
+If
+.I rcpthosts
+and
+.I morercpthosts
+both exist,
+.I morercpthosts
+is effectively appended to
+.IR rcpthosts .
+
+You must run
+.B qmail-newmrh
+whenever
+.I morercpthosts
+changes.
+
+Rule of thumb for large sites:
+Put your 50 most commonly used domains into
+.IR rcpthosts ,
+and the rest into
+.IR morercpthosts .
 .TP 5
 .I rcpthosts
 Allowed RCPT domains.
@@ -121,5 +174,6 @@ tcp-env(1),
 tcp-environ(5),
 qmail-control(5),
 qmail-inject(8),
+qmail-newmrh(8),
 qmail-queue(8),
 qmail-remote(8)

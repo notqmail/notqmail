@@ -1,5 +1,6 @@
-022
+002
 
-These stat bits are not allowed in ~ and ~/.qmail.
+These stat bits are not allowed in ~ and ~/.qmail. On most systems, the
+default umask is 022 or 077, so 022 will work here.
 
 Note that ~ftp, ~www, ~uucp, etc. should be owned by root.

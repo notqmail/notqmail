@@ -16,11 +16,11 @@ out-of-the-box configuration.
 
 * qmail automatically prevents mailing list loops, even across hosts.
 
-* qlist, included in the qmail package, deals with subscription requests
-safely and automatically.
-
 * qmail allows inconceivably gigantic mailing lists. No random limits.
 
 * qmail handles aliasing and forwarding with the same simple mechanism.
 For example, Postmaster is controlled by ~alias/.qmail-postmaster. This
 means that cross-host loop detection also applies to aliases.
+
+* qmail supports the ezmlm mailing list manager, which easily and
+automatically handles bounces, subscription requests, and archives.

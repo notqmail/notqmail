@@ -23,6 +23,7 @@ in
 .IR badmailfrom ,
 .IR locals ,
 .IR percenthack ,
+.IR qmqpservers ,
 .IR rcpthosts ,
 .IR smtproutes ,
 and
@@ -46,6 +47,7 @@ control	default	used by
 .I concurrencyremote	\fR20	\fRqmail-send
 .I defaultdomain	\fIme	\fRqmail-inject
 .I defaulthost	\fIme	\fRqmail-inject
+.I databytes	\fR0	\fRqmail-smtpd
 .I doublebouncehost	\fIme	\fRqmail-send
 .I doublebounceto	\fRpostmaster	\fRqmail-send
 .I envnoathost	\fIme	\fRqmail-send
@@ -53,11 +55,12 @@ control	default	used by
 .I idhost	\fIme	\fRqmail-inject
 .I localiphost	\fIme	\fRqmail-smtpd
 .I locals	\fIme	\fRqmail-send
+.I morercpthosts	\fR(none)	\fRqmail-smtpd
 .I percenthack	\fR(none)	\fRqmail-send
 .I plusdomain	\fIme	\fRqmail-inject
+.I qmqpservers	\fR(none)	\fRqmail-qmqpc
 .I queuelifetime	\fR604800	\fRqmail-send
 .I rcpthosts	\fR(none)	\fRqmail-smtpd
-.I recipientmap	\fR(none)	\fRqmail-send
 .I smtpgreeting	\fIme	\fRqmail-smtpd
 .I smtproutes	\fR(none)	\fRqmail-remote
 .I timeoutconnect	\fR60	\fRqmail-remote
@@ -68,6 +71,7 @@ control	default	used by
 .RE
 .SH "SEE ALSO"
 qmail-inject(8),
+qmail-qmqpc(8),
 qmail-remote(8),
 qmail-send(8),
 qmail-showctl(8),

@@ -29,6 +29,7 @@ static char *(hname[]) = {
 , "content-type"
 , "content-transfer-encoding"
 , "notice-requested-upon-delivery-to"
+, "mail-followup-to"
 , 0
 };
 

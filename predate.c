@@ -5,10 +5,13 @@
 #include "wait.h"
 #include "fd.h"
 #include "fmt.h"
+#include "strerr.h"
 #include "substdio.h"
 #include "subfd.h"
 #include "readwrite.h"
 #include "exit.h"
+
+#define FATAL "predate: fatal: "
 
 static char *montab[12] = {
 "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"
@@ -34,30 +37,22 @@ char **argv;
 
   sig_pipeignore();
 
-  if (!argv[1]) {
-    substdio_putsflush(subfderr,"predate: usage: predate child\n");
-    _exit(100);
-  }
+  if (!argv[1])
+    strerr_die1x(100,"predate: usage: predate child");
 
-  if (pipe(pi) == -1) {
-    substdio_putsflush(subfderr,"predate: fatal: unable to create pipe\n");
-    _exit(111);
-  }
+  if (pipe(pi) == -1)
+    strerr_die2sys(111,FATAL,"unable to create pipe: ");
 
   switch(pid = fork()) {
     case -1:
-      substdio_putsflush(subfderr,"predate: fatal: unable to fork\n");
-      _exit(111);
+      strerr_die2sys(111,FATAL,"unable to fork: ");
     case 0:
       close(pi[1]);
-      if (fd_move(0,pi[0]) == -1) {
-        substdio_putsflush(subfderr,"predate: fatal: unable to set up fds\n");
-        _exit(111);
-      }
+      if (fd_move(0,pi[0]) == -1)
+	strerr_die2sys(111,FATAL,"unable to set up fds: ");
       sig_pipedefault();
       execvp(argv[1],argv + 1);
-      substdio_putsflush(subfderr,"predate: fatal: unable to exec\n");
-      _exit(111);
+      strerr_die4sys(111,FATAL,"unable to run ",argv[1],": ");
   }
   close(pi[0]);
   substdio_fdbuf(&ss,write,pi[1],outbuf,sizeof(outbuf));
@@ -113,13 +108,9 @@ char **argv;
   substdio_flush(&ss);
   close(pi[1]);
 
-  if (wait_pid(&wstat,pid) == -1) {
-    substdio_putsflush(subfderr,"predate: fatal: wait failed\n");
-    _exit(111);
-  }
-  if (wait_crashed(wstat)) {
-    substdio_putsflush(subfderr,"predate: fatal: child crashed\n");
-    _exit(111);
-  }
+  if (wait_pid(&wstat,pid) == -1)
+    strerr_die2sys(111,FATAL,"wait failed: ");
+  if (wait_crashed(wstat))
+    strerr_die2x(111,FATAL,"child crashed");
   _exit(wait_exitcode(wstat));
 }

@@ -1,22 +1,24 @@
-#include "subfd.h"
-#include "substdio.h"
-#include "error.h"
+#include "strerr.h"
 #include "exit.h"
 
-void die(s) char *s; { substdio_putsflush(subfderr,s); _exit(111); }
+#define FATAL "maildirmake: fatal: "
 
 void main(argc,argv)
 int argc;
 char **argv;
 {
- umask(077);
- if (!argv[1]) die("usage: maildirmake name\n");
- if (mkdir(argv[1],0700))
-   if (errno == error_exist) die("fatal: directory already exists\n");
-   else die("fatal: unable to mkdir\n");
- if (chdir(argv[1])) die("fatal: unable to chdir\n");
- if (mkdir("tmp",0700)) die("fatal: unable to make tmp/ subdir\n");
- if (mkdir("new",0700)) die("fatal: unable to make new/ subdir\n");
- if (mkdir("cur",0700)) die("fatal: unable to make cur/ subdir\n");
- _exit(0);
+  umask(077);
+  if (!argv[1])
+    strerr_die1x(100,"maildirmake: usage: maildirmake name");
+  if (mkdir(argv[1],0700) == -1)
+    strerr_die4sys(111,FATAL,"unable to mkdir ",argv[1],": ");
+  if (chdir(argv[1]) == -1)
+    strerr_die4sys(111,FATAL,"unable to chdir to ",argv[1],": ");
+  if (mkdir("tmp",0700) == -1)
+    strerr_die4sys(111,FATAL,"unable to mkdir ",argv[1],"/tmp: ");
+  if (mkdir("new",0700) == -1)
+    strerr_die4sys(111,FATAL,"unable to mkdir ",argv[1],"/new: ");
+  if (mkdir("cur",0700) == -1)
+    strerr_die4sys(111,FATAL,"unable to mkdir ",argv[1],"/cur: ");
+  _exit(0);
 }

@@ -1,0 +1,29 @@
+.TH qmail-qmqpc 8
+.SH NAME
+qmail-qmqpc \- queue a mail message via QMQP
+.SH SYNOPSIS
+.B qmail-qmqpc
+.SH DESCRIPTION
+.B qmail-qmqpc
+offers the same interface as
+.BR qmail-queue ,
+but it gives the message to a QMQP server
+instead of storing it locally.
+
+In a
+.B mini-qmail
+installation,
+.B qmail-queue
+is replaced with a symbolic link to
+.BR qmail-qmqpc .
+.SH "CONTROL FILES"
+.TP 5
+.I qmqpservers
+IP addresses of QMQP servers, one address per line.
+.B qmail-qmqpc
+will try each address in turn until it establishes a QMQP connection
+or runs out of addresses.
+.SH "SEE ALSO"
+qmail-control(5),
+qmail-queue(8),
+qmail-qmqpd(8)

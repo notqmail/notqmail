@@ -1,3 +1,7 @@
 cd QMAIL
-echo messages in queue: `find queue/mess -type f -print | wc -l`
-echo messages in queue but not yet preprocessed: `find queue/todo -type f -print | wc -l`
+messdirs=`echo queue/mess/* | wc -w`
+messfiles=`find queue/mess/* -print | wc -w`
+tododirs=`echo queue/todo | wc -w`
+todofiles=`find queue/todo -print | wc -w`
+echo messages in queue: `expr $messfiles - $messdirs`
+echo messages in queue but not yet preprocessed: `expr $todofiles - $tododirs`

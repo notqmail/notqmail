@@ -1,0 +1,71 @@
+.TH bouncesaying 1
+.SH NAME
+bouncesaying \- perhaps bounce each incoming message
+.SH SYNOPSIS
+in
+.BR .qmail :
+.B |bouncesaying
+.I error
+[
+.I program
+[
+.I arg ...
+]
+]
+.SH DESCRIPTION
+.B bouncesaying
+feeds each new mail message to
+.I program
+with the given arguments.
+If
+.I program
+exits 0,
+.B bouncesaying
+prints
+.I error
+and bounces the message.
+
+If
+.I program
+exits 111,
+.B bouncesaying
+exits 111,
+so delivery will be retried later.
+
+If
+.I program
+exits anything else
+(or does not exist),
+.B bouncesaying
+exits 0,
+so the rest of
+.B .qmail
+will be processed as usual.
+
+Note that
+it is not safe for
+.I program
+to fork a child that
+reads the message in the background.
+
+If
+.I program
+is not supplied,
+.B bouncesaying
+always bounces the message:
+
+.EX
+   |bouncesaying 'This address no longer accepts mail.'
+.EE
+
+.B WARNING:
+If you create a
+.B .qmail
+file to enable
+.BR bouncesaying ,
+make sure to also add a line specifying delivery to your normal mailbox.
+.SH "SEE ALSO"
+condredirect(1),
+except(1),
+dot-qmail(5),
+qmail-command(8)

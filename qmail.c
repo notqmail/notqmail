@@ -28,7 +28,7 @@ struct qmail *qq;
       close(pie[1]);
       if (fd_move(0,pim[0]) == -1) _exit(120);
       if (fd_move(1,pie[0]) == -1) _exit(120);
-      if (chdir(auto_qmail) == -1) _exit(120);
+      if (chdir(auto_qmail) == -1) _exit(61);
       execv(*binqqargs,binqqargs);
       _exit(120);
   }
@@ -77,27 +77,49 @@ void qmail_to(qq,s) struct qmail *qq; char *s;
   qmail_put(qq,"",1);
 }
 
-int qmail_close(qq)
+char *qmail_close(qq)
 struct qmail *qq;
 {
   int wstat;
+  int exitcode;
 
   qmail_put(qq,"",1);
   if (!qq->flagerr) if (substdio_flush(&qq->ss) == -1) qq->flagerr = 1;
   close(qq->fde);
 
-  if (wait_pid(&wstat,qq->pid) != qq->pid) return QMAIL_WAITPID;
-  if (wait_crashed(wstat)) return QMAIL_CRASHED;
-  switch(wait_exitcode(wstat)) {
-    case 0: if (qq->flagerr) return QMAIL_BUG; return 0;
-    case 112: return QMAIL_USAGE;
-    case 115: return QMAIL_TOOLONG;
-    case 103: case 104: case 105: case 106: case 108: return QMAIL_SYS;
-    case 121: return QMAIL_READ;
-    case 122: return QMAIL_WRITE;
-    case 123: return QMAIL_NOMEM;
-    case 124: return QMAIL_TIMEOUT;
-    case 120: return QMAIL_EXECSOFT;
-    default: /* 101 or 102 */ return QMAIL_BUG;
+  if (wait_pid(&wstat,qq->pid) != qq->pid)
+    return "Zqq waitpid surprise (#4.3.0)";
+  if (wait_crashed(wstat))
+    return "Zqq crashed (#4.3.0)";
+  exitcode = wait_exitcode(wstat);
+
+  switch(exitcode) {
+    case 115: /* compatibility */
+    case 11: return "Denvelope address too long for qq (#5.1.3)";
+    case 31: return "Dmail server permanently rejected message (#5.3.0)";
+    case 51: return "Zqq out of memory (#4.3.0)";
+    case 52: return "Zqq timeout (#4.3.0)";
+    case 53: return "Zqq write error or disk full (#4.3.0)";
+    case 0: if (!qq->flagerr) return ""; /* fall through */
+    case 54: return "Zqq read error (#4.3.0)";
+    case 55: return "Zqq unable to read configuration (#4.3.0)";
+    case 56: return "Zqq trouble making network connection (#4.3.0)";
+    case 61: return "Zqq trouble in home directory (#4.3.0)";
+    case 63:
+    case 64:
+    case 65:
+    case 66:
+    case 62: return "Zqq trouble creating files in queue (#4.3.0)";
+    case 71: return "Zmail server temporarily rejected message (#4.3.0)";
+    case 72: return "Zconnection to mail server timed out (#4.4.1)";
+    case 73: return "Zconnection to mail server rejected (#4.4.1)";
+    case 74: return "Zcommunication with mail server failed (#4.4.2)";
+    case 91: /* fall through */
+    case 81: return "Zqq internal bug (#4.3.0)";
+    case 120: return "Zunable to exec qq (#4.3.0)";
+    default:
+      if ((exitcode >= 11) && (exitcode <= 40))
+	return "Dqq permanent problem (#5.3.0)";
+      return "Zqq temporary problem (#4.3.0)";
   }
 }

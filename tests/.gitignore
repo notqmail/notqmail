@@ -1,2 +1,4 @@
 *.o
+unittest_blast
 unittest_stralloc
+blast.c

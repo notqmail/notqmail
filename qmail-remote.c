@@ -200,6 +200,16 @@ void blast()
     if (ch == '.')
       substdio_put(&smtpto,".",1);
     while (ch != '\n') {
+      if (ch == '\r') {
+        r = substdio_get(&ssin, &ch, 1);
+        if (r == 0)
+          break;
+        if (r == -1) temp_read();
+        if (ch != '\n') {
+          substdio_put(&smtpto, "\r\n", 2);
+        } else
+          break;
+      }
       substdio_put(&smtpto,&ch,1);
       r = substdio_get(&ssin,&ch,1);
       if (r == 0) perm_partialline();

@@ -40,6 +40,12 @@ and does not enforce any restrictions on its contents.
 However, the recipients probably expect to see a proper header,
 as described in
 .BR qmail-header(5) .
+
+Programs included with qmail which invoke
+.B qmail-queue
+will invoke the contents of
+.B $QMAILQUEUE
+instead, if that environment variable is set.
 .SH "FILESYSTEM RESTRICTIONS"
 .B qmail-queue
 imposes two constraints on the queue structure:

@@ -6,14 +6,25 @@
 #include "fd.h"
 #include "qmail.h"
 #include "auto_qmail.h"
+#include "env.h"
 
-static char *binqqargs[2] = { "bin/qmail-queue", 0 } ;
+static char *binqqargs[2] = { 0, 0 } ;
+
+static void setup_qqargs()
+{
+  if(!binqqargs[0])
+    binqqargs[0] = env_get("QMAILQUEUE");
+  if(!binqqargs[0])
+    binqqargs[0] = "bin/qmail-queue";
+}
 
 int qmail_open(qq)
 struct qmail *qq;
 {
   int pim[2];
   int pie[2];
+
+  setup_qqargs();
 
   if (pipe(pim) == -1) return -1;
   if (pipe(pie) == -1) { close(pim[0]); close(pim[1]); return -1; }

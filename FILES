@@ -10,6 +10,7 @@ INSTALL.ctl
 INSTALL.ids
 INSTALL.maildir
 INSTALL.mbox
+INSTALL-1.03
 INSTALL.vsm
 REMOVE.sendmail
 REMOVE.binmail

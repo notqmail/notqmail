@@ -3,7 +3,7 @@ information generally), the qmail system comes with NO WARRANTY. It's
 much more secure and reliable than sendmail, but that's not saying much.
 
 
-Here's how to upgrade to qmail 1.03. This procedure will overwrite the
+Here's how to upgrade to netqmail 1.04. This procedure will overwrite the
 old qmail binaries. Furthermore, it may begin delivering messages from
 the queue before you have had a chance to test it.
 
@@ -17,7 +17,7 @@ mechanism has been expanded to support virtual users.
 
 
 Before starting, compare conf* to your old conf*, and make any necessary
-changes. You can copy conf* from 1.02.
+changes. You can copy conf* from 1.02 or 1.03.
 
 
 How to install:

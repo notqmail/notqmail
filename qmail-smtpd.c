@@ -69,7 +69,7 @@ void smtp_greet(code) char *code;
 }
 void smtp_help()
 {
-  out("214 qmail home page: http://pobox.com/~djb/qmail.html\r\n");
+  out("214 netqmail home page: http://qmail.org/netqmail\r\n");
 }
 void smtp_quit()
 {

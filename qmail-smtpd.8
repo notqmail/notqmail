@@ -210,9 +210,10 @@ and the certificate email address is in
 
 .TP 5
 .I tlsserverciphers
-An OpenSSL cipher string. If the environment variable
+A set of OpenSSL cipher strings. Multiple ciphers contained in a
+string should be separated by a colon. If the environment variable
 .B TLSCIPHERS
-is set, it takes precedence.
+is set to such a string, it takes precedence.
 
 .SH "SEE ALSO"
 tcp-env(1),

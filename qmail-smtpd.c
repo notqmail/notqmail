@@ -28,26 +28,16 @@
 unsigned int databytes = 0;
 int timeout = 1200;
 
+const char *protocol = "SMTP";
+
 #ifdef TLS
+# include "tls.h"
+# include "ssl_timeoutio.h"
 
-#include "ssl_timeoutio.h"
-#include <openssl/ssl.h>
-
-SSL *ssl = NULL;
-/* SSL_get_Xfd() are broken */
-int ssl_rfd = -1, ssl_wfd = -1;
-
-int smtps = 0;
-void init_tls();
-
-stralloc clientcert = {0};
-stralloc tlsserverciphers = {0};
-
-static int verify_cb(int ok, X509_STORE_CTX * ctx)
-{
-  return 1;
-}
-
+void tls_init();
+int tls_verify();
+void tls_nogateway();
+int ssl_rfd = -1, ssl_wfd = -1; /* SSL_get_Xfd() are broken */
 #endif
 
 int safewrite(fd,buf,len) int fd; char *buf; int len;
@@ -55,7 +45,7 @@ int safewrite(fd,buf,len) int fd; char *buf; int len;
   int r;
 #ifdef TLS
   if (ssl && fd == ssl_wfd)
-    r = ssl_timeoutwrite(timeout,ssl_rfd,ssl_wfd,ssl,buf,len);
+    r = ssl_timeoutwrite(timeout, ssl_rfd, ssl_wfd, ssl, buf, len);
   else
 #endif
   r = timeoutwrite(timeout,fd,buf,len);
@@ -77,12 +67,13 @@ void die_ipme() { out("421 unable to figure out my IP addresses (#4.3.0)\r\n"); 
 void straynewline() { out("451 See http://pobox.com/~djb/docs/smtplf.html.\r\n"); flush(); _exit(1); }
 
 void err_bmf() { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
+#ifndef TLS
 void err_nogateway() { out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n"); }
-#ifdef TLS
-void err_nogwcert(const char *s)
+#else
+void err_nogateway()
 {
-  out("553 no valid cert for gatewaying");
-  if (s) { out(": "); out(s); }
+  out("553 sorry, that domain isn't in my list of allowed rcpthosts");
+  tls_nogateway();
   out(" (#5.7.1)\r\n");
 }
 #endif
@@ -168,19 +159,7 @@ void setup()
   relayclient = env_get("RELAYCLIENT");
 
 #ifdef TLS
-  x = env_get("TLSCIPHERS");
-  if (x) { if (*x) if (!stralloc_copys(&tlsserverciphers,x)) die_nomem(); } 
-  else if (control_readline(&tlsserverciphers,"control/tlsserverciphers") == -1)
-    die_control();
-  if (!tlsserverciphers.len)
-    if (!stralloc_copys(&tlsserverciphers,"DEFAULT")) die_nomem();
-  if (!stralloc_0(&tlsserverciphers)) die_nomem();
-
-  x = env_get("SMTPS");
-  if (x && *x) {
-    smtps = 1;
-    init_tls();
-  }
+  if (env_get("SMTPS")) { smtps = 1; tls_init(); }
   else
 #endif
   dohelo(remotehost);
@@ -265,6 +244,9 @@ int addrallowed()
   int r;
   r = rcpthosts(addr.s,str_len(addr.s));
   if (r == -1) die_control();
+#ifdef TLS
+  if (r == 0) if (tls_verify()) r = -2;
+#endif
   return r;
 }
 
@@ -314,67 +296,7 @@ void smtp_rcpt(arg) char *arg; {
     if (!stralloc_0(&addr)) die_nomem();
   }
   else
-    if (!addrallowed()) {
-#ifdef TLS
-    static int checkcert = 1;
-    stralloc tlsclients;
-    struct constmap maptlsclients;
-
-    if (ssl && checkcert) {
-      STACK_OF(X509_NAME) *sk;
-      checkcert = 0;
-      if (control_readfile(&tlsclients,"control/tlsclients",0) == 1)
-        switch (constmap_init(&maptlsclients,tlsclients.s,tlsclients.len,0))
-        {
-        default:
-          if (sk = SSL_load_client_CA_file("control/clientca.pem")) {
-            checkcert = 1;
-            SSL_set_client_CA_list(ssl, sk);
-            break;
-          }
-          constmap_free(&maptlsclients);
-        case 0:
-          alloc_free(tlsclients.s);
-        }
-    }
-    if (ssl && checkcert) {
-      const char *errstr = NULL;
-      checkcert = 0;
-      do { /* renegotiate with the client */
-        int r;
-        X509 *peercert;
-        char emailAddress[256];
-
-        SSL_set_verify(ssl,SSL_VERIFY_PEER|SSL_VERIFY_CLIENT_ONCE,verify_cb);
-        if (SSL_renegotiate(ssl) <= 0) break;
-        if (SSL_do_handshake(ssl) <= 0) break;
-        /* SSL_set_accept_state() clears crypto state so don't use */
-        ssl->state = SSL_ST_ACCEPT;
-        if (SSL_do_handshake(ssl) <= 0) break;
-
-        if ((r = SSL_get_verify_result(ssl)) != X509_V_OK) {
-          errstr = X509_verify_cert_error_string(r);
-          break;
-        }
-        if (!(peercert = SSL_get_peer_certificate(ssl))) break;
-
-        X509_NAME_get_text_by_NID(X509_get_subject_name(peercert),
-          NID_pkcs9_emailAddress, emailAddress, 256);
-        if (!stralloc_copys(&clientcert, emailAddress)) die_nomem();
-        X509_free(peercert);
-
-        /* checked out; set relayclient so no need to check next "RCPT TO" */
-        if (constmap(&maptlsclients,clientcert.s,clientcert.len))
-          relayclient = "";
-      } while (0);
-      constmap_free(&maptlsclients);
-      alloc_free(tlsclients.s);
-      if (!relayclient) { err_nogwcert(errstr); return; }
-    }
-    else
-#endif
-    { err_nogateway(); return; }
-  }
+    if (!addrallowed()) { err_nogateway(); return; }
   if (!stralloc_cats(&rcptto,"T")) die_nomem();
   if (!stralloc_cats(&rcptto,addr.s)) die_nomem();
   if (!stralloc_0(&rcptto)) die_nomem();
@@ -388,7 +310,7 @@ int saferead(fd,buf,len) int fd; char *buf; int len;
   flush();
 #ifdef TLS
   if (ssl && fd == ssl_rfd)
-    r = ssl_timeoutread(timeout,ssl_rfd,ssl_wfd,ssl,buf,len);
+    r = ssl_timeoutread(timeout, ssl_rfd, ssl_wfd, ssl, buf, len);
   else
 #endif
   r = timeoutread(timeout,fd,buf,len);
@@ -500,23 +422,7 @@ void smtp_data() {
   qp = qmail_qp(&qqt);
   out("354 go ahead\r\n");
  
-#ifdef TLS
-  if (ssl) {
-    static stralloc protocol = {0};
-    if (!protocol.len) {
-      if (!stralloc_copys(&protocol,SSL_get_cipher(ssl))) die_nomem();
-      if (!stralloc_catb(&protocol," encrypted SMTP",15)) die_nomem();
-      if (smtps) if (!stralloc_append(&protocol,"S")) die_nomem();
-      if (clientcert.len) {
-        if (!stralloc_catb(&protocol," cert ",6)) die_nomem();
-        if (!stralloc_catb(&protocol,clientcert.s,clientcert.len)) die_nomem();
-      }
-      if (!stralloc_0(&protocol)) die_nomem();
-    }
-    received(&qqt,protocol.s,local,remoteip,remotehost,remoteinfo,fakehelo);
-  } else
-#endif
-  received(&qqt,"SMTP",local,remoteip,remotehost,remoteinfo,fakehelo);
+  received(&qqt,protocol,local,remoteip,remotehost,remoteinfo,fakehelo);
   blast(&hops);
   hops = (hops >= MAXHOPS);
   if (hops) qmail_fail(&qqt);
@@ -533,91 +439,200 @@ void smtp_data() {
 }
 
 #ifdef TLS
-void smtp_tls(arg) char *arg; 
+stralloc proto = {0};
+int ssl_verified = 0;
+const char *ssl_verify_err = 0;
+
+void smtp_tls(char *arg)
 {
-  if (ssl) {
-    err_unimpl();
-    return;
-  }
-  if (*arg) {
-    out("501 Syntax error (no parameters allowed) (#5.5.4)\r\n");
-    return;
-  }
-  init_tls();
+  if (ssl) err_unimpl();
+  else if (*arg) out("501 Syntax error (no parameters allowed) (#5.5.4)\r\n");
+  else tls_init();
 }
 
-static RSA *tmp_rsa_cb(ssl,export,keylen) SSL *ssl; int export; int keylen; 
+RSA *tmp_rsa_cb(SSL *ssl, int export, int keylen)
 {
   if (!export) keylen = 512;
   if (keylen == 512) {
     BIO *in = BIO_new_file("control/rsa512.pem", "r");
     if (in) {
-      RSA *rsa = PEM_read_bio_RSAPrivateKey(in,NULL,NULL,NULL);
+      RSA *rsa = PEM_read_bio_RSAPrivateKey(in, NULL, NULL, NULL);
       BIO_free(in);
       if (rsa) return rsa;
     }
   }
-  return RSA_generate_key(keylen,RSA_F4,NULL,NULL);
+  return RSA_generate_key(keylen, RSA_F4, NULL, NULL);
 }
 
-void init_tls()
+/* don't want to fail handshake if cert isn't verifiable */
+int verify_cb(int preverify_ok, X509_STORE_CTX *ctx) { return 1; }
+
+void tls_nogateway()
 {
+  /* there may be cases when relayclient is set */
+  if (!ssl || relayclient) return;
+  out("; no valid cert for gatewaying");
+  if (ssl_verify_err) { out(": "); out(ssl_verify_err); }
+}
+void tls_out(const char *s1, const char *s2)
+{
+  out("454 TLS "); out(s1);
+  if (s2) { out(": "); out(s2); }
+  out(" (#4.3.0)\r\n"); flush();
+}
+void tls_err(const char *s) { tls_out(s, ssl_error()); if (smtps) die_read(); }
+
+# define CLIENTCA "control/clientca.pem"
+# define SERVERCERT "control/servercert.pem"
+
+int tls_verify()
+{
+  stralloc clients = {0};
+  struct constmap mapclients;
+
+  if (!ssl || relayclient || ssl_verified) return 0;
+  ssl_verified = 1; /* don't do this twice */
+
+  /* request client cert to see if it can be verified by one of our CAs
+   * and the associated email address matches an entry in tlsclients */
+  switch (control_readfile(&clients, "control/tlsclients", 0))
+  {
+  case 1:
+    if (constmap_init(&mapclients, clients.s, clients.len, 0)) {
+      /* if CLIENTCA contains all the standart root certificates, a
+       * 0.9.6b client might fail with SSL_R_EXCESSIVE_MESSAGE_SIZE;
+       * it is probably due to 0.9.6b supporting only 8k key exchange
+       * data while the 0.9.6c release increases that limit to 100k */
+      STACK_OF(X509_NAME) *sk = SSL_load_client_CA_file(CLIENTCA);
+      if (sk) {
+        SSL_set_client_CA_list(ssl, sk);
+        SSL_set_verify(ssl, SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE, NULL);
+        break;
+      }
+      constmap_free(&mapclients);
+    }
+  case 0: alloc_free(clients.s); return 0;
+  case -1: die_control();
+  }
+
+  if (ssl_timeoutrehandshake(timeout, ssl_rfd, ssl_wfd, ssl) <= 0) {
+    const char *err = ssl_strerror();
+    tls_out("rehandshake failed", err); die_read();
+  }
+
+  do { /* one iteration */
+    X509 *peercert;
+    X509_NAME *subj;
+    stralloc email = {0};
+
+    int n = SSL_get_verify_result(ssl);
+    if (n != X509_V_OK)
+      { ssl_verify_err = X509_verify_cert_error_string(n); break; }
+    peercert = SSL_get_peer_certificate(ssl);
+    if (!peercert) break;
+
+    subj = X509_get_subject_name(peercert);
+    n = X509_NAME_get_index_by_NID(subj, NID_pkcs9_emailAddress, -1);
+    if (n >= 0) {
+      const ASN1_STRING *s = X509_NAME_get_entry(subj, n)->value;
+      if (s) { email.len = s->length; email.s = s->data; }
+    }
+
+    if (email.len <= 0)
+      ssl_verify_err = "contains no email address";
+    else if (!constmap(&mapclients, email.s, email.len))
+      ssl_verify_err = "email address not in my list of tlsclients";
+    else {
+      /* add the cert email to the proto if it helped allow relaying */
+      --proto.len;
+      if (!stralloc_cats(&proto, "\n  cert ") /* continuation line */
+        || !stralloc_catb(&proto, email.s, email.len)
+        || !stralloc_0(&proto)) die_nomem();
+      relayclient = "";
+      protocol = proto.s;
+    }
+
+    X509_free(peercert);
+  } while (0);
+  constmap_free(&mapclients); alloc_free(clients.s);
+
+  /* we are not going to need this anymore: free the memory */
+  SSL_set_client_CA_list(ssl, NULL);
+  SSL_set_verify(ssl, SSL_VERIFY_NONE, NULL);
+
+  return relayclient ? 1 : 0;
+}
+
+void tls_init()
+{
+  SSL *myssl;
   SSL_CTX *ctx;
+  const char *ciphers;
+  stralloc saciphers = {0};
 
   SSL_library_init();
 
   /* a new SSL context with the bare minimum of options */
-  if (!(ctx = SSL_CTX_new(SSLv23_server_method()))) {
-    out("454 TLS not available: unable to initialize ctx (#4.3.0)\r\n");
-    flush();
-    if (smtps) die_read();
-    return;
-  }
-  if (!SSL_CTX_use_certificate_chain_file(ctx,"control/servercert.pem")) {
-    out("454 TLS not available: missing certificate (#4.3.0)\r\n");
-    flush();
-    if (smtps) die_read();
-    SSL_CTX_free(ctx);
-    return;
-  }
-  SSL_CTX_load_verify_locations(ctx,"control/clientca.pem",NULL);
+  ctx = SSL_CTX_new(SSLv23_server_method());
+  if (!ctx) { tls_err("unable to initialize ctx"); return; }
+
+  if (!SSL_CTX_use_certificate_chain_file(ctx, SERVERCERT))
+    { SSL_CTX_free(ctx); tls_err("missing certificate"); return; }
+  SSL_CTX_load_verify_locations(ctx, CLIENTCA, NULL);
+  /* set the callback here; SSL_set_verify didn't work before 0.9.6c */
+  SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_cb);
 
   /* a new SSL object, with the rest added to it directly to avoid copying */
-  if (!(ssl = SSL_new(ctx))) die_read();
+  myssl = SSL_new(ctx);
   SSL_CTX_free(ctx);
-  if (!SSL_use_RSAPrivateKey_file(ssl,"control/servercert.pem",SSL_FILETYPE_PEM)) {
-    out("454 TLS not available: missing RSA private key (#4.3.0)\r\n"); 
-    flush();
-    if (smtps) die_read();
-    return;
+  if (!myssl) { tls_err("unable to initialize ssl"); return; }
+
+  /* this will also check whether publc and private keys match */
+  if (!SSL_use_RSAPrivateKey_file(myssl, SERVERCERT, SSL_FILETYPE_PEM))
+    { SSL_free(myssl); tls_err("no valid RSA private key"); return; }
+
+  ciphers = env_get("TLSCIPHERS");
+  if (!ciphers) {
+    if (control_readfile(&saciphers, "control/tlsserverciphers") == -1)
+      { SSL_free(myssl); die_control(); }
+    if (saciphers.len) { /* convert all '\0's except the last one to ':' */
+      int i;
+      for (i = 0; i < saciphers.len - 1; ++i)
+        if (!saciphers.s[i]) saciphers.s[i] = ':';
+      ciphers = saciphers.s;
+    }
   }
-  SSL_set_tmp_rsa_callback(ssl,tmp_rsa_cb);
-  SSL_set_cipher_list(ssl,tlsserverciphers.s);
-  SSL_set_verify(ssl,SSL_VERIFY_NONE,verify_cb);
- 
+  if (!ciphers || !*ciphers) ciphers = "DEFAULT";
+  SSL_set_cipher_list(myssl, ciphers);
+  alloc_free(saciphers.s);
+
+  SSL_set_tmp_rsa_callback(myssl, tmp_rsa_cb);
+  SSL_set_rfd(myssl, ssl_rfd = substdio_fileno(&ssin));
+  SSL_set_wfd(myssl, ssl_wfd = substdio_fileno(&ssout));
+
   if (!smtps) { out("220 ready for tls\r\n"); flush(); }
 
-  ssl_rfd = substdio_fileno(&ssin);
-  SSL_set_rfd(ssl,ssl_rfd);
-  ssl_wfd = substdio_fileno(&ssout);
-  SSL_set_wfd(ssl,ssl_wfd);
-
-  if (ssl_timeoutaccept(timeout,ssl_rfd,ssl_wfd,ssl) <= 0) {
-    SSL_free(ssl); ssl = 0; /* so that out() doesn't go via SSL_write() */
-    /* cleartext response is not part of any standard, nor is any other response here */
-    out("454 TLS not available: connection ");
-    if (errno == error_timeout)
-      out("timed out");
-    else
-      out("failed");
-    out(" (#4.3.0)\r\n");
-    flush();
-    die_read();
+  if (ssl_timeoutaccept(timeout, ssl_rfd, ssl_wfd, myssl) <= 0) {
+    /* neither cleartext nor any other response here is part of a standard */
+    const char *err = ssl_strerror();
+    ssl_free(myssl); tls_out("connection failed", err); die_read();
   }
+  ssl = myssl;
+
+  /* populate the protocol string, used in Received */
+  if (!stralloc_copys(&proto, SSL_get_cipher(ssl))
+    || !stralloc_cats(&proto, " encrypted SMTP")) die_nomem();
+  if (smtps) if (!stralloc_append(&proto, "S")) die_nomem();
+  if (!stralloc_0(&proto)) die_nomem();
+  protocol = proto.s;
 
   /* have to discard the pre-STARTTLS HELO/EHLO argument, if any */
   dohelo(remotehost);
 }
+
+# undef SERVERCERT
+# undef CLIENTCA
+
 #endif
 
 struct commands smtpcommands[] = {

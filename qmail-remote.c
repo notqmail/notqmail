@@ -47,10 +47,17 @@ stralloc sender = {0};
 saa reciplist = {0};
 
 struct ip_address partner;
+
 #ifdef TLS
-char *partner_fqdn = 0;
-#define PORT_SMTPS 465
-#endif
+# include <sys/stat.h>
+# include "tls.h"
+# include "ssl_timeoutio.h"
+# include <openssl/x509v3.h>
+# define EHLO 1
+
+int tls_init();
+const char *ssl_err_str = 0;
+#endif 
 
 void out(s) char *s; { if (substdio_puts(subfdoutsmall,s) == -1) _exit(0); }
 void zero() { if (substdio_put(subfdoutsmall,"\0",1) == -1) _exit(0); }
@@ -103,6 +110,9 @@ void dropped() {
   outhost();
   out(" but connection died. ");
   if (flagcritical) out("Possible duplicate! ");
+#ifdef TLS
+  if (ssl_err_str) { out(ssl_err_str); out(" "); }
+#endif
   out("(#4.4.2)\n");
   zerodie();
 }
@@ -111,56 +121,13 @@ int timeoutconnect = 60;
 int smtpfd;
 int timeout = 1200;
 
-#ifdef TLS
-
-#include <sys/stat.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include "ssl_timeoutio.h"
-
-SSL *ssl = NULL;
-
-stralloc tlsclientciphers = {0};
-
-void ssl_shutdie()
-{
-  SSL_shutdown(ssl);
-  SSL_free(ssl);
-  zerodie();
-}
-void ssl_zerodie()
-{
-  char buf[1024];
-  SSL_load_error_strings();
-  out(ERR_error_string(ERR_get_error(), buf));
-  out("\n");
-  ssl_shutdie();
-}
-
-static int client_cert_cb(SSL *s,X509 **x509, EVP_PKEY **pkey)
-{
-  out("ZTLS found no client cert in control/clientcert.pem\n");
-  ssl_shutdie();
-  return 0; /* isn't reached but... */
-}
-
-static int verify_cb(int ok, X509_STORE_CTX * ctx)
-{
-  return 1;
-}
-
-#endif 
-
 int saferead(fd,buf,len) int fd; char *buf; int len;
 {
   int r;
 #ifdef TLS
   if (ssl) {
-    r = ssl_timeoutread(timeout,smtpfd,smtpfd,ssl,buf,len);
-    if (r == -2) {
-      out("ZTLS connection to "); outhost(); out(" died: ");
-      ssl_zerodie();
-    }
+    r = ssl_timeoutread(timeout, smtpfd, smtpfd, ssl, buf, len);
+    if (r < 0) ssl_err_str = ssl_strerror();
   } else
 #endif
   r = timeoutread(timeout,smtpfd,buf,len);
@@ -172,11 +139,8 @@ int safewrite(fd,buf,len) int fd; char *buf; int len;
   int r;
 #ifdef TLS
   if (ssl) {
-    r = ssl_timeoutwrite(timeout,smtpfd,smtpfd,ssl,buf,len);
-    if (r == -2) {
-      out("ZTLS connection to "); outhost(); out(" died: ");
-      ssl_zerodie();
-    }
+    r = ssl_timeoutwrite(timeout, smtpfd, smtpfd, ssl, buf, len);
+    if (r < 0) ssl_err_str = ssl_strerror();
   } else
 #endif 
   r = timeoutwrite(timeout,smtpfd,buf,len);
@@ -225,6 +189,59 @@ unsigned long smtpcode()
   return code;
 }
 
+#ifdef EHLO
+saa ehlokw = {0}; /* list of EHLO keywords and parameters */
+int maxehlokwlen = 0;
+
+unsigned long ehlo()
+{
+  stralloc *sa;
+  char *s, *e, *p;
+  unsigned long code;
+
+  if (ehlokw.len > maxehlokwlen) maxehlokwlen = ehlokw.len;
+  ehlokw.len = 0;
+
+# ifdef MXPS
+  if (type == 's') return 0;
+# endif
+
+  substdio_puts(&smtpto, "EHLO ");
+  substdio_put(&smtpto, helohost.s, helohost.len);
+  substdio_puts(&smtpto, "\r\n");
+  substdio_flush(&smtpto);
+
+  code = smtpcode();
+  if (code != 250) return code;
+
+  s = smtptext.s;
+  while (*s++ != '\n') ; /* skip the first line: contains the domain */
+
+  e = smtptext.s + smtptext.len - 6; /* 250-?\n */
+  while (s <= e)
+  {
+    if (!saa_readyplus(&ehlokw, 1)) temp_nomem();
+    sa = ehlokw.sa + ehlokw.len++;
+    if (ehlokw.len > maxehlokwlen) *sa = sauninit; else sa->len = 0;
+
+    /* smtptext is known to end in a '\n' */
+    for (p = (s += 4); ; ++p)
+      if (*p == '\n' || *p == ' ' || *p == '\t') {
+        if (!stralloc_catb(sa, s, p - s) || !stralloc_0(sa)) temp_nomem();
+        if (*p++ == '\n') break;
+        while (*p == ' ' || *p == '\t') ;
+        s = p;
+      }
+    s = p;
+    /* keyword should consist of alpha-num and '-'
+     * broken AUTH might use '=' instead of space */
+    for (p = sa->s; *p; ++p) if (*p == '=') { *p = 0; break; }
+  }
+
+  return 250;
+}
+#endif
+
 void outsmtptext()
 {
   int i; 
@@ -241,6 +258,11 @@ void quit(prepend,append)
 char *prepend;
 char *append;
 {
+#ifdef TLS
+  /* shouldn't talk to the client unless in an appropriate state */
+  int state = ssl ? ssl->state : SSL_ST_BEFORE;
+  if (state & SSL_ST_OK || !smtps && state & SSL_ST_BEFORE)
+#endif
   substdio_putsflush(&smtpto,"QUIT\r\n");
   /* waiting for remote side is just too ridiculous */
   out(prepend);
@@ -249,33 +271,27 @@ char *append;
   out(".\n");
   outsmtptext();
 
-/* TAG */
-#ifdef TLS
+#if defined(TLS) && defined(DEBUG)
   if (ssl) {
-# ifdef DEBUG
     X509 *peercert;
 
     out("STARTTLS proto="); out(SSL_get_version(ssl));
-    out("; cipher="); out(SSL_CIPHER_get_name(SSL_get_current_cipher(ssl)));
+    out("; cipher="); out(SSL_get_cipher(ssl));
 
     /* we want certificate details */
     if (peercert = SSL_get_peer_certificate(ssl)) {
       char *str;
 
-      str = X509_NAME_oneline(X509_get_subject_name(peercert),NULL,0);
-      out("; subject="); out(str);
-      OPENSSL_free(str);
+      str = X509_NAME_oneline(X509_get_subject_name(peercert), NULL, 0);
+      out("; subject="); out(str); OPENSSL_free(str);
 
-      str = X509_NAME_oneline(X509_get_issuer_name(peercert),NULL,0);
-      out("; issuer="); out(str);
-      OPENSSL_free(str);
+      str = X509_NAME_oneline(X509_get_issuer_name(peercert), NULL, 0);
+      out("; issuer="); out(str); OPENSSL_free(str);
 
       X509_free(peercert);
     }
     out(";\n");
-# endif
-    ssl_shutdie();
-  } else
+  }
 #endif
 
   zerodie();
@@ -306,6 +322,182 @@ void blast()
   substdio_flush(&smtpto);
 }
 
+#ifdef TLS
+char *partner_fqdn = 0;
+
+# define TLS_QUIT quit(ssl ? "; connected to " : "; connecting to ", "")
+void tls_quit(const char *s1, const char *s2)
+{
+  out(s1); if (s2) { out(": "); out(s2); } TLS_QUIT;
+}
+# define tls_quit_error(s) tls_quit(s, ssl_error())
+
+int match_partner(const char *s, int len)
+{
+  if (!case_diffb(partner_fqdn, len, s) && !partner_fqdn[len]) return 1;
+  /* we also match if the name is *.domainname */
+  if (*s == '*') {
+    const char *domain = partner_fqdn + str_chr(partner_fqdn, '.');
+    if (!case_diffb(domain, --len, ++s) && !domain[len]) return 1;
+  }
+  return 0;
+}
+
+/* don't want to fail handshake if certificate can't be verified */
+int verify_cb(int preverify_ok, X509_STORE_CTX *ctx) { return 1; }
+
+int tls_init()
+{
+  int i;
+  SSL *myssl;
+  SSL_CTX *ctx;
+  stralloc saciphers = {0};
+  const char *ciphers, *servercert = 0;
+
+  if (partner_fqdn) {
+    struct stat st;
+    stralloc tmp = {0};
+    if (!stralloc_copys(&tmp, "control/tlshosts/")
+      || !stralloc_catb(&tmp, partner_fqdn, str_len(partner_fqdn))
+      || !stralloc_catb(&tmp, ".pem", 5)) temp_nomem();
+    if (stat(tmp.s, &st)) alloc_free(tmp.s); else servercert = tmp.s;
+  }
+ 
+  if (!smtps) {
+    stralloc *sa = ehlokw.sa;
+    unsigned int len = ehlokw.len;
+    /* look for STARTTLS among EHLO keywords */
+    for ( ; len && case_diffs(sa->s, "STARTTLS"); ++sa, --len) ;
+    if (!len) {
+      if (!servercert) return 0;
+      out("ZNo TLS achieved while "); out(servercert);
+      out(" exists"); smtptext.len = 0; TLS_QUIT;
+    }
+  }
+
+  SSL_library_init();
+  ctx = SSL_CTX_new(SSLv23_client_method());
+  if (!ctx) {
+    if (!smtps && !servercert) return 0;
+    smtptext.len = 0;
+    tls_quit_error("ZTLS error initializing ctx");
+  }
+
+  if (servercert) {
+    if (!SSL_CTX_load_verify_locations(ctx, servercert, NULL)) {
+      SSL_CTX_free(ctx);
+      smtptext.len = 0;
+      out("ZTLS unable to load "); tls_quit_error(servercert);
+    }
+    /* set the callback here; SSL_set_verify didn't work before 0.9.6c */
+    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, verify_cb);
+  }
+
+  /* let the other side complain if it needs a cert and we don't have one */
+# define CLIENTCERT "control/clientcert.pem"
+  if (SSL_CTX_use_certificate_chain_file(ctx, CLIENTCERT))
+    SSL_CTX_use_RSAPrivateKey_file(ctx, CLIENTCERT, SSL_FILETYPE_PEM);
+# undef CLIENTCERT
+
+  myssl = SSL_new(ctx);
+  SSL_CTX_free(ctx);
+  if (!myssl) {
+    if (!smtps && !servercert) return 0;
+    smtptext.len = 0;
+    tls_quit_error("ZTLS error initializing ssl");
+  }
+
+  if (!smtps) substdio_putsflush(&smtpto, "STARTTLS\r\n");
+
+  /* while the server is preparing a responce, do something else */
+  if (control_readfile(&saciphers, "control/tlsclientciphers", 0) == -1)
+    { SSL_free(myssl); temp_control(); }
+  if (saciphers.len) {
+    for (i = 0; i < saciphers.len - 1; ++i)
+      if (!saciphers.s[i]) saciphers.s[i] = ':';
+    ciphers = saciphers.s;
+  }
+  else ciphers = "DEFAULT";
+  SSL_set_cipher_list(myssl, ciphers);
+  alloc_free(saciphers.s);
+
+  /* SSL_set_options(myssl, SSL_OP_NO_TLSv1); */
+  SSL_set_fd(myssl, smtpfd);
+
+  /* read the responce to STARTTLS */
+  if (!smtps) {
+    if (smtpcode() != 220) {
+      SSL_free(myssl);
+      if (!servercert) return 0;
+      out("ZSTARTTLS rejected while ");
+      out(servercert); out(" exists"); TLS_QUIT;
+    }
+    smtptext.len = 0;
+  }
+
+  ssl = myssl;
+  if (ssl_timeoutconn(timeout, smtpfd, smtpfd, ssl) <= 0)
+    tls_quit("ZTLS connect failed", ssl_strerror());
+
+  if (servercert) {
+    X509 *peercert;
+    STACK_OF(GENERAL_NAME) *gens;
+
+    int r = SSL_get_verify_result(ssl);
+    if (r != X509_V_OK) {
+      out("ZTLS unable to verify server with ");
+      tls_quit(servercert, X509_verify_cert_error_string(r));
+    }
+    alloc_free(servercert);
+
+    peercert = SSL_get_peer_certificate(ssl);
+    if (!peercert) {
+      out("ZTLS unable to verify server ");
+      tls_quit(partner_fqdn, "no certificate provided");
+    }
+
+    /* RFC 2595 section 2.4: find a matching name
+     * first find a match among alternative names */
+    gens = X509_get_ext_d2i(peercert, NID_subject_alt_name, 0, 0);
+    if (gens) {
+      for (i = 0, r = sk_GENERAL_NAME_num(gens); i < r; ++i)
+      {
+        const GENERAL_NAME *gn = sk_GENERAL_NAME_value(gens, i);
+        if (gn->type == GEN_DNS)
+          if (match_partner(gn->d.ia5->data, gn->d.ia5->length)) break;
+      }
+      sk_GENERAL_NAME_free(gens);
+    }
+
+    /* no alternative name matched, look up commonName */
+    if (!gens || i >= r) {
+      stralloc peer = {0};
+      X509_NAME *subj = X509_get_subject_name(peercert);
+      i = X509_NAME_get_index_by_NID(subj, NID_commonName, -1);
+      if (i >= 0) {
+        const ASN1_STRING *s = X509_NAME_get_entry(subj, i)->value;
+        if (s) { peer.len = s->length; peer.s = s->data; }
+      }
+      if (peer.len <= 0) {
+        out("ZTLS unable to verify server ");
+        tls_quit(partner_fqdn, "certificate contains no valid commonName");
+      }
+      if (!match_partner(peer.s, peer.len)) {
+        out("ZTLS unable to verify server "); out(partner_fqdn);
+        out(": received certificate for "); outsafe(&peer); TLS_QUIT;
+      }
+    }
+
+    X509_free(peercert);
+  }
+
+  if (smtps) if (smtpcode() != 220)
+    quit("ZTLS Connected to "," but greeting failed");
+
+  return 1;
+}
+#endif
+
 stralloc recip = {0};
 
 void smtp()
@@ -313,164 +505,51 @@ void smtp()
   unsigned long code;
   int flagbother;
   int i;
-#ifdef TLS
-  char *starttls;
-  char *servercert = 0;
-  struct stat st;
-  /* ifdef PORT_SMTP to go along with qmtp patch */
-#ifdef PORT_SMTP
-  int smtps = (PORT_SMTPS == port);
-#else
-  int smtps = (PORT_SMTPS == smtp_port);
+
+#ifndef PORT_SMTP
+  /* the qmtpc patch uses smtp_port and undefines PORT_SMTP */
+# define port smtp_port
 #endif
 
-  if (smtps)
-    starttls = "";
-  else {
+#ifdef TLS
+# ifdef MXPS
+  if (type == 'S') smtps = 1;
+  else if (type != 's')
+# endif
+    if (port == 465) smtps = 1;
+  if (!smtps)
 #endif
  
   if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
  
-#ifdef TLS
-    substdio_puts(&smtpto,"EHLO ");
-    substdio_put(&smtpto,helohost.s,helohost.len);
-    substdio_puts(&smtpto,"\r\n");
-    substdio_flush(&smtpto);
-    if (smtpcode() != 250) {
-#endif
+#ifdef EHLO
+# ifdef TLS
+  if (!smtps)
+# endif
+  code = ehlo();
 
+# ifdef TLS
+  if (tls_init())
+    /* RFC2487 says we should issue EHLO (even if we might not need
+     * extensions); at the same time, it does not prohibit a server
+     * to reject the EHLO and make us fallback to HELO */
+    code = ehlo();
+# endif
+
+  if (code == 250) {
+    /* add EHLO response checks here */
+
+    /* and if EHLO failed, use HELO */
+  } else {
+#endif
+ 
   substdio_puts(&smtpto,"HELO ");
   substdio_put(&smtpto,helohost.s,helohost.len);
   substdio_puts(&smtpto,"\r\n");
   substdio_flush(&smtpto);
   if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
  
-#ifdef TLS
-    } else {
-      starttls = smtptext.s + 4; /* skipping "250 " */
-      do {
-        starttls += str_chr(starttls, '\n') + 5;
-        if (starttls + 9 > smtptext.s + smtptext.len) { starttls = 0; break; }
-      } while (str_diffn(starttls,"STARTTLS\n",9));
-
-      if (starttls) { /* found STARTTLS */
-        substdio_puts(&smtpto,"STARTTLS\r\n");
-        substdio_flush(&smtpto);
-        if (smtpcode() != 220) starttls = 0;
-      }
-    }
-  }
-
-  if (partner_fqdn) {
-    stralloc tmp = {0};
-    if (!stralloc_copys(&tmp, "control/tlshosts/")) temp_nomem();
-    if (!stralloc_catb(&tmp, partner_fqdn, str_len(partner_fqdn))) temp_nomem();
-    if (!stralloc_catb(&tmp, ".pem", 4)) temp_nomem();
-    if (!stralloc_0(&tmp)) temp_nomem();
-    if (stat(tmp.s,&st)) /* no such file */
-      alloc_free(tmp.s);
-    else if (starttls)
-      servercert = tmp.s;
-    else {
-      out("ZNo TLS achieved while "); out(tmp.s); out(" exists.\n");
-      quit();
-    }
-  }
- 
-  if (starttls) {
-    SSL_CTX *ctx;
-
-    SSL_library_init();
-    if (!(ctx = SSL_CTX_new(SSLv23_client_method()))) {
-      out("ZTLS not available: error initializing ctx: ");
-      ssl_zerodie();
-    }
-    /* if there is a cert and it is bad, I fail
-       if there is no cert, I leave it to the other side to complain */
-    if (stat("control/clientcert.pem",&st) == 0)
-      if (
-        1 != SSL_CTX_use_RSAPrivateKey_file(ctx,
-          "control/clientcert.pem",SSL_FILETYPE_PEM) ||
-        1 != SSL_CTX_use_certificate_chain_file(ctx,"control/clientcert.pem") ||
-        1 != SSL_CTX_check_private_key(ctx)
-      )
-        SSL_CTX_set_client_cert_cb(ctx, client_cert_cb);
-
-    if (servercert && !SSL_CTX_load_verify_locations(ctx,servercert,NULL)) {
-      out("ZTLS unable to load "); out(servercert); out("\n");
-      zerodie();
-    }
-
-    if (!(ssl = SSL_new(ctx))) {
-      out("ZTLS not available: error initializing ssl: "); 
-      ssl_zerodie();
-    }
-    SSL_CTX_free(ctx);
-    if (servercert) SSL_set_verify(ssl,SSL_VERIFY_PEER,verify_cb);
-    /*SSL_set_options(ssl, SSL_OP_NO_TLSv1);*/
-    SSL_set_cipher_list(ssl,tlsclientciphers.s);
-    SSL_set_fd(ssl,smtpfd);
-
-    if (ssl_timeoutconn(timeout,smtpfd,smtpfd,ssl) <= 0) {
-      out("ZTLS not available: connect ");
-      if (errno == error_timeout)
-        { out("timed out\n"); ssl_shutdie(); }
-      else
-        { out("failed: "); ssl_zerodie(); }
-    }
-    if (servercert) {
-      /* should also check alternate names */
-      char commonName[256];
-      X509 *peercert;
-      int r;
-
-      if ((r = SSL_get_verify_result(ssl)) != X509_V_OK) {
-        out("ZTLS unable to verify server with ");
-        out(servercert); out(": ");
-        out(X509_verify_cert_error_string(r)); out("\n");
-        ssl_shutdie();
-      }
-      alloc_free(servercert);
-
-      peercert = SSL_get_peer_certificate(ssl);
-      X509_NAME_get_text_by_NID(
-        X509_get_subject_name(peercert), NID_commonName, commonName, 256);
-      X509_free(peercert);
-
-      r = case_diffs(partner_fqdn,commonName);
-      /* we also match if the cert has commonName *.domainname */
-      /* instead, i would like an implementation of RFC2595, part2.4 */
-      if (r && commonName[0] == '*' && commonName[1] == '.') {
-        char *partner_domain = partner_fqdn + str_chr(partner_fqdn,'.');
-        if (*partner_domain) r = case_diffs(partner_domain+1,commonName+2);
-      }
-      if (r) {
-        out("ZTLS connection to "); out(partner_fqdn);
-        out(" wanted, certificate for "); out(commonName);
-        out(" received\n");
-        ssl_shutdie();
-      }
-    }
-
-    if (smtps) if (smtpcode() != 220)
-      quit("ZTLS Connected to "," but greeting failed");
-
-    /* RFC2487 says we should issue EHLO (even if we do not need extensions) */
-    /* at the same time, it does not prohibit a server to reject the EHLO */
-    /* and make us fallback to HELO */  
-    substdio_puts(&smtpto,"EHLO ");
-    substdio_put(&smtpto,helohost.s,helohost.len);
-    substdio_puts(&smtpto,"\r\n");
-    substdio_flush(&smtpto);
-
-    if (smtpcode() != 250) {
-      substdio_puts(&smtpto,"HELO ");
-      substdio_put(&smtpto,helohost.s,helohost.len);
-      substdio_puts(&smtpto,"\r\n");
-      substdio_flush(&smtpto);
-      if (smtpcode() != 250)
-        quit("ZTLS connected to "," but my name was rejected");
-    }
+#ifdef EHLO
   }
 #endif
  
@@ -568,12 +647,6 @@ void getcontrols()
     case 1:
       if (!constmap_init(&maproutes,routes.s,routes.len,1)) temp_nomem(); break;
   }
-#ifdef TLS
-  if (1 !=
-    control_rldef(&tlsclientciphers, "control/tlsclientciphers",0,"DEFAULT")
-  ) temp_control();
-  if (!stralloc_0(&tlsclientciphers)) temp_nomem();
-#endif
 }
 
 void main(argc,argv)

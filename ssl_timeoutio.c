@@ -1,244 +1,94 @@
 #include "select.h"
 #include "error.h"
 #include "ndelay.h"
-#include <openssl/ssl.h>
+#include "ssl_timeoutio.h"
 
-int ssl_timeoutaccept(t,rfd,wfd,ssl) long t; int rfd; int wfd; SSL *ssl;
+int ssl_timeoutio(int (*fun)(),
+  long t, int rfd, int wfd, SSL *ssl, char *buf, int len)
 {
-  int r;
-  int n = rfd + 1;
-  int maxfd = (rfd > wfd ? rfd : wfd) + 1;
-
-  fd_set rfds, wfds;
-  fd_set *pwfds = (fd_set *) 0;
-  struct timeval tv;
-  long end = t + time((long *) 0);
-
-  /* if connection is established, keep it that way */
-  if (ndelay_on(rfd) == -1) return -1;
-  if (ndelay_on(wfd) == -1) return -1;
-
-  tv.tv_sec = t;
-  tv.tv_usec = 0;
-
-  FD_ZERO(&rfds);
-  FD_SET(rfd,&rfds);
-
-  /* number of descriptors that changes status */
-  while (0 < (n = select(n,&rfds,pwfds,(fd_set *) 0,&tv)))
-  {
-    r = SSL_accept(ssl);
-    if (r > 0) {
-      SSL_set_mode(ssl, SSL_MODE_ENABLE_PARTIAL_WRITE);
-      return r;
-    }
-
-    switch (SSL_get_error(ssl, r))
-    {
-    case SSL_ERROR_WANT_READ:
-      pwfds = (fd_set *) 0;
-      n = rfd + 1;
-      break;
-    case SSL_ERROR_WANT_WRITE:
-      pwfds = &wfds;
-      FD_ZERO(&wfds);
-      FD_SET(wfd,&wfds);
-      n = maxfd;
-      break;
-    default:
-      /* some other error */
-      ndelay_off(rfd);
-      ndelay_off(wfd);
-      return -2;
-    }
-
-    if ((t = end - time((long *)0)) < 0) break;
-
-    tv.tv_sec = t;
-    tv.tv_usec = 0;
-
-    FD_ZERO(&rfds);
-    FD_SET(rfd,&rfds);
-  }
-
-  ndelay_off(rfd);
-  ndelay_off(wfd);
-  if (n != -1) errno = error_timeout;
-  return -1;
-}
-
-int ssl_timeoutconn(t,rfd,wfd,ssl) long t; int rfd; int wfd; SSL *ssl;
-{
-  int r;
-  int n = wfd + 1;
-  int maxfd = (rfd > wfd ? rfd : wfd) + 1;
-
-  fd_set rfds, wfds;
-  fd_set *prfds = (fd_set *) 0;
-  struct timeval tv;
-  long end = t + time((long *) 0);
-
-  /* if connection is established, keep it that way */
-  if (ndelay_on(rfd) == -1) return -1;
-  if (ndelay_on(wfd) == -1) return -1;
-
-  tv.tv_sec = t;
-  tv.tv_usec = 0;
-
-  FD_ZERO(&wfds);
-  FD_SET(wfd,&wfds);
-
-  /* number of descriptors that changes status */
-  while (0 < (n = select(n,prfds,&wfds,(fd_set *) 0,&tv)))
-  {
-    r = SSL_connect(ssl);
-    if (r > 0) {
-      SSL_set_mode(ssl, SSL_MODE_ENABLE_PARTIAL_WRITE);
-      return r;
-    }
-
-    switch (SSL_get_error(ssl, r))
-    {
-    case SSL_ERROR_WANT_READ:
-      /* try again as SSL_write() might be re-negotiating */
-      prfds = &rfds;
-      FD_ZERO(&rfds);
-      FD_SET(rfd,&rfds);
-      n = maxfd;
-      break;
-    case SSL_ERROR_WANT_WRITE:
-      /* try again as network write operation would block */
-      prfds = (fd_set *) 0;
-      n = wfd + 1;
-      break;
-    default:
-      /* some other error */
-      ndelay_off(rfd);
-      ndelay_off(wfd);
-      return -2;
-    }
-
-    if ((t = end - time((long *)0)) < 0) break;
-
-    tv.tv_sec = t;
-    tv.tv_usec = 0;
-
-    FD_ZERO(&wfds);
-    FD_SET(wfd,&wfds);
-  }
-
-  ndelay_off(rfd);
-  ndelay_off(wfd);
-  if (n != -1) errno = error_timeout;
-  return -1;
-}
-
-int ssl_timeoutread(t,rfd,wfd,ssl,buf,len)
-long t; int rfd; int wfd; SSL *ssl; char *buf; int len;
-{
-  int r, n, maxfd;
-  fd_set rfds, wfds;
-  fd_set *pwfds = (fd_set *) 0;
-  struct timeval tv;
-  long end;
-
-  if (SSL_pending(ssl))
-    return SSL_read(ssl,buf,len);
-
-  n = rfd + 1;
-  maxfd = (rfd > wfd ? rfd : wfd) + 1;
-  end = t + time((long *)0);
+  int n;
+  const long end = t + time(NULL);
 
   do {
-    tv.tv_sec = t;
-    tv.tv_usec = 0;
+    fd_set fds;
+    struct timeval tv;
 
-    FD_ZERO(&rfds);
-    FD_SET(rfd,&rfds);
-
-    n = select(n,&rfds,pwfds,(fd_set *) 0,&tv);
-    if (n == -1) return -1;
-    if (n == 0) break; /* timed out */
-
-    r = SSL_read(ssl,buf,len);
+    const int r = buf ? fun(ssl, buf, len) : fun(ssl);
     if (r > 0) return r;
 
+    t = end - time(NULL);
+    if (t < 0) break;
+    tv.tv_sec = t; tv.tv_usec = 0;
+
+    FD_ZERO(&fds);
     switch (SSL_get_error(ssl, r))
     {
+    default: return r; /* some other error */
     case SSL_ERROR_WANT_READ:
-      /* try again as an incomplete record has been read */
-      pwfds = (fd_set *) 0;
-      n = rfd + 1;
+      FD_SET(rfd, &fds); n = select(rfd + 1, &fds, NULL, NULL, &tv);
       break;
     case SSL_ERROR_WANT_WRITE:
-      /* try again as SSL_read() might be re-negotiating */
-      pwfds = &wfds;
-      FD_ZERO(&wfds);
-      FD_SET(wfd,&wfds);
-      n = maxfd;
+      FD_SET(wfd, &fds); n = select(wfd + 1, NULL, &fds, NULL, &tv);
       break;
-    default:
-      /* some other error */
-      return -2;
-    }
-  } while (0 < (t = end - time((long *)0)));
-
-  errno = error_timeout;
-  return -1;
-}
-
-int ssl_timeoutwrite(t,rfd,wfd,ssl,buf,len)
-long t; int rfd; int wfd; SSL* ssl; char *buf; int len;
-{
-  int r;
-  int n = wfd + 1;
-  int maxfd = (rfd > wfd ? rfd : wfd) + 1;
-
-  fd_set rfds, wfds;
-  fd_set *prfds = (fd_set *) 0;
-  struct timeval tv;
-  long end = t + time((long *) 0);
-
-  tv.tv_sec = t;
-  tv.tv_usec = 0;
-
-  FD_ZERO(&wfds);
-  FD_SET(wfd,&wfds);
-
-  /* number of descriptors that changes status */
-  while (0 < (n = select(n,prfds,&wfds,(fd_set *) 0,&tv)))
-  {
-    r = SSL_write(ssl,buf,len);
-    if (r > 0) return r;
-
-    switch (SSL_get_error(ssl, r))
-    {
-    case SSL_ERROR_WANT_READ:
-      /* try again as SSL_write() might be re-negotiating */
-      prfds = &rfds;
-      FD_ZERO(&rfds);
-      FD_SET(rfd,&rfds);
-      n = maxfd;
-      break;
-    case SSL_ERROR_WANT_WRITE:
-      /* try again as network write operation would block */
-      prfds = (fd_set *) 0;
-      n = wfd + 1;
-      break;
-    default:
-      /* some other error */
-      return -2;
     }
 
-    if ((t = end - time((long *)0)) < 0) break;
-
-    tv.tv_sec = t;
-    tv.tv_usec = 0;
-
-    FD_ZERO(&wfds);
-    FD_SET(wfd,&wfds);
-  }
+    /* n is the number of descriptors that changed status */
+  } while (n > 0);
 
   if (n != -1) errno = error_timeout;
   return -1;
+}
+
+int ssl_timeoutaccept(long t, int rfd, int wfd, SSL *ssl)
+{
+  int r;
+
+  /* if connection is established, keep NDELAY */
+  if (ndelay_on(rfd) == -1 || ndelay_on(wfd) == -1) return -1;
+  r = ssl_timeoutio(SSL_accept, t, rfd, wfd, ssl, NULL, 0);
+
+  if (r <= 0) { ndelay_off(rfd); ndelay_off(wfd); }
+  else SSL_set_mode(ssl, SSL_MODE_ENABLE_PARTIAL_WRITE);
+
+  return r;
+}
+
+int ssl_timeoutconn(long t, int rfd, int wfd, SSL *ssl)
+{
+  int r;
+
+  /* if connection is established, keep NDELAY */
+  if (ndelay_on(rfd) == -1 || ndelay_on(wfd) == -1) return -1;
+  r = ssl_timeoutio(SSL_connect, t, rfd, wfd, ssl, NULL, 0);
+
+  if (r <= 0) { ndelay_off(rfd); ndelay_off(wfd); }
+  else SSL_set_mode(ssl, SSL_MODE_ENABLE_PARTIAL_WRITE);
+
+  return r;
+}
+
+int ssl_timeoutrehandshake(long t, int rfd, int wfd, SSL *ssl)
+{
+  int r;
+
+  SSL_renegotiate(ssl);
+  r = ssl_timeoutio(SSL_do_handshake, t, rfd, wfd, ssl, NULL, 0);
+  if (r <= 0 || ssl->type == SSL_ST_CONNECT) return r;
+
+  /* this is for the server only */
+  ssl->state = SSL_ST_ACCEPT;
+  return ssl_timeoutio(SSL_do_handshake, t, rfd, wfd, ssl, NULL, 0);
+}
+
+int ssl_timeoutread(long t, int rfd, int wfd, SSL *ssl, char *buf, int len)
+{
+  if (!buf) return 0;
+  if (SSL_pending(ssl)) return SSL_read(ssl, buf, len);
+  return ssl_timeoutio(SSL_read, t, rfd, wfd, ssl, buf, len);
+}
+
+int ssl_timeoutwrite(long t, int rfd, int wfd, SSL *ssl, char *buf, int len)
+{
+  if (!buf) return 0;
+  return ssl_timeoutio(SSL_write, t, rfd, wfd, ssl, buf, len);
 }

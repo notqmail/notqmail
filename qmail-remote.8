@@ -204,14 +204,17 @@ Default: 1200.
 
 .TP 5
 .I tlsclientciphers
-An OpenSSL client cipher string.
+A set of OpenSSL client cipher strings. Multiple ciphers
+contained in a string should be separated by a colon.
 
 .TP 5
 .I tlshosts/<FQDN>.pem
 .B qmail-remote
 requires authentication from servers for which this certificate exists
 .RB ( <FQDN>
-is the fully-qualified domain name of the server). The
+is the fully-qualified domain name of the server). One of the
+.I dNSName
+or the
 .I CommonName
 attributes have to match.
 

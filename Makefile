@@ -2143,17 +2143,19 @@ compile wait_pid.c error.h haswaitp.h
 
 cert:
 	/usr/local/ssl/bin/openssl req -new -x509 -nodes \
-	-out /var/qmail/control/cert.pem -days 366 \
-	-keyout /var/qmail/control/cert.pem
-	chmod 640 /var/qmail/control/cert.pem
-	chown qmaild.qmail /var/qmail/control/cert.pem
+	-out /var/qmail/control/servercert.pem -days 366 \
+	-keyout /var/qmail/control/servercert.pem
+	chmod 640 /var/qmail/control/servercert.pem
+	chown qmaild.qmail /var/qmail/control/servercert.pem
+	ln -s /var/qmail/control/servercert.pem /var/qmail/control/clientcert.pem
 
 cert-req:
 	/usr/local/ssl/bin/openssl req -new -nodes \
 	-out req.pem \
-	-keyout /var/qmail/control/cert.pem
-	chmod 640 /var/qmail/control/cert.pem
-	chown qmaild.qmail /var/qmail/control/cert.pem
+	-keyout /var/qmail/control/servercert.pem
+	chmod 640 /var/qmail/control/servercert.pem
+	chown qmaild.qmail /var/qmail/control/servercert.pem
+	ln -s /var/qmail/control/servercert.pem /var/qmail/control/clientcert.pem
 	@echo
 	@echo "Send req.pem to your CA to obtain signed_req.pem, and do:"
-	@echo "cat signed_req.pem >> /var/qmail/control/cert.pem"
+	@echo "cat signed_req.pem >> /var/qmail/control/servercert.pem"

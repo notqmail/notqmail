@@ -30,6 +30,7 @@
 SSL *ssl = NULL;
 
 stralloc clientcert = {0};
+stralloc tlsserverciphers = {0};
 #endif
 
 #define MAXHOPS 100
@@ -134,6 +135,9 @@ char *remotehost;
 char *remoteinfo;
 char *local;
 char *relayclient;
+#ifdef TLS
+char *tlsciphers;
+#endif
 
 stralloc helohost = {0};
 char *fakehelo; /* pointer into helohost, or 0 */
@@ -154,7 +158,10 @@ void setup()
 {
   char *x;
   unsigned long u;
- 
+#ifdef TLS
+  char *tlsciphers;
+#endif
+
   if (control_init() == -1) die_control();
   if (control_rldef(&greeting,"control/smtpgreeting",1,(char *) 0) != 1)
     die_control();
@@ -184,6 +191,17 @@ void setup()
   if (!remotehost) remotehost = "unknown";
   remoteinfo = env_get("TCPREMOTEINFO");
   relayclient = env_get("RELAYCLIENT");
+#ifdef TLS
+  if (tlsciphers = env_get("TLSCIPHERS")){
+    if (!stralloc_copys(&tlsserverciphers,tlsciphers)) die_nomem();
+  } 
+  else {
+    if (control_rldef(&tlsserverciphers,"control/tlsserverciphers",0,"DEFAULT") != 1) 
+      die_control();
+  }
+  if (!stralloc_0(&tlsserverciphers)) die_nomem();
+#endif
+
   dohelo(remotehost);
 }
 
@@ -552,13 +570,14 @@ void smtp_tls(arg) char *arg;
   if(!(ctx=SSL_CTX_new(SSLv23_server_method())))
    {out("454 TLS not available: unable to initialize ctx (#4.3.0)\r\n"); 
     return;}
-  if(!SSL_CTX_use_RSAPrivateKey_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM))
+  if(!SSL_CTX_use_RSAPrivateKey_file(ctx, "control/servercert.pem", SSL_FILETYPE_PEM))
    {out("454 TLS not available: missing RSA private key (#4.3.0)\r\n"); 
     return;}
-  if(!SSL_CTX_use_certificate_chain_file(ctx, "control/cert.pem"))
+  if(!SSL_CTX_use_certificate_chain_file(ctx, "control/servercert.pem"))
    {out("454 TLS not available: missing certificate (#4.3.0)\r\n"); 
     return;}
   SSL_CTX_set_tmp_rsa_callback(ctx, tmp_rsa_cb);
+  SSL_CTX_set_cipher_list(ctx,tlsserverciphers.s);
   SSL_CTX_load_verify_locations(ctx, "control/clientca.pem",NULL);
   SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_cb);
  

@@ -35,6 +35,8 @@
 #include <sys/stat.h>
 #include <openssl/ssl.h>
 SSL *ssl = NULL;
+
+stralloc tlsclientciphers = {0};
 #endif
 
 #define HUGESMTPTEXT 5000
@@ -174,7 +176,7 @@ int ssl_timeoutwrite(timeout,fd,buf,n) int timeout; int fd; char *buf; int n;
 
 static int client_cert_cb(SSL *s,X509 **x509, EVP_PKEY **pkey)
 {
- out("ZTLS found no client cert in control/cert.pem\n");
+ out("ZTLS found no client cert in control/clientcert.pem\n");
  zerodie(NULL,NULL);
 }
 
@@ -398,15 +400,17 @@ void smtp()
         SSL_shutdown(ssl);
         zerodie();
       }
-      if((SSL_CTX_use_RSAPrivateKey_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM) <= 0) ||
-         (SSL_CTX_use_certificate_chain_file(ctx, "control/cert.pem") <= 0) ||
-         (SSL_CTX_check_private_key(ctx) <= 0))
-        /* if I was unable to set a good cert I will fail only when a
-        cert is required */
+      if((stat("control/clientcert.pem", &st) == 0) &&
+         ((SSL_CTX_use_RSAPrivateKey_file(ctx, "control/clientcert.pem", SSL_FILETYPE_PEM) <= 0) ||
+         (SSL_CTX_use_certificate_chain_file(ctx, "control/clientcert.pem") <= 0) ||
+         (SSL_CTX_check_private_key(ctx) <= 0)))
+        /* if there is a cert and it is bad, I fail
+           if there is no cert, I leave it to the other side to complain */
         SSL_CTX_set_client_cert_cb(ctx, client_cert_cb);
  
       /*SSL_CTX_set_options(ctx, SSL_OP_NO_TLSv1);*/
-
+      SSL_CTX_set_cipher_list(ctx,tlsclientciphers.s);
+ 
       if (needtlsauth){
         if (!SSL_CTX_load_verify_locations(ctx, servercert.s, NULL))
           {out("ZTLS unable to load "); out(servercert.s); out("\n");
@@ -573,6 +577,11 @@ void getcontrols()
     case 1:
       if (!constmap_init(&maproutes,routes.s,routes.len,1)) temp_nomem(); break;
   }
+#ifdef TLS
+  if (control_rldef(&tlsclientciphers,"control/tlsclientciphers",0,"DEFAULT") != 1)
+    temp_control();
+  if(!stralloc_0(&tlsclientciphers)) temp_nomem();
+#endif
 }
 
 void main(argc,argv)

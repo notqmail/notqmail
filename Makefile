@@ -2182,7 +2182,7 @@ compile wait_pid.c wait_pid.c wait_pid.c error.h wait_pid.c
 	./compile wait_pid.c
 
 cert:
-	/usr/local/ssl/bin/ssleay req -new -x509 -nodes \
+	/usr/local/ssl/bin/openssl req -new -x509 -nodes \
 	-out /var/qmail/control/cert.pem -days 366 \
 	-keyout /var/qmail/control/cert.pem
 	chmod 640 /var/qmail/control/cert.pem

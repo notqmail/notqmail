@@ -1414,7 +1414,8 @@ substdio.a error.a str.a fs.a auto_qmail.o dns.lib socket.lib
 	timeoutwrite.o timeoutconn.o tcpto.o now.o dns.o ip.o \
 	ipalloc.o ipme.o quote.o ndelay.a case.a sig.a open.a \
 	lock.a seek.a getln.a stralloc.a alloc.a substdio.a error.a \
-	str.a fs.a auto_qmail.o  `cat dns.lib` `cat socket.lib`
+	str.a fs.a auto_qmail.o  `cat dns.lib` `cat socket.lib` \
+	-L/usr/local/ssl/lib -lssl -lcrypto
 
 qmail-remote.0: \
 qmail-remote.8
@@ -1527,7 +1528,7 @@ str.a fs.a auto_qmail.o socket.lib
 	constmap.o received.o date822fmt.o now.o qmail.o fd.a \
 	wait.a datetime.a open.a getln.a sig.a case.a env.a \
 	stralloc.a alloc.a substdio.a error.a str.a fs.a \
-	auto_qmail.o  `cat socket.lib`
+	auto_qmail.o  `cat socket.lib` -L/usr/local/ssl/lib -lssl -lcrypto
 
 qmail-smtpd.0: \
 qmail-smtpd.8
@@ -2179,3 +2180,10 @@ wait_nohang.c
 wait_pid.o: \
 compile wait_pid.c wait_pid.c wait_pid.c error.h wait_pid.c
 	./compile wait_pid.c
+
+cert:
+	/usr/local/ssl/bin/ssleay req -new -x509 -nodes \
+	-out /var/qmail/control/cert.pem -days 366 \
+	-keyout /var/qmail/control/cert.pem
+	chmod 640 /var/qmail/control/cert.pem
+	chown qmaild.qmail /var/qmail/control/cert.pem

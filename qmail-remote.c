@@ -29,6 +29,19 @@
 #include "timeoutread.h"
 #include "timeoutwrite.h"
 
+#define TLS
+#ifdef TLS
+#include "select.h" /*timeval*/
+#include <stdio.h> /* this is a SSLeay bug */
+#include <ssl.h>
+#include <err.h>
+#include <bio.h>
+#include <pem.h>
+SSL *ssl = NULL;
+int ssl_timeoutread();
+int ssl_timeoutwrite();
+#endif
+
 #define HUGESMTPTEXT 5000
 
 #define PORT_SMTP 25 /* silly rabbit, /etc/services is for users */
@@ -217,6 +230,9 @@ int fd;
  unsigned long code;
  int flaganyrecipok;
  int i;
+#ifdef TLS
+ SSL_CTX *ctx;
+#endif
 
  substdio_fdbuf(&ssto,timeoutwrite,TIMEOUTWRITE(timeout,fd),smtptobuf,sizeof(smtptobuf));
  substdio_fdbuf(&ssfrom,timeoutread,TIMEOUTREAD(timeout,fd),smtpfrombuf,sizeof(smtpfrombuf));
@@ -227,16 +243,75 @@ int fd;
    quit(&ssto,&ssfrom);
   }
 
+#ifdef TLS
+ if (substdio_puts(&ssto,"EHLO ") == -1) writeerr();
+#else
  if (substdio_puts(&ssto,"HELO ") == -1) writeerr();
+#endif
  if (substdio_put(&ssto,helohost.s,helohost.len) == -1) writeerr();
  if (substdio_puts(&ssto,"\r\n") == -1) writeerr();
  if (substdio_flush(&ssto) == -1) writeerr();
 
  if (smtpcode(&ssfrom) != 250)
+#ifdef TLS
+  {
+   if (substdio_puts(&ssto,"HELO ") == -1) writeerr();
+   if (substdio_put(&ssto,helohost.s,helohost.len) == -1) writeerr();
+   if (substdio_puts(&ssto,"\r\n") == -1) writeerr();
+   if (substdio_flush(&ssto) == -1) writeerr();
+   if (smtpcode(&ssfrom) != 250)
+    {
+     out("ZConnected to "); outhost(); out(" but my name was rejected.\n");
+     quit(&ssto,&ssfrom);
+    }
+  }
+
+#else
   {
    out("ZConnected to "); outhost(); out(" but my name was rejected.\n");
    quit(&ssto,&ssfrom);
   }
+#endif
+
+#ifdef TLS
+ i = 0; 
+ while(i = str_chr(smtptext.s+i,'S'))
+  if (*(smtptext.s+i+1) == 'T')
+   if (*(smtptext.s+i+2) == 'A')
+    if (*(smtptext.s+i+3) == 'R')
+     if (*(smtptext.s+i+4) == 'T')
+      if (*(smtptext.s+i+5) == 'T')
+       if (*(smtptext.s+i+6) == 'L')
+        if (*(smtptext.s+i+7) == 'S')
+  {
+   if (substdio_puts(&ssto,"STARTTLS\r\n") == -1) writeerr();
+   if (substdio_flush(&ssto) == -1) writeerr();
+   if (smtpcode(&ssfrom) == 220)
+    {
+     SSLeay_add_ssl_algorithms();
+     if(!(ctx=SSL_CTX_new(SSLv23_client_method())))
+       {out("ZTLS not available: error initializing ctx\n");
+        quit(&ssto,&ssfrom);}
+ 
+     SSL_CTX_use_RSAPrivateKey_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
+     SSL_CTX_use_certificate_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM);
+     if(SSL_CTX_need_tmp_RSA(ctx))
+      if(!SSL_CTX_set_tmp_rsa(ctx,RSA_generate_key(512,RSA_F4,NULL,NULL)))
+       {out("ZTLS not available: error generating RSA temp key\n");
+        quit(&ssto,&ssfrom);}
+
+     if(!(ssl=SSL_new(ctx)))
+       {out("ZTLS not available: error initializing ctx\n");
+        quit(&ssto,&ssfrom);}
+     SSL_set_fd(ssl,fd);
+     if(SSL_connect(ssl)<=0) 
+       {out("ZTLS not available: connect failed\n");
+        quit(&ssto,&ssfrom);}
+     substdio_fdbuf(&ssto,ssl_timeoutwrite,ssl,smtptobuf,sizeof(smtptobuf));
+     substdio_fdbuf(&ssfrom,ssl_timeoutread,ssl,smtpfrombuf,sizeof(smtpfrombuf));
+    }
+  }
+#endif
 
  if (substdio_puts(&ssto,"MAIL FROM:<") == -1) writeerr();
  if (substdio_put(&ssto,sender.s,sender.len) == -1) writeerr();
@@ -478,3 +553,47 @@ char **argv;
  
  temp_noconn();
 }
+
+#ifdef TLS
+int ssl_timeoutread(ssl,buf,len) SSL *ssl; char *buf; int len;
+{
+  fd_set rfds;
+  struct timeval tv;
+  int fd;
+
+  tv.tv_sec = timeout;
+  tv.tv_usec = 0;
+
+  fd = SSL_get_fd(ssl);
+  FD_ZERO(&rfds);
+  FD_SET(fd,&rfds);
+
+  if (select(fd + 1,&rfds,(fd_set *) 0,(fd_set *) 0,&tv) == -1) return -1;
+  if (FD_ISSET(fd,&rfds)) return SSL_read(ssl,buf,len);
+
+  shutdown(fd,0);
+  errno = error_timeout;
+  return -1;
+}
+
+int ssl_timeoutwrite(ssl,buf,len) SSL *ssl; char *buf; int len;
+{
+  fd_set wfds;
+  struct timeval tv;
+  int fd;
+
+  tv.tv_sec = timeout;
+  tv.tv_usec = 0;
+ 
+  fd = SSL_get_fd(ssl);
+  FD_ZERO(&wfds);
+  FD_SET(fd,&wfds);
+
+  if (select(fd + 1,(fd_set *) 0,&wfds,(fd_set *) 0,&tv) == -1) return -1;
+  if (FD_ISSET(fd,&wfds)) return SSL_write(ssl,buf,len);
+
+  shutdown(fd,1);
+  errno = error_timeout;
+  return -1;
+}
+#endif

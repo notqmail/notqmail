@@ -220,19 +220,25 @@ unsigned long ehlo()
   e = smtptext.s + smtptext.len - 6; /* 250-?\n */
   while (s <= e)
   {
+    int wasspace = 0;
+
     if (!saa_readyplus(&ehlokw, 1)) temp_nomem();
     sa = ehlokw.sa + ehlokw.len++;
     if (ehlokw.len > maxehlokwlen) *sa = sauninit; else sa->len = 0;
 
-    /* smtptext is known to end in a '\n' */
-    for (p = (s += 4); ; ++p)
-      if (*p == '\n' || *p == ' ' || *p == '\t') {
-        if (!stralloc_catb(sa, s, p - s) || !stralloc_0(sa)) temp_nomem();
-        if (*p++ == '\n') break;
-        while (*p == ' ' || *p == '\t') ;
-        s = p;
-      }
-    s = p;
+     /* smtptext is known to end in a '\n' */
+     for (p = (s += 4); ; ++p)
+       if (*p == '\n' || *p == ' ' || *p == '\t') {
+         if (!wasspace)
+           if (!stralloc_catb(sa, s, p - s) || !stralloc_0(sa)) temp_nomem();
+         if (*p == '\n') break;
+         wasspace = 1;
+       } else if (wasspace == 1) {
+         wasspace = 0;
+         s = p;
+       }
+    s = ++p;
+
     /* keyword should consist of alpha-num and '-'
      * broken AUTH might use '=' instead of space */
     for (p = sa->s; *p; ++p) if (*p == '=') { *p = 0; break; }

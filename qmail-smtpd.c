@@ -77,12 +77,12 @@ void err_nogateway()
   out(" (#5.7.1)\r\n");
 }
 #endif
-void err_unimpl() { out("502 unimplemented (#5.5.1)\r\n"); }
+void err_unimpl(arg) char *arg; { out("502 unimplemented (#5.5.1)\r\n"); }
 void err_syntax() { out("555 syntax error (#5.5.4)\r\n"); }
 void err_wantmail() { out("503 MAIL first (#5.5.1)\r\n"); }
 void err_wantrcpt() { out("503 RCPT first (#5.5.1)\r\n"); }
-void err_noop() { out("250 ok\r\n"); }
-void err_vrfy() { out("252 send some mail, i'll try my best\r\n"); }
+void err_noop(arg) char *arg; { out("250 ok\r\n"); }
+void err_vrfy(arg) char *arg; { out("252 send some mail, i'll try my best\r\n"); }
 void err_qqt() { out("451 qqt failure (#4.3.0)\r\n"); }
 
 
@@ -93,11 +93,11 @@ void smtp_greet(code) char *code;
   substdio_puts(&ssout,code);
   substdio_put(&ssout,greeting.s,greeting.len);
 }
-void smtp_help()
+void smtp_help(arg) char *arg;
 {
   out("214 netqmail home page: http://qmail.org/netqmail\r\n");
 }
-void smtp_quit()
+void smtp_quit(arg) char *arg;
 {
   smtp_greet("221 "); out("\r\n"); flush(); _exit(0);
 }
@@ -271,7 +271,7 @@ void smtp_ehlo(arg) char *arg;
   out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
   seenmail = 0; dohelo(arg);
 }
-void smtp_rset()
+void smtp_rset(arg) char *arg;
 {
   seenmail = 0;
   out("250 flushed\r\n");
@@ -360,8 +360,8 @@ int *hops;
         if (flagmaybex) if (pos == 7) ++*hops;
         if (pos < 2) if (ch != "\r\n"[pos]) flagmaybey = 0;
         if (flagmaybey) if (pos == 1) flaginheader = 0;
+	++pos;
       }
-      ++pos;
       if (ch == '\n') { pos = 0; flagmaybex = flagmaybey = flagmaybez = 1; }
     }
     switch(state) {
@@ -409,7 +409,7 @@ void acceptmessage(qp) unsigned long qp;
   out("\r\n");
 }
 
-void smtp_data() {
+void smtp_data(arg) char *arg; {
   int hops;
   unsigned long qp;
   char *qqx;

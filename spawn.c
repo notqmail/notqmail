@@ -5,6 +5,7 @@
 #include "substdio.h"
 #include "byte.h"
 #include "str.h"
+#include "alloc.h"
 #include "stralloc.h"
 #include "select.h"
 #include "exit.h"

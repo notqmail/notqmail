@@ -1,3 +1,10 @@
+20040121 version: netqmail 1.05
+20040121 code: qmail-smtpd is protected from exceedingly long (eg 2GB)
+         header lines
+20040121 code: qmail_lspawn, qmail-newmrh, qmail-newu, and qmail-rspawn
+         are protected from misbehaving on hosts where the size of an
+         integer is not the same as the size of a character pointer
+         (eg 64 bit hosts with 32 bit ints)
 20031027 version: netqmail 1.04.
 20031027 doc: INSTALL points to http://lifewithqmail.org/lwq.html
 20031027 doc: qmail.7 identifies installation as netqmail and points to

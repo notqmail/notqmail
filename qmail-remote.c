@@ -174,16 +174,8 @@ int ssl_timeoutwrite(timeout,fd,buf,n) int timeout; int fd; char *buf; int n;
 
 static int client_cert_cb(SSL *s,X509 **x509, EVP_PKEY **pkey)
 {
-  SSL_CTX *ctx;
-
-  ctx = SSL_get_SSL_CTX(s);
-
-  if(!SSL_CTX_use_RSAPrivateKey_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM)||
-     !SSL_CTX_use_certificate_chain_file(ctx, "control/cert.pem") ||
-     (SSL_CTX_check_private_key(ctx) < 0))
-    {out("ZTLS not available: error in control/cert.pem\n");
-     zerodie(NULL,NULL);}
-  return (1);
+ out("ZTLS found no client cert in control/cert.pem\n");
+ zerodie(NULL,NULL);
 }
 
 static int verify_cb(int ok, X509_STORE_CTX * ctx)
@@ -406,8 +398,13 @@ void smtp()
         SSL_shutdown(ssl);
         zerodie();
       }
-
-      SSL_CTX_set_client_cert_cb(ctx, client_cert_cb);
+      if((SSL_CTX_use_RSAPrivateKey_file(ctx, "control/cert.pem", SSL_FILETYPE_PEM) <= 0) ||
+         (SSL_CTX_use_certificate_chain_file(ctx, "control/cert.pem") <= 0) ||
+         (SSL_CTX_check_private_key(ctx) <= 0))
+        /* if I was unable to set a good cert I will fail only when a
+        cert is required */
+        SSL_CTX_set_client_cert_cb(ctx, client_cert_cb);
+ 
       /*SSL_CTX_set_options(ctx, SSL_OP_NO_TLSv1);*/
 
       if (needtlsauth){

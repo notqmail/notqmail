@@ -323,8 +323,12 @@ void smtp()
 #else
   int smtps = (PORT_SMTPS == smtp_port);
 #endif
-  if (!smtps) {
+
+  if (smtps)
+    starttls = "";
+  else {
 #endif
+ 
   if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
  
 #ifdef TLS
@@ -334,27 +338,28 @@ void smtp()
     substdio_flush(&smtpto);
     if (smtpcode() != 250) {
 #endif
+
   substdio_puts(&smtpto,"HELO ");
   substdio_put(&smtpto,helohost.s,helohost.len);
   substdio_puts(&smtpto,"\r\n");
   substdio_flush(&smtpto);
   if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
+ 
 #ifdef TLS
-    }
+    } else {
+      starttls = smtptext.s + 4; /* skipping "250 " */
+      do {
+        starttls += str_chr(starttls, '\n') + 5;
+        if (starttls + 9 > smtptext.s + smtptext.len) { starttls = 0; break; }
+      } while (str_diffn(starttls,"STARTTLS\n",9));
 
-    starttls = smtptext.s + 4; /* skipping "250 " */
-    do {
-      starttls += str_chr(starttls, '\n') + 5;
-      if (starttls + 9 > smtptext.s + smtptext.len) { starttls = 0; break; }
-    } while (str_diffn(starttls,"STARTTLS\n",9));
-
-    if (starttls) { /* found STARTTLS */
-      substdio_puts(&smtpto,"STARTTLS\r\n");
-      substdio_flush(&smtpto);
-      if (smtpcode() != 220) starttls = 0;
+      if (starttls) { /* found STARTTLS */
+        substdio_puts(&smtpto,"STARTTLS\r\n");
+        substdio_flush(&smtpto);
+        if (smtpcode() != 220) starttls = 0;
+      }
     }
-  } else /* smtps */
-    starttls = "";
+  }
 
   if (partner_fqdn) {
     stralloc tmp = {0};
@@ -450,13 +455,22 @@ void smtp()
     if (smtps) if (smtpcode() != 220)
       quit("ZTLS Connected to "," but greeting failed");
 
-    substdio_puts(&smtpto,"HELO ");
+    /* RFC2487 says we should issue EHLO (even if we do not need extensions) */
+    /* at the same time, it does not prohibit a server to reject the EHLO */
+    /* and make us fallback to HELO */  
+    substdio_puts(&smtpto,"EHLO ");
     substdio_put(&smtpto,helohost.s,helohost.len);
     substdio_puts(&smtpto,"\r\n");
     substdio_flush(&smtpto);
 
-    if (smtpcode() != 250)
-      quit("ZTLS connected to "," but my name was rejected");
+    if (smtpcode() != 250) {
+      substdio_puts(&smtpto,"HELO ");
+      substdio_put(&smtpto,helohost.s,helohost.len);
+      substdio_puts(&smtpto,"\r\n");
+      substdio_flush(&smtpto);
+      if (smtpcode() != 250)
+        quit("ZTLS connected to "," but my name was rejected");
+    }
   }
 #endif
  

@@ -404,7 +404,7 @@ alloc.a error.a fs.a str.a
 dns.o: \
 compile dns.c ip.h ipalloc.h ip.h gen_alloc.h fmt.h alloc.h str.h \
 stralloc.h gen_alloc.h dns.h case.h
-	./compile -DIX_FQDN dns.c
+	./compile dns.c
 
 dnscname: \
 load dnscname.o dns.o dnsdoe.o ip.o ipalloc.o stralloc.a alloc.a \
@@ -779,7 +779,7 @@ compile ip.c fmt.h scan.h ip.h
 ipalloc.o: \
 compile ipalloc.c alloc.h gen_allocdefs.h ip.h ipalloc.h ip.h \
 gen_alloc.h
-	./compile -DIX_FQDN ipalloc.c
+	./compile ipalloc.c
 
 ipme.o: \
 compile ipme.c hassalen.h byte.h ip.h ipalloc.h ip.h gen_alloc.h \
@@ -1460,7 +1460,7 @@ subfd.h substdio.h scan.h case.h error.h auto_qmail.h control.h dns.h \
 alloc.h quote.h ip.h ipalloc.h ip.h gen_alloc.h ipme.h ip.h ipalloc.h \
 gen_alloc.h gen_allocdefs.h str.h now.h datetime.h exit.h constmap.h \
 tcpto.h readwrite.h timeoutconn.h timeoutread.h timeoutwrite.h
-	./compile -DTLS -DIX_FQDN -I/usr/local/ssl/include qmail-remote.c
+	./compile qmail-remote.c
 
 qmail-rspawn: \
 load qmail-rspawn.o spawn.o tcpto_clean.o now.o coe.o sig.a open.a \
@@ -1558,7 +1558,7 @@ substdio.h alloc.h auto_qmail.h control.h received.h constmap.h \
 error.h ipme.h ip.h ipalloc.h ip.h gen_alloc.h ip.h qmail.h \
 substdio.h str.h fmt.h scan.h byte.h case.h env.h now.h datetime.h \
 exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h
-	./compile -DTLS -I/usr/local/ssl/include qmail-smtpd.c
+	./compile qmail-smtpd.c
 
 qmail-start: \
 load qmail-start.o prot.o fd.a auto_uids.o
@@ -2114,7 +2114,7 @@ compile timeoutwrite.c timeoutwrite.h select.h error.h readwrite.h
 
 ssl_timeoutio.o: \
 compile ssl_timeoutio.c ssl_timeoutio.h select.h error.h ndelay.h
-	./compile -I/usr/local/ssl/include ssl_timeoutio.c
+	./compile ssl_timeoutio.c
 
 token822.o: \
 compile token822.c stralloc.h gen_alloc.h alloc.h str.h token822.h \

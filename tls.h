@@ -11,6 +11,6 @@ void ssl_exit(int status);
 # define _exit ssl_exit
 
 const char *ssl_error();
-const char *ssl_strerror();
+const char *ssl_error_str();
 
 #endif

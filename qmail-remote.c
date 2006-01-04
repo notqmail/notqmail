@@ -127,7 +127,7 @@ int saferead(fd,buf,len) int fd; char *buf; int len;
 #ifdef TLS
   if (ssl) {
     r = ssl_timeoutread(timeout, smtpfd, smtpfd, ssl, buf, len);
-    if (r < 0) ssl_err_str = ssl_strerror();
+    if (r < 0) ssl_err_str = ssl_error_str();
   } else
 #endif
   r = timeoutread(timeout,smtpfd,buf,len);
@@ -140,7 +140,7 @@ int safewrite(fd,buf,len) int fd; char *buf; int len;
 #ifdef TLS
   if (ssl) {
     r = ssl_timeoutwrite(timeout, smtpfd, smtpfd, ssl, buf, len);
-    if (r < 0) ssl_err_str = ssl_strerror();
+    if (r < 0) ssl_err_str = ssl_error_str();
   } else
 #endif 
   r = timeoutwrite(timeout,smtpfd,buf,len);
@@ -267,7 +267,7 @@ char *append;
 #ifdef TLS
   /* shouldn't talk to the client unless in an appropriate state */
   int state = ssl ? ssl->state : SSL_ST_BEFORE;
-  if (state & SSL_ST_OK || !smtps && state & SSL_ST_BEFORE)
+  if (state & SSL_ST_OK || (!smtps && state & SSL_ST_BEFORE))
 #endif
   substdio_putsflush(&smtpto,"QUIT\r\n");
   /* waiting for remote side is just too ridiculous */
@@ -455,7 +455,7 @@ int tls_init()
 
   ssl = myssl;
   if (ssl_timeoutconn(timeout, smtpfd, smtpfd, ssl) <= 0)
-    tls_quit("ZTLS connect failed", ssl_strerror());
+    tls_quit("ZTLS connect failed", ssl_error_str());
 
   if (servercert) {
     X509 *peercert;

@@ -1,3 +1,3 @@
-cc -O2 -DTLS=20050329 -I/usr/local/ssl/include
+cc -O2 -DTLS=20060104 -I/usr/local/ssl/include
 
 This will be used to compile .c files.

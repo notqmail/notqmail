@@ -1541,16 +1541,21 @@ auto_uids.h auto_users.h auto_qmail.h auto_break.h auto_patrn.h \
 auto_spawn.h auto_split.h
 	./compile qmail-showctl.c
 
+qmail-spp.o: \
+compile qmail-spp.c readwrite.h stralloc.h substdio.h control.h str.h \
+byte.h env.h exit.h wait.h fork.h fd.h fmt.h getln.h
+	./compile qmail-spp.c
+
 qmail-smtpd: \
 load qmail-smtpd.o rcpthosts.o commands.o timeoutread.o \
 timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
 date822fmt.o now.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
 open.a sig.a case.a env.a stralloc.a alloc.a substdio.a error.a str.a \
-fs.a auto_qmail.o base64.o socket.lib
+fs.a auto_qmail.o base64.o qmail-spp.o socket.lib
 	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
-	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
+	datetime.a getln.a open.a sig.a case.a qmail-spp.o env.a stralloc.a \
 	alloc.a substdio.a error.a str.a fs.a auto_qmail.o base64.o  `cat \
 	socket.lib`
 
@@ -1562,7 +1567,7 @@ compile qmail-smtpd.c sig.h readwrite.h stralloc.h gen_alloc.h \
 substdio.h alloc.h auto_qmail.h control.h received.h constmap.h \
 error.h ipme.h ip.h ipalloc.h ip.h gen_alloc.h ip.h qmail.h \
 substdio.h str.h fmt.h scan.h byte.h case.h env.h now.h datetime.h \
-exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h base64.h
+exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h base64.h qmail-spp.h
 	./compile qmail-smtpd.c
 
 qmail-start: \

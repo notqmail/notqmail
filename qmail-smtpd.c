@@ -23,6 +23,9 @@
 #include "timeoutread.h"
 #include "timeoutwrite.h"
 #include "commands.h"
+#include "qmail-spp.h"
+
+int spp_val;
 
 #define MAXHOPS 100
 unsigned int databytes = 0;
@@ -111,6 +114,7 @@ void setup()
   if (timeout <= 0) timeout = 1;
 
   if (rcpthosts_init() == -1) die_control();
+  if (spp_init() == -1) die_control();
 
   bmfok = control_readfile(&bmf,"control/badmailfrom",0);
   if (bmfok == -1) die_control();
@@ -219,27 +223,33 @@ int addrallowed()
 
 int seenmail = 0;
 int flagbarf; /* defined if seenmail */
+int allowed;
 stralloc mailfrom = {0};
 stralloc rcptto = {0};
 
 void smtp_helo(arg) char *arg;
 {
+  if(!spp_helo(arg)) return;
   smtp_greet("250 "); out("\r\n");
   seenmail = 0; dohelo(arg);
 }
 void smtp_ehlo(arg) char *arg;
 {
+  if(!spp_helo(arg)) return;
   smtp_greet("250-"); out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
   seenmail = 0; dohelo(arg);
 }
 void smtp_rset(arg) char *arg;
 {
+  spp_rset();
   seenmail = 0;
   out("250 flushed\r\n");
 }
 void smtp_mail(arg) char *arg;
 {
   if (!addrparse(arg)) { err_syntax(); return; }
+  if (!(spp_val = spp_mail())) return;
+  if (spp_val == 1)
   flagbarf = bmfcheck();
   seenmail = 1;
   if (!stralloc_copys(&rcptto,"")) die_nomem();
@@ -251,13 +261,18 @@ void smtp_rcpt(arg) char *arg; {
   if (!seenmail) { err_wantmail(); return; }
   if (!addrparse(arg)) { err_syntax(); return; }
   if (flagbarf) { err_bmf(); return; }
+  if (!relayclient) allowed = addrallowed();
+  else allowed = 1;
+  if (!(spp_val = spp_rcpt(allowed))) return;
   if (relayclient) {
     --addr.len;
     if (!stralloc_cats(&addr,relayclient)) die_nomem();
     if (!stralloc_0(&addr)) die_nomem();
   }
-  else
-    if (!addrallowed()) { err_nogateway(); return; }
+  else if (spp_val == 1) {
+    if (!allowed) { err_nogateway(); return; }
+  }
+  spp_rcpt_accepted();
   if (!stralloc_cats(&rcptto,"T")) die_nomem();
   if (!stralloc_cats(&rcptto,addr.s)) die_nomem();
   if (!stralloc_0(&rcptto)) die_nomem();
@@ -372,6 +387,7 @@ void smtp_data(arg) char *arg; {
  
   if (!seenmail) { err_wantmail(); return; }
   if (!rcptto.len) { err_wantrcpt(); return; }
+  if (!spp_data()) return;
   seenmail = 0;
   if (databytes) bytestooverflow = databytes + 1;
   if (qmail_open(&qqt) == -1) { err_qqt(); return; }
@@ -379,6 +395,8 @@ void smtp_data(arg) char *arg; {
   out("354 go ahead\r\n");
  
   received(&qqt,"SMTP",local,remoteip,remotehost,remoteinfo,fakehelo);
+  qmail_put(&qqt,sppheaders.s,sppheaders.len); /* set in qmail-spp.c */
+  spp_rset();
   blast(&hops);
   hops = (hops >= MAXHOPS);
   if (hops) qmail_fail(&qqt);
@@ -414,8 +432,10 @@ void main()
   if (chdir(auto_qmail) == -1) die_control();
   setup();
   if (ipme_init() != 1) die_ipme();
+  if (spp_connect()) {
   smtp_greet("220 ");
   out(" ESMTP\r\n");
+  }
   if (commands(&ssin,&smtpcommands) == 0) die_read();
   die_nomem();
 }

@@ -24,6 +24,7 @@
 #include "timeoutread.h"
 #include "timeoutwrite.h"
 #include "commands.h"
+#include "wait.h"
 
 #define MAXHOPS 100
 unsigned int databytes = 0;
@@ -42,6 +43,9 @@ void die_alarm() { out("451 timeout (#4.4.2)\r\n"); flush(); _exit(1); }
 void die_nomem() { out("421 out of memory (#4.3.0)\r\n"); flush(); _exit(1); }
 void die_control() { out("421 unable to read controls (#4.3.0)\r\n"); flush(); _exit(1); }
 void die_ipme() { out("421 unable to figure out my IP addresses (#4.3.0)\r\n"); flush(); _exit(1); }
+void die_fork() { out("421 unable to fork (#4.3.0)\r\n"); flush(); _exit(1); }
+void die_rcpt() { out("421 unable to verify recipient (#4.3.0)\r\n"); flush(); _exit(1); }
+void die_rcpt2() { out("421 unable to execute recipient check (#4.3.0)\r\n"); flush(); _exit(1); }
 void straynewline() { out("451 See https://cr.yp.to/docs/smtplf.html.\r\n"); flush(); _exit(1); }
 
 void err_bmf() { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
@@ -53,6 +57,7 @@ void err_wantrcpt() { out("503 RCPT first (#5.5.1)\r\n"); }
 void err_noop(arg) char *arg; { out("250 ok\r\n"); }
 void err_vrfy(arg) char *arg; { out("252 send some mail, i'll try my best\r\n"); }
 void err_qqt() { out("451 qqt failure (#4.3.0)\r\n"); }
+void err_badrcpt() { out("553 sorry, no mailbox here by that name. (#5.1.1)\r\n"); }
 
 
 stralloc greeting = {0};
@@ -76,6 +81,7 @@ char *remotehost;
 char *remoteinfo;
 char *local;
 char *relayclient;
+static char *rcptcheck[2] = { 0, 0 };
 
 stralloc helohost = {0};
 char *fakehelo; /* pointer into helohost, or 0 */
@@ -126,6 +132,7 @@ void setup()
   if (!remotehost) remotehost = "unknown";
   remoteinfo = env_get("TCPREMOTEINFO");
   relayclient = env_get("RELAYCLIENT");
+  rcptcheck[0] = env_get("RCPTCHECK");
   dohelo(remotehost);
 }
 
@@ -211,11 +218,35 @@ int addrallowed()
   return r;
 }
 
-
 int seenmail = 0;
 int flagbarf; /* defined if seenmail */
 stralloc mailfrom = {0};
 stralloc rcptto = {0};
+
+int addrvalid()
+{
+	int pid;
+	int wstat;
+
+	if (!rcptcheck[0]) return 1;
+
+    switch(pid = fork()) {
+	  case -1: die_fork();
+	  case 0:
+	    if (!env_put2("SENDER",mailfrom.s)) die_nomem();
+	    if (!env_put2("RECIPIENT",addr.s)) die_nomem();
+	    execv(*rcptcheck,rcptcheck);
+		_exit(120);
+    }
+    if (wait_pid(&wstat,pid) == -1) die_rcpt2();
+    if (wait_crashed(wstat)) die_rcpt2();
+    switch(wait_exitcode(wstat)) {
+	  case 100: return 0;
+	  case 111: die_rcpt();
+	  case 120: die_rcpt2();
+    }
+	return 1;
+}
 
 void smtp_helo(arg) char *arg;
 {
@@ -251,8 +282,10 @@ void smtp_rcpt(arg) char *arg; {
     if (!stralloc_cats(&addr,relayclient)) die_nomem();
     if (!stralloc_0(&addr)) die_nomem();
   }
-  else
+  else {
     if (!addrallowed()) { err_nogateway(); return; }
+    if (!addrvalid()) { err_badrcpt(); return; }
+  }
   if (!stralloc_cats(&rcptto,"T")) die_nomem();
   if (!stralloc_cats(&rcptto,addr.s)) die_nomem();
   if (!stralloc_0(&rcptto)) die_nomem();

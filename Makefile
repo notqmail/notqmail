@@ -1287,14 +1287,15 @@ sig.h substdio.h readwrite.h exit.h now.h datetime.h fmt.h env.h byte.h
 	./compile qmail-qmqpd.c
 
 qmail-qmtpd: \
-load qmail-qmtpd.o rcpthosts.o control.o constmap.o received.o \
+load qmail-qmtpd.o realrcptto.o rcpthosts.o control.o constmap.o received.o \
 date822fmt.o qmail.o cdb.a fd.a wait.a datetime.a open.a \
 getln.a sig.a case.a env.a stralloc.a substdio.a error.a \
-str.a fs.a auto_qmail.o
-	./load qmail-qmtpd rcpthosts.o control.o constmap.o \
+str.a fs.a auto_qmail.o auto_break.o auto_usera.o
+	./load qmail-qmtpd realrcptto.o rcpthosts.o control.o constmap.o \
 	received.o date822fmt.o qmail.o cdb.a fd.a wait.a \
 	datetime.a open.a getln.a sig.a case.a env.a stralloc.a \
-	substdio.a error.a str.a fs.a auto_qmail.o
+	substdio.a error.a str.a fs.a auto_qmail.o auto_break.o \
+	auto_usera.o
 
 qmail-qmtpd.0: \
 qmail-qmtpd.8
@@ -1450,17 +1451,17 @@ auto_spawn.h auto_split.h
 	./compile qmail-showctl.c
 
 qmail-smtpd: \
-load qmail-smtpd.o rcpthosts.o commands.o timeoutread.o \
+load qmail-smtpd.o realrcptto.o rcpthosts.o commands.o timeoutread.o \
 timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
 date822fmt.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
 open.a sig.a case.a env.a stralloc.a substdio.a error.a str.a \
-fs.a auto_qmail.o socket.lib
-	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
+fs.a auto_qmail.o auto_break.o auto_usera.o socket.lib
+	./load qmail-smtpd realrcptto.o rcpthosts.o commands.o timeoutread.o \
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
 	received.o date822fmt.o qmail.o cdb.a fd.a wait.a \
 	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
-	substdio.a error.a str.a fs.a auto_qmail.o  `cat \
-	socket.lib`
+	substdio.a error.a str.a fs.a auto_qmail.o auto_break.o \
+	auto_usera.o `cat socket.lib`
 
 qmail-smtpd.0: \
 qmail-smtpd.8
@@ -1590,6 +1591,11 @@ readsubdir.o: \
 compile readsubdir.c readsubdir.h direntry.h fmt.h scan.h str.h \
 auto_split.h
 	./compile readsubdir.c
+
+realrcptto.o: \
+compile realrcptto.c auto_break.h auto_usera.h byte.h case.h cdb.h \
+constmap.h error.h fmt.h open.h str.h stralloc.h uint32.h
+	./compile realrcptto.c
 
 received.o: \
 compile received.c fmt.h qmail.h substdio.h now.h datetime.h \

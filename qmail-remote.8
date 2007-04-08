@@ -220,13 +220,13 @@ contained in a string should be separated by a colon.
 .TP 5
 .I tlshosts/<FQDN>.pem
 .B qmail-remote
-requires TLS authentication from servers for which this certificate exists
+requires TLS authentication from servers for which this file exists
 .RB ( <FQDN>
 is the fully-qualified domain name of the server). One of the
 .I dNSName
 or the
 .I CommonName
-attributes have to match.
+attributes have to match. The file contains the trusted CA certificates.
 
 .B WARNING:
 this option may cause mail to be delayed, bounced, doublebounced, or lost.

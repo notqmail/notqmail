@@ -634,7 +634,7 @@ void tls_init()
 
   ciphers = env_get("TLSCIPHERS");
   if (!ciphers) {
-    if (control_readfile(&saciphers, "control/tlsserverciphers") == -1)
+    if (control_readfile(&saciphers, "control/tlsserverciphers", 0) == -1)
       { SSL_free(myssl); die_control(); }
     if (saciphers.len) { /* convert all '\0's except the last one to ':' */
       int i;
@@ -662,9 +662,9 @@ void tls_init()
   ssl = myssl;
 
   /* populate the protocol string, used in Received */
-  if (!stralloc_copys(&proto, "(")
+  if (!stralloc_copys(&proto, "ESMTPS (")
     || !stralloc_cats(&proto, SSL_get_cipher(ssl))
-    || !stralloc_cats(&proto, " encrypted) SMTP")) die_nomem();
+    || !stralloc_cats(&proto, " encrypted)")) die_nomem();
   if (!stralloc_0(&proto)) die_nomem();
   protocol = proto.s;
 

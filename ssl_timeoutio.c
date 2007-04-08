@@ -1,13 +1,14 @@
 #include "select.h"
 #include "error.h"
 #include "ndelay.h"
+#include "now.h"
 #include "ssl_timeoutio.h"
 
 int ssl_timeoutio(int (*fun)(),
-  long t, int rfd, int wfd, SSL *ssl, char *buf, int len)
+  int t, int rfd, int wfd, SSL *ssl, char *buf, int len)
 {
   int n;
-  const long end = t + time(NULL);
+  const datetime_sec end = (datetime_sec)t + now();
 
   do {
     fd_set fds;
@@ -16,9 +17,9 @@ int ssl_timeoutio(int (*fun)(),
     const int r = buf ? fun(ssl, buf, len) : fun(ssl);
     if (r > 0) return r;
 
-    t = end - time(NULL);
+    t = end - now();
     if (t < 0) break;
-    tv.tv_sec = t; tv.tv_usec = 0;
+    tv.tv_sec = (time_t)t; tv.tv_usec = 0;
 
     FD_ZERO(&fds);
     switch (SSL_get_error(ssl, r))
@@ -39,7 +40,7 @@ int ssl_timeoutio(int (*fun)(),
   return -1;
 }
 
-int ssl_timeoutaccept(long t, int rfd, int wfd, SSL *ssl)
+int ssl_timeoutaccept(int t, int rfd, int wfd, SSL *ssl)
 {
   int r;
 
@@ -53,7 +54,7 @@ int ssl_timeoutaccept(long t, int rfd, int wfd, SSL *ssl)
   return r;
 }
 
-int ssl_timeoutconn(long t, int rfd, int wfd, SSL *ssl)
+int ssl_timeoutconn(int t, int rfd, int wfd, SSL *ssl)
 {
   int r;
 
@@ -67,7 +68,7 @@ int ssl_timeoutconn(long t, int rfd, int wfd, SSL *ssl)
   return r;
 }
 
-int ssl_timeoutrehandshake(long t, int rfd, int wfd, SSL *ssl)
+int ssl_timeoutrehandshake(int t, int rfd, int wfd, SSL *ssl)
 {
   int r;
 
@@ -80,14 +81,14 @@ int ssl_timeoutrehandshake(long t, int rfd, int wfd, SSL *ssl)
   return ssl_timeoutio(SSL_do_handshake, t, rfd, wfd, ssl, NULL, 0);
 }
 
-int ssl_timeoutread(long t, int rfd, int wfd, SSL *ssl, char *buf, int len)
+int ssl_timeoutread(int t, int rfd, int wfd, SSL *ssl, char *buf, int len)
 {
   if (!buf) return 0;
   if (SSL_pending(ssl)) return SSL_read(ssl, buf, len);
   return ssl_timeoutio(SSL_read, t, rfd, wfd, ssl, buf, len);
 }
 
-int ssl_timeoutwrite(long t, int rfd, int wfd, SSL *ssl, char *buf, int len)
+int ssl_timeoutwrite(int t, int rfd, int wfd, SSL *ssl, char *buf, int len)
 {
   if (!buf) return 0;
   return ssl_timeoutio(SSL_write, t, rfd, wfd, ssl, buf, len);

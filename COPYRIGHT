@@ -25,3 +25,9 @@ NOTE: netqmail 1.05 is a community-assembled distribution of qmail from
 the official qmail-1.03.tar.gz and patches approved by the community.
 D. J. Bernstein did not participate in, nor has he been asked to approve
 of this distribution.
+
+netqmail-1.06
+-------------
+The same copyright information as netqmail-1.05 applies to netqmail-1.06
+with the addition of D. J. Bernstein's dedication of qmail to the public
+domain.

@@ -326,6 +326,9 @@ int saferead(fd,buf,len) int fd; char *buf; int len;
 
 char ssinbuf[1024];
 substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof ssinbuf);
+#ifdef TLS
+void flush_io() { ssin.p = 0; flush(); }
+#endif
 
 struct qmail qqt;
 unsigned int bytestooverflow = 0;
@@ -687,7 +690,7 @@ struct commands smtpcommands[] = {
 , { "rset", smtp_rset, 0 }
 , { "help", smtp_help, flush }
 #ifdef TLS
-, { "starttls", smtp_tls, flush }
+, { "starttls", smtp_tls, flush_io }
 #endif
 , { "noop", err_noop, flush }
 , { "vrfy", err_vrfy, flush }

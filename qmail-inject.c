@@ -358,11 +358,14 @@ stralloc *h;
  
   switch(htype) {
     case H_TO: case H_CC:
-      rw = rwtocc; break;
+      if (flagrh) rw = rwtocc;
+      break;
     case H_BCC: case H_APPARENTLYTO:
-      rw = rwhr; break;
+      if (flagrh) rw = rwhr;
+      break;
     case H_R_TO: case H_R_CC: case H_R_BCC:
-      rw = rwhrr; break;
+      if (flagrh) rw = rwhrr;
+      break;
     case H_RETURNPATH:
       rw = rwreturn; break;
     case H_SENDER: case H_FROM: case H_REPLYTO:

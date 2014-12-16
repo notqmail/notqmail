@@ -610,6 +610,9 @@ void tls_init()
   ctx = SSL_CTX_new(SSLv23_server_method());
   if (!ctx) { tls_err("unable to initialize ctx"); return; }
 
+  /* POODLE vulnerability */
+  SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
+
   if (!SSL_CTX_use_certificate_chain_file(ctx, SERVERCERT))
     { SSL_CTX_free(ctx); tls_err("missing certificate"); return; }
   SSL_CTX_load_verify_locations(ctx, CLIENTCA, NULL);

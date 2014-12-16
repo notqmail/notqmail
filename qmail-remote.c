@@ -401,6 +401,9 @@ int tls_init()
     tls_quit_error("ZTLS error initializing ctx");
   }
 
+  /* POODLE vulnerability */
+  SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
+
   if (servercert) {
     if (!SSL_CTX_load_verify_locations(ctx, servercert, NULL)) {
       SSL_CTX_free(ctx);
@@ -427,7 +430,7 @@ int tls_init()
 
   if (!smtps) substdio_putsflush(&smtpto, "STARTTLS\r\n");
 
-  /* while the server is preparing a responce, do something else */
+  /* while the server is preparing a response, do something else */
   if (control_readfile(&saciphers, "control/tlsclientciphers", 0) == -1)
     { SSL_free(myssl); temp_control(); }
   if (saciphers.len) {
@@ -439,10 +442,9 @@ int tls_init()
   SSL_set_cipher_list(myssl, ciphers);
   alloc_free(saciphers.s);
 
-  /* SSL_set_options(myssl, SSL_OP_NO_TLSv1); */
   SSL_set_fd(myssl, smtpfd);
 
-  /* read the responce to STARTTLS */
+  /* read the response to STARTTLS */
   if (!smtps) {
     if (smtpcode() != 220) {
       SSL_free(myssl);
@@ -460,6 +462,7 @@ int tls_init()
   if (servercert) {
     X509 *peercert;
     STACK_OF(GENERAL_NAME) *gens;
+    int found_gen_dns = 0;
 
     int r = SSL_get_verify_result(ssl);
     if (r != X509_V_OK) {
@@ -481,14 +484,16 @@ int tls_init()
       for (i = 0, r = sk_GENERAL_NAME_num(gens); i < r; ++i)
       {
         const GENERAL_NAME *gn = sk_GENERAL_NAME_value(gens, i);
-        if (gn->type == GEN_DNS)
+        if (gn->type == GEN_DNS){
+          found_gen_dns = 1;
           if (match_partner(gn->d.ia5->data, gn->d.ia5->length)) break;
+        }
       }
       sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
     }
 
-    /* no alternative name matched, look up commonName */
-    if (!gens || i >= r) {
+    /* no SubjectAltName of type DNS found, look up commonName */
+    if (!found_gen_dns) {
       stralloc peer = {0};
       X509_NAME *subj = X509_get_subject_name(peercert);
       i = X509_NAME_get_index_by_NID(subj, NID_commonName, -1);

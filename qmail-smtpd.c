@@ -460,9 +460,9 @@ void smtp_tls(char *arg)
 
 RSA *tmp_rsa_cb(SSL *ssl, int export, int keylen)
 {
-  if (!export) keylen = 512;
-  if (keylen == 512) {
-    FILE *in = fopen("control/rsa512.pem", "r");
+  if (!export) keylen = 2048;
+  if (keylen == 2048) {
+    FILE *in = fopen("control/rsa2048.pem", "r");
     if (in) {
       RSA *rsa = PEM_read_RSAPrivateKey(in, NULL, NULL, NULL);
       fclose(in);
@@ -474,17 +474,9 @@ RSA *tmp_rsa_cb(SSL *ssl, int export, int keylen)
 
 DH *tmp_dh_cb(SSL *ssl, int export, int keylen)
 {
-  if (!export) keylen = 1024;
-  if (keylen == 512) {
-    FILE *in = fopen("control/dh512.pem", "r");
-    if (in) {
-      DH *dh = PEM_read_DHparams(in, NULL, NULL, NULL);
-      fclose(in);
-      if (dh) return dh;
-    }
-  }
-  if (keylen == 1024) {
-    FILE *in = fopen("control/dh1024.pem", "r");
+  if (!export) keylen = 2048;
+  if (keylen == 2048) {
+    FILE *in = fopen("control/dh2048.pem", "r");
     if (in) {
       DH *dh = PEM_read_DHparams(in, NULL, NULL, NULL);
       fclose(in);
@@ -580,8 +572,10 @@ int tls_verify()
         || !stralloc_catb(&proto, email.s, email.len)
         || !stralloc_cats(&proto, ")")
         || !stralloc_0(&proto)) die_nomem();
-      relayclient = "";
       protocol = proto.s;
+      relayclient = "";
+      /* also inform qmail-queue */
+      if (!env_put("RELAYCLIENT=")) die_nomem();
     }
 
     X509_free(peercert);
@@ -625,7 +619,12 @@ void tls_init()
     X509_STORE_set_flags(store, X509_V_FLAG_CRL_CHECK |
                                 X509_V_FLAG_CRL_CHECK_ALL);
 #endif
-
+  
+#if OPENSSL_VERSION_NUMBER >= 0x01000200L
+  /* support ECDH */
+  SSL_CTX_set_ecdh_auto(ctx,1);
+#endif
+ 
   /* set the callback here; SSL_set_verify didn't work before 0.9.6c */
   SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_cb);
 

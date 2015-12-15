@@ -620,7 +620,7 @@ void tls_init()
                                 X509_V_FLAG_CRL_CHECK_ALL);
 #endif
   
-#if OPENSSL_VERSION_NUMBER >= 0x01000200L
+#if OPENSSL_VERSION_NUMBER >= 0x10002000L
   /* support ECDH */
   SSL_CTX_set_ecdh_auto(ctx,1);
 #endif

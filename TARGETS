@@ -5,7 +5,6 @@ systype
 load
 make-compile
 compile
-fork.h
 qmail-local.o
 qmail.o
 quote.o

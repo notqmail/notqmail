@@ -96,7 +96,7 @@ char *s; char *r; int at;
  args[3] = r;
  args[4] = 0;
 
- if (!(f = vfork()))
+ if (!(f = fork()))
   {
    if (fd_move(0,fdmess) == -1) _exit(111);
    if (fd_move(1,fdout) == -1) _exit(111);

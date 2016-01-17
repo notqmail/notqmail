@@ -156,7 +156,7 @@ char *local;
  args[0] = "bin/qmail-getpw";
  args[1] = local;
  args[2] = 0;
- switch(gpwpid = vfork())
+ switch(gpwpid = fork())
   {
    case -1:
      _exit(QLX_SYS);

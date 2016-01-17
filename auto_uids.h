@@ -1,16 +1,18 @@
 #ifndef AUTO_UIDS_H
 #define AUTO_UIDS_H
 
-extern int auto_uida;
-extern int auto_uidd;
-extern int auto_uidl;
-extern int auto_uido;
-extern int auto_uidp;
-extern int auto_uidq;
-extern int auto_uidr;
-extern int auto_uids;
+#include <sys/types.h>
 
-extern int auto_gidn;
-extern int auto_gidq;
+extern uid_t auto_uida;
+extern uid_t auto_uidd;
+extern uid_t auto_uidl;
+extern uid_t auto_uido;
+extern uid_t auto_uidp;
+extern uid_t auto_uidq;
+extern uid_t auto_uidr;
+extern uid_t auto_uids;
+
+extern gid_t auto_gidn;
+extern gid_t auto_gidq;
 
 #endif

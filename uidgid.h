@@ -1,7 +1,9 @@
 #ifndef UIDGID_H
 #define UIDGID_H
 
-extern int inituid();
-extern int initgid();
+#include <sys/types.h>
+
+extern uid_t inituid();
+extern gid_t initgid();
 
 #endif

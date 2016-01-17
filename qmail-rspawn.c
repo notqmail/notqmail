@@ -9,7 +9,7 @@
 #include "auto_uids.h"
 #include "auto_users.h"
 
-int auto_uidq;
+uid_t auto_uidq;
 
 void initialize(argc,argv)
 int argc;

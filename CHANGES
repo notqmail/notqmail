@@ -1,3 +1,4 @@
+20160117 use gid_t and uid_t
 20190822 cleanup: remove unused dnsmxip.
 20190822 cleanup: remove unused dnscname.
 20190819 version: notqmail 1.07.

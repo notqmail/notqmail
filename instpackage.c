@@ -57,8 +57,8 @@ int mode;
 
 void h(home,uid,gid,mode)
 char *home;
-int uid;
-int gid;
+uid_t uid;
+gid_t gid;
 int mode;
 {
   stralloc dh = { 0 };
@@ -75,8 +75,8 @@ int mode;
 void d(home,subdir,uid,gid,mode)
 char *home;
 char *subdir;
-int uid;
-int gid;
+uid_t uid;
+gid_t gid;
 int mode;
 {
   stralloc dh = { 0 };
@@ -95,8 +95,8 @@ int mode;
 void p(home,fifo,uid,gid,mode)
 char *home;
 char *fifo;
-int uid;
-int gid;
+uid_t uid;
+gid_t gid;
 int mode;
 {
   stralloc dh = { 0 };
@@ -121,8 +121,8 @@ void c(home,subdir,file,uid,gid,mode)
 char *home;
 char *subdir;
 char *file;
-int uid;
-int gid;
+uid_t uid;
+gid_t gid;
 int mode;
 {
   int fdin;
@@ -173,8 +173,8 @@ void z(home,file,len,uid,gid,mode)
 char *home;
 char *file;
 int len;
-int uid;
-int gid;
+uid_t uid;
+gid_t gid;
 int mode;
 {
   int fdout;
@@ -207,13 +207,13 @@ int mode;
 }
 
 /* these are ignored, but hier() passes them to h() and friends */
-int auto_uida = -1;
-int auto_uido = -1;
-int auto_uidq = -1;
-int auto_uidr = -1;
-int auto_uids = -1;
+uid_t auto_uida = -1;
+uid_t auto_uido = -1;
+uid_t auto_uidq = -1;
+uid_t auto_uidr = -1;
+uid_t auto_uids = -1;
 
-int auto_gidq = -1;
+gid_t auto_gidq = -1;
 
 void main()
 {

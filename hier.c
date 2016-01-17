@@ -8,7 +8,7 @@ char buf[100 + FMT_ULONG];
 
 void dsplit(base,uid,mode)
 char *base; /* must be under 100 bytes */
-int uid;
+uid_t uid;
 int mode;
 {
   char *x;

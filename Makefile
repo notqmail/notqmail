@@ -690,15 +690,6 @@ trysgprm.c compile load
 	&& echo \#define HASSIGPROCMASK 1 || exit 0 ) > hassgprm.h
 	rm -f trysgprm.o trysgprm
 
-hasshsgr.h: \
-chkshsgr warn-shsgr tryshsgr.c compile load
-	./chkshsgr || ( cat warn-shsgr; exit 1 )
-	( ( ./compile tryshsgr.c \
-	&& ./load tryshsgr && ./tryshsgr ) >/dev/null 2>&1 \
-	&& echo \#define HASSHORTSETGROUPS 1 || exit 0 ) > \
-	hasshsgr.h
-	rm -f tryshsgr.o tryshsgr
-
 haswaitp.h: \
 trywaitp.c compile load
 	( ( ./compile trywaitp.c && ./load trywaitp ) >/dev/null \
@@ -1065,7 +1056,8 @@ proc+df.sh conf-qmail
 	chmod 755 proc+df
 
 prot.o: \
-compile prot.c hasshsgr.h prot.h
+compile prot.c prot.h chkshsgr warn-shsgr
+	./chkshsgr || ( cat warn-shsgr; exit 1 )
 	./compile prot.c
 
 qail: \

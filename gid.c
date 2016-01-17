@@ -5,7 +5,7 @@
 #include "substdio.h"
 #include "exit.h"
 
-int
+gid_t
 initgid(group)
   char *group;
 {

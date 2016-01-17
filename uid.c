@@ -5,7 +5,7 @@
 #include "substdio.h"
 #include "exit.h"
 
-int
+uid_t
 inituid(user)
   char *user;
 {

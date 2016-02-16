@@ -100,7 +100,7 @@ void err_nogateway()
 }
 void err_unimpl(arg) char *arg;
 {
-  enew(); eout("Unimplemented command\n"); eflush();
+  enew(); eout("Unimplemented command <"); eoutclean(arg); eout(">\n"); eflush();
   out("502 unimplemented (#5.5.1)\r\n");
 }
 void err_syntax(cmd) char *cmd;

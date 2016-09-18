@@ -463,6 +463,7 @@ int tls_init()
     X509 *peercert;
     STACK_OF(GENERAL_NAME) *gens;
     int found_gen_dns = 0;
+    int matched_gen_dns = 0;
 
     int r = SSL_get_verify_result(ssl);
     if (r != X509_V_OK) {
@@ -486,7 +487,10 @@ int tls_init()
         const GENERAL_NAME *gn = sk_GENERAL_NAME_value(gens, i);
         if (gn->type == GEN_DNS){
           found_gen_dns = 1;
-          if (match_partner(gn->d.ia5->data, gn->d.ia5->length)) break;
+          if (match_partner(gn->d.ia5->data, gn->d.ia5->length)){
+            matched_gen_dns = 1;
+            break;
+          }
         }
       }
       sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
@@ -509,6 +513,9 @@ int tls_init()
         out("ZTLS unable to verify server "); out(partner_fqdn);
         out(": received certificate for "); outsafe(&peer); TLS_QUIT;
       }
+    } else if (!matched_gen_dns) {
+      out("ZTLS unable to verify server ");
+      tls_quit(partner_fqdn, "certificate contains no matching dNSNnames");
     }
 
     X509_free(peercert);

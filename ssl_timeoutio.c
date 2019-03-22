@@ -70,14 +70,30 @@ int ssl_timeoutconn(int t, int rfd, int wfd, SSL *ssl)
 
 int ssl_timeoutrehandshake(int t, int rfd, int wfd, SSL *ssl)
 {
-  int r;
+  int r=0;
+  char buf[1]; /* dummy read buffer */
+  struct timeval tv;
+  fd_set fds;
 
   SSL_renegotiate(ssl);
+#if OPENSSL_VERSION_NUMBER >= 0x10001000L
+  r = ssl_timeoutio(SSL_do_handshake, t, rfd, wfd, ssl, NULL, 0);
+  if (r <=0) return r;
+
+  tv.tv_sec = (time_t)t; tv.tv_usec = 0;
+  FD_ZERO(&fds);  FD_SET(rfd, &fds);
+  if ((r = select(rfd + 1, &fds, NULL, NULL, &tv)>0) && FD_ISSET(rfd, &fds)){
+    r = SSL_read(ssl, buf, 1);
+    if (SSL_get_error(ssl, r) == SSL_ERROR_WANT_READ) r = 1; /*ignore */
+  }
+  if (r <=0) return r;
+#else
   r = ssl_timeoutio(SSL_do_handshake, t, rfd, wfd, ssl, NULL, 0);
   if (r <= 0 || ssl->type == SSL_ST_CONNECT) return r;
 
   /* this is for the server only */
   ssl->state = SSL_ST_ACCEPT;
+#endif
   return ssl_timeoutio(SSL_do_handshake, t, rfd, wfd, ssl, NULL, 0);
 }
 

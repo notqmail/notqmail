@@ -460,34 +460,53 @@ void smtp_tls(char *arg)
 
 RSA *tmp_rsa_cb(SSL *ssl, int export, int keylen)
 {
+  RSA *rsa;
+  BIGNUM *e; /*exponent */
+
   if (!export) keylen = 2048;
   if (keylen == 2048) {
     FILE *in = fopen("control/rsa2048.pem", "r");
     if (in) {
-      RSA *rsa = PEM_read_RSAPrivateKey(in, NULL, NULL, NULL);
+      rsa = PEM_read_RSAPrivateKey(in, NULL, NULL, NULL);
       fclose(in);
       if (rsa) return rsa;
     }
   }
+#if OPENSSL_VERSION_NUMBER >= 0x10002000L
+  e = BN_new(); 
+  BN_set_word(e, RSA_F4);
+  if (RSA_generate_key_ex(rsa, keylen, e, NULL) == 1)
+    return rsa;
+  return NULL;
+#else
   return RSA_generate_key(keylen, RSA_F4, NULL, NULL);
+#endif
 }
 
 DH *tmp_dh_cb(SSL *ssl, int export, int keylen)
 {
+  DH *dh;
+
   if (!export) keylen = 2048;
   if (keylen == 2048) {
     FILE *in = fopen("control/dh2048.pem", "r");
     if (in) {
-      DH *dh = PEM_read_DHparams(in, NULL, NULL, NULL);
+      dh = PEM_read_DHparams(in, NULL, NULL, NULL);
       fclose(in);
       if (dh) return dh;
     }
   }
+#if OPENSSL_VERSION_NUMBER >= 0x10002000L
+  if((dh = DH_new()) && (DH_generate_parameters_ex(dh, keylen, DH_GENERATOR_2, NULL) == 1))
+    return dh;
+  return NULL;
+#else
   return DH_generate_parameters(keylen, DH_GENERATOR_2, NULL, NULL);
+#endif
 } 
 
 /* don't want to fail handshake if cert isn't verifiable */
-int verify_cb(int preverify_ok, X509_STORE_CTX *ctx) { return 1; }
+int verify_cb(int preverify_ok, X509_STORE_CTX *x509_ctx) { return 1; }
 
 void tls_nogateway()
 {
@@ -529,7 +548,7 @@ int tls_verify()
       STACK_OF(X509_NAME) *sk = SSL_load_client_CA_file(CLIENTCA);
       if (sk) {
         SSL_set_client_CA_list(ssl, sk);
-        SSL_set_verify(ssl, SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE, NULL);
+        SSL_set_verify(ssl, SSL_VERIFY_PEER, verify_cb);
         break;
       }
       constmap_free(&mapclients);
@@ -557,7 +576,7 @@ int tls_verify()
     subj = X509_get_subject_name(peercert);
     n = X509_NAME_get_index_by_NID(subj, NID_pkcs9_emailAddress, -1);
     if (n >= 0) {
-      const ASN1_STRING *s = X509_NAME_get_entry(subj, n)->value;
+      const ASN1_STRING *s = X509_NAME_ENTRY_get_data(X509_NAME_get_entry(subj, n));
       if (s) { email.len = s->length; email.s = s->data; }
     }
 
@@ -597,6 +616,7 @@ void tls_init()
   stralloc saciphers = {0};
   X509_STORE *store;
   X509_LOOKUP *lookup;
+  int session_id_context = 1; /* anything will do */
 
   SSL_library_init();
 
@@ -607,26 +627,35 @@ void tls_init()
   /* POODLE vulnerability */
   SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
 
+  /* renegotiation should include certificate request */
+  SSL_CTX_set_options(ctx, SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
+
+  /* never bother the application with retries if the transport is blocking */
+  SSL_CTX_set_mode(ctx, SSL_MODE_AUTO_RETRY);
+
+  /* relevant in renegotiation */
+  SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_OFF);
+  if (!SSL_CTX_set_session_id_context(ctx, (void *)&session_id_context,
+                                        sizeof(session_id_context))) 
+    { SSL_CTX_free(ctx); tls_err("failed to set session_id_context"); return; }
+
   if (!SSL_CTX_use_certificate_chain_file(ctx, SERVERCERT))
     { SSL_CTX_free(ctx); tls_err("missing certificate"); return; }
   SSL_CTX_load_verify_locations(ctx, CLIENTCA, NULL);
 
-#if OPENSSL_VERSION_NUMBER >= 0x00907000L
   /* crl checking */
   store = SSL_CTX_get_cert_store(ctx);
   if ((lookup = X509_STORE_add_lookup(store, X509_LOOKUP_file())) &&
       (X509_load_crl_file(lookup, CLIENTCRL, X509_FILETYPE_PEM) == 1))
     X509_STORE_set_flags(store, X509_V_FLAG_CRL_CHECK |
                                 X509_V_FLAG_CRL_CHECK_ALL);
-#endif
   
 #if OPENSSL_VERSION_NUMBER >= 0x10002000L
   /* support ECDH */
   SSL_CTX_set_ecdh_auto(ctx,1);
 #endif
- 
-  /* set the callback here; SSL_set_verify didn't work before 0.9.6c */
-  SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_cb);
+
+  SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, NULL);
 
   /* a new SSL object, with the rest added to it directly to avoid copying */
   myssl = SSL_new(ctx);

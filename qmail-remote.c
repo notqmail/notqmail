@@ -111,7 +111,7 @@ void dropped() {
   out(" but connection died. ");
   if (flagcritical) out("Possible duplicate! ");
 #ifdef TLS
-  if (ssl_err_str) { out(ssl_err_str); out(" "); }
+  if (ssl_err_str) { out((char *)ssl_err_str); out(" "); }
 #endif
   out("(#4.4.2)\n");
   zerodie();
@@ -266,8 +266,14 @@ char *append;
 {
 #ifdef TLS
   /* shouldn't talk to the client unless in an appropriate state */
+#if OPENSSL_VERSION_NUMBER >= 0x10002000L
+  OSSL_HANDSHAKE_STATE state = ssl ? SSL_get_state(ssl) : TLS_ST_BEFORE;
+  if (state & TLS_ST_OK || (!smtps && state & TLS_ST_BEFORE))
+  
+#else
   int state = ssl ? ssl->state : SSL_ST_BEFORE;
   if (state & SSL_ST_OK || (!smtps && state & SSL_ST_BEFORE))
+#endif
 #endif
   substdio_putsflush(&smtpto,"QUIT\r\n");
   /* waiting for remote side is just too ridiculous */
@@ -334,7 +340,7 @@ char *partner_fqdn = 0;
 # define TLS_QUIT quit(ssl ? "; connected to " : "; connecting to ", "")
 void tls_quit(const char *s1, const char *s2)
 {
-  out(s1); if (s2) { out(": "); out(s2); } TLS_QUIT;
+  out((char *)s1); if (s2) { out(": "); out((char *)s2); } TLS_QUIT;
 }
 # define tls_quit_error(s) tls_quit(s, ssl_error())
 
@@ -388,7 +394,7 @@ int tls_init()
     for ( ; len && case_diffs(sa->s, "STARTTLS"); ++sa, --len) ;
     if (!len) {
       if (!servercert) return 0;
-      out("ZNo TLS achieved while "); out(servercert);
+      out("ZNo TLS achieved while "); out((char *)servercert);
       out(" exists"); smtptext.len = 0; TLS_QUIT;
     }
   }
@@ -450,7 +456,7 @@ int tls_init()
       SSL_free(myssl);
       if (!servercert) return 0;
       out("ZSTARTTLS rejected while ");
-      out(servercert); out(" exists"); TLS_QUIT;
+      out((char *)servercert); out(" exists"); TLS_QUIT;
     }
     smtptext.len = 0;
   }
@@ -502,7 +508,7 @@ int tls_init()
       X509_NAME *subj = X509_get_subject_name(peercert);
       i = X509_NAME_get_index_by_NID(subj, NID_commonName, -1);
       if (i >= 0) {
-        const ASN1_STRING *s = X509_NAME_get_entry(subj, i)->value;
+        const ASN1_STRING *s = X509_NAME_ENTRY_get_data(X509_NAME_get_entry(subj, i));
         if (s) { peer.len = s->length; peer.s = s->data; }
       }
       if (peer.len <= 0) {

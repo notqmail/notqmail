@@ -1,3 +1,4 @@
+#ifdef TLS
 #include "select.h"
 #include "error.h"
 #include "ndelay.h"
@@ -71,12 +72,13 @@ int ssl_timeoutconn(int t, int rfd, int wfd, SSL *ssl)
 int ssl_timeoutrehandshake(int t, int rfd, int wfd, SSL *ssl)
 {
   int r=0;
+
+  SSL_renegotiate(ssl);
+
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
   char buf[1]; /* dummy read buffer */
   struct timeval tv;
   fd_set fds;
-
-  SSL_renegotiate(ssl);
-#if OPENSSL_VERSION_NUMBER >= 0x10001000L
   r = ssl_timeoutio(SSL_do_handshake, t, rfd, wfd, ssl, NULL, 0);
   if (r <=0) return r;
 
@@ -109,3 +111,4 @@ int ssl_timeoutwrite(int t, int rfd, int wfd, SSL *ssl, char *buf, int len)
   if (!buf) return 0;
   return ssl_timeoutio(SSL_write, t, rfd, wfd, ssl, buf, len);
 }
+#endif

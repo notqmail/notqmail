@@ -266,7 +266,7 @@ char *append;
 {
 #ifdef TLS
   /* shouldn't talk to the client unless in an appropriate state */
-#if OPENSSL_VERSION_NUMBER >= 0x10002000L
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
   OSSL_HANDSHAKE_STATE state = ssl ? SSL_get_state(ssl) : TLS_ST_BEFORE;
   if (state & TLS_ST_OK || (!smtps && state & TLS_ST_BEFORE))
   

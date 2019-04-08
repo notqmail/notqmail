@@ -272,6 +272,9 @@ int pref;
  if (!stralloc_copy(&glue,sa)) return DNS_MEM;
  if (!stralloc_0(&glue)) return DNS_MEM;
  if (glue.s[0]) {
+#ifndef IX_FQDN
+   ix.pref = 0;
+#endif
    if (!glue.s[ip_scan(glue.s,&ix.ip)] || !glue.s[ip_scanbracket(glue.s,&ix.ip)])
     {
      if (!ipalloc_append(ia,&ix)) return DNS_MEM;
@@ -331,6 +334,9 @@ unsigned long random;
  if (!stralloc_copy(&glue,sa)) return DNS_MEM;
  if (!stralloc_0(&glue)) return DNS_MEM;
  if (glue.s[0]) {
+#ifndef IX_FQDN
+   ix.pref = 0;
+#endif
    if (!glue.s[ip_scan(glue.s,&ix.ip)] || !glue.s[ip_scanbracket(glue.s,&ix.ip)])
     {
      if (!ipalloc_append(ia,&ix)) return DNS_MEM;

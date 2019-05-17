@@ -691,7 +691,7 @@ void tls_init()
   if (ssl_timeoutaccept(timeout, ssl_rfd, ssl_wfd, myssl) <= 0) {
     /* neither cleartext nor any other response here is part of a standard */
     const char *err = ssl_error_str();
-    ssl_free(myssl); tls_out("connection failed", err); die_read();
+    tls_out("connection failed", err); ssl_free(myssl); die_read();
   }
   ssl = myssl;
 

@@ -1633,7 +1633,7 @@ qmail.7
 
 qmail.o: \
 compile qmail.c substdio.h readwrite.h wait.h exit.h fork.h fd.h \
-qmail.h substdio.h auto_qmail.h
+qmail.h auto_qmail.h env.h
 	./compile qmail.c
 
 qreceipt: \

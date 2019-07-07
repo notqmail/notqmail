@@ -1,6 +1,6 @@
 #include "auto_qmail.h"
 #include "auto_split.h"
-#include "auto_uids.h"
+#include "fake_uids.h"
 #include "fmt.h"
 #include "fifo.h"
 

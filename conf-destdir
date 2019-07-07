@@ -1,0 +1,5 @@
+/var/tmp/qmail-destdir
+
+This is the qmail installation staging directory. It can be the same as
+the qmail home directory (conf-qmail), if you want. If it's somewhere
+else writable by non-root, you can build as non-root.

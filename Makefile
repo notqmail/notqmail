@@ -4,6 +4,14 @@ SHELL=/bin/sh
 
 default: it
 
+auto_destdir.c: \
+auto-str conf-destdir
+	./auto-str auto_qmail `head -1 conf-destdir` > auto_destdir.c
+
+auto_destdir.o: \
+compile auto_destdir.c
+	./compile auto_destdir.c
+
 addresses.0: \
 addresses.5
 	nroff -man addresses.5 > addresses.0
@@ -110,7 +118,7 @@ auto_split.o: \
 compile auto_split.c
 	./compile auto_split.c
 
-auto_uids.c: \
+auto_uids_orig.c: \
 auto-uid auto-gid conf-users conf-groups
 	( ./auto-uid auto_uida `head -1 conf-users` \
 	&&./auto-uid auto_uidd `head -2 conf-users | tail -1` \
@@ -122,10 +130,10 @@ auto-uid auto-gid conf-users conf-groups
 	&&./auto-uid auto_uids `head -8 conf-users | tail -1` \
 	&&./auto-gid auto_gidq `head -1 conf-groups` \
 	&&./auto-gid auto_gidn `head -2 conf-groups | tail -1` \
-	) > auto_uids.c.tmp && mv auto_uids.c.tmp auto_uids.c
+	) > auto_uids_orig.c.tmp && mv auto_uids_orig.c.tmp auto_uids_orig.c
 
 auto_uids.o: \
-compile auto_uids.c
+compile auto_uids.c auto_usergroupnames.h
 	./compile auto_uids.c
 
 auto_usera.c: \
@@ -135,6 +143,20 @@ auto-str conf-users
 auto_usera.o: \
 compile auto_usera.c
 	./compile auto_usera.c
+
+auto_usergroupnames.h: \
+auto-str conf-users conf-groups
+	( ./auto-str auto_usera `head -1 conf-users` \
+	&&./auto-str auto_userd `head -2 conf-users | tail -1` \
+	&&./auto-str auto_userl `head -3 conf-users | tail -1` \
+	&&./auto-str auto_usero `head -4 conf-users | tail -1` \
+	&&./auto-str auto_userp `head -5 conf-users | tail -1` \
+	&&./auto-str auto_userq `head -6 conf-users | tail -1` \
+	&&./auto-str auto_userr `head -7 conf-users | tail -1` \
+	&&./auto-str auto_users `head -8 conf-users | tail -1` \
+	&&./auto-str auto_groupq `head -1 conf-groups` \
+	&&./auto-str auto_groupn `head -2 conf-groups | tail -1` \
+	) > auto_usergroupnames.h.tmp && mv auto_usergroupnames.h.tmp auto_usergroupnames.h
 
 binm1: \
 binm1.sh conf-qmail
@@ -701,8 +723,18 @@ hfield.o: \
 compile hfield.c hfield.h
 	./compile hfield.c
 
+hier_destdir.c: \
+hier.c
+	cat hier.c \
+	| sed s}fake_uids\.h}auto_uids.h}g \
+	> hier_destdir.c
+
+hier_destdir.o: \
+compile hier_destdir.c auto_qmail.h auto_split.h auto_uids.h fmt.h fifo.h
+	./compile hier_destdir.c
+
 hier.o: \
-compile hier.c auto_qmail.h auto_split.h auto_uids.h fmt.h fifo.h
+compile hier.c auto_qmail.h auto_split.h fake_uids.h fmt.h fifo.h
 	./compile hier.c
 
 home: \
@@ -740,15 +772,15 @@ seek.h fork.h
 	./compile idedit.c
 
 install: \
-load install.o fifo.o hier.o auto_qmail.o auto_split.o auto_uids.o \
+load install.o fifo.o hier.o auto_destdir.o auto_split.o auto_uids.o \
 strerr.a substdio.a open.a error.a str.a fs.a
-	./load install fifo.o hier.o auto_qmail.o auto_split.o \
+	./load install fifo.o hier.o auto_destdir.o auto_split.o \
 	auto_uids.o strerr.a substdio.a open.a error.a str.a fs.a 
 
 install-big: \
-load install-big.o fifo.o install.o auto_qmail.o auto_split.o \
+load install-big.o fifo.o install.o auto_destdir.o auto_split.o \
 auto_uids.o strerr.a substdio.a open.a error.a str.a fs.a
-	./load install-big fifo.o install.o auto_qmail.o \
+	./load install-big fifo.o install.o auto_destdir.o \
 	auto_split.o auto_uids.o strerr.a substdio.a open.a error.a \
 	str.a fs.a 
 
@@ -757,15 +789,26 @@ compile install-big.c auto_qmail.h auto_split.h auto_uids.h fmt.h \
 fifo.h
 	./compile install-big.c
 
+install-destdir: \
+load install-destdir.o fifo.o hier_destdir.o auto_qmail.o auto_split.o auto_uids.o \
+strerr.a substdio.a open.a error.a str.a fs.a env.a
+	./load install-destdir fifo.o hier_destdir.o auto_qmail.o auto_split.o \
+	auto_uids.o strerr.a substdio.a open.a error.a str.a fs.a env.a
+
+install-destdir.o: \
+compile install-destdir.c substdio.h strerr.h error.h open.h readwrite.h \
+exit.h str.h env.h
+	./compile install-destdir.c
+
 install.o: \
 compile install.c substdio.h strerr.h error.h open.h readwrite.h \
 exit.h
 	./compile install.c
 
 instcheck: \
-load instcheck.o fifo.o hier.o auto_qmail.o auto_split.o auto_uids.o \
+load instcheck.o fifo.o hier_destdir.o auto_qmail.o auto_split.o auto_uids.o \
 strerr.a substdio.a error.a str.a fs.a
-	./load instcheck fifo.o hier.o auto_qmail.o auto_split.o \
+	./load instcheck fifo.o hier_destdir.o auto_qmail.o auto_split.o \
 	auto_uids.o strerr.a substdio.a error.a str.a fs.a 
 
 instcheck.o: \

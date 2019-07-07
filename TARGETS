@@ -154,7 +154,6 @@ auto-uid.o
 auto-uid
 auto-gid.o
 auto-gid
-auto_uids.c
 auto_uids.o
 qmail-lspawn
 qmail-getpw.o
@@ -385,3 +384,10 @@ forgeries.0
 man
 setup
 check
+auto_destdir.c
+auto_destdir.o
+auto_usergroupnames.h
+hier_destdir.c
+hier_destdir.o
+install-destdir.o
+install-destdir

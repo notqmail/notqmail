@@ -4,13 +4,12 @@
 #include "open.h"
 #include "readwrite.h"
 #include "exit.h"
-#include "fake_chown.h"
+#include "str.h"
+#include "env.h"
 
 extern void hier();
 
-#define FATAL "install: fatal: "
-
-int fdsourcedir = -1;
+#define FATAL "install-destdir: fatal: "
 
 void h(home,uid,gid,mode)
 char *home;
@@ -63,9 +62,7 @@ int mode;
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",fifo,": ");
 }
 
-char inbuf[SUBSTDIO_INSIZE];
 char outbuf[SUBSTDIO_OUTSIZE];
-substdio ssin;
 substdio ssout;
 
 void c(home,subdir,file,uid,gid,mode)
@@ -76,42 +73,10 @@ int uid;
 int gid;
 int mode;
 {
-  int fdin;
-  int fdout;
-
-  if (fchdir(fdsourcedir) == -1)
-    strerr_die2sys(111,FATAL,"unable to switch back to source directory: ");
-
-  fdin = open_read(file);
-  if (fdin == -1)
-    strerr_die4sys(111,FATAL,"unable to read ",file,": ");
-  substdio_fdbuf(&ssin,read,fdin,inbuf,sizeof inbuf);
-
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
   if (chdir(subdir) == -1)
     strerr_die6sys(111,FATAL,"unable to switch to ",home,"/",subdir,": ");
-
-  fdout = open_trunc(file);
-  if (fdout == -1)
-    strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
-  substdio_fdbuf(&ssout,write,fdout,outbuf,sizeof outbuf);
-
-  switch(substdio_copy(&ssout,&ssin)) {
-    case -2:
-      strerr_die4sys(111,FATAL,"unable to read ",file,": ");
-    case -3:
-      strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
-  }
-
-  close(fdin);
-  if (substdio_flush(&ssout) == -1)
-    strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
-  if (fsync(fdout) == -1)
-    strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
-  if (close(fdout) == -1) /* NFS silliness */
-    strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
-
   if (chown(file,uid,gid) == -1)
     strerr_die6sys(111,FATAL,"unable to chown .../",subdir,"/",file,": ");
   if (chmod(file,mode) == -1)
@@ -155,10 +120,6 @@ int mode;
 
 void main()
 {
-  fdsourcedir = open_read(".");
-  if (fdsourcedir == -1)
-    strerr_die2sys(111,FATAL,"unable to open current directory: ");
-
   umask(077);
   hier();
   _exit(0);

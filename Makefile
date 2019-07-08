@@ -741,16 +741,18 @@ seek.h fork.h
 
 install: \
 load install.o fifo.o hier.o auto_qmail.o auto_split.o auto_uids.o \
-strerr.a substdio.a open.a error.a str.a fs.a
+strerr.a substdio.a open.a error.a env.a str.a fs.a stralloc.a alloc.a
 	./load install fifo.o hier.o auto_qmail.o auto_split.o \
-	auto_uids.o strerr.a substdio.a open.a error.a str.a fs.a 
+	auto_uids.o strerr.a substdio.a open.a error.a env.a str.a fs.a \
+	stralloc.a alloc.a
 
 install-big: \
 load install-big.o fifo.o install.o auto_qmail.o auto_split.o \
-auto_uids.o strerr.a substdio.a open.a error.a str.a fs.a
+auto_uids.o strerr.a substdio.a open.a error.a env.a str.a fs.a stralloc.a \
+alloc.a
 	./load install-big fifo.o install.o auto_qmail.o \
 	auto_split.o auto_uids.o strerr.a substdio.a open.a error.a \
-	str.a fs.a 
+	env.a str.a fs.a stralloc.a alloc.a
 
 install-big.o: \
 compile install-big.c auto_qmail.h auto_split.h auto_uids.h fmt.h \
@@ -758,8 +760,8 @@ fifo.h
 	./compile install-big.c
 
 install.o: \
-compile install.c substdio.h strerr.h error.h open.h readwrite.h \
-exit.h
+compile install.c substdio.h strerr.h env.h error.h fifo.h open.h \
+readwrite.h exit.h alloc.h str.h stralloc.h
 	./compile install.c
 
 instcheck: \

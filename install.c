@@ -1,9 +1,14 @@
 #include "substdio.h"
 #include "strerr.h"
+#include "env.h"
 #include "error.h"
+#include "fifo.h"
 #include "open.h"
 #include "readwrite.h"
 #include "exit.h"
+#include "alloc.h"
+#include "str.h"
+#include "stralloc.h"
 
 extern void hier();
 
@@ -11,19 +16,62 @@ extern void hier();
 
 int fdsourcedir = -1;
 
+static void die_nomem()
+{
+  strerr_die2sys(111,FATAL,"out of memory");
+}
+
+static void ddhome(dd,home)
+stralloc *dd;
+char *home;
+{
+  const char *denv = env_get("DESTDIR");
+  if (denv)
+    if (!stralloc_copys(dd,denv)) die_nomem();
+
+  if (!stralloc_catb(dd,home,str_len(home))) die_nomem();
+  if (!stralloc_0(dd)) die_nomem();
+}
+
+static int mkdir_p(home,mode)
+char *home;
+int mode;
+{
+  stralloc parent = { 0 };
+  unsigned int sl;
+  int r = mkdir(home,mode);
+  if (!r || errno != error_noent)
+    return r;
+
+  /* try parent first */
+  sl = str_rchr(home, '/');
+  if (!stralloc_copyb(&parent,home,sl)) die_nomem();
+  if (!stralloc_0(&parent)) die_nomem();
+  r = mkdir_p(parent.s);
+  alloc_free(parent.s);
+  if (r && errno != error_exist)
+    return r;
+
+  return mkdir(home,mode);
+}
+
 void h(home,uid,gid,mode)
 char *home;
 int uid;
 int gid;
 int mode;
 {
-  if (mkdir(home,0700) == -1)
+  stralloc dh = { 0 };
+  ddhome(&dh, home);
+  home=dh.s;
+  if (mkdir_p(home,mode) == -1)
     if (errno != error_exist)
       strerr_die4sys(111,FATAL,"unable to mkdir ",home,": ");
   if (chown(home,uid,gid) == -1)
     strerr_die4sys(111,FATAL,"unable to chown ",home,": ");
   if (chmod(home,mode) == -1)
     strerr_die4sys(111,FATAL,"unable to chmod ",home,": ");
+  alloc_free(dh.s);
 }
 
 void d(home,subdir,uid,gid,mode)
@@ -33,6 +81,9 @@ int uid;
 int gid;
 int mode;
 {
+  stralloc dh = { 0 };
+  ddhome(&dh, home);
+  home=dh.s;
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
   if (mkdir(subdir,0700) == -1)
@@ -42,6 +93,7 @@ int mode;
     strerr_die6sys(111,FATAL,"unable to chown ",home,"/",subdir,": ");
   if (chmod(subdir,mode) == -1)
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",subdir,": ");
+  alloc_free(dh.s);
 }
 
 void p(home,fifo,uid,gid,mode)
@@ -51,6 +103,9 @@ int uid;
 int gid;
 int mode;
 {
+  stralloc dh = { 0 };
+  ddhome(&dh, home);
+  home=dh.s;
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
   if (fifo_make(fifo,0700) == -1)
@@ -60,6 +115,7 @@ int mode;
     strerr_die6sys(111,FATAL,"unable to chown ",home,"/",fifo,": ");
   if (chmod(fifo,mode) == -1)
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",fifo,": ");
+  alloc_free(dh.s);
 }
 
 char inbuf[SUBSTDIO_INSIZE];
@@ -77,7 +133,10 @@ int mode;
 {
   int fdin;
   int fdout;
+  stralloc dh = { 0 };
 
+  ddhome(&dh, home);
+  home=dh.s;
   if (fchdir(fdsourcedir) == -1)
     strerr_die2sys(111,FATAL,"unable to switch back to source directory: ");
 
@@ -115,6 +174,7 @@ int mode;
     strerr_die6sys(111,FATAL,"unable to chown .../",subdir,"/",file,": ");
   if (chmod(file,mode) == -1)
     strerr_die6sys(111,FATAL,"unable to chmod .../",subdir,"/",file,": ");
+  alloc_free(dh.s);
 }
 
 void z(home,file,len,uid,gid,mode)
@@ -126,7 +186,10 @@ int gid;
 int mode;
 {
   int fdout;
+  stralloc dh = { 0 };
 
+  ddhome(&dh, home);
+  home=dh.s;
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
 
@@ -150,6 +213,7 @@ int mode;
     strerr_die6sys(111,FATAL,"unable to chown ",home,"/",file,": ");
   if (chmod(file,mode) == -1)
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",file,": ");
+  alloc_free(dh.s);
 }
 
 void main()

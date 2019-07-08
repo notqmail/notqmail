@@ -741,15 +741,19 @@ seek.h fork.h
 
 install: \
 load install.o fifo.o hier.o auto_qmail.o auto_split.o auto_uids.o \
-strerr.a substdio.a open.a error.a str.a fs.a
+subgetopt.o sgetopt.o alloc.o alloc_re.o stralloc.a strerr.a \
+substdio.a open.a error.a str.a fs.a
 	./load install fifo.o hier.o auto_qmail.o auto_split.o \
-	auto_uids.o strerr.a substdio.a open.a error.a str.a fs.a 
+	subgetopt.o sgetopt.o alloc.o alloc_re.o auto_uids.o \
+	stralloc.a strerr.a substdio.a open.a error.a str.a fs.a 
 
 install-big: \
 load install-big.o fifo.o install.o auto_qmail.o auto_split.o \
-auto_uids.o strerr.a substdio.a open.a error.a str.a fs.a
+alloc.o alloc_re.o subgetopt.o sgetopt.o auto_uids.o strerr.a \
+stralloc.a substdio.a open.a error.a str.a fs.a
 	./load install-big fifo.o install.o auto_qmail.o \
-	auto_split.o auto_uids.o strerr.a substdio.a open.a error.a \
+	alloc.o alloc_re.o subgetopt.o sgetopt.o auto_split.o \
+	auto_uids.o strerr.a substdio.a open.a error.a stralloc.a \
 	str.a fs.a 
 
 install-big.o: \
@@ -758,8 +762,8 @@ fifo.h
 	./compile install-big.c
 
 install.o: \
-compile install.c substdio.h strerr.h error.h open.h readwrite.h \
-exit.h
+compile install.c substdio.h strerr.h error.h open.h stralloc.h \
+exit.h fifo.h
 	./compile install.c
 
 instcheck: \
@@ -1744,7 +1748,7 @@ substdio.h alloc.h auto_qmail.h exit.h env.h str.h
 
 setup: \
 it man
-	./install
+	./install -d "$(DESTDIR)"
 
 sgetopt.o: \
 compile sgetopt.c substdio.h subfd.h substdio.h sgetopt.h subgetopt.h \

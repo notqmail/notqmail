@@ -77,8 +77,8 @@ void hier()
 
   c(auto_qmail,"doc","FAQ",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","UPGRADE",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","SENDMAIL",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","INSTALL",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","SENDMAIL.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","INSTALL.md",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","INSTALL.alias",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","INSTALL.ctl",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","INSTALL.ids",auto_uido,auto_gidq,0644);

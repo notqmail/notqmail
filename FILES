@@ -432,3 +432,6 @@ maildir.c
 tcp-environ.5
 constmap.h
 constmap.c
+qtmp.h1
+qtmp.h2
+tryutmpx.c

@@ -10,10 +10,9 @@
 #include "str.h"
 #include "stralloc.h"
 
-extern void init_uidgid();
 extern void hier();
 
-#define FATAL "install: fatal: "
+#define FATAL "instpackage: fatal: "
 
 int fdsourcedir = -1;
 
@@ -68,8 +67,6 @@ int mode;
   if (mkdir_p(home,mode) == -1)
     if (errno != error_exist)
       strerr_die4sys(111,FATAL,"unable to mkdir ",home,": ");
-  if (chown(home,uid,gid) == -1)
-    strerr_die4sys(111,FATAL,"unable to chown ",home,": ");
   if (chmod(home,mode) == -1)
     strerr_die4sys(111,FATAL,"unable to chmod ",home,": ");
   alloc_free(dh.s);
@@ -90,8 +87,6 @@ int mode;
   if (mkdir(subdir,0700) == -1)
     if (errno != error_exist)
       strerr_die6sys(111,FATAL,"unable to mkdir ",home,"/",subdir,": ");
-  if (chown(subdir,uid,gid) == -1)
-    strerr_die6sys(111,FATAL,"unable to chown ",home,"/",subdir,": ");
   if (chmod(subdir,mode) == -1)
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",subdir,": ");
   alloc_free(dh.s);
@@ -112,8 +107,6 @@ int mode;
   if (fifo_make(fifo,0700) == -1)
     if (errno != error_exist)
       strerr_die6sys(111,FATAL,"unable to mkfifo ",home,"/",fifo,": ");
-  if (chown(fifo,uid,gid) == -1)
-    strerr_die6sys(111,FATAL,"unable to chown ",home,"/",fifo,": ");
   if (chmod(fifo,mode) == -1)
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",fifo,": ");
   alloc_free(dh.s);
@@ -171,8 +164,6 @@ int mode;
   if (close(fdout) == -1) /* NFS silliness */
     strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
 
-  if (chown(file,uid,gid) == -1)
-    strerr_die6sys(111,FATAL,"unable to chown .../",subdir,"/",file,": ");
   if (chmod(file,mode) == -1)
     strerr_die6sys(111,FATAL,"unable to chmod .../",subdir,"/",file,": ");
   alloc_free(dh.s);
@@ -210,12 +201,19 @@ int mode;
   if (close(fdout) == -1) /* NFS silliness */
     strerr_die6sys(111,FATAL,"unable to write ",home,"/",file,": ");
 
-  if (chown(file,uid,gid) == -1)
-    strerr_die6sys(111,FATAL,"unable to chown ",home,"/",file,": ");
   if (chmod(file,mode) == -1)
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",file,": ");
   alloc_free(dh.s);
 }
+
+/* these are ignored, but hier() passes them to h() and friends */
+int auto_uida = -1;
+int auto_uido = -1;
+int auto_uidq = -1;
+int auto_uidr = -1;
+int auto_uids = -1;
+
+int auto_gidq = -1;
 
 void main()
 {
@@ -224,7 +222,6 @@ void main()
     strerr_die2sys(111,FATAL,"unable to open current directory: ");
 
   umask(077);
-  init_uidgid();
   hier();
   _exit(0);
 }

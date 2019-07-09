@@ -685,6 +685,13 @@ chkshsgr warn-shsgr tryshsgr.c compile load
 	hasshsgr.h
 	rm -f tryshsgr.o tryshsgr
 
+hasutmpx.h: \
+tryutmpx.c compile load
+	( ( ./compile tryutmpx.c && ./load tryutmpx ) >/dev/null \
+	2>&1 \
+	&& echo \#define HASUTMPX 1 || exit 0 ) > hasutmpx.h
+	rm -f tryutmpx.o tryutmpx
+
 haswaitp.h: \
 trywaitp.c compile load
 	( ( ./compile trywaitp.c && ./load trywaitp ) >/dev/null \
@@ -1071,7 +1078,8 @@ qbiff.1
 
 qbiff.o: \
 compile qbiff.c readwrite.h stralloc.h gen_alloc.h substdio.h subfd.h \
-substdio.h open.h byte.h str.h headerbody.h hfield.h env.h exit.h
+substdio.h open.h byte.h str.h headerbody.h hfield.h env.h exit.h \
+hasutmpx.h
 	./compile qbiff.c
 
 qmail-clean: \

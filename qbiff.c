@@ -1,11 +1,16 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "hasutmpx.h"
+#ifdef HASUTMPX
+#include <utmpx.h>
+#else
 #include <utmp.h>
 #ifndef UTMP_FILE
 #ifdef _PATH_UTMP
 #define UTMP_FILE _PATH_UTMP
 #else
 #define UTMP_FILE "/etc/utmp"
+#endif
 #endif
 #endif
 #include "readwrite.h"
@@ -20,15 +25,22 @@
 #include "env.h"
 #include "exit.h"
 
+#ifndef HASUTMPX
 substdio ssutmp;
 char bufutmp[sizeof(struct utmp) * 16];
 int fdutmp;
+#endif
 substdio sstty;
 char buftty[1024];
 int fdtty;
 
+#ifdef HASUTMPX
+struct utmpx *ut;
+char line[sizeof(ut->ut_line) + 1];
+#else
 struct utmp ut;
 char line[sizeof(ut.ut_line) + 1];
+#endif
 stralloc woof = {0};
 stralloc tofrom = {0};
 stralloc text = {0};
@@ -63,7 +75,11 @@ void main()
  if (!(user = env_get("USER"))) _exit(0);
  if (!(sender = env_get("SENDER"))) _exit(0);
  if (!(userext = env_get("LOCAL"))) _exit(0);
+#ifdef HASUTMPX
+ if (str_len(user) > sizeof(ut->ut_user)) _exit(0);
+#else
  if (str_len(user) > sizeof(ut.ut_name)) _exit(0);
+#endif
 
  if (!stralloc_copys(&tofrom,"*** TO <")) _exit(0);
  if (!stralloc_cats(&tofrom,userext)) _exit(0);
@@ -88,6 +104,7 @@ void main()
  if (!stralloc_cat(&woof,&text)) _exit(0);
  if (!stralloc_cats(&woof,"\015\n")) _exit(0);
 
+#ifndef HASUTMPX
  fdutmp = open_read(UTMP_FILE);
  if (fdutmp == -1) _exit(0);
  substdio_fdbuf(&ssutmp,read,fdutmp,bufutmp,sizeof(bufutmp));
@@ -97,6 +114,13 @@ void main()
     {
      byte_copy(line,sizeof(ut.ut_line),ut.ut_line);
      line[sizeof(ut.ut_line)] = 0;
+#else
+ while ((ut = getutxent()))
+   if (ut->ut_type == USER_PROCESS && !str_diffn(ut->ut_user,user,sizeof(ut->ut_user)))
+    {
+     byte_copy(line,sizeof(ut->ut_line),ut->ut_line);
+     line[sizeof(ut->ut_line)] = 0;
+#endif
      if (line[0] == '/') continue;
      if (!line[0]) continue;
      if (line[str_chr(line,'.')]) continue;

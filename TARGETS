@@ -325,11 +325,14 @@ maildirwatch
 qail
 elq
 pinq
-install.o
 hier.o
 install
 instcheck.o
 instcheck
+instchown.o
+instchown
+instpackage.o
+instpackage
 instuidgid.o
 home
 home+df

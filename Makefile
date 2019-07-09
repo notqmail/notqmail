@@ -779,20 +779,9 @@ hostname.o: \
 compile hostname.c substdio.h subfd.h substdio.h readwrite.h exit.h
 	./compile hostname.c
 
-install: \
-load install.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o uid.o \
-gid.o auto_usera.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
-auto_users.o auto_groupq.o strerr.a substdio.a open.a error.a env.a \
-str.a fs.a stralloc.a alloc.a
-	./load install instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o \
-	uid.o gid.o auto_usera.o auto_usero.o auto_userp.o auto_userq.o \
-	auto_userr.o auto_users.o auto_groupq.o strerr.a substdio.a open.a \
-	error.a env.a str.a fs.a stralloc.a alloc.a
-
-install.o: \
-compile install.c substdio.h strerr.h env.h error.h fifo.h open.h \
-readwrite.h exit.h alloc.h str.h stralloc.h
-	./compile install.c
+install:
+	echo './instpackage && ./instchown' > install
+	chmod 755 install
 
 instcheck: \
 load instcheck.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o uid.o \
@@ -806,6 +795,29 @@ auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
 instcheck.o: \
 compile instcheck.c strerr.h error.h readwrite.h exit.h
 	./compile instcheck.c
+
+instchown: \
+load instchown.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o uid.o \
+gid.o auto_usera.o auto_usero.o auto_userq.o auto_userr.o auto_users.o \
+auto_groupq.o strerr.a substdio.a error.a str.a fs.a
+	./load instchown instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o \
+	uid.o gid.o auto_usera.o auto_usero.o auto_userq.o auto_userr.o \
+	auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
+
+instchown.o: \
+compile instchown.c strerr.h error.h exit.h
+	./compile instchown.c
+
+instpackage: \
+load instpackage.o fifo.o hier.o auto_qmail.o auto_split.o strerr.a \
+substdio.a open.a error.a env.a str.a fs.a stralloc.a alloc.a
+	./load instpackage fifo.o hier.o auto_qmail.o auto_split.o \
+	strerr.a substdio.a open.a error.a env.a str.a fs.a stralloc.a alloc.a
+
+instpackage.o: \
+compile instpackage.c substdio.h strerr.h env.h error.h fifo.h open.h \
+readwrite.h exit.h alloc.h str.h stralloc.h
+	./compile instpackage.c
 
 instuidgid.o: \
 compile instuidgid.c uidgid.h auto_uids.h auto_users.h
@@ -845,7 +857,7 @@ qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast dnscname \
 dnsptr dnsip dnsmxip dnsfq hostname ipmeprint qreceipt qsmhook qbiff \
 forward preline condredirect bouncesaying except maildirmake \
-maildir2mbox maildirwatch qail elq pinq install \
+maildir2mbox maildirwatch qail elq pinq install instpackage instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
 binm3 binm3+df
 
@@ -1030,6 +1042,10 @@ compile open_trunc.c open.h
 open_write.o: \
 compile open_write.c open.h
 	./compile open_write.c
+
+package: \
+it man
+	./instpackage
 
 pinq: \
 warn-auto.sh pinq.sh conf-qmail conf-break conf-split
@@ -1797,7 +1813,8 @@ substdio.h alloc.h auto_qmail.h exit.h env.h str.h
 
 setup: \
 it man
-	./install
+	./instpackage
+	./instchown
 
 sgetopt.o: \
 compile sgetopt.c substdio.h subfd.h substdio.h sgetopt.h subgetopt.h \

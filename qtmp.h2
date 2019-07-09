@@ -1,0 +1,11 @@
+#ifndef QTMP_H
+#define QTMP_H
+
+#include <utmpx.h>
+#define UTMP_INIT struct utmpx *ut
+#define UTMP_USER ut_user
+#define UTMP_OPEN
+#define UTMP_READ_MORE (ut = getutxent())
+#define UTMP_TYPE_MATCHES (ut->ut_type == USER_PROCESS)
+
+#endif

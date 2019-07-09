@@ -12,8 +12,10 @@
 #include "now.h"
 #include "triggerpull.h"
 #include "extra.h"
+#include "uidgid.h"
 #include "auto_qmail.h"
 #include "auto_uids.h"
+#include "auto_users.h"
 #include "date822fmt.h"
 #include "fmtqfn.h"
 
@@ -39,6 +41,10 @@ int messfd;
 int intdfd;
 int flagmademess = 0;
 int flagmadeintd = 0;
+
+int auto_uida;
+int auto_uidd;
+int auto_uids;
 
 void cleanup()
 {
@@ -165,6 +171,10 @@ void main()
  uid = getuid();
  starttime = now();
  datetime_tai(&dt,starttime);
+
+ auto_uida = inituid(auto_usera);
+ auto_uidd = inituid(auto_userd);
+ auto_uids = inituid(auto_users);
 
  received_setup();
 

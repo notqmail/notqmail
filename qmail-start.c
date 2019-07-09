@@ -2,7 +2,9 @@
 #include "prot.h"
 #include "exit.h"
 #include "fork.h"
+#include "uidgid.h"
 #include "auto_uids.h"
+#include "auto_users.h"
 
 char *(qsargs[]) = { "qmail-send", 0 };
 char *(qcargs[]) = { "qmail-clean", 0 };
@@ -19,6 +21,14 @@ int pi4[2];
 int pi5[2];
 int pi6[2];
 
+int auto_uidl;
+int auto_uidq;
+int auto_uidr;
+int auto_uids;
+
+int auto_gidn;
+int auto_gidq;
+
 void close23456() { close(2); close(3); close(4); close(5); close(6); }
 
 void closepipes() {
@@ -33,6 +43,15 @@ char **argv;
 {
   if (chdir("/") == -1) die();
   umask(077);
+
+  auto_uidl = inituid(auto_userl);
+  auto_uidq = inituid(auto_userq);
+  auto_uidr = inituid(auto_userr);
+  auto_uids = inituid(auto_users);
+
+  auto_gidn = initgid(auto_groupn);
+  auto_gidq = initgid(auto_groupq);
+
   if (prot_gid(auto_gidq) == -1) die();
 
   if (fd_copy(2,0) == -1) die();

@@ -5,6 +5,7 @@
 #include "readwrite.h"
 #include "exit.h"
 
+extern void init_uidgid();
 extern void hier();
 
 #define FATAL "instcheck: fatal: "
@@ -103,6 +104,7 @@ int mode;
 
 void main()
 {
+  init_uidgid();
   hier();
   _exit(0);
 }

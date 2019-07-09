@@ -9,7 +9,9 @@
 #include "constmap.h"
 #include "stralloc.h"
 #include "direntry.h"
+#include "uidgid.h"
 #include "auto_uids.h"
+#include "auto_users.h"
 #include "auto_qmail.h"
 #include "auto_break.h"
 #include "auto_patrn.h"
@@ -21,6 +23,18 @@ int meok;
 
 stralloc line = {0};
 char num[FMT_ULONG];
+
+int auto_uida;
+int auto_uidd;
+int auto_uidl;
+int auto_uido;
+int auto_uidp;
+int auto_uidq;
+int auto_uidr;
+int auto_uids;
+
+int auto_gidn;
+int auto_gidq;
 
 void safeput(buf,len)
 char *buf;
@@ -142,6 +156,18 @@ void main()
   direntry *d;
   struct stat stmrh;
   struct stat stmrhcdb;
+
+  auto_uida = inituid(auto_usera);
+  auto_uidd = inituid(auto_userd);
+  auto_uidl = inituid(auto_userl);
+  auto_uido = inituid(auto_usero);
+  auto_uidp = inituid(auto_userp);
+  auto_uidq = inituid(auto_userq);
+  auto_uidr = inituid(auto_userr);
+  auto_uids = inituid(auto_users);
+
+  auto_gidn = initgid(auto_groupn);
+  auto_gidq = initgid(auto_groupq);
 
   substdio_puts(subfdout,"qmail home directory: ");
   substdio_puts(subfdout,auto_qmail);

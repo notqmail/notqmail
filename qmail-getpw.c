@@ -10,7 +10,7 @@
 #include "str.h"
 #include "case.h"
 #include "fmt.h"
-#include "auto_usera.h"
+#include "auto_users.h"
 #include "auto_break.h"
 #include "qlx.h"
 

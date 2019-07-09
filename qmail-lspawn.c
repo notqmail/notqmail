@@ -12,11 +12,18 @@
 #include "case.h"
 #include "open.h"
 #include "slurpclose.h"
+#include "uidgid.h"
 #include "auto_qmail.h"
 #include "auto_uids.h"
+#include "auto_users.h"
 #include "qlx.h"
 
 char *aliasempty;
+
+int auto_uidp;
+int auto_uidq;
+
+int auto_gidn;
 
 void initialize(argc,argv)
 int argc;
@@ -24,6 +31,11 @@ char **argv;
 {
   aliasempty = argv[1];
   if (!aliasempty) _exit(100);
+
+  auto_uidp = inituid(auto_userp);
+  auto_uidq = inituid(auto_userq);
+
+  auto_gidn = initgid(auto_groupn);
 }
 
 int truncreport = 3000;

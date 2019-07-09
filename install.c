@@ -10,6 +10,7 @@
 #include "str.h"
 #include "stralloc.h"
 
+extern void init_uidgid();
 extern void hier();
 
 #define FATAL "install: fatal: "
@@ -223,6 +224,7 @@ void main()
     strerr_die2sys(111,FATAL,"unable to open current directory: ");
 
   umask(077);
+  init_uidgid();
   hier();
   _exit(0);
 }

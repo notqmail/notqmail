@@ -5,11 +5,17 @@
 #include "fork.h"
 #include "error.h"
 #include "tcpto.h"
+#include "uidgid.h"
+#include "auto_uids.h"
+#include "auto_users.h"
+
+int auto_uidq;
 
 void initialize(argc,argv)
 int argc;
 char **argv;
 {
+ auto_uidq = inituid(auto_userq);
  tcpto_clean();
 }
 

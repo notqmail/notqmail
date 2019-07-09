@@ -27,14 +27,9 @@ conf-cc conf-ld warn-auto.sh
 	echo LD=\'`head -1 conf-ld`\' \
 	) > auto-ccld.sh
 
-auto-gid: \
-load auto-gid.o substdio.a error.a str.a fs.a
-	./load auto-gid substdio.a error.a str.a fs.a 
-
-auto-gid.o: \
-compile auto-gid.c subfd.h substdio.h substdio.h readwrite.h exit.h \
-scan.h fmt.h
-	./compile auto-gid.c
+gid.o: \
+compile gid.c uidgid.h subfd.h substdio.h exit.h
+	./compile gid.c
 
 auto-int: \
 load auto-int.o substdio.a error.a str.a fs.a
@@ -110,23 +105,9 @@ auto_split.o: \
 compile auto_split.c
 	./compile auto_split.c
 
-auto_uids.c: \
-auto-uid auto-gid conf-users conf-groups
-	( ./auto-uid auto_uida `head -1 conf-users` \
-	&&./auto-uid auto_uidd `head -2 conf-users | tail -1` \
-	&&./auto-uid auto_uidl `head -3 conf-users | tail -1` \
-	&&./auto-uid auto_uido `head -4 conf-users | tail -1` \
-	&&./auto-uid auto_uidp `head -5 conf-users | tail -1` \
-	&&./auto-uid auto_uidq `head -6 conf-users | tail -1` \
-	&&./auto-uid auto_uidr `head -7 conf-users | tail -1` \
-	&&./auto-uid auto_uids `head -8 conf-users | tail -1` \
-	&&./auto-gid auto_gidq `head -1 conf-groups` \
-	&&./auto-gid auto_gidn `head -2 conf-groups | tail -1` \
-	) > auto_uids.c.tmp && mv auto_uids.c.tmp auto_uids.c
-
-auto_uids.o: \
-compile auto_uids.c
-	./compile auto_uids.c
+uid.o: \
+compile uid.c uidgid.h subfd.h substdio.h exit.h
+	./compile uid.c
 
 auto_usera.c: \
 auto-str conf-users
@@ -135,6 +116,118 @@ auto-str conf-users
 auto_usera.o: \
 compile auto_usera.c
 	./compile auto_usera.c
+
+auto_uida.o: \
+compile auto_uida.c uidgid.h auto_uids.h auto_users.h
+	./compile auto_uida.c
+
+auto_userd.c: \
+auto-str conf-users
+	./auto-str auto_userd `head -2 conf-users` > auto_userd.c
+
+auto_userd.o: \
+compile auto_userd.c
+	./compile auto_userd.c
+
+auto_uidd.o: \
+compile auto_uidd.c uidgid.h auto_uids.h auto_users.h
+	./compile auto_uidd.c
+
+auto_userl.c: \
+auto-str conf-users
+	./auto-str auto_userl `head -3 conf-users` > auto_userl.c
+
+auto_userl.o: \
+compile auto_userl.c
+	./compile auto_userl.c
+
+auto_uidl.o: \
+compile auto_uidl.c uidgid.h auto_uids.h auto_users.h
+	./compile auto_uidl.c
+
+auto_usero.c: \
+auto-str conf-users
+	./auto-str auto_usero `head -4 conf-users` > auto_usero.c
+
+auto_usero.o: \
+compile auto_usero.c
+	./compile auto_usero.c
+
+auto_uido.o: \
+compile auto_uido.c uidgid.h auto_uids.h auto_users.h
+	./compile auto_uido.c
+
+auto_userp.c: \
+auto-str conf-users
+	./auto-str auto_userp `head -5 conf-users` > auto_userp.c
+
+auto_userp.o: \
+compile auto_userp.c
+	./compile auto_userp.c
+
+auto_uidp.o: \
+compile auto_uidp.c uidgid.h auto_uids.h auto_users.h
+	./compile auto_uidp.c
+
+auto_userq.c: \
+auto-str conf-users
+	./auto-str auto_userq `head -6 conf-users` > auto_userq.c
+
+auto_userq.o: \
+compile auto_userq.c
+	./compile auto_userq.c
+
+auto_uidq.o: \
+compile auto_uidq.c uidgid.h auto_uids.h auto_users.h
+	./compile auto_uidq.c
+
+auto_userr.c: \
+auto-str conf-users
+	./auto-str auto_userr `head -7 conf-users` > auto_userr.c
+
+auto_userr.o: \
+compile auto_userr.c
+	./compile auto_userr.c
+
+auto_uidr.o: \
+compile auto_uidr.c uidgid.h auto_uids.h auto_users.h
+	./compile auto_uidr.c
+
+auto_users.c: \
+auto-str conf-users
+	./auto-str auto_users `head -8 conf-users` > auto_users.c
+
+auto_users.o: \
+compile auto_users.c
+	./compile auto_users.c
+
+auto_uids.o: \
+compile auto_uids.c uidgid.h auto_uids.h auto_users.h
+	./compile auto_uids.c
+
+auto_groupn.c: \
+auto-str conf-groups
+	./auto-str auto_groupn `head -1 conf-groups` > auto_groupn.c
+
+auto_groupn.o: \
+compile auto_groupn.c
+	./compile auto_groupn.c
+
+auto_gidn.o: \
+compile auto_gidn.c uidgid.h auto_uids.h auto_users.h
+	./compile auto_gidn.c
+
+auto_groupq.c: \
+auto-str conf-groups
+	./auto-str auto_groupq `head -2 conf-groups` > auto_groupq.c
+
+auto_groupq.o: \
+compile auto_groupq.c
+	./compile auto_groupq.c
+
+auto_gidq.o: \
+compile auto_gidq.c uidgid.h auto_uids.h auto_users.h
+	./compile auto_gidq.c
 
 binm1: \
 binm1.sh conf-qmail
@@ -740,17 +833,26 @@ seek.h fork.h
 	./compile idedit.c
 
 install: \
-load install.o fifo.o hier.o auto_qmail.o auto_split.o auto_uids.o \
-strerr.a substdio.a open.a error.a str.a fs.a
+load install.o fifo.o hier.o auto_qmail.o auto_split.o uid.o gid.o \
+auto_usera.o auto_uida.o auto_usero.o auto_uido.o auto_userp.o auto_uidp.o \
+auto_userq.o auto_uidq.o auto_userr.o auto_uidr.o auto_users.o auto_uids.o \
+auto_groupq.o auto_gidq.o strerr.a substdio.a open.a error.a str.a fs.a
 	./load install fifo.o hier.o auto_qmail.o auto_split.o \
-	auto_uids.o strerr.a substdio.a open.a error.a str.a fs.a 
+	uid.o gid.o auto_usera.o auto_uida.o auto_usero.o auto_uido.o \
+	auto_userp.o auto_uidp.o auto_userq.o auto_uidq.o auto_userr.o \
+	auto_uidr.o auto_users.o auto_uids.o auto_groupq.o auto_gidq.o \
+	strerr.a substdio.a open.a error.a str.a fs.a
 
 install-big: \
-load install-big.o fifo.o install.o auto_qmail.o auto_split.o \
-auto_uids.o strerr.a substdio.a open.a error.a str.a fs.a
+load install-big.o fifo.o install.o auto_qmail.o auto_split.o uid.o gid.o \
+auto_usera.o auto_uida.o auto_usero.o auto_uido.o auto_userp.o auto_uidp.o \
+auto_userq.o auto_uidq.o auto_userr.o auto_uidr.o auto_users.o auto_uids.o \
+auto_groupq.o auto_gidq.o strerr.a substdio.a open.a error.a str.a fs.a
 	./load install-big fifo.o install.o auto_qmail.o \
-	auto_split.o auto_uids.o strerr.a substdio.a open.a error.a \
-	str.a fs.a 
+	auto_split.o uid.o gid.o auto_usera.o auto_uida.o auto_usero.o \
+	auto_uido.o auto_userp.o auto_uidp.o auto_userq.o auto_uidq.o \
+	auto_userr.o auto_uidr.o auto_users.o auto_uids.o auto_groupq.o \
+	auto_gidq.o strerr.a substdio.a open.a error.a str.a fs.a
 
 install-big.o: \
 compile install-big.c auto_qmail.h auto_split.h auto_uids.h fmt.h \
@@ -763,10 +865,15 @@ exit.h
 	./compile install.c
 
 instcheck: \
-load instcheck.o fifo.o hier.o auto_qmail.o auto_split.o auto_uids.o \
-strerr.a substdio.a error.a str.a fs.a
+load instcheck.o fifo.o hier.o auto_qmail.o auto_split.o uid.o gid.o \
+auto_usera.o auto_uida.o auto_usero.o auto_uido.o auto_userp.o auto_uidp.o \
+auto_userq.o auto_uidq.o auto_userr.o auto_uidr.o auto_users.o auto_uids.o \
+auto_groupn.o auto_gidn.o strerr.a substdio.a error.a str.a fs.a
 	./load instcheck fifo.o hier.o auto_qmail.o auto_split.o \
-	auto_uids.o strerr.a substdio.a error.a str.a fs.a 
+	uid.o gid.o auto_usera.o auto_uida.o auto_usero.o auto_uido.o \
+	auto_userp.o auto_uidp.o auto_userq.o auto_uidq.o auto_userr.o \
+	auto_uidr.o auto_users.o auto_uids.o auto_groupq.o auto_gidq.o \
+	strerr.a substdio.a error.a str.a fs.a
 
 instcheck.o: \
 compile instcheck.c strerr.h error.h readwrite.h exit.h
@@ -1127,7 +1234,7 @@ qmail-getpw.9 conf-break conf-spawn
 
 qmail-getpw.o: \
 compile qmail-getpw.c readwrite.h substdio.h subfd.h substdio.h \
-error.h exit.h byte.h str.h case.h fmt.h auto_usera.h auto_break.h \
+error.h exit.h byte.h str.h case.h fmt.h auto_users.h auto_break.h \
 qlx.h
 	./compile qmail-getpw.c
 
@@ -1200,11 +1307,13 @@ qmail-log.5
 qmail-lspawn: \
 load qmail-lspawn.o spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
 case.a cdb.a fd.a open.a stralloc.a alloc.a substdio.a error.a str.a \
-fs.a auto_qmail.o auto_uids.o auto_spawn.o
+fs.a auto_qmail.o uid.o auto_userp.o auto_uidp.o auto_userq.o auto_uidq.o \
+auto_groupn.o auto_gidn.o auto_spawn.o
 	./load qmail-lspawn spawn.o prot.o slurpclose.o coe.o \
 	sig.a wait.a case.a cdb.a fd.a open.a stralloc.a alloc.a \
-	substdio.a error.a str.a fs.a auto_qmail.o auto_uids.o \
-	auto_spawn.o 
+	auto_qmail.o uid.o auto_userp.o auto_uidp.o auto_userq.o \
+	auto_uidq.o auto_groupn.o auto_gidn.o auto_spawn.o \
+	substdio.a error.a str.a fs.a
 
 qmail-lspawn.0: \
 qmail-lspawn.8
@@ -1328,7 +1437,7 @@ qmail-pw2u.o: \
 compile qmail-pw2u.c substdio.h readwrite.h subfd.h substdio.h \
 sgetopt.h subgetopt.h control.h constmap.h stralloc.h gen_alloc.h \
 fmt.h str.h scan.h open.h error.h getln.h auto_break.h auto_qmail.h \
-auto_usera.h
+auto_users.h
 	./compile qmail-pw2u.c
 
 qmail-qmqpc: \
@@ -1421,11 +1530,13 @@ qmail-qstat.8
 qmail-queue: \
 load qmail-queue.o triggerpull.o fmtqfn.o now.o date822fmt.o \
 datetime.a seek.a ndelay.a open.a sig.a alloc.a substdio.a error.a \
-str.a fs.a auto_qmail.o auto_split.o auto_uids.o
+str.a fs.a auto_qmail.o auto_split.o uid.o auto_usera.o auto_uida.o \
+auto_userd.o auto_uidd.o auto_users.o auto_uids.o
 	./load qmail-queue triggerpull.o fmtqfn.o now.o \
 	date822fmt.o datetime.a seek.a ndelay.a open.a sig.a \
-	alloc.a substdio.a error.a str.a fs.a auto_qmail.o \
-	auto_split.o auto_uids.o 
+	alloc.a auto_qmail.o auto_split.o uid.o auto_usera.o \
+	auto_uida.o auto_userd.o auto_uidd.o auto_users.o auto_uids.o \
+	substdio.a error.a str.a fs.a
 
 qmail-queue.0: \
 qmail-queue.8
@@ -1463,11 +1574,11 @@ tcpto.h readwrite.h timeoutconn.h timeoutread.h timeoutwrite.h
 qmail-rspawn: \
 load qmail-rspawn.o spawn.o tcpto_clean.o now.o coe.o sig.a open.a \
 seek.a lock.a wait.a fd.a stralloc.a alloc.a substdio.a error.a str.a \
-auto_qmail.o auto_uids.o auto_spawn.o
+auto_qmail.o uid.o auto_userq.o auto_uidq.o auto_spawn.o
 	./load qmail-rspawn spawn.o tcpto_clean.o now.o coe.o \
 	sig.a open.a seek.a lock.a wait.a fd.a stralloc.a alloc.a \
-	substdio.a error.a str.a auto_qmail.o auto_uids.o \
-	auto_spawn.o 
+	auto_qmail.o uid.o auto_userq.o auto_uidq.o substdio.a error.a \
+	str.a auto_spawn.o
 
 qmail-rspawn.0: \
 qmail-rspawn.8
@@ -1512,13 +1623,20 @@ fmtqfn.h readsubdir.h direntry.h
 	./compile qmail-send.c
 
 qmail-showctl: \
-load qmail-showctl.o auto_uids.o control.o open.a getln.a stralloc.a \
+load qmail-showctl.o uid.o gid.o auto_usera.o auto_uida.o auto_userd.o \
+auto_uidd.o auto_userl.o auto_uidl.o auto_usero.o auto_uido.o \
+auto_userp.o auto_uidp.o auto_userq.o auto_uidq.o auto_userr.o \
+auto_uidr.o auto_users.o auto_uids.o auto_groupn.o auto_gidn.o \
+auto_groupq.o auto_gidq.o control.o open.a getln.a stralloc.a \
 alloc.a substdio.a error.a str.a fs.a auto_qmail.o auto_break.o \
 auto_patrn.o auto_spawn.o auto_split.o
-	./load qmail-showctl auto_uids.o control.o open.a getln.a \
-	stralloc.a alloc.a substdio.a error.a str.a fs.a \
-	auto_qmail.o auto_break.o auto_patrn.o auto_spawn.o \
-	auto_split.o 
+	./load qmail-showctl uid.o gid.o auto_usera.o auto_uida.o \
+	auto_userd.o auto_uidd.o auto_userl.o auto_uidl.o auto_usero.o \
+	auto_uido.o auto_userp.o auto_uidp.o auto_userq.o auto_uidq.o \
+	auto_userr.o auto_uidr.o auto_users.o auto_uids.o auto_groupn.o \
+	auto_gidn.o auto_groupq.o auto_gidq.o control.o open.a getln.a \
+	stralloc.a alloc.a substdio.a error.a str.a fs.a auto_qmail.o \
+	auto_break.o auto_patrn.o auto_spawn.o auto_split.o
 
 qmail-showctl.0: \
 qmail-showctl.8
@@ -1557,8 +1675,13 @@ exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h
 	./compile qmail-smtpd.c
 
 qmail-start: \
-load qmail-start.o prot.o fd.a auto_uids.o
-	./load qmail-start prot.o fd.a auto_uids.o 
+load qmail-start.o prot.o fd.a uid.o gid.o auto_userl.o auto_uidl.o \
+auto_userq.o auto_uidq.o auto_userr.o auto_uidr.o auto_users.o auto_uids.o \
+auto_groupn.o auto_gidn.o auto_groupq.o auto_gidq.o substdio.a error.a str.a
+	./load qmail-start prot.o fd.a uid.o gid.o auto_userl.o auto_uidl.o \
+	auto_userq.o auto_uidq.o auto_userr.o auto_uidr.o auto_users.o \
+	auto_uids.o auto_groupn.o auto_gidn.o auto_groupq.o auto_gidq.o \
+	substdio.a error.a str.a
 
 qmail-start.0: \
 qmail-start.8
@@ -1761,7 +1884,7 @@ PIC.local2virt PIC.nullclient PIC.relaybad PIC.relaygood \
 PIC.rem2local FILES VERSION SYSDEPS TARGETS Makefile BIN.README \
 BIN.Makefile BIN.setup idedit.c conf-break auto_break.h conf-spawn \
 auto_spawn.h chkspawn.c conf-split auto_split.h conf-patrn \
-auto_patrn.h conf-users conf-groups auto_uids.h auto_usera.h extra.h \
+auto_patrn.h conf-users conf-groups auto_uids.h auto_users.h extra.h \
 addresses.5 except.1 bouncesaying.1 condredirect.1 dot-qmail.9 \
 envelopes.5 forgeries.7 forward.1 maildir2mbox.1 maildirmake.1 \
 maildirwatch.1 mailsubj.1 mbox.5 preline.1 qbiff.1 qmail-clean.8 \

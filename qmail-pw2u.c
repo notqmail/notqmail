@@ -15,7 +15,7 @@
 #include "getln.h"
 #include "auto_break.h"
 #include "auto_qmail.h"
-#include "auto_usera.h"
+#include "auto_users.h"
 
 void die_chdir()
 {

@@ -87,6 +87,70 @@ auto_qmail.o: \
 compile auto_qmail.c
 	./compile auto_qmail.c
 
+auto_qmail_alias.c: \
+auto-str conf-qmail-alias
+	./auto-str auto_qmail_alias `head -1 conf-qmail-alias` > auto_qmail_alias.c
+
+auto_qmail_alias.o: \
+compile auto_qmail_alias.c
+	./compile auto_qmail_alias.c
+
+auto_qmail_bin.c: \
+auto-str conf-qmail-bin
+	./auto-str auto_qmail_bin `head -1 conf-qmail-bin` > auto_qmail_bin.c
+
+auto_qmail_bin.o: \
+compile auto_qmail_bin.c
+	./compile auto_qmail_bin.c
+
+auto_qmail_boot.c: \
+auto-str conf-qmail-boot
+	./auto-str auto_qmail_boot `head -1 conf-qmail-boot` > auto_qmail_boot.c
+
+auto_qmail_boot.o: \
+compile auto_qmail_boot.c
+	./compile auto_qmail_boot.c
+
+auto_qmail_doc.c: \
+auto-str conf-qmail-doc
+	./auto-str auto_qmail_doc `head -1 conf-qmail-doc` > auto_qmail_doc.c
+
+auto_qmail_doc.o: \
+compile auto_qmail_doc.c
+	./compile auto_qmail_doc.c
+
+auto_qmail_control.c: \
+auto-str conf-qmail-control
+	./auto-str auto_qmail_control `head -1 conf-qmail-control` > auto_qmail_control.c
+
+auto_qmail_control.o: \
+compile auto_qmail_control.c
+	./compile auto_qmail_control.c
+
+auto_qmail_man.c: \
+auto-str conf-qmail-man
+	./auto-str auto_qmail_man `head -1 conf-qmail-man` > auto_qmail_man.c
+
+auto_qmail_man.o: \
+compile auto_qmail_man.c
+	./compile auto_qmail_man.c
+
+auto_qmail_queue.c: \
+auto-str conf-qmail-queue
+	./auto-str auto_qmail_queue `head -1 conf-qmail-queue` > auto_qmail_queue.c
+
+auto_qmail_queue.o: \
+compile auto_qmail_queue.c
+	./compile auto_qmail_queue.c
+
+auto_qmail_users.c: \
+auto-str conf-qmail-users
+	./auto-str auto_qmail_users `head -1 conf-qmail-users` > auto_qmail_users.c
+
+auto_qmail_users.o: \
+compile auto_qmail_users.c
+	./compile auto_qmail_users.c
+
 auto_spawn.c: \
 auto-int conf-spawn
 	./auto-int auto_spawn `head -1 conf-spawn` > auto_spawn.c

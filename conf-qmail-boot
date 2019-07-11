@@ -1,0 +1,4 @@
+/var/qmail/boot
+
+This is the qmail boot directory. The boot directory is where various
+qmail run control scripts are located.

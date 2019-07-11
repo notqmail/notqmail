@@ -1,0 +1,4 @@
+/var/qmail/control
+
+This is the qmail control directory. qmail cannot run without the fully
+qualified domain name of the host in the file ./me here.

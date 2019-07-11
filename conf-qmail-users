@@ -1,0 +1,4 @@
+/var/qmail/users
+
+This is the qmail users directory. The users directory is where qmail stores
+local user address assignments.

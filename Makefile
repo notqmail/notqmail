@@ -382,19 +382,17 @@ wait.h seek.h qmail.h substdio.h strerr.h substdio.h fmt.h
 	./compile condredirect.c
 
 config: \
-warn-auto.sh config.sh conf-qmail conf-break conf-split
+warn-auto.sh config.sh conf-qmail conf-split
 	cat warn-auto.sh config.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> config
 	chmod 755 config
 
 config-fast: \
-warn-auto.sh config-fast.sh conf-qmail conf-break conf-split
+warn-auto.sh config-fast.sh conf-qmail conf-split
 	cat warn-auto.sh config-fast.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> config-fast
 	chmod 755 config-fast
@@ -413,10 +411,9 @@ compile date822fmt.c datetime.h fmt.h date822fmt.h
 	./compile date822fmt.c
 
 datemail: \
-warn-auto.sh datemail.sh conf-qmail conf-break conf-split
+warn-auto.sh datemail.sh conf-qmail conf-split
 	cat warn-auto.sh datemail.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> datemail
 	chmod 755 datemail
@@ -505,10 +502,9 @@ dot-qmail.9 conf-break conf-spawn
 	> dot-qmail.5
 
 elq: \
-warn-auto.sh elq.sh conf-qmail conf-break conf-split
+warn-auto.sh elq.sh conf-qmail conf-split
 	cat warn-auto.sh elq.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> elq
 	chmod 755 elq
@@ -904,10 +900,9 @@ readwrite.h open.h headerbody.h maildir.h strerr.h
 	./compile maildirwatch.c
 
 mailsubj: \
-warn-auto.sh mailsubj.sh conf-qmail conf-break conf-split
+warn-auto.sh mailsubj.sh conf-qmail conf-split
 	cat warn-auto.sh mailsubj.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> mailsubj
 	chmod 755 mailsubj
@@ -1010,10 +1005,9 @@ it man
 	./instpackage
 
 pinq: \
-warn-auto.sh pinq.sh conf-qmail conf-break conf-split
+warn-auto.sh pinq.sh conf-qmail conf-split
 	cat warn-auto.sh pinq.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> pinq
 	chmod 755 pinq
@@ -1068,10 +1062,9 @@ compile prot.c hasshsgr.h prot.h
 	./compile prot.c
 
 qail: \
-warn-auto.sh qail.sh conf-qmail conf-break conf-split
+warn-auto.sh qail.sh conf-qmail conf-split
 	cat warn-auto.sh qail.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> qail
 	chmod 755 qail
@@ -1117,10 +1110,9 @@ qmail-control.5
 	nroff -man qmail-control.5 > qmail-control.0
 
 qmail-control.5: \
-qmail-control.9 conf-qmail conf-break conf-spawn
+qmail-control.9 conf-qmail conf-spawn
 	cat qmail-control.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> qmail-control.5
 
@@ -1179,9 +1171,8 @@ qmail-limits.7
 	nroff -man qmail-limits.7 > qmail-limits.0
 
 qmail-limits.7: \
-qmail-limits.9 conf-break conf-spawn
+qmail-limits.9 conf-spawn
 	cat qmail-limits.9 \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> qmail-limits.7
 
@@ -1245,10 +1236,9 @@ qmail-newmrh.8
 	nroff -man qmail-newmrh.8 > qmail-newmrh.0
 
 qmail-newmrh.8: \
-qmail-newmrh.9 conf-qmail conf-break conf-spawn
+qmail-newmrh.9 conf-qmail conf-spawn
 	cat qmail-newmrh.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> qmail-newmrh.8
 
@@ -1270,10 +1260,9 @@ qmail-newu.8
 	nroff -man qmail-newu.8 > qmail-newu.0
 
 qmail-newu.8: \
-qmail-newu.9 conf-qmail conf-break conf-spawn
+qmail-newu.9 conf-qmail conf-spawn
 	cat qmail-newu.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> qmail-newu.8
 
@@ -1423,10 +1412,9 @@ exit.h
 	./compile qmail-qread.c
 
 qmail-qstat: \
-warn-auto.sh qmail-qstat.sh conf-qmail conf-break conf-split
+warn-auto.sh qmail-qstat.sh conf-qmail conf-split
 	cat warn-auto.sh qmail-qstat.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> qmail-qstat
 	chmod 755 qmail-qstat
@@ -1587,10 +1575,9 @@ qmail-start.8
 	nroff -man qmail-start.8 > qmail-start.0
 
 qmail-start.8: \
-qmail-start.9 conf-qmail conf-break conf-spawn
+qmail-start.9 conf-qmail conf-spawn
 	cat qmail-start.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> qmail-start.8
 
@@ -1629,10 +1616,9 @@ fmt.h ip.h lock.h error.h exit.h datetime.h now.h datetime.h open.h
 	./compile qmail-tcpto.c
 
 qmail-upq: \
-warn-auto.sh qmail-upq.sh conf-qmail conf-break conf-split
+warn-auto.sh qmail-upq.sh conf-qmail conf-split
 	cat warn-auto.sh qmail-upq.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> qmail-upq
 	chmod 755 qmail-upq
@@ -1642,10 +1628,9 @@ qmail-users.5
 	nroff -man qmail-users.5 > qmail-users.0
 
 qmail-users.5: \
-qmail-users.9 conf-qmail conf-break conf-spawn
+qmail-users.9 conf-qmail conf-spawn
 	cat qmail-users.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> qmail-users.5
 

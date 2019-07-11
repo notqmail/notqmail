@@ -1480,9 +1480,9 @@ exit.h
 	./compile qmail-qread.c
 
 qmail-qstat: \
-warn-auto.sh qmail-qstat.sh conf-qmail
+warn-auto.sh qmail-qstat.sh conf-qmail-queue
 	cat warn-auto.sh qmail-qstat.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILQUEUE}"`head -1 conf-qmail-queue`"}g \
 	> qmail-qstat
 	chmod 755 qmail-qstat
 
@@ -1690,9 +1690,9 @@ fmt.h ip.h lock.h error.h exit.h datetime.h now.h datetime.h open.h
 	./compile qmail-tcpto.c
 
 qmail-upq: \
-warn-auto.sh qmail-upq.sh conf-qmail conf-split
+warn-auto.sh qmail-upq.sh conf-qmail-queue conf-split
 	cat warn-auto.sh qmail-upq.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILQUEUE}"`head -1 conf-qmail-queue`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> qmail-upq
 	chmod 755 qmail-upq

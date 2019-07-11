@@ -446,16 +446,16 @@ wait.h seek.h qmail.h substdio.h strerr.h substdio.h fmt.h
 	./compile condredirect.c
 
 config: \
-warn-auto.sh config.sh conf-qmail
+warn-auto.sh config.sh conf-qmail-control
 	cat warn-auto.sh config.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILCONTROL}"`head -1 conf-qmail-control`"}g \
 	> config
 	chmod 755 config
 
 config-fast: \
-warn-auto.sh config-fast.sh conf-qmail
+warn-auto.sh config-fast.sh conf-qmail-control
 	cat warn-auto.sh config-fast.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILCONTROL}"`head -1 conf-qmail-control`"}g \
 	> config-fast
 	chmod 755 config-fast
 
@@ -1180,9 +1180,9 @@ qmail-control.5
 	nroff -man qmail-control.5 > qmail-control.0
 
 qmail-control.5: \
-qmail-control.9 conf-qmail
+qmail-control.9 conf-qmail-control
 	cat qmail-control.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILCONTROL}"`head -1 conf-qmail-control`"}g \
 	> qmail-control.5
 
 qmail-getpw: \
@@ -1305,9 +1305,9 @@ qmail-newmrh.8
 	nroff -man qmail-newmrh.8 > qmail-newmrh.0
 
 qmail-newmrh.8: \
-qmail-newmrh.9 conf-qmail
+qmail-newmrh.9 conf-qmail-control
 	cat qmail-newmrh.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILCONTROL}"`head -1 conf-qmail-control`"}g \
 	> qmail-newmrh.8
 
 qmail-newmrh.o: \

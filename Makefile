@@ -382,18 +382,16 @@ wait.h seek.h qmail.h substdio.h strerr.h substdio.h fmt.h
 	./compile condredirect.c
 
 config: \
-warn-auto.sh config.sh conf-qmail conf-split
+warn-auto.sh config.sh conf-qmail
 	cat warn-auto.sh config.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> config
 	chmod 755 config
 
 config-fast: \
-warn-auto.sh config-fast.sh conf-qmail conf-split
+warn-auto.sh config-fast.sh conf-qmail
 	cat warn-auto.sh config-fast.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> config-fast
 	chmod 755 config-fast
 
@@ -411,10 +409,9 @@ compile date822fmt.c datetime.h fmt.h date822fmt.h
 	./compile date822fmt.c
 
 datemail: \
-warn-auto.sh datemail.sh conf-qmail conf-split
+warn-auto.sh datemail.sh conf-qmail
 	cat warn-auto.sh datemail.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> datemail
 	chmod 755 datemail
 
@@ -501,10 +498,9 @@ dot-qmail.9 conf-break
 	> dot-qmail.5
 
 elq: \
-warn-auto.sh elq.sh conf-qmail conf-split
+warn-auto.sh elq.sh conf-qmail
 	cat warn-auto.sh elq.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> elq
 	chmod 755 elq
 
@@ -899,10 +895,9 @@ readwrite.h open.h headerbody.h maildir.h strerr.h
 	./compile maildirwatch.c
 
 mailsubj: \
-warn-auto.sh mailsubj.sh conf-qmail conf-split
+warn-auto.sh mailsubj.sh conf-qmail
 	cat warn-auto.sh mailsubj.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> mailsubj
 	chmod 755 mailsubj
 
@@ -1004,10 +999,9 @@ it man
 	./instpackage
 
 pinq: \
-warn-auto.sh pinq.sh conf-qmail conf-split
+warn-auto.sh pinq.sh conf-qmail
 	cat warn-auto.sh pinq.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> pinq
 	chmod 755 pinq
 
@@ -1061,10 +1055,9 @@ compile prot.c hasshsgr.h prot.h
 	./compile prot.c
 
 qail: \
-warn-auto.sh qail.sh conf-qmail conf-split
+warn-auto.sh qail.sh conf-qmail
 	cat warn-auto.sh qail.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> qail
 	chmod 755 qail
 
@@ -1406,10 +1399,9 @@ exit.h
 	./compile qmail-qread.c
 
 qmail-qstat: \
-warn-auto.sh qmail-qstat.sh conf-qmail conf-split
+warn-auto.sh qmail-qstat.sh conf-qmail
 	cat warn-auto.sh qmail-qstat.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> qmail-qstat
 	chmod 755 qmail-qstat
 

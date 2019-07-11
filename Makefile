@@ -248,44 +248,44 @@ compile auto_groupq.c
 	./compile auto_groupq.c
 
 binm1: \
-binm1.sh conf-qmail
+binm1.sh conf-qmail-bin
 	cat binm1.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> binm1
 	chmod 755 binm1
 
 binm1+df: \
-binm1+df.sh conf-qmail
+binm1+df.sh conf-qmail-bin
 	cat binm1+df.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> binm1+df
 	chmod 755 binm1+df
 
 binm2: \
-binm2.sh conf-qmail
+binm2.sh conf-qmail-bin
 	cat binm2.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> binm2
 	chmod 755 binm2
 
 binm2+df: \
-binm2+df.sh conf-qmail
+binm2+df.sh conf-qmail-bin
 	cat binm2+df.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> binm2+df
 	chmod 755 binm2+df
 
 binm3: \
-binm3.sh conf-qmail
+binm3.sh conf-qmail-bin
 	cat binm3.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> binm3
 	chmod 755 binm3
 
 binm3+df: \
-binm3+df.sh conf-qmail
+binm3+df.sh conf-qmail-bin
 	cat binm3+df.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> binm3+df
 	chmod 755 binm3+df
 
@@ -473,9 +473,9 @@ compile date822fmt.c datetime.h fmt.h date822fmt.h
 	./compile date822fmt.c
 
 datemail: \
-warn-auto.sh datemail.sh conf-qmail
+warn-auto.sh datemail.sh conf-qmail-bin
 	cat warn-auto.sh datemail.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> datemail
 	chmod 755 datemail
 
@@ -562,9 +562,9 @@ dot-qmail.9 conf-break
 	> dot-qmail.5
 
 elq: \
-warn-auto.sh elq.sh conf-qmail
+warn-auto.sh elq.sh conf-qmail-bin
 	cat warn-auto.sh elq.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> elq
 	chmod 755 elq
 
@@ -774,16 +774,16 @@ compile hier.c auto_qmail.h auto_split.h auto_uids.h fmt.h fifo.h
 	./compile hier.c
 
 home: \
-home.sh conf-qmail
+home.sh conf-qmail-bin
 	cat home.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> home
 	chmod 755 home
 
 home+df: \
-home+df.sh conf-qmail
+home+df.sh conf-qmail-bin
 	cat home+df.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> home+df
 	chmod 755 home+df
 
@@ -973,9 +973,9 @@ readwrite.h open.h headerbody.h maildir.h strerr.h
 	./compile maildirwatch.c
 
 mailsubj: \
-warn-auto.sh mailsubj.sh conf-qmail
+warn-auto.sh mailsubj.sh conf-qmail-bin
 	cat warn-auto.sh mailsubj.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> mailsubj
 	chmod 755 mailsubj
 
@@ -1077,9 +1077,9 @@ it man
 	./instpackage
 
 pinq: \
-warn-auto.sh pinq.sh conf-qmail
+warn-auto.sh pinq.sh conf-qmail-bin
 	cat warn-auto.sh pinq.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> pinq
 	chmod 755 pinq
 
@@ -1115,16 +1115,16 @@ gen_alloc.h
 	./compile prioq.c
 
 proc: \
-proc.sh conf-qmail
+proc.sh conf-qmail-bin
 	cat proc.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> proc
 	chmod 755 proc
 
 proc+df: \
-proc+df.sh conf-qmail
+proc+df.sh conf-qmail-bin
 	cat proc+df.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> proc+df
 	chmod 755 proc+df
 
@@ -1133,9 +1133,9 @@ compile prot.c hasshsgr.h prot.h
 	./compile prot.c
 
 qail: \
-warn-auto.sh qail.sh conf-qmail
+warn-auto.sh qail.sh conf-qmail-bin
 	cat warn-auto.sh qail.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> qail
 	chmod 755 qail
 
@@ -1650,9 +1650,9 @@ qmail-start.8
 	nroff -man qmail-start.8 > qmail-start.0
 
 qmail-start.8: \
-qmail-start.9 conf-qmail
+qmail-start.9 conf-qmail-bin
 	cat qmail-start.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> qmail-start.8
 
 qmail-start.o: \

@@ -523,7 +523,7 @@ dot-qmail.5
 	nroff -man dot-qmail.5 > dot-qmail.0
 
 dot-qmail.5: \
-dot-qmail.9 conf-break conf-spawn
+dot-qmail.9 conf-qmail conf-break conf-spawn
 	cat dot-qmail.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
@@ -1155,7 +1155,7 @@ qmail-control.5
 	nroff -man qmail-control.5 > qmail-control.0
 
 qmail-control.5: \
-qmail-control.9 conf-break conf-spawn
+qmail-control.9 conf-qmail conf-break conf-spawn
 	cat qmail-control.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
@@ -1173,7 +1173,7 @@ qmail-getpw.8
 	nroff -man qmail-getpw.8 > qmail-getpw.0
 
 qmail-getpw.8: \
-qmail-getpw.9 conf-break conf-spawn
+qmail-getpw.9 conf-qmail conf-break conf-spawn
 	cat qmail-getpw.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
@@ -1218,7 +1218,7 @@ qmail-limits.7
 	nroff -man qmail-limits.7 > qmail-limits.0
 
 qmail-limits.7: \
-qmail-limits.9 conf-break conf-spawn
+qmail-limits.9 conf-qmail conf-break conf-spawn
 	cat qmail-limits.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
@@ -1285,7 +1285,7 @@ qmail-newmrh.8
 	nroff -man qmail-newmrh.8 > qmail-newmrh.0
 
 qmail-newmrh.8: \
-qmail-newmrh.9 conf-break conf-spawn
+qmail-newmrh.9 conf-qmail conf-break conf-spawn
 	cat qmail-newmrh.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
@@ -1310,7 +1310,7 @@ qmail-newu.8
 	nroff -man qmail-newu.8 > qmail-newu.0
 
 qmail-newu.8: \
-qmail-newu.9 conf-break conf-spawn
+qmail-newu.9 conf-qmail conf-break conf-spawn
 	cat qmail-newu.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
@@ -1374,7 +1374,7 @@ qmail-pw2u.8
 	nroff -man qmail-pw2u.8 > qmail-pw2u.0
 
 qmail-pw2u.8: \
-qmail-pw2u.9 conf-break conf-spawn
+qmail-pw2u.9 conf-qmail conf-break conf-spawn
 	cat qmail-pw2u.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
@@ -1553,7 +1553,7 @@ qmail-send.8
 	nroff -man qmail-send.8 > qmail-send.0
 
 qmail-send.8: \
-qmail-send.9 conf-break conf-spawn
+qmail-send.9 conf-qmail conf-break conf-spawn
 	cat qmail-send.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
@@ -1628,7 +1628,7 @@ qmail-start.8
 	nroff -man qmail-start.8 > qmail-start.0
 
 qmail-start.8: \
-qmail-start.9 conf-break conf-spawn
+qmail-start.9 conf-qmail conf-break conf-spawn
 	cat qmail-start.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
@@ -1683,7 +1683,7 @@ qmail-users.5
 	nroff -man qmail-users.5 > qmail-users.0
 
 qmail-users.5: \
-qmail-users.9 conf-break conf-spawn
+qmail-users.9 conf-qmail conf-break conf-spawn
 	cat qmail-users.9 \
 	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \

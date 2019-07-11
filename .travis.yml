@@ -1,0 +1,18 @@
+dist: xenial
+language: c
+compiler:
+ - gcc
+ - clang
+script:
+ - sudo groupadd -g 200 nofiles
+ - sudo groupadd -g 201 qmail
+ - sudo useradd -u 200 -g 200 -d /var/qmail/alias alias
+ - sudo useradd -u 201 -g 200 -d /var/qmail qmaild
+ - sudo useradd -u 202 -g 200 -d /var/qmail qmaill
+ - sudo useradd -u 203 -g 200 -d /var/qmail qmailp
+ - sudo useradd -u 204 -g 201 -d /var/qmail qmailq
+ - sudo useradd -u 205 -g 201 -d /var/qmail qmailr
+ - sudo useradd -u 206 -g 201 -d /var/qmail qmails
+ - echo "${CC} -O2 -Wall" > conf-cc
+ - make
+ - sudo make setup check

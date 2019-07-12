@@ -1275,12 +1275,12 @@ qmail-log.5
 qmail-lspawn: \
 load qmail-lspawn.o spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
 case.a cdb.a fd.a open.a stralloc.a alloc.a substdio.a error.a str.a \
-fs.a auto_qmail.o uid.o gid.o auto_userp.o auto_userq.o auto_groupn.o \
-auto_spawn.o
+fs.a auto_qmail_bin.o auto_qmail_queue.o auto_qmail_users.o uid.o gid.o \
+auto_userp.o auto_userq.o auto_groupn.o auto_spawn.o
 	./load qmail-lspawn spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
-	case.a cdb.a fd.a open.a stralloc.a alloc.a auto_qmail.o uid.o gid.o \
-	auto_userp.o auto_userq.o auto_groupn.o auto_spawn.o substdio.a \
-	error.a str.a fs.a
+	case.a cdb.a fd.a open.a stralloc.a alloc.a auto_qmail_bin.o \
+	auto_qmail_queue.o auto_qmail_users.o uid.o gid.o auto_userp.o \
+	auto_userq.o auto_groupn.o auto_spawn.o substdio.a error.a str.a fs.a
 
 qmail-lspawn.0: \
 qmail-lspawn.8

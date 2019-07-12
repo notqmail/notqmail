@@ -18,9 +18,9 @@ static int getbuf()
  int r;
  int fd;
 
- fdlock = open_write("queue/lock/tcpto");
+ fdlock = open_write("lock/tcpto");
  if (fdlock == -1) return 0;
- fd = open_read("queue/lock/tcpto");
+ fd = open_read("lock/tcpto");
  if (fd == -1) { close(fdlock); return 0; }
  if (lock_ex(fdlock) == -1) { close(fdlock); close(fd); return 0; }
  r = read(fd,tcpto_buf,sizeof(tcpto_buf));

@@ -45,8 +45,8 @@ void main()
  datetime_sec when;
  datetime_sec start;
 
- if (chdir(auto_qmail) == -1) die_chdir();
- if (chdir("queue/lock") == -1) die_chdir();
+ if (chdir(auto_qmail_queue) == -1) die_chdir();
+ if (chdir("lock") == -1) die_chdir();
 
  fdlock = open_write("tcpto");
  if (fdlock == -1) die_open();

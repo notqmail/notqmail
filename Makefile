@@ -1156,9 +1156,9 @@ substdio.h open.h byte.h str.h headerbody.h hfield.h env.h exit.h qtmp.h
 
 qmail-clean: \
 load qmail-clean.o fmtqfn.o now.o getln.a sig.a stralloc.a alloc.a \
-substdio.a error.a str.a fs.a auto_qmail.o auto_split.o
+substdio.a error.a str.a fs.a auto_qmail_queue.o auto_split.o
 	./load qmail-clean fmtqfn.o now.o getln.a sig.a stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a auto_qmail.o \
+	alloc.a substdio.a error.a str.a fs.a auto_qmail_queue.o \
 	auto_split.o 
 
 qmail-clean.0: \
@@ -1463,10 +1463,10 @@ auto_qmail.h readwrite.h control.h received.h
 qmail-qread: \
 load qmail-qread.o fmtqfn.o readsubdir.o date822fmt.o datetime.a \
 open.a getln.a stralloc.a alloc.a substdio.a error.a str.a fs.a \
-auto_qmail.o auto_split.o
+auto_qmail_queue.o auto_split.o
 	./load qmail-qread fmtqfn.o readsubdir.o date822fmt.o \
 	datetime.a open.a getln.a stralloc.a alloc.a substdio.a \
-	error.a str.a fs.a auto_qmail.o auto_split.o 
+	error.a str.a fs.a auto_qmail_queue.o auto_split.o
 
 qmail-qread.0: \
 qmail-qread.8
@@ -1493,11 +1493,11 @@ qmail-qstat.8
 qmail-queue: \
 load qmail-queue.o triggerpull.o fmtqfn.o now.o date822fmt.o \
 datetime.a seek.a ndelay.a open.a sig.a alloc.a substdio.a error.a \
-str.a fs.a auto_qmail.o auto_split.o uid.o auto_usera.o auto_userd.o \
+str.a fs.a auto_qmail_queue.o auto_split.o uid.o auto_usera.o auto_userd.o \
 auto_users.o
 	./load qmail-queue triggerpull.o fmtqfn.o now.o \
 	date822fmt.o datetime.a seek.a ndelay.a open.a sig.a \
-	alloc.a auto_qmail.o auto_split.o uid.o auto_usera.o \
+	alloc.a auto_qmail_queue.o auto_split.o uid.o auto_usera.o \
 	auto_userd.o auto_users.o substdio.a error.a str.a fs.a
 
 qmail-queue.0: \
@@ -1661,9 +1661,9 @@ compile qmail-start.c fd.h prot.h exit.h fork.h uidgid.h auto_uids.h auto_users.
 
 qmail-tcpok: \
 load qmail-tcpok.o open.a lock.a strerr.a substdio.a error.a str.a \
-auto_qmail.o
+auto_qmail_queue.o
 	./load qmail-tcpok open.a lock.a strerr.a substdio.a \
-	error.a str.a auto_qmail.o 
+	error.a str.a auto_qmail_queue.o
 
 qmail-tcpok.0: \
 qmail-tcpok.8
@@ -1676,9 +1676,9 @@ auto_qmail.h exit.h
 
 qmail-tcpto: \
 load qmail-tcpto.o ip.o now.o open.a lock.a substdio.a error.a str.a \
-fs.a auto_qmail.o
+fs.a auto_qmail_queue.o
 	./load qmail-tcpto ip.o now.o open.a lock.a substdio.a \
-	error.a str.a fs.a auto_qmail.o 
+	error.a str.a fs.a auto_qmail_queue.o
 
 qmail-tcpto.0: \
 qmail-tcpto.8

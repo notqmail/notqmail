@@ -114,8 +114,7 @@ void main()
  substdio ss;
  int x;
 
- if (chdir(auto_qmail) == -1) die_chdir();
- if (chdir("queue") == -1) die_chdir();
+ if (chdir(auto_qmail_queue) == -1) die_chdir();
  readsubdir_init(&rs,"info",die_opendir);
 
  while (x = readsubdir_next(&rs,&id))

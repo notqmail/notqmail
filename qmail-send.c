@@ -1505,7 +1505,7 @@ void reread()
    return;
   }
  regetcontrols();
- while (chdir("queue") == -1)
+ while (chdir(auto_qmail_queue) == -1)
   {
    log1("alert: unable to switch back to queue directory; HELP! sleeping...\n");
    sleep(10);
@@ -1526,7 +1526,7 @@ void main()
   { log1("alert: cannot start: unable to switch to control directory\n"); _exit(111); }
  if (!getcontrols())
   { log1("alert: cannot start: unable to read controls\n"); _exit(111); }
- if (chdir("queue") == -1)
+ if (chdir(auto_qmail_queue) == -1)
   { log1("alert: cannot start: unable to switch to queue directory\n"); _exit(111); }
  sig_pipeignore();
  sig_termcatch(sigterm);

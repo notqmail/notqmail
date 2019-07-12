@@ -186,8 +186,8 @@ char **argv;
  fd_set rfds;
  int nfds;
 
- if (chdir(auto_qmail) == -1) _exit(111);
- if (chdir("queue/mess") == -1) _exit(111);
+ if (chdir(auto_qmail_queue) == -1) _exit(111);
+ if (chdir("mess") == -1) _exit(111);
  if (!stralloc_copys(&messid,"")) _exit(111);
  if (!stralloc_copys(&sender,"")) _exit(111);
  if (!stralloc_copys(&recip,"")) _exit(111);

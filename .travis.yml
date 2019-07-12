@@ -4,12 +4,16 @@ env:
   matrix:
     - BUILD_NAME="default"
     - BUILD_NAME="utmp" FORCE_UTMP="1"
+    - BUILD_NAME="default+tls" QMAIL_PATCH=""
+    - BUILD_NAME="TLS" QMAIL_PATCH="http://inoa.net/qmail-tls/netqmail-1.06-tls-20190517.patch"
 compiler:
  - gcc
  - clang
 script:
  - echo "${CC} -O2 -Wall" > conf-cc
  - if [ -n "${FORCE_UTMP}" ]; then export MAKEFLAGS="${MAKEFLAGS} -o qtmp.h"; cp qtmp.h1 qtmp.h; fi
+ - if [ -n "${QMAIL_PATCH}" ]; then wget -O extra.patch "${QMAIL_PATCH}" && patch -p1 -i extra.patch; fi
+ - sed "s/^cc /${CC} -Wall /" -i conf-cc
  - make ${MAKEFLAGS} it man
  - env DESTDIR=/tmp/qmail make ${MAKEFLAGS} package
  - sudo make ${MAKEFLAGS} package

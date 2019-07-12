@@ -506,12 +506,8 @@ compile envread.c env.h str.h
 	./compile envread.c
 
 error.a: \
-makelib error.o error_str.o error_temp.o
-	./makelib error.a error.o error_str.o error_temp.o
-
-error.o: \
-compile error.c error.h
-	./compile error.c
+makelib error_str.o error_temp.o
+	./makelib error.a error_str.o error_temp.o
 
 error_str.o: \
 compile error_str.c error.h

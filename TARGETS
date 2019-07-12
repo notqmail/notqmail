@@ -86,7 +86,6 @@ subfdin.o
 subfdins.o
 substdio_copy.o
 substdio.a
-error.o
 error_str.o
 error_temp.o
 error.a

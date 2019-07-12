@@ -2,6 +2,9 @@
 #include <netdb.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#ifndef BIND_8_COMPAT
+#define BIND_8_COMPAT /* Mac OS X: if Bind 9, Bind 8 compatibility */
+#endif
 #include <arpa/nameser.h>
 #include <resolv.h>
 #include <errno.h>

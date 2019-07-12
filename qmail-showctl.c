@@ -169,10 +169,6 @@ void main()
   auto_gidn = initgid(auto_groupn);
   auto_gidq = initgid(auto_groupq);
 
-  substdio_puts(subfdout,"qmail home directory: ");
-  substdio_puts(subfdout,auto_qmail);
-  substdio_puts(subfdout,".\n");
-
   substdio_puts(subfdout,"qmail alias directory: ");
   substdio_puts(subfdout,auto_qmail_alias);
   substdio_puts(subfdout,".\n");

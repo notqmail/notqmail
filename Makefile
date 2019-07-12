@@ -79,14 +79,6 @@ auto_patrn.o: \
 compile auto_patrn.c
 	./compile auto_patrn.c
 
-auto_qmail.c: \
-auto-str conf-qmail
-	./auto-str auto_qmail `head -1 conf-qmail` > auto_qmail.c
-
-auto_qmail.o: \
-compile auto_qmail.c
-	./compile auto_qmail.c
-
 auto_qmail_alias.c: \
 auto-str conf-qmail-alias
 	./auto-str auto_qmail_alias `head -1 conf-qmail-alias` > auto_qmail_alias.c
@@ -801,45 +793,45 @@ install:
 	chmod 755 install
 
 instcheck: \
-load instcheck.o instuidgid.o fifo.o hier.o auto_qmail.o auto_qmail_alias.o \
+load instcheck.o instuidgid.o fifo.o hier.o auto_qmail_alias.o \
 auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o auto_qmail_doc.o \
 auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o auto_split.o uid.o \
 gid.o auto_usera.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
 auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
-	./load instcheck instuidgid.o fifo.o hier.o auto_qmail.o \
-	auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
-	auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o \
-	auto_qmail_queue.o auto_qmail_users.o auto_split.o uid.o gid.o \
-	auto_usera.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
-	auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
+	./load instcheck instuidgid.o fifo.o hier.o auto_qmail_alias.o \
+	auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o \
+	auto_qmail_doc.o auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o \
+	auto_split.o uid.o gid.o auto_usera.o auto_usero.o auto_userp.o \
+	auto_userq.o auto_userr.o auto_users.o auto_groupq.o strerr.a \
+	substdio.a error.a str.a fs.a
 
 instcheck.o: \
 compile instcheck.c strerr.h error.h readwrite.h exit.h
 	./compile instcheck.c
 
 instchown: \
-load instchown.o instuidgid.o fifo.o hier.o auto_qmail.o auto_qmail_alias.o \
+load instchown.o instuidgid.o fifo.o hier.o auto_qmail_alias.o \
 auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o auto_qmail_doc.o \
 auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o auto_split.o uid.o \
 gid.o auto_usera.o auto_usero.o auto_userq.o auto_userr.o auto_users.o \
 auto_groupq.o strerr.a substdio.a error.a str.a fs.a
-	./load instchown instuidgid.o fifo.o hier.o auto_qmail.o \
-	auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
-	auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o \
-	auto_qmail_queue.o auto_qmail_users.o auto_split.o uid.o gid.o \
-	auto_usera.o auto_usero.o auto_userq.o auto_userr.o auto_users.o \
-	auto_groupq.o strerr.a substdio.a error.a str.a fs.a
+	./load instchown instuidgid.o fifo.o hier.o auto_qmail_alias.o \
+	auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o \
+	auto_qmail_doc.o auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o \
+	auto_split.o uid.o gid.o auto_usera.o auto_usero.o auto_userq.o \
+	auto_userr.o auto_users.o auto_groupq.o strerr.a substdio.a error.a \
+	str.a fs.a
 
 instchown.o: \
 compile instchown.c strerr.h error.h exit.h
 	./compile instchown.c
 
 instpackage: \
-load instpackage.o fifo.o hier.o auto_qmail.o auto_qmail_alias.o \
+load instpackage.o fifo.o hier.o auto_qmail_alias.o \
 auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o auto_qmail_doc.o \
 auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o auto_split.o strerr.a \
 substdio.a open.a error.a env.a str.a fs.a stralloc.a alloc.a
-	./load instpackage fifo.o hier.o auto_qmail.o \
+	./load instpackage fifo.o hier.o \
 	auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
 	auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o \
 	auto_qmail_queue.o auto_qmail_users.o auto_split.o \
@@ -1215,13 +1207,12 @@ qmail-inject: \
 load qmail-inject.o headerbody.o hfield.o newfield.o quote.o now.o \
 control.o date822fmt.o constmap.o qmail.o case.a fd.a wait.a open.a \
 getln.a sig.a getopt.a datetime.a token822.o env.a stralloc.a alloc.a \
-substdio.a error.a str.a fs.a auto_qmail.o auto_qmail_bin.o \
-auto_qmail_control.o
+substdio.a error.a str.a fs.a auto_qmail_bin.o auto_qmail_control.o
 	./load qmail-inject headerbody.o hfield.o newfield.o \
 	quote.o now.o control.o date822fmt.o constmap.o qmail.o \
 	case.a fd.a wait.a open.a getln.a sig.a getopt.a datetime.a \
 	token822.o env.a stralloc.a alloc.a substdio.a error.a \
-	str.a fs.a auto_qmail.o auto_qmail_bin.o auto_qmail_control.o
+	str.a fs.a auto_qmail_bin.o auto_qmail_control.o
 
 qmail-inject.0: \
 qmail-inject.8
@@ -1590,13 +1581,13 @@ qmail-showctl: \
 load qmail-showctl.o uid.o gid.o auto_usera.o auto_userd.o auto_userl.o \
 auto_usero.o auto_userp.o auto_userq.o auto_userr.o auto_users.o auto_groupn.o \
 auto_groupq.o control.o open.a getln.a stralloc.a alloc.a substdio.a error.a \
-str.a fs.a auto_qmail.o auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
+str.a fs.a auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
 auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o auto_qmail_queue.o \
 auto_qmail_users.o auto_break.o auto_patrn.o auto_spawn.o auto_split.o
 	./load qmail-showctl uid.o gid.o auto_usera.o auto_userd.o \
 	auto_userl.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
 	auto_users.o auto_groupn.o auto_groupq.o control.o open.a getln.a \
-	stralloc.a alloc.a substdio.a error.a str.a fs.a auto_qmail.o \
+	stralloc.a alloc.a substdio.a error.a str.a fs.a \
 	auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
 	auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o \
 	auto_qmail_queue.o auto_qmail_users.o auto_break.o auto_patrn.o \

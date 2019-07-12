@@ -29,7 +29,6 @@ int mode;
 
 void hier()
 {
-  h(auto_qmail,auto_uido,auto_gidq,0755);
   h(auto_qmail_bin,auto_uido,auto_gidq,0755);
   h(auto_qmail_boot,auto_uido,auto_gidq,0755);
   h(auto_qmail_doc,auto_uido,auto_gidq,0755);

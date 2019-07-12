@@ -7,7 +7,9 @@
 #include "exit.h"
 #include "now.h"
 #include "fmt.h"
+#include "byte.h"
 #include "env.h"
+#include "str.h"
 
 void resources() { _exit(111); }
 

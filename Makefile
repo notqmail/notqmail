@@ -1443,11 +1443,12 @@ qmail-qmtpd: \
 load qmail-qmtpd.o rcpthosts.o control.o constmap.o received.o \
 date822fmt.o now.o qmail.o cdb.a fd.a wait.a datetime.a open.a \
 getln.a sig.a case.a env.a stralloc.a alloc.a substdio.a error.a \
-str.a fs.a auto_qmail.o
+str.a fs.a auto_qmail_bin.o auto_qmail_control.o
 	./load qmail-qmtpd rcpthosts.o control.o constmap.o \
 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
 	datetime.a open.a getln.a sig.a case.a env.a stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a auto_qmail.o 
+	alloc.a substdio.a error.a str.a fs.a auto_qmail_bin.o \
+	auto_qmail_control.o
 
 qmail-qmtpd.0: \
 qmail-qmtpd.8

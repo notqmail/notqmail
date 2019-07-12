@@ -91,7 +91,6 @@ error.o
 error_str.o
 error_temp.o
 error.a
-str_diff.o
 str_diffn.o
 str_cpy.o
 str_chr.o

@@ -1,5 +1,9 @@
 dist: xenial
 language: c
+env:
+  matrix:
+    - BUILD_NAME="default" QMAIL_PATH=""
+    - BUILD_NAME="TLS" QMAIL_PATH="http://inoa.net/qmail-tls/netqmail-1.06-tls-20190517.patch"
 compiler:
  - gcc
  - clang
@@ -13,6 +17,7 @@ script:
  - sudo useradd -u 204 -g 201 -d /var/qmail qmailq
  - sudo useradd -u 205 -g 201 -d /var/qmail qmailr
  - sudo useradd -u 206 -g 201 -d /var/qmail qmails
- - echo "${CC} -O2 -Wall" > conf-cc
+ - if [ -n "${QMAIL_PATH}" ]; then wget -O extra.patch "${QMAIL_PATH}" && patch -p1 -i extra.patch; fi
+ - sed "s/^cc /${CC} -Wall /" -i conf-cc
  - make
  - sudo make setup check

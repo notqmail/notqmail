@@ -1215,7 +1215,7 @@ qmail-lspawn.8
 qmail-lspawn.o: \
 compile qmail-lspawn.c fd.h wait.h prot.h substdio.h stralloc.h \
 gen_alloc.h scan.h exit.h fork.h error.h cdb.h uint32.h case.h \
-slurpclose.h auto_qmail.h auto_uids.h qlx.h
+slurpclose.h auto_qmail.h auto_uids.h qlx.h byte.h open.h
 	./compile qmail-lspawn.c
 
 qmail-newmrh: \
@@ -1364,8 +1364,8 @@ qmail-qmqpd.8
 	nroff -man qmail-qmqpd.8 > qmail-qmqpd.0
 
 qmail-qmqpd.o: \
-compile qmail-qmqpd.c auto_qmail.h qmail.h substdio.h received.h \
-sig.h substdio.h readwrite.h exit.h now.h datetime.h fmt.h env.h
+compile qmail-qmqpd.c auto_qmail.h qmail.h substdio.h received.h str.h \
+sig.h substdio.h readwrite.h exit.h now.h datetime.h fmt.h env.h byte.h
 	./compile qmail-qmqpd.c
 
 qmail-qmtpd: \

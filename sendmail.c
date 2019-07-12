@@ -19,7 +19,7 @@ void die_usage()
   _exit(100);
 }
 
-char *smtpdarg[] = { "bin/qmail-smtpd", 0 };
+char *smtpdarg[] = { "qmail-smtpd", 0 };
 void smtpd()
 {
   if (!env_get("PROTO")) {
@@ -37,7 +37,7 @@ void smtpd()
   _exit(111);
 }
 
-char *qreadarg[] = { "bin/qmail-qread", 0 };
+char *qreadarg[] = { "qmail-qread", 0 };
 void mailq()
 {
   execv(*qreadarg,qreadarg);
@@ -89,8 +89,8 @@ char **argv;
   char **arg;
   int i;
  
-  if (chdir(auto_qmail) == -1) {
-    substdio_putsflush(subfderr,"sendmail: fatal: unable to switch to qmail home directory\n");
+  if (chdir(auto_qmail_bin) == -1) {
+    substdio_putsflush(subfderr,"sendmail: fatal: unable to switch to qmail binaries directory\n");
     _exit(111);
   }
 
@@ -145,7 +145,7 @@ char **argv;
   if (!qiargv) nomem();
  
   arg = qiargv;
-  *arg++ = "bin/qmail-inject";
+  *arg++ = "qmail-inject";
   *arg++ = (flagh ? "-H" : "-a");
   if (sender) {
     *arg++ = "-f";

@@ -432,9 +432,9 @@ make-compile warn-auto.sh
 
 condredirect: \
 load condredirect.o qmail.o strerr.a fd.a sig.a wait.a seek.a env.a \
-substdio.a error.a str.a fs.a auto_qmail.o
+substdio.a error.a str.a fs.a auto_qmail_bin.o
 	./load condredirect qmail.o strerr.a fd.a sig.a wait.a \
-	seek.a env.a substdio.a error.a str.a fs.a auto_qmail.o 
+	seek.a env.a substdio.a error.a str.a fs.a auto_qmail_bin.o
 
 condredirect.0: \
 condredirect.1
@@ -658,9 +658,9 @@ forgeries.7
 
 forward: \
 load forward.o qmail.o strerr.a alloc.a fd.a wait.a sig.a env.a \
-substdio.a error.a str.a fs.a auto_qmail.o
+substdio.a error.a str.a fs.a auto_qmail_bin.o
 	./load forward qmail.o strerr.a alloc.a fd.a wait.a sig.a \
-	env.a substdio.a error.a str.a fs.a auto_qmail.o 
+	env.a substdio.a error.a str.a fs.a auto_qmail_bin.o
 
 forward.0: \
 forward.1
@@ -1249,11 +1249,11 @@ qmail-local: \
 load qmail-local.o qmail.o quote.o now.o gfrom.o myctime.o \
 slurpclose.o case.a getln.a getopt.a sig.a open.a seek.a lock.a fd.a \
 wait.a env.a stralloc.a alloc.a strerr.a substdio.a error.a str.a \
-fs.a datetime.a auto_qmail.o auto_patrn.o socket.lib
+fs.a datetime.a auto_qmail_bin.o auto_patrn.o socket.lib
 	./load qmail-local qmail.o quote.o now.o gfrom.o myctime.o \
 	slurpclose.o case.a getln.a getopt.a sig.a open.a seek.a \
 	lock.a fd.a wait.a env.a stralloc.a alloc.a strerr.a \
-	substdio.a error.a str.a fs.a datetime.a auto_qmail.o \
+	substdio.a error.a str.a fs.a datetime.a auto_qmail_bin.o \
 	auto_patrn.o  `cat socket.lib`
 
 qmail-local.0: \
@@ -1720,10 +1720,10 @@ qmail.h auto_qmail.h env.h
 qreceipt: \
 load qreceipt.o headerbody.o hfield.o quote.o token822.o qmail.o \
 getln.a fd.a wait.a sig.a env.a stralloc.a alloc.a substdio.a error.a \
-str.a auto_qmail.o
+str.a auto_qmail_bin.o
 	./load qreceipt headerbody.o hfield.o quote.o token822.o \
 	qmail.o getln.a fd.a wait.a sig.a env.a stralloc.a alloc.a \
-	substdio.a error.a str.a auto_qmail.o 
+	substdio.a error.a str.a auto_qmail_bin.o
 
 qreceipt.0: \
 qreceipt.1
@@ -1820,9 +1820,9 @@ compile trysysel.c select.h1 select.h2
 
 sendmail: \
 load sendmail.o env.a getopt.a alloc.a substdio.a error.a str.a \
-auto_qmail.o
+auto_qmail_bin.o
 	./load sendmail env.a getopt.a alloc.a substdio.a error.a \
-	str.a auto_qmail.o 
+	str.a auto_qmail_bin.o
 
 sendmail.o: \
 compile sendmail.c sgetopt.h subgetopt.h substdio.h subfd.h \

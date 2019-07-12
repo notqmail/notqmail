@@ -153,7 +153,7 @@ char *local;
   }
 
  if (pipe(pi) == -1) _exit(QLX_SYS);
- args[0] = "bin/qmail-getpw";
+ args[0] = "qmail-getpw";
  args[1] = local;
  args[2] = 0;
  switch(gpwpid = fork())
@@ -163,6 +163,7 @@ char *local;
    case 0:
      if (prot_gid(auto_gidn) == -1) _exit(QLX_USAGE);
      if (prot_uid(auto_uidp) == -1) _exit(QLX_USAGE);
+     if (chdir(auto_qmail_bin) == -1) _exit(QLX_USAGE);
      close(pi[0]);
      if (fd_move(1,pi[1]) == -1) _exit(QLX_SYS);
      execv(*args,args);
@@ -205,7 +206,7 @@ char *s; char *r; int at;
    x = nughde.s;
    xlen = nughde.len;
 
-   args[0] = "bin/qmail-local";
+   args[0] = "qmail-local";
    args[1] = "--";
    args[2] = x;
    n = byte_chr(x,xlen,0); if (n++ == xlen) _exit(QLX_USAGE); x += n; xlen -= n;
@@ -238,6 +239,7 @@ char *s; char *r; int at;
    if (fd_copy(2,1) == -1) _exit(QLX_SYS);
    if (prot_gid(gid) == -1) _exit(QLX_USAGE);
    if (prot_uid(uid) == -1) _exit(QLX_USAGE);
+   if (chdir(auto_qmail_bin) == -1) _exit(QLX_USAGE);
    if (!getuid()) _exit(QLX_ROOT);
 
    execv(*args,args);

@@ -1215,12 +1215,13 @@ qmail-inject: \
 load qmail-inject.o headerbody.o hfield.o newfield.o quote.o now.o \
 control.o date822fmt.o constmap.o qmail.o case.a fd.a wait.a open.a \
 getln.a sig.a getopt.a datetime.a token822.o env.a stralloc.a alloc.a \
-substdio.a error.a str.a fs.a auto_qmail.o
+substdio.a error.a str.a fs.a auto_qmail.o auto_qmail_bin.o \
+auto_qmail_control.o
 	./load qmail-inject headerbody.o hfield.o newfield.o \
 	quote.o now.o control.o date822fmt.o constmap.o qmail.o \
 	case.a fd.a wait.a open.a getln.a sig.a getopt.a datetime.a \
 	token822.o env.a stralloc.a alloc.a substdio.a error.a \
-	str.a fs.a auto_qmail.o 
+	str.a fs.a auto_qmail.o auto_qmail_bin.o auto_qmail_control.o
 
 qmail-inject.0: \
 qmail-inject.8

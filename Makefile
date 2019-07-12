@@ -1775,10 +1775,10 @@ scan.h fmt.h
 	./compile splogger.c
 
 str.a: \
-makelib str_len.o str_diff.o str_diffn.o str_cpy.o str_chr.o \
+makelib str_diff.o str_diffn.o str_cpy.o str_chr.o \
 str_rchr.o str_start.o byte_chr.o byte_rchr.o byte_diff.o byte_copy.o \
 byte_cr.o byte_zero.o
-	./makelib str.a str_len.o str_diff.o str_diffn.o str_cpy.o \
+	./makelib str.a str_diff.o str_diffn.o str_cpy.o \
 	str_chr.o str_rchr.o str_start.o byte_chr.o byte_rchr.o \
 	byte_diff.o byte_copy.o byte_cr.o byte_zero.o
 
@@ -1797,10 +1797,6 @@ compile str_diff.c str.h
 str_diffn.o: \
 compile str_diffn.c str.h
 	./compile str_diffn.c
-
-str_len.o: \
-compile str_len.c str.h
-	./compile str_len.c
 
 str_rchr.o: \
 compile str_rchr.c str.h

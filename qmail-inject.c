@@ -67,7 +67,7 @@ void die_invalid(sa) stralloc *sa; {
 void die_qqt() {
  substdio_putsflush(subfderr,"qmail-inject: fatal: unable to run qmail-queue\n"); temp(); }
 void die_chdir() {
- substdio_putsflush(subfderr,"qmail-inject: fatal: internal bug\n"); temp(); }
+ substdio_putsflush(subfderr,"qmail-inject: fatal: unable to switch to qmail control directory\n"); }
 void die_read() {
  if (errno == error_nomem) die_nomem();
  substdio_putsflush(subfderr,"qmail-inject: fatal: read error\n"); temp(); }

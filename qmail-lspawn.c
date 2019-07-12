@@ -106,7 +106,7 @@ char *local;
 
  if (!stralloc_copys(&nughde,"")) _exit(QLX_NOMEM);
 
- fd = open_read("users/cdb");
+ fd = open_read("cdb");
  if (fd == -1)
    if (errno != error_noent)
      _exit(QLX_CDB);
@@ -199,7 +199,7 @@ char *s; char *r; int at;
    r[at] = 0;
    if (!r[0]) _exit(0); /* <> */
 
-   if (chdir(auto_qmail) == -1) _exit(QLX_USAGE);
+   if (chdir(auto_qmail_users) == -1) _exit(QLX_USAGE);
 
    nughde_get(r);
 

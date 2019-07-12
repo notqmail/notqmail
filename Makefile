@@ -1318,10 +1318,10 @@ uint32.h substdio.h case.h
 
 qmail-newu: \
 load qmail-newu.o cdbmss.o getln.a open.a seek.a cdbmake.a case.a \
-stralloc.a alloc.a substdio.a error.a str.a auto_qmail.o
+stralloc.a alloc.a substdio.a error.a str.a auto_qmail_users.o
 	./load qmail-newu cdbmss.o getln.a open.a seek.a cdbmake.a \
 	case.a stralloc.a alloc.a substdio.a error.a str.a \
-	auto_qmail.o 
+	auto_qmail_users.o
 
 qmail-newu.0: \
 qmail-newu.8
@@ -1380,10 +1380,10 @@ readwrite.h timeoutread.h timeoutwrite.h
 qmail-pw2u: \
 load qmail-pw2u.o constmap.o control.o open.a getln.a case.a getopt.a \
 stralloc.a alloc.a substdio.a error.a str.a fs.a auto_usera.o \
-auto_break.o auto_qmail.o
+auto_break.o auto_qmail_users.o
 	./load qmail-pw2u constmap.o control.o open.a getln.a \
 	case.a getopt.a stralloc.a alloc.a substdio.a error.a str.a \
-	fs.a auto_usera.o auto_break.o auto_qmail.o 
+	fs.a auto_usera.o auto_break.o auto_qmail_users.o
 
 qmail-pw2u.0: \
 qmail-pw2u.8

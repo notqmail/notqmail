@@ -1590,12 +1590,17 @@ qmail-showctl: \
 load qmail-showctl.o uid.o gid.o auto_usera.o auto_userd.o auto_userl.o \
 auto_usero.o auto_userp.o auto_userq.o auto_userr.o auto_users.o auto_groupn.o \
 auto_groupq.o control.o open.a getln.a stralloc.a alloc.a substdio.a error.a \
-str.a fs.a auto_qmail.o auto_break.o auto_patrn.o auto_spawn.o auto_split.o
+str.a fs.a auto_qmail.o auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
+auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o auto_qmail_queue.o \
+auto_qmail_users.o auto_break.o auto_patrn.o auto_spawn.o auto_split.o
 	./load qmail-showctl uid.o gid.o auto_usera.o auto_userd.o \
 	auto_userl.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
 	auto_users.o auto_groupn.o auto_groupq.o control.o open.a getln.a \
 	stralloc.a alloc.a substdio.a error.a str.a fs.a auto_qmail.o \
-	auto_break.o auto_patrn.o auto_spawn.o auto_split.o
+	auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
+	auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o \
+	auto_qmail_queue.o auto_qmail_users.o auto_break.o auto_patrn.o \
+	auto_spawn.o auto_split.o
 
 qmail-showctl.0: \
 qmail-showctl.8

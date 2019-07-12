@@ -97,7 +97,6 @@ byte_chr.o
 byte_rchr.o
 byte_copy.o
 byte_cr.o
-byte_zero.o
 str.a
 fmt_str.o
 fmt_strn.o

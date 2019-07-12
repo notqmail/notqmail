@@ -1423,11 +1423,12 @@ timeoutread.h timeoutwrite.h auto_qmail.h control.h fmt.h
 	./compile qmail-qmqpc.c
 
 qmail-qmqpd: \
-load qmail-qmqpd.o received.o now.o date822fmt.o qmail.o auto_qmail.o \
-env.a substdio.a sig.a error.a wait.a fd.a str.a datetime.a fs.a
+load qmail-qmqpd.o received.o now.o date822fmt.o qmail.o auto_qmail_bin.o \
+auto_qmail_queue.o env.a substdio.a sig.a error.a wait.a fd.a str.a \
+datetime.a fs.a
 	./load qmail-qmqpd received.o now.o date822fmt.o qmail.o \
-	auto_qmail.o env.a substdio.a sig.a error.a wait.a fd.a \
-	str.a datetime.a fs.a 
+	auto_qmail_bin.o auto_qmail_queue.o env.a substdio.a sig.a error.a \
+	wait.a fd.a str.a datetime.a fs.a
 
 qmail-qmqpd.0: \
 qmail-qmqpd.8

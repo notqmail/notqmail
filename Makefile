@@ -1328,9 +1328,9 @@ qmail-newu.8
 	nroff -man qmail-newu.8 > qmail-newu.0
 
 qmail-newu.8: \
-qmail-newu.9 conf-qmail
+qmail-newu.9 conf-qmail-users
 	cat qmail-newu.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILUSERS}"`head -1 conf-qmail-users`"}g \
 	> qmail-newu.8
 
 qmail-newu.o: \
@@ -1390,9 +1390,9 @@ qmail-pw2u.8
 	nroff -man qmail-pw2u.8 > qmail-pw2u.0
 
 qmail-pw2u.8: \
-qmail-pw2u.9 conf-qmail conf-break
+qmail-pw2u.9 conf-qmail-users conf-break
 	cat qmail-pw2u.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILUSERS}"`head -1 conf-qmail-users`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
 	> qmail-pw2u.8
 
@@ -1702,9 +1702,10 @@ qmail-users.5
 	nroff -man qmail-users.5 > qmail-users.0
 
 qmail-users.5: \
-qmail-users.9 conf-qmail-alias
+qmail-users.9 conf-qmail-alias conf-qmail-users
 	cat qmail-users.9 \
 	| sed s}QMAILALIAS}"`head -1 conf-qmail-alias`"}g \
+	| sed s}QMAILUSERS}"`head -1 conf-qmail-users`"}g \
 	> qmail-users.5
 
 qmail.0: \

@@ -3,7 +3,7 @@
 qmail-users \- assign mail addresses to users
 .SH OVERVIEW
 The file
-.B QMAILHOME/users/assign
+.B QMAILUSERS/assign
 assigns addresses to users. For example,
 
 .EX
@@ -28,12 +28,12 @@ deliveries.
 See
 .BR qmail-newu (8).
 A change to
-.B QMAILHOME/users/assign
+.B QMAILUSERS/assign
 will have no effect until
 .B qmail-newu
 is run.
 .SH STRUCTURE
-.B QMAILHOME/users/assign
+.B QMAILUSERS/assign
 is a series of assignments, one per line.
 It ends with a line containing a single dot.
 Lines must not contain NUL.

@@ -142,9 +142,9 @@ main()
 
   sig_pipeignore();
 
-  if (chdir(auto_qmail) == -1) die_home();
+  if (chdir(auto_qmail_control) == -1) die_home();
   if (control_init() == -1) die_control();
-  if (control_readfile(&servers,"control/qmqpservers",0) != 1) die_control();
+  if (control_readfile(&servers,"qmqpservers",0) != 1) die_control();
 
   getmess();
 

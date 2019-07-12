@@ -15,10 +15,10 @@ static int fdmrh;
 
 int rcpthosts_init()
 {
-  flagrh = control_readfile(&rh,"control/rcpthosts",0);
+  flagrh = control_readfile(&rh,"rcpthosts",0);
   if (flagrh != 1) return flagrh;
   if (!constmap_init(&maprh,rh.s,rh.len,0)) return flagrh = -1;
-  fdmrh = open_read("control/morercpthosts.cdb");
+  fdmrh = open_read("morercpthosts.cdb");
   if (fdmrh == -1) if (errno != error_noent) return flagrh = -1;
   return 0;
 }

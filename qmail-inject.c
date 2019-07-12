@@ -644,10 +644,10 @@ void getcontrols()
 
  mft_init();
 
- if (chdir(auto_qmail) == -1) die_chdir();
+ if (chdir(auto_qmail_control) == -1) die_chdir();
  if (control_init() == -1) die_read();
 
- if (control_rldef(&control_defaultdomain,"control/defaultdomain",1,"defaultdomain") != 1)
+ if (control_rldef(&control_defaultdomain,"defaultdomain",1,"defaultdomain") != 1)
    die_read();
  x = env_get("QMAILDEFAULTDOMAIN");
  if (x) if (!stralloc_copys(&control_defaultdomain,x)) die_nomem();
@@ -655,7 +655,7 @@ void getcontrols()
  if (!stralloc_cat(&sa,&control_defaultdomain)) die_nomem();
  doordie(&sa,token822_parse(&defaultdomain,&sa,&defaultdomainbuf));
 
- if (control_rldef(&control_defaulthost,"control/defaulthost",1,"defaulthost") != 1)
+ if (control_rldef(&control_defaulthost,"defaulthost",1,"defaulthost") != 1)
    die_read();
  x = env_get("QMAILDEFAULTHOST");
  if (x) if (!stralloc_copys(&control_defaulthost,x)) die_nomem();
@@ -663,7 +663,7 @@ void getcontrols()
  if (!stralloc_cat(&sa,&control_defaulthost)) die_nomem();
  doordie(&sa,token822_parse(&defaulthost,&sa,&defaulthostbuf));
 
- if (control_rldef(&control_plusdomain,"control/plusdomain",1,"plusdomain") != 1)
+ if (control_rldef(&control_plusdomain,"plusdomain",1,"plusdomain") != 1)
    die_read();
  x = env_get("QMAILPLUSDOMAIN");
  if (x) if (!stralloc_copys(&control_plusdomain,x)) die_nomem();
@@ -671,7 +671,7 @@ void getcontrols()
  if (!stralloc_cat(&sa,&control_plusdomain)) die_nomem();
  doordie(&sa,token822_parse(&plusdomain,&sa,&plusdomainbuf));
 
- if (control_rldef(&control_idhost,"control/idhost",1,"idhost") != 1)
+ if (control_rldef(&control_idhost,"idhost",1,"idhost") != 1)
    die_read();
  x = env_get("QMAILIDHOST");
  if (x) if (!stralloc_copys(&control_idhost,x)) die_nomem();

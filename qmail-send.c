@@ -1442,26 +1442,26 @@ fd_set *rfds;
 /* this file is too long ---------------------------------------------- MAIN */
 
 int getcontrols() { if (control_init() == -1) return 0;
- if (control_readint(&lifetime,"control/queuelifetime") == -1) return 0;
- if (control_readint(&concurrency[0],"control/concurrencylocal") == -1) return 0;
- if (control_readint(&concurrency[1],"control/concurrencyremote") == -1) return 0;
- if (control_rldef(&envnoathost,"control/envnoathost",1,"envnoathost") != 1) return 0;
- if (control_rldef(&bouncefrom,"control/bouncefrom",0,"MAILER-DAEMON") != 1) return 0;
- if (control_rldef(&bouncehost,"control/bouncehost",1,"bouncehost") != 1) return 0;
- if (control_rldef(&doublebouncehost,"control/doublebouncehost",1,"doublebouncehost") != 1) return 0;
- if (control_rldef(&doublebounceto,"control/doublebounceto",0,"postmaster") != 1) return 0;
+ if (control_readint(&lifetime,"queuelifetime") == -1) return 0;
+ if (control_readint(&concurrency[0],"concurrencylocal") == -1) return 0;
+ if (control_readint(&concurrency[1],"concurrencyremote") == -1) return 0;
+ if (control_rldef(&envnoathost,"envnoathost",1,"envnoathost") != 1) return 0;
+ if (control_rldef(&bouncefrom,"bouncefrom",0,"MAILER-DAEMON") != 1) return 0;
+ if (control_rldef(&bouncehost,"bouncehost",1,"bouncehost") != 1) return 0;
+ if (control_rldef(&doublebouncehost,"doublebouncehost",1,"doublebouncehost") != 1) return 0;
+ if (control_rldef(&doublebounceto,"doublebounceto",0,"postmaster") != 1) return 0;
  if (!stralloc_cats(&doublebounceto,"@")) return 0;
  if (!stralloc_cat(&doublebounceto,&doublebouncehost)) return 0;
  if (!stralloc_0(&doublebounceto)) return 0;
- if (control_readfile(&locals,"control/locals",1) != 1) return 0;
+ if (control_readfile(&locals,"locals",1) != 1) return 0;
  if (!constmap_init(&maplocals,locals.s,locals.len,0)) return 0;
- switch(control_readfile(&percenthack,"control/percenthack",0))
+ switch(control_readfile(&percenthack,"percenthack",0))
   {
    case -1: return 0;
    case 0: if (!constmap_init(&mappercenthack,"",0,0)) return 0; break;
    case 1: if (!constmap_init(&mappercenthack,percenthack.s,percenthack.len,0)) return 0; break;
   }
- switch(control_readfile(&vdoms,"control/virtualdomains",0))
+ switch(control_readfile(&vdoms,"virtualdomains",0))
   {
    case -1: return 0;
    case 0: if (!constmap_init(&mapvdoms,"",0,1)) return 0; break;
@@ -1476,11 +1476,11 @@ void regetcontrols()
 {
  int r;
 
- if (control_readfile(&newlocals,"control/locals",1) != 1)
-  { log1("alert: unable to reread control/locals\n"); return; }
- r = control_readfile(&newvdoms,"control/virtualdomains",0);
+ if (control_readfile(&newlocals,"locals",1) != 1)
+  { log1("alert: unable to reread locals\n"); return; }
+ r = control_readfile(&newvdoms,"virtualdomains",0);
  if (r == -1)
-  { log1("alert: unable to reread control/virtualdomains\n"); return; }
+  { log1("alert: unable to reread virtualdomains\n"); return; }
 
  constmap_free(&maplocals);
  constmap_free(&mapvdoms);
@@ -1499,9 +1499,9 @@ void regetcontrols()
 
 void reread()
 {
- if (chdir(auto_qmail) == -1)
+ if (chdir(auto_qmail_control) == -1)
   {
-   log1("alert: unable to reread controls: unable to switch to home directory\n");
+   log1("alert: unable to reread controls: unable to switch to controls directory\n");
    return;
   }
  regetcontrols();
@@ -1522,8 +1522,8 @@ void main()
  struct timeval tv;
  int c;
 
- if (chdir(auto_qmail) == -1)
-  { log1("alert: cannot start: unable to switch to home directory\n"); _exit(111); }
+ if (chdir(auto_qmail_control) == -1)
+  { log1("alert: cannot start: unable to switch to control directory\n"); _exit(111); }
  if (!getcontrols())
   { log1("alert: cannot start: unable to read controls\n"); _exit(111); }
  if (chdir("queue") == -1)

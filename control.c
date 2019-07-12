@@ -30,7 +30,7 @@ stralloc *sa;
 int control_init()
 {
  int r;
- r = control_readline(&me,"control/me");
+ r = control_readline(&me,"me");
  if (r == 1) meok = 1;
  return r;
 }

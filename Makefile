@@ -801,34 +801,48 @@ install:
 	chmod 755 install
 
 instcheck: \
-load instcheck.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o uid.o \
+load instcheck.o instuidgid.o fifo.o hier.o auto_qmail.o auto_qmail_alias.o \
+auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o auto_qmail_doc.o \
+auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o auto_split.o uid.o \
 gid.o auto_usera.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
 auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
-	./load instcheck instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o \
-	uid.o gid.o auto_usera.o auto_usero.o auto_userp.o auto_userq.o \
-	auto_userr.o auto_users.o auto_groupq.o strerr.a substdio.a error.a \
-	str.a fs.a
+	./load instcheck instuidgid.o fifo.o hier.o auto_qmail.o \
+	auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
+	auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o \
+	auto_qmail_queue.o auto_qmail_users.o auto_split.o uid.o gid.o \
+	auto_usera.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
+	auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
 
 instcheck.o: \
 compile instcheck.c strerr.h error.h readwrite.h exit.h
 	./compile instcheck.c
 
 instchown: \
-load instchown.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o uid.o \
+load instchown.o instuidgid.o fifo.o hier.o auto_qmail.o auto_qmail_alias.o \
+auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o auto_qmail_doc.o \
+auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o auto_split.o uid.o \
 gid.o auto_usera.o auto_usero.o auto_userq.o auto_userr.o auto_users.o \
 auto_groupq.o strerr.a substdio.a error.a str.a fs.a
-	./load instchown instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o \
-	uid.o gid.o auto_usera.o auto_usero.o auto_userq.o auto_userr.o \
-	auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
+	./load instchown instuidgid.o fifo.o hier.o auto_qmail.o \
+	auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
+	auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o \
+	auto_qmail_queue.o auto_qmail_users.o auto_split.o uid.o gid.o \
+	auto_usera.o auto_usero.o auto_userq.o auto_userr.o auto_users.o \
+	auto_groupq.o strerr.a substdio.a error.a str.a fs.a
 
 instchown.o: \
 compile instchown.c strerr.h error.h exit.h
 	./compile instchown.c
 
 instpackage: \
-load instpackage.o fifo.o hier.o auto_qmail.o auto_split.o strerr.a \
+load instpackage.o fifo.o hier.o auto_qmail.o auto_qmail_alias.o \
+auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o auto_qmail_doc.o \
+auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o auto_split.o strerr.a \
 substdio.a open.a error.a env.a str.a fs.a stralloc.a alloc.a
-	./load instpackage fifo.o hier.o auto_qmail.o auto_split.o \
+	./load instpackage fifo.o hier.o auto_qmail.o \
+	auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
+	auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o \
+	auto_qmail_queue.o auto_qmail_users.o auto_split.o \
 	strerr.a substdio.a open.a error.a env.a str.a fs.a stralloc.a alloc.a
 
 instpackage.o: \

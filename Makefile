@@ -1702,9 +1702,9 @@ qmail-users.5
 	nroff -man qmail-users.5 > qmail-users.0
 
 qmail-users.5: \
-qmail-users.9 conf-qmail
+qmail-users.9 conf-qmail-alias
 	cat qmail-users.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILALIAS}"`head -1 conf-qmail-alias`"}g \
 	> qmail-users.5
 
 qmail.0: \

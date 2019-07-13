@@ -1215,6 +1215,7 @@ void pass_do()
 
 /* this file is too long ---------------------------------------------- TODO */
 
+#ifndef EXTERNAL_TODO
 datetime_sec nexttodorun;
 DIR *tododir; /* if 0, have to opendir again */
 stralloc todoline = {0};
@@ -1438,6 +1439,143 @@ fd_set *rfds;
    if (fdchan[c] != -1) close(fdchan[c]);
 }
 
+#endif
+
+/* this file is too long ------------------------------------- EXTERNAL TODO */
+
+#ifdef EXTERNAL_TODO
+stralloc todoline = {0};
+char todobuf[2048];
+int todofdin;
+int todofdout;
+int flagtodoalive;
+
+void tododied() { log1("alert: oh no! lost qmail-todo connection! dying...\n");
+ flagexitasap = 1; flagtodoalive = 0; }
+
+void todo_init()
+{
+  todofdout = 7;
+  todofdin = 8;
+  flagtodoalive = 1;
+  /* sync with external todo */
+  if (write(todofdout, "S", 1) != 1) tododied();
+  
+  return;
+}
+
+void todo_selprep(nfds,rfds,wakeup)
+int *nfds;
+fd_set *rfds;
+datetime_sec *wakeup;
+{
+  if (flagexitasap) {
+    if (flagtodoalive) {
+      write(todofdout, "X", 1);
+    }
+  }
+  if (flagtodoalive) {
+    FD_SET(todofdin,rfds);
+    if (*nfds <= todofdin)
+      *nfds = todofdin + 1;
+  }
+}
+
+void todo_del(char* s)
+{
+ int flagchan[CHANNELS];
+ struct prioq_elt pe;
+ unsigned long id;
+ unsigned int len;
+ int c;
+
+ for (c = 0;c < CHANNELS;++c) flagchan[c] = 0;
+ switch(*s++) {
+  case 'L':
+    flagchan[0] = 1;
+    break;
+  case 'R':
+    flagchan[1] = 1;
+    break;
+  case 'B':
+    flagchan[0] = 1;
+    flagchan[1] = 1;
+    break;
+  case 'X':
+    break;
+  default:
+    log1("warning: qmail-send unable to understand qmail-todo\n");
+    return;
+ }
+ 
+ len = scan_ulong(s,&id);
+ if (!len || s[len]) {
+  log1("warning: qmail-send unable to understand qmail-todo\n");
+  return;
+ }
+
+ pe.id = id; pe.dt = now();
+ for (c = 0;c < CHANNELS;++c)
+   if (flagchan[c])
+     while (!prioq_insert(&pqchan[c],&pe)) nomem();
+
+ for (c = 0;c < CHANNELS;++c) if (flagchan[c]) break;
+ if (c == CHANNELS)
+   while (!prioq_insert(&pqdone,&pe)) nomem();
+
+ return;
+}
+
+void todo_do(rfds)
+fd_set *rfds;
+{
+  int r;
+  char ch;
+  int i;
+  
+  if (!flagtodoalive) return;
+  if (!FD_ISSET(todofdin,rfds)) return;
+
+  r = read(todofdin,todobuf,sizeof(todobuf));
+  if (r == -1) return;
+  if (r == 0) {
+    if (flagexitasap)
+      flagtodoalive = 0;
+    else
+      tododied();
+    return;
+  }
+  for (i = 0;i < r;++i) {
+    ch = todobuf[i];
+    while (!stralloc_append(&todoline,&ch)) nomem();
+    if (todoline.len > REPORTMAX)
+      todoline.len = REPORTMAX;
+      /* qmail-todo is responsible for keeping it short */
+    if (!ch && (todoline.len > 1)) {
+      switch (todoline.s[0]) {
+	case 'D':
+	  if (flagexitasap) break;
+	  todo_del(todoline.s + 1);
+	  break;
+	case 'L':
+	  log1(todoline.s + 1);
+	  break;
+	case 'X':
+	  if (flagexitasap)
+	    flagtodoalive = 0;
+	  else
+	    tododied();
+	  break;
+	default:
+	  log1("warning: qmail-send unable to understand qmail-todo: report mangled\n");
+	  break;
+      }
+      todoline.len = 0;
+    }
+  }
+}
+
+#endif
 
 /* this file is too long ---------------------------------------------- MAIN */
 
@@ -1504,6 +1642,9 @@ void reread()
    log1("alert: unable to reread controls: unable to switch to home directory\n");
    return;
   }
+#ifdef EXTERNAL_TODO
+ write(todofdout, "H", 1);
+#endif
  regetcontrols();
  while (chdir("queue") == -1)
   {
@@ -1568,8 +1709,12 @@ void main()
  todo_init();
  cleanup_init();
 
+#ifdef EXTERNAL_TODO
+ while (!flagexitasap || !del_canexit() || flagtodoalive)
+#else
  while (!flagexitasap || !del_canexit())
-  {
+#endif
+ {
    recent = now();
 
    if (flagrunasap) { flagrunasap = 0; pqrun(); }

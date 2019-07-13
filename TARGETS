@@ -91,6 +91,7 @@ substdio.a
 error_str.o
 error_temp.o
 error.a
+errbits.o
 str_chr.o
 str_rchr.o
 str_start.o

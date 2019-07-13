@@ -3,6 +3,8 @@
 
 extern unsigned int byte_chr();
 extern unsigned int byte_rchr();
+extern unsigned int byte_cspn();
+extern unsigned int byte_rcspn();
 extern void byte_copy();
 extern void byte_copyr();
 extern int byte_diff();

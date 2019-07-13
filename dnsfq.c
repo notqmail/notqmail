@@ -5,15 +5,19 @@
 #include "dnsdoe.h"
 #include "ip.h"
 #include "ipalloc.h"
+#include "strsalloc.h"
 #include "exit.h"
 
 stralloc sa = {0};
+strsalloc ssa = {0};
 ipalloc ia = {0};
 
 void main(argc,argv)
 int argc;
 char **argv;
 {
+ int j;
+
  if (!argv[1]) _exit(100);
 
  if (!stralloc_copys(&sa,argv[1]))
@@ -25,8 +29,11 @@ char **argv;
   {
    substdio_putsflush(subfderr,"no IP addresses\n"); _exit(100);
   }
- dnsdoe(dns_ptr(&sa,&ia.ix[0].ip));
- substdio_putflush(subfdout,sa.s,sa.len);
- substdio_putsflush(subfdout,"\n");
+ dnsdoe(dns_ptr(&ssa,&ia.ix[0].ip));
+ for(j = 0;j < ssa.len;++j)
+  {
+   substdio_putflush(subfdout,ssa.sa[j].s,ssa.sa[j].len);
+   substdio_putsflush(subfdout,"\n");
+  }
  _exit(0);
 }

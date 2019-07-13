@@ -136,6 +136,8 @@ dnsfq.c
 dnsip.c
 dnsmxip.c
 dnsptr.c
+dnstxt.c
+spfquery.c
 hostname.c
 ipmeprint.c
 tcp-env.c
@@ -336,13 +338,16 @@ envread.c
 byte.h
 byte_chr.c
 byte_copy.c
+byte_cspn.c
 byte_cr.c
 byte_diff.c
 byte_rchr.c
+byte_rcspn.c
 byte_zero.c
 str.h
 str_chr.c
 str_cpy.c
+str_cpyb.c
 str_diff.c
 str_diffn.c
 str_len.c
@@ -402,6 +407,8 @@ date822fmt.h
 date822fmt.c
 dns.h
 dns.c
+spf.h
+spf.c
 trylsock.c
 tryrsolv.c
 ip.h

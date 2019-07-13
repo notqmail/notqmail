@@ -10,5 +10,6 @@ int dns_cname();
 int dns_mxip();
 int dns_ip();
 int dns_ptr();
+int dns_txt();
 
 #endif

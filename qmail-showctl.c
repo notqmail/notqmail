@@ -15,6 +15,7 @@
 #include "auto_patrn.h"
 #include "auto_spawn.h"
 #include "auto_split.h"
+#include "spf.h"
 
 stralloc me = {0};
 int meok;
@@ -257,6 +258,10 @@ void main()
 
   do_str("smtpgreeting",1,"smtpgreeting","SMTP greeting: 220 ");
   do_lst("smtproutes","No artificial SMTP routes.","SMTP route: ","");
+  do_int("spfbehavior","0","The SPF behavior is ","");
+  do_str("spfexp",0,SPF_DEFEXP,"The SPF default explanation is: 550 ");
+  do_str("spfguess",0,"","The guess SPF rules are: ");
+  do_str("spfrules",0,"","The local SPF rules are: ");
   do_int("timeoutconnect","60","SMTP client connection timeout is "," seconds");
   do_int("timeoutremote","1200","SMTP client data timeout is "," seconds");
   do_int("timeoutsmtpd","1200","SMTP server data timeout is "," seconds");
@@ -292,6 +297,10 @@ void main()
     if (str_equal(d->d_name,"rcpthosts")) continue;
     if (str_equal(d->d_name,"smtpgreeting")) continue;
     if (str_equal(d->d_name,"smtproutes")) continue;
+    if (str_equal(d->d_name,"spfbehavior")) continue;
+    if (str_equal(d->d_name,"spfexp")) continue;
+    if (str_equal(d->d_name,"spfguess")) continue;
+    if (str_equal(d->d_name,"spfrules")) continue;
     if (str_equal(d->d_name,"timeoutconnect")) continue;
     if (str_equal(d->d_name,"timeoutremote")) continue;
     if (str_equal(d->d_name,"timeoutsmtpd")) continue;

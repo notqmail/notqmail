@@ -2,6 +2,7 @@
 #define STR_H
 
 extern unsigned int str_copy();
+extern unsigned int str_copyb();
 extern int str_diff();
 extern int str_diffn();
 extern unsigned int str_len();

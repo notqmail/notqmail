@@ -23,10 +23,12 @@
 #include "timeoutread.h"
 #include "timeoutwrite.h"
 #include "commands.h"
+#include "spf.h"
 
 #define MAXHOPS 100
 unsigned int databytes = 0;
 int timeout = 1200;
+unsigned int spfbehavior = 0;
 
 int safewrite(fd,buf,len) int fd; char *buf; int len;
 {
@@ -61,6 +63,9 @@ void err_qqt() { out("451 qqt failure (#4.3.0)\r\n"); }
 
 
 stralloc greeting = {0};
+stralloc spflocal = {0};
+stralloc spfguess = {0};
+stralloc spfexp = {0};
 
 void smtp_greet(code) char *code;
 {
@@ -122,6 +127,19 @@ void setup()
   if (x) { scan_ulong(x,&u); databytes = u; }
   if (!(databytes + 1)) --databytes;
  
+  if (control_readint(&spfbehavior,"control/spfbehavior") == -1)
+    die_control();
+  x = env_get("SPFBEHAVIOR");
+  if (x) { scan_ulong(x,&u); spfbehavior = u; }
+
+  if (control_readline(&spflocal,"control/spfrules") == -1) die_control();
+  if (spflocal.len && !stralloc_0(&spflocal)) die_nomem();
+  if (control_readline(&spfguess,"control/spfguess") == -1) die_control();
+  if (spfguess.len && !stralloc_0(&spfguess)) die_nomem();
+  if (control_rldef(&spfexp,"control/spfexp",0,SPF_DEFEXP) == -1)
+    die_control();
+  if (!stralloc_0(&spfexp)) die_nomem();
+
   remoteip = env_get("TCPREMOTEIP");
   if (!remoteip) remoteip = "unknown";
   local = env_get("TCPLOCALHOST");
@@ -219,6 +237,8 @@ int addrallowed()
 
 int seenmail = 0;
 int flagbarf; /* defined if seenmail */
+int flagbarfspf;
+stralloc spfbarfmsg = {0};
 stralloc mailfrom = {0};
 stralloc rcptto = {0};
 
@@ -237,20 +257,79 @@ void smtp_rset(arg) char *arg;
   seenmail = 0;
   out("250 flushed\r\n");
 }
+
 void smtp_mail(arg) char *arg;
 {
+  int r;
+
   if (!addrparse(arg)) { err_syntax(); return; }
   flagbarf = bmfcheck();
+  flagbarfspf = 0;
+  if (spfbehavior && !relayclient)
+   { 
+    switch(r = spfcheck()) {
+    case SPF_OK: env_put2("SPFRESULT","pass"); break;
+    case SPF_NONE: env_put2("SPFRESULT","none"); break;
+    case SPF_UNKNOWN: env_put2("SPFRESULT","unknown"); break;
+    case SPF_NEUTRAL: env_put2("SPFRESULT","neutral"); break;
+    case SPF_SOFTFAIL: env_put2("SPFRESULT","softfail"); break;
+    case SPF_FAIL: env_put2("SPFRESULT","fail"); break;
+    case SPF_ERROR: env_put2("SPFRESULT","error"); break;
+    }
+    switch (r) {
+    case SPF_NOMEM:
+      die_nomem();
+    case SPF_ERROR:
+      if (spfbehavior < 2) break;
+      out("451 SPF lookup failure (#4.3.0)\r\n");
+      return;
+    case SPF_NONE:
+    case SPF_UNKNOWN:
+      if (spfbehavior < 6) break;
+    case SPF_NEUTRAL:
+      if (spfbehavior < 5) break;
+    case SPF_SOFTFAIL:
+      if (spfbehavior < 4) break;
+    case SPF_FAIL:
+      if (spfbehavior < 3) break;
+      if (!spfexplanation(&spfbarfmsg)) die_nomem();
+      if (!stralloc_0(&spfbarfmsg)) die_nomem();
+      flagbarfspf = 1;
+    }
+   } 
+  else
+   env_unset("SPFRESULT");
   seenmail = 1;
   if (!stralloc_copys(&rcptto,"")) die_nomem();
   if (!stralloc_copys(&mailfrom,addr.s)) die_nomem();
   if (!stralloc_0(&mailfrom)) die_nomem();
   out("250 ok\r\n");
 }
+
+void err_spf() {
+  int i,j;
+
+  for(i = 0; i < spfbarfmsg.len; i = j + 1) {
+    j = byte_chr(spfbarfmsg.s + i, spfbarfmsg.len - i, '\n') + i;
+    if (j < spfbarfmsg.len) {
+      out("550-");
+      spfbarfmsg.s[j] = 0;
+      out(spfbarfmsg.s);
+      spfbarfmsg.s[j] = '\n';
+      out("\r\n");
+    } else {
+      out("550 ");
+      out(spfbarfmsg.s);
+      out(" (#5.7.1)\r\n");
+    }
+  }
+}
+
 void smtp_rcpt(arg) char *arg; {
   if (!seenmail) { err_wantmail(); return; }
   if (!addrparse(arg)) { err_syntax(); return; }
   if (flagbarf) { err_bmf(); return; }
+  if (flagbarfspf) { err_spf(); return; }
   if (relayclient) {
     --addr.len;
     if (!stralloc_cats(&addr,relayclient)) die_nomem();
@@ -351,6 +430,25 @@ int *hops;
   }
 }
 
+void spfreceived()
+{
+  stralloc sa = {0};
+  stralloc rcvd_spf = {0};
+
+  if (!spfbehavior || relayclient) return;
+
+  if (!stralloc_copys(&rcvd_spf, "Received-SPF: ")) die_nomem();
+  if (!spfinfo(&sa)) die_nomem();
+  if (!stralloc_cat(&rcvd_spf, &sa)) die_nomem();
+  if (!stralloc_append(&rcvd_spf, "\n")) die_nomem();
+  if (bytestooverflow) {
+    bytestooverflow -= rcvd_spf.len;
+    if (bytestooverflow <= 0) qmail_fail(&qqt);
+  }
+  qmail_put(&qqt,rcvd_spf.s,rcvd_spf.len);
+}
+
+
 char accept_buf[FMT_ULONG];
 void acceptmessage(qp) unsigned long qp;
 {
@@ -379,6 +477,7 @@ void smtp_data(arg) char *arg; {
   out("354 go ahead\r\n");
  
   received(&qqt,"SMTP",local,remoteip,remotehost,remoteinfo,fakehelo);
+  spfreceived();
   blast(&hops);
   hops = (hops >= MAXHOPS);
   if (hops) qmail_fail(&qqt);

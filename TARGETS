@@ -91,11 +91,14 @@ substdio.a
 error_str.o
 error_temp.o
 error.a
+str_cpyb.o
 str_chr.o
 str_rchr.o
 str_start.o
 byte_chr.o
 byte_rchr.o
+byte_cspn.o
+byte_rcspn.o
 byte_copy.o
 byte_cr.o
 byte_zero.o
@@ -171,8 +174,10 @@ timeoutwrite.o
 timeoutconn.o
 tcpto.o
 dns.o
+spf.o
 ip.o
 ipalloc.o
+strsalloc.o
 hassalen.h
 ipme.o
 ndelay.o
@@ -212,6 +217,9 @@ qmail-inject.o
 headerbody.o
 hfield.o
 token822.o
+spf.o
+spfquery.o
+spfquery
 qmail-inject
 predate.o
 predate
@@ -266,6 +274,8 @@ dnsptr.o
 dnsptr
 dnsip.o
 dnsip
+dnstxt.o
+dnstxt
 dnsfq.o
 dnsfq
 hostname.o

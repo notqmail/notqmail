@@ -14,6 +14,7 @@ extern int res_query();
 extern int res_search();
 #include "ip.h"
 #include "ipalloc.h"
+#include "strsalloc.h"
 #include "fmt.h"
 #include "alloc.h"
 #include "str.h"
@@ -35,6 +36,7 @@ static unsigned long saveresoptions;
 static int numanswers;
 static char name[MAXDNAME];
 static struct ip_address ip;
+static stralloc txt = {0};
 unsigned short pref;
 
 static stralloc glue = {0};
@@ -205,6 +207,49 @@ int wanttype;
  return 0;
 }
 
+static int findtxt(wanttype)
+int wanttype;
+{
+ unsigned short rrtype;
+ unsigned short rrdlen;
+ int i;
+
+ if (numanswers <= 0) return 2;
+ --numanswers;
+ if (responsepos == responseend) return DNS_SOFT;
+
+ i = dn_expand(response.buf,responseend,responsepos,name,MAXDNAME);
+ if (i < 0) return DNS_SOFT;
+ responsepos += i;
+
+ i = responseend - responsepos;
+ if (i < 4 + 3 * 2) return DNS_SOFT;
+   
+ rrtype = getshort(responsepos);
+ rrdlen = getshort(responsepos + 8);
+ responsepos += 10;
+
+ if (rrtype == wanttype)
+  {
+   unsigned short txtpos;
+   unsigned char txtlen;
+
+   txt.len = 0;
+   for (txtpos = 0;txtpos < rrdlen;txtpos += txtlen)
+    {
+     txtlen = responsepos[txtpos++];
+     if (txtlen > rrdlen-txtpos) txtlen = rrdlen-txtpos;
+     if (!stralloc_catb(&txt,&responsepos[txtpos],txtlen)) return DNS_MEM;
+    }
+
+   responsepos += rrdlen;
+   return 1;
+ }
+
+ responsepos += rrdlen;
+ return 0;
+}
+
 void dns_init(flagsearch)
 int flagsearch;
 {
@@ -230,13 +275,16 @@ static int iaafmt(char *s, struct ip_address *ipa)
  return len;
 }
 
-int dns_ptr(stralloc *sa, struct ip_address *ipa)
+static int dns_ptrplus(strsalloc *ssa, struct ip_address *ipa)
 {
+ stralloc sa = {0};
  int r;
 
- if (!stralloc_ready(sa,iaafmt(NULL,ipa))) return DNS_MEM;
- sa->len = iaafmt(sa->s,ipa);
- switch(resolve(sa,T_PTR))
+ if (!stralloc_ready(&sa,iaafmt(NULL,ipa))) return DNS_MEM;
+ sa.len = iaafmt(sa.s,ipa);
+ r = resolve(&sa,T_PTR);
+ free(sa.s);
+ switch(r)
   {
    case DNS_MEM: return DNS_MEM;
    case DNS_SOFT: return DNS_SOFT;
@@ -247,11 +295,30 @@ int dns_ptr(stralloc *sa, struct ip_address *ipa)
    if (r == DNS_SOFT) return DNS_SOFT;
    if (r == 1)
     {
-     if (!stralloc_copys(sa,name)) return DNS_MEM;
-     return 0;
+     stralloc sa2 = {0};
+     if (!stralloc_copys(&sa2,name)) return DNS_MEM;
+     if (!strsalloc_append(ssa,&sa2)) return DNS_MEM;
     }
   }
+ if (ssa->len) return 0;
  return DNS_HARD;
+}
+
+int dns_ptr(strsalloc *ssa, struct ip_address *ipa)
+{
+ int r;
+ int j;
+
+ if (!strsalloc_readyplus(ssa,0)) return DNS_MEM;
+ ssa->len = 0;
+ r = dns_ptrplus(ssa,ipa);
+ if (r < 0)
+  {
+   for (j = 0;j < ssa->len;++j)
+    alloc_free(ssa->sa[j].s);
+   ssa->len = 0;
+  }
+ return r;
 }
 
 static int dns_ipplus(ipalloc *ia, stralloc *sa, int dpref)
@@ -385,4 +452,50 @@ unsigned long random;
 
  alloc_free(mx);
  return flagsoft;
+}
+
+
+static int dns_txtplus(ssa,sa)
+strsalloc *ssa;
+stralloc *sa;
+{
+ int r;
+
+ switch(resolve(sa,T_TXT)) 
+  {
+   case DNS_MEM: return DNS_MEM;
+   case DNS_SOFT: return DNS_SOFT;
+   case DNS_HARD: return DNS_HARD;
+  }
+ while ((r = findtxt(T_TXT)) != 2)
+  {
+   if (r == DNS_SOFT) return DNS_SOFT;
+   if (r == 1)
+    {
+     stralloc sa = {0};
+     if (!stralloc_copy(&sa,&txt)) return DNS_MEM;
+     if (!strsalloc_append(ssa,&sa)) return DNS_MEM;
+    }
+  }
+ if (ssa->len) return 0;
+ return DNS_HARD;
+}
+
+int dns_txt(ssa,sa)
+strsalloc *ssa;
+stralloc *sa;
+{
+ int r;
+ int j;
+
+ if (!strsalloc_readyplus(ssa,0)) return DNS_MEM;
+ ssa->len = 0;
+ r = dns_txtplus(ssa,sa);
+ if (r < 0)
+  {
+   for (j = 0;j < ssa->len;++j)
+    alloc_free(ssa->sa[j].s);
+   ssa->len = 0;
+  }
+ return r;
 }

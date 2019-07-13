@@ -9,5 +9,6 @@ void dns_init();
 int dns_mxip();
 int dns_ip();
 int dns_ptr();
+int dns_txt();
 
 #endif

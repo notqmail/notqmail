@@ -11,6 +11,7 @@
 #include "scan.h"
 #include "subgetopt.h"
 #include "ip.h"
+#include "strsalloc.h"
 #include "dns.h"
 #include "byte.h"
 #include "remoteinfo.h"
@@ -33,6 +34,7 @@ char temp[IPFMT + FMT_ULONG];
 
 int main(int argc, char **argv)
 {
+ strsalloc ssa = {0};
  unsigned int dummy;
  char *proto;
  int opt;
@@ -73,12 +75,13 @@ int main(int argc, char **argv)
    temp[ip_fmt(temp,&iplocal)] = 0;
    if (!env_put2("TCPLOCALIP",temp)) die();
 
-   switch(dns_ptr(&localname,&iplocal))
+   switch(dns_ptr(&ssa,&iplocal))
     {
      case DNS_MEM: die();
      case DNS_SOFT:
        if (!stralloc_copys(&localname,"softdnserror")) die();
      case 0:
+       if (!stralloc_copy(&localname,&ssa.sa[0])) die();
        if (!stralloc_0(&localname)) die();
        case_lowers(localname.s);
        if (!env_put2("TCPLOCALHOST",localname.s)) die();
@@ -98,12 +101,13 @@ int main(int argc, char **argv)
    temp[ip_fmt(temp,&ipremote)] = 0;
    if (!env_put2("TCPREMOTEIP",temp)) die();
 
-   switch(dns_ptr(&remotename,&ipremote))
+   switch(dns_ptr(&ssa,&ipremote))
     {
      case DNS_MEM: die();
      case DNS_SOFT:
        if (!stralloc_copys(&remotename,"softdnserror")) die();
      case 0:
+       if (!stralloc_copy(&remotename,&ssa.sa[0])) die();
        if (!stralloc_0(&remotename)) die();
        case_lowers(remotename.s);
        if (!env_put2("TCPREMOTEHOST",remotename.s)) die();

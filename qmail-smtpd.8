@@ -169,6 +169,41 @@ Number of seconds
 .B qmail-smtpd
 will wait for each new buffer of data from the remote SMTP client.
 Default: 1200.
+.TP 5
+.I spfbehavior
+Set to a value between 1 and 6 to enable SPF checks; 0 to disable.
+1 selects 'annotate-only' mode, where
+.B qmail-smtpd
+will annotate incoming email with
+.B Received-SPF
+fields, but will not reject any messages.  2 will produce temporary
+failures on DNS lookup problems so you can make sure you always have
+meaningful Received-SPF headers.  3 selects 'reject' mode,
+where incoming mail will be rejected if the SPF record says 'fail'.  4
+selects a more stricter rejection mode, which is like 'reject' mode,
+except that incoming mail will also be rejected when the SPF record
+says 'softfail'.  5 will also reject when the SPF record says 'neutral',
+and 6 if no SPF records are available at all (or a syntax error was
+encountered). The contents of this file are overridden by the value of
+the
+.B SPFBEHAVIOR
+environment variable, if set.
+Default: 0.
+.TP 5
+.I spfexp
+You can add a line with a an SPF explanation that will be shown to the
+sender in case of a reject. It will override the default one. You can
+use SPF macro expansion.
+.TP 5
+.I spfguess
+You can add a line with SPF rules that will be checked if a sender
+domain doesn't have a SPF record. The local rules will also be used
+in this case.
+.TP 5
+.I spfrules
+You can add a line with SPF rules that will be checked before other SPF
+rules would fail.  This can be used to always allow certain machines to
+send certain mails.
 .SH "SEE ALSO"
 tcp-env(1),
 tcp-environ(5),

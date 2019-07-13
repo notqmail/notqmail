@@ -507,7 +507,6 @@ struct commands smtpcommands[] = {
 int main(void)
 {
   sig_pipeignore();
-  /* esetfd(2); Errors default to FD2 (stderr), change here if needed */
   if (chdir(auto_qmail) == -1) die_control();
   setup();
   if (ipme_init() != 1) die_ipme();

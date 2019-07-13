@@ -500,7 +500,7 @@ compile envread.c env.h str.h
 	./compile envread.c
 
 errbits.o: \
-compile errbits.c errbits.h stralloc.h gen_alloc.h fmt.h exit.h
+compile errbits.c stralloc.h readwrite.h errbits.h substdio.h fmt.h exit.h
 	./compile errbits.c
 
 error.a: \
@@ -1467,7 +1467,7 @@ compile qmail-smtpd.c sig.h readwrite.h stralloc.h gen_alloc.h \
 substdio.h alloc.h auto_qmail.h control.h received.h constmap.h \
 error.h ipme.h ip.h ipalloc.h ip.h gen_alloc.h ip.h qmail.h \
 substdio.h str.h fmt.h scan.h byte.h case.h env.h now.h datetime.h \
-exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h
+exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h errbits.h
 	./compile qmail-smtpd.c
 
 qmail-start: \

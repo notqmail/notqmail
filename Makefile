@@ -1360,7 +1360,7 @@ ndelay.a case.a sig.a open.a lock.a getln.a stralloc.a \
 substdio.a error.a str.a fs.a auto_qmail.o dns.lib socket.lib
 	./load qmail-remote control.o constmap.o timeoutread.o \
 	timeoutwrite.o timeoutconn.o tcpto.o dns.o ip.o \
-	tls.o ssl_timeoutio.o -L/usr/local/ssl/lib -lssl -lcrypto \
+	tls.o ssl_timeoutio.o -lssl -lcrypto \
 	ipalloc.o ipme.o quote.o ndelay.a case.a sig.a open.a \
 	lock.a getln.a stralloc.a substdio.a error.a \
 	str.a fs.a auto_qmail.o  `cat dns.lib` `cat socket.lib`
@@ -1458,7 +1458,7 @@ open.a sig.a case.a env.a stralloc.a substdio.a error.a str.a \
 fs.a auto_qmail.o socket.lib
 	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
-	tls.o ssl_timeoutio.o ndelay.a -L/usr/local/ssl/lib -lssl -lcrypto \
+	tls.o ssl_timeoutio.o ndelay.a -lssl -lcrypto \
 	received.o date822fmt.o qmail.o cdb.a fd.a wait.a \
 	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
 	substdio.a error.a str.a fs.a auto_qmail.o  `cat \

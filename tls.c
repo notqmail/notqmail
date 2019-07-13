@@ -1,4 +1,3 @@
-#ifdef TLS
 #include "exit.h"
 #include "error.h"
 #include <openssl/ssl.h>
@@ -24,4 +23,3 @@ const char *ssl_error_str()
   if (!errno) return 0;
   return (errno == error_timeout) ? "timed out" : error_str(errno);
 }
-#endif

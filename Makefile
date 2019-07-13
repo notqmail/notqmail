@@ -184,14 +184,6 @@ base64.o: \
 compile base64.c base64.h stralloc.h substdio.h str.h
 	./compile base64.c
 
-md5c.o : \
-compile md5c.c md5.h
-	./compile md5c.c
-
-hmac_md5.o : \
-compile hmac_md5.c hmac_md5.h global.h
-	./compile hmac_md5.c
-
 binm1: \
 binm1.sh conf-qmail
 	cat binm1.sh \
@@ -684,6 +676,10 @@ hier.o: \
 compile hier.c auto_qmail.h auto_split.h auto_uids.h fmt.h fifo.h hier.h
 	./compile hier.c
 
+hmac_md5.o : \
+compile hmac_md5.c hmac_md5.h global.h
+	./compile hmac_md5.c
+
 home: \
 home.sh conf-qmail
 	cat home.sh \
@@ -896,6 +892,10 @@ envelopes.0 forgeries.0
 
 mbox.0: \
 mbox.5
+
+md5c.o : \
+compile md5c.c md5.h
+	./compile md5c.c
 
 myctime.o: \
 compile myctime.c datetime.h fmt.h myctime.h

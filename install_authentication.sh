@@ -15,7 +15,7 @@
 #
 # Return Codes: 0 - Patches applied successfully
 #		1 - Original QMAIL files not found (Patch not extracted in QMAIL source directory)
-#		2 - Patch files not found 
+#		2 - Patch files not found
 #
 # Output:	install_auth.log
 #
@@ -40,7 +40,7 @@ BUILD=20150823180830
 
 if [ $# -eq 0 ] ; then
 
-	echo "Installing qmail AUTH $REL (Build $BUILD) at $DATE <<<" | tee -a $LOGFILE 2>&1 
+	echo "Installing qmail AUTH $REL (Build $BUILD) at $DATE <<<" | tee -a $LOGFILE 2>&1
 
 	for FILE in $(grep "^= " ${TARGETS} | awk '{print $2}'); do
 		echo "Targeting file $FILE ..." | tee -a $LOGFILE 2>&1
@@ -63,27 +63,27 @@ if [ $# -eq 0 ] ; then
 			echo "!! ${FILE}.patch not found !"
 			exit 2
 		fi
-	done 
+	done
 
 
-	echo "Copying documentation and samples to ${QMAILHOME}/doc/ ..." | tee -a $LOGFILE 2>&1 
+	echo "Copying documentation and samples to ${QMAILHOME}/doc/ ..." | tee -a $LOGFILE 2>&1
 
 	cp README.auth* ${QMAILHOME}/doc/ | tee -a $LOGFILE 2>&1
 	echo ""
 	echo "If you dont wont CRAM-MD5 suport disable '#define CRAM_MD5' in qmail-smtpd !"
-	echo "Installation of qmail authentication $REL (Build $BUILD) finished at $DATE <<<" | tee -a $LOGFILE 2>&1 
+	echo "Installation of qmail authentication $REL (Build $BUILD) finished at $DATE <<<" | tee -a $LOGFILE 2>&1
 
 # Now go for the uninstallation....
 
 elif [ "$1" = "-u" ] ; then
 
-# Get the Version Number from INPUT 
+# Get the Version Number from INPUT
 
 	if [ $# -eq 2 ] ; then
 		REL=$2
 	fi
 
-	echo "De-installing qmail authentication $REL (Build $BUILD) at $DATE <<<" | tee -a $LOGFILE 2>&1 
+	echo "De-installing qmail authentication $REL (Build $BUILD) at $DATE <<<" | tee -a $LOGFILE 2>&1
 
 	for FILE in $(grep "^= " ${TARGETS} | awk '{print $2}'); do
 		echo "Targeting file $FILE ..." | tee -a $LOGFILE 2>&1
@@ -95,7 +95,7 @@ elif [ "$1" = "-u" ] ; then
 			echo "!! ${FILE}.$REL not found !"
 		fi
 	done
-	echo "De-installation of qmail authentication $REL (Build $BUILD) finished at $DATE <<<" | tee -a $LOGFILE 2>&1 
+	echo "De-installation of qmail authentication $REL (Build $BUILD) finished at $DATE <<<" | tee -a $LOGFILE 2>&1
 fi
 
 exit 0

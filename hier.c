@@ -77,6 +77,7 @@ void hier()
 
   c(auto_qmail,"doc","FAQ",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","UPGRADE",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","EXTTODO",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","SENDMAIL",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","INSTALL",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","INSTALL.alias",auto_uido,auto_gidq,0644);
@@ -108,9 +109,7 @@ void hier()
   c(auto_qmail,"bin","qmail-rspawn",auto_uido,auto_gidq,0711);
   c(auto_qmail,"bin","qmail-clean",auto_uido,auto_gidq,0711);
   c(auto_qmail,"bin","qmail-send",auto_uido,auto_gidq,0711);
-#ifdef EXTERNAL_TODO
   c(auto_qmail,"bin","qmail-todo",auto_uido,auto_gidq,0711);
-#endif
   c(auto_qmail,"bin","splogger",auto_uido,auto_gidq,0711);
   c(auto_qmail,"bin","qmail-newu",auto_uido,auto_gidq,0700);
   c(auto_qmail,"bin","qmail-newmrh",auto_uido,auto_gidq,0700);

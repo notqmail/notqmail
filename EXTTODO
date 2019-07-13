@@ -1,4 +1,4 @@
-EXTTODO by Claudio Jeker <jeker@n-r-g.com> and 
+EXTTODO by Claudio Jeker <jeker@n-r-g.com> and
 Andre Oppermann <opi@nrg4u.com>
 (c) 1998,1999,2000,2001,2002 Internet Business Solutions Ltd.
 
@@ -20,7 +20,7 @@ TOC:
  BIG PICTURE
 
 NEWS:
- 
+
  This is the first release of the EXTTODO patch.
 
 ================================================================================
@@ -30,36 +30,28 @@ WHAT DOES IT DO
  The exttodo patch addresses a problem known as the silly qmail (queue)
  problem. This problem is found only on system with high injection rates.
 
- qmail with a big local and remote concurrency could deliver a tremendous 
+ qmail with a big local and remote concurrency could deliver a tremendous
  amount of messages but normally this can not be achieved because qmail-send
  becomes a bottleneck on those high volumes servers.
  qmail-send preprocesses all new messages before distributing them for local
- or remote delivering. In one run qmail-send does one todo run but has the 
- ability to close multiple jobs. Because of this layout qmail-send can not 
- feed all the new available (local/remote) delivery slots and therefor it is 
+ or remote delivering. In one run qmail-send does one todo run but has the
+ ability to close multiple jobs. Because of this layout qmail-send can not
+ feed all the new available (local/remote) delivery slots and therefor it is
  not possible to achieve the maximum throughput.
  This would be a minor problem if one qmail-send run could be done in extreme
  short time but because of many file system calls (fsync and (un)link) a todo
  run is expensive and throttles the throughput.
 
- The exttodo patch tries to solve the problem by moving the todo routine into 
+ The exttodo patch tries to solve the problem by moving the todo routine into
  an external program. This reduces the run time in qmail-send.
 
  exttodo adds a new program to qmail called qmail-todo. qmail-todo prepares
  incoming messages for local and remote delivering (by creating info/<messid>
  local/<messid> and remote/<messid> and removing todo/<messid>). See also
  INTERNALS. As next qmail-todo transmits the <messid> to qmail-send which will
- add this message into the priority queue which schedules the message for 
- delivery. 
+ add this message into the priority queue which schedules the message for
+ delivery.
 
-INSTALL
-
- To enable the exttodo patch you need to define EXTERNAL_TODO while compiling
- qmail(-ldap) this can be done with the -D flag of cc (e.g. cc -DEXTERNAL_TODO).
-
- NOTE: the exttodo patch can also be used on qmail systems without the 
- qmail-ldap patch.
- 
 ================================================================================
 
 CONFIG FILES

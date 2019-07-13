@@ -1,7 +1,5 @@
 # Don't edit Makefile! Use conf-* for configuration.
 
-DEFINES=-DEXTERNAL_TODO # use to enable external todo
-
 SHELL=/bin/sh
 
 default: it
@@ -705,7 +703,7 @@ compile hfield.c hfield.h
 
 hier.o: \
 compile hier.c auto_qmail.h auto_split.h auto_uids.h fmt.h fifo.h
-	./compile $(DEFINES) hier.c
+	./compile hier.c
 
 home: \
 home.sh conf-qmail
@@ -757,7 +755,7 @@ auto_uids.o strerr.a substdio.a open.a error.a str.a fs.a
 install-big.o: \
 compile install-big.c auto_qmail.h auto_split.h auto_uids.h fmt.h \
 fifo.h
-	./compile $(DEFINES) install-big.c
+	./compile install-big.c
 
 install.o: \
 compile install.c substdio.h strerr.h error.h open.h readwrite.h \
@@ -1511,7 +1509,7 @@ substdio.h alloc.h error.h stralloc.h gen_alloc.h str.h byte.h fmt.h \
 scan.h case.h auto_qmail.h trigger.h newfield.h stralloc.h quote.h \
 qmail.h substdio.h qsutil.h prioq.h datetime.h gen_alloc.h constmap.h \
 fmtqfn.h readsubdir.h direntry.h
-	./compile $(DEFINES) qmail-send.c
+	./compile qmail-send.c
 
 qmail-showctl: \
 load qmail-showctl.o auto_uids.o control.o open.a getln.a stralloc.a \
@@ -1576,7 +1574,7 @@ qmail-start.9 conf-break conf-spawn
 
 qmail-start.o: \
 compile qmail-start.c fd.h prot.h exit.h fork.h auto_uids.h
-	./compile $(DEFINES) qmail-start.c
+	./compile qmail-start.c
 
 qmail-tcpok: \
 load qmail-tcpok.o open.a lock.a strerr.a substdio.a error.a str.a \
@@ -1620,7 +1618,7 @@ qmail-todo.o: \
 compile alloc.h auto_qmail.h byte.h constmap.h control.h direntry.h error.h \
 exit.h fmt.h fmtqfn.h getln.h open.h ndelay.h now.h readsubdir.h readwrite.h \
 scan.h select.h str.h stralloc.h substdio.h trigger.h
-	./compile $(DEFINES) qmail-todo.c
+	./compile qmail-todo.c
 
 qmail-upq: \
 warn-auto.sh qmail-upq.sh conf-qmail conf-break conf-split

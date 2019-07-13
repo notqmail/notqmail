@@ -66,7 +66,7 @@ void pausedir(dir) char *dir;
 { log3("alert: unable to opendir ",dir,", sleeping...\n"); sleep(10); }
 
 void cleandied()
-{ 
+{
   log1("alert: qmail-todo: oh no! lost qmail-clean connection! dying...\n");
   flagstopasap = 1;
 }
@@ -137,7 +137,7 @@ int rewrite(char *recip)
         if (!stralloc_0(&rwline)) return 0;
         return 1;
       }
- 
+
   if (!stralloc_cat(&rwline,&addr)) return 0;
   if (!stralloc_0(&rwline)) return 0;
   return 2;
@@ -178,13 +178,13 @@ int comm_canwrite(void)
 void log1(char* x)
 {
   int pos;
-  
+
   pos = comm_buf.len;
   if (!stralloc_cats(&comm_buf,"L")) goto fail;
   if (!stralloc_cats(&comm_buf,x)) goto fail;
   if (!stralloc_0(&comm_buf)) goto fail;
   return;
-  
+
 fail:
   /* either all or nothing */
   comm_buf.len = pos;
@@ -193,7 +193,7 @@ fail:
 void log3(char* x, char *y, char *z)
 {
   int pos;
-  
+
   pos = comm_buf.len;
   if (!stralloc_cats(&comm_buf,"L")) goto fail;
   if (!stralloc_cats(&comm_buf,x)) goto fail;
@@ -201,7 +201,7 @@ void log3(char* x, char *y, char *z)
   if (!stralloc_cats(&comm_buf,z)) goto fail;
   if (!stralloc_0(&comm_buf)) goto fail;
   return;
-  
+
 fail:
   /* either all or nothing */
   comm_buf.len = pos;
@@ -211,12 +211,12 @@ void comm_write(unsigned long id, int local, int remote)
 {
   int pos;
   char *s;
-  
+
   if(local && remote) s="B";
   else if(local) s="L";
   else if(remote) s="R";
   else s="X";
-  
+
   pos = comm_buf.len;
   strnum[fmt_ulong(strnum,id)] = 0;
   if (!stralloc_cats(&comm_buf,"D")) goto fail;
@@ -224,7 +224,7 @@ void comm_write(unsigned long id, int local, int remote)
   if (!stralloc_cats(&comm_buf,strnum)) goto fail;
   if (!stralloc_0(&comm_buf)) goto fail;
   return;
-  
+
 fail:
   /* either all or nothing */
   comm_buf.len = pos;
@@ -242,7 +242,7 @@ void comm_info(unsigned long id, unsigned long size, char* from, unsigned long p
 {
   int pos;
   int i;
-  
+
   pos = comm_buf.len;
   if (!stralloc_cats(&comm_buf,"Linfo msg ")) goto fail;
   strnum[fmt_ulong(strnum,id)] = 0;
@@ -268,7 +268,7 @@ void comm_info(unsigned long id, unsigned long size, char* from, unsigned long p
   if (!stralloc_cats(&comm_buf,"\n")) goto fail;
   if (!stralloc_0(&comm_buf)) goto fail;
   return;
-  
+
 fail:
   /* either all or nothing */
   comm_buf.len = pos;
@@ -277,7 +277,7 @@ fail:
 void comm_exit(void)
 {
   int w;
-  
+
   /* if it fails exit, we have already stoped */
   if (!stralloc_cats(&comm_buf,"X")) _exit(1);
   if (!stralloc_0(&comm_buf)) _exit(1);
@@ -540,9 +540,9 @@ void todo_do(fd_set *rfds)
   }
 
  comm_write(id, flagchan[0], flagchan[1]);
- 
+
  return;
- 
+
  fail:
  if (fd != -1) close(fd);
  if (fdinfo != -1) close(fdinfo);
@@ -639,13 +639,13 @@ void main()
 
  todo_init();
  comm_init();
- 
+
  do {
    r = read(fdin, &c, 1);
    if ((r == -1) && (errno != error_intr))
      _exit(100); /* read failed probably qmail-send died */
  } while (r =! 1); /* we assume it is a 'S' */
- 
+
  for (;;)
   {
    recent = now();

@@ -1443,7 +1443,6 @@ fd_set *rfds;
 
 /* this file is too long ------------------------------------- EXTERNAL TODO */
 
-#ifdef EXTERNAL_TODO
 stralloc todoline = {0};
 char todobuf[2048];
 int todofdin;
@@ -1460,7 +1459,7 @@ void todo_init()
   flagtodoalive = 1;
   /* sync with external todo */
   if (write(todofdout, "S", 1) != 1) tododied();
-  
+
   return;
 }
 
@@ -1507,7 +1506,7 @@ void todo_del(char* s)
     log1("warning: qmail-send unable to understand qmail-todo\n");
     return;
  }
- 
+
  len = scan_ulong(s,&id);
  if (!len || s[len]) {
   log1("warning: qmail-send unable to understand qmail-todo\n");
@@ -1532,7 +1531,7 @@ fd_set *rfds;
   int r;
   char ch;
   int i;
-  
+
   if (!flagtodoalive) return;
   if (!FD_ISSET(todofdin,rfds)) return;
 
@@ -1575,7 +1574,6 @@ fd_set *rfds;
   }
 }
 
-#endif
 
 /* this file is too long ---------------------------------------------- MAIN */
 
@@ -1642,9 +1640,7 @@ void reread()
    log1("alert: unable to reread controls: unable to switch to home directory\n");
    return;
   }
-#ifdef EXTERNAL_TODO
  write(todofdout, "H", 1);
-#endif
  regetcontrols();
  while (chdir("queue") == -1)
   {
@@ -1709,12 +1705,8 @@ void main()
  todo_init();
  cleanup_init();
 
-#ifdef EXTERNAL_TODO
  while (!flagexitasap || !del_canexit() || flagtodoalive)
-#else
- while (!flagexitasap || !del_canexit())
-#endif
- {
+  {
    recent = now();
 
    if (flagrunasap) { flagrunasap = 0; pqrun(); }

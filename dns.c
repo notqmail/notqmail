@@ -197,7 +197,7 @@ stralloc *sa;
    if (!sa->len) return loop;
    if (sa->s[sa->len - 1] == ']') return loop;
    if (sa->s[sa->len - 1] == '.') { --sa->len; continue; }
-   switch(resolve(sa,T_ANY))
+   switch(resolve(sa,T_CNAME))
     {
      case DNS_MEM: return DNS_MEM;
      case DNS_SOFT: return DNS_SOFT;

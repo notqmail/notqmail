@@ -37,6 +37,8 @@ void hier_queue()
   d(auto_qmail,"queue/bounce",auto_uids,auto_gidq,0700);
 
   dsplit("queue/mess",auto_uidq,0750);
+  dsplit("queue/todo",auto_uidq,0750);
+  dsplit("queue/intd",auto_uidq,0700);
   dsplit("queue/info",auto_uids,0700);
   dsplit("queue/local",auto_uids,0700);
   dsplit("queue/remote",auto_uids,0700);

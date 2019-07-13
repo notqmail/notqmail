@@ -48,7 +48,6 @@ saa reciplist = {0};
 
 struct ip_address partner;
 
-#ifdef TLS
 # include <sys/stat.h>
 # include "tls.h"
 # include "ssl_timeoutio.h"
@@ -57,7 +56,6 @@ struct ip_address partner;
 
 int tls_init();
 const char *ssl_err_str = 0;
-#endif
 
 void out(s) char *s; { if (substdio_puts(subfdoutsmall,s) == -1) _exit(0); }
 void zero() { if (substdio_put(subfdoutsmall,"\0",1) == -1) _exit(0); }
@@ -110,9 +108,7 @@ void _noreturn_ dropped() {
   outhost();
   out(" but connection died. ");
   if (flagcritical) out("Possible duplicate! ");
-#ifdef TLS
   if (ssl_err_str) { out((char *)ssl_err_str); out(" "); }
-#endif
   out("(#4.4.2)\n");
   zerodie();
 }
@@ -124,12 +120,10 @@ int timeout = 1200;
 int saferead(fd,buf,len) int fd; char *buf; int len;
 {
   int r;
-#ifdef TLS
   if (ssl) {
     r = ssl_timeoutread(timeout, smtpfd, smtpfd, ssl, buf, len);
     if (r < 0) ssl_err_str = ssl_error_str();
   } else
-#endif
   r = timeoutread(timeout,smtpfd,buf,len);
   if (r <= 0) dropped();
   return r;
@@ -137,12 +131,10 @@ int saferead(fd,buf,len) int fd; char *buf; int len;
 int safewrite(fd,buf,len) int fd; char *buf; int len;
 {
   int r;
-#ifdef TLS
   if (ssl) {
     r = ssl_timeoutwrite(timeout, smtpfd, smtpfd, ssl, buf, len);
     if (r < 0) ssl_err_str = ssl_error_str();
   } else
-#endif
   r = timeoutwrite(timeout,smtpfd,buf,len);
   if (r <= 0) dropped();
   return r;
@@ -264,7 +256,6 @@ void quit(prepend,append)
 char *prepend;
 char *append;
 {
-#ifdef TLS
   /* shouldn't talk to the client unless in an appropriate state */
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
   OSSL_HANDSHAKE_STATE state = ssl ? SSL_get_state(ssl) : TLS_ST_BEFORE;
@@ -272,7 +263,6 @@ char *append;
 #else
   int state = ssl ? ssl->state : SSL_ST_BEFORE;
   if (state & SSL_ST_OK || (!smtps && state & SSL_ST_BEFORE))
-#endif
 #endif
   substdio_putsflush(&smtpto,"QUIT\r\n");
   /* waiting for remote side is just too ridiculous */
@@ -282,7 +272,7 @@ char *append;
   out(".\n");
   outsmtptext();
 
-#if defined(TLS) && defined(DEBUG)
+#if defined(DEBUG)
   if (ssl) {
     X509 *peercert;
 
@@ -343,7 +333,6 @@ void blast()
   substdio_flush(&smtpto);
 }
 
-#ifdef TLS
 char *partner_fqdn = 0;
 
 # define TLS_QUIT quit(ssl ? "; connected to " : "; connecting to ", "")
@@ -545,7 +534,6 @@ int tls_init()
 
   return 1;
 }
-#endif
 
 stralloc recip = {0};
 
@@ -560,30 +548,24 @@ void smtp()
 # define port smtp_port
 #endif
 
-#ifdef TLS
 # ifdef MXPS
   if (type == 'S') smtps = 1;
   else if (type != 's')
 # endif
     if (port == 465) smtps = 1;
   if (!smtps)
-#endif
  
   if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
  
 #ifdef EHLO
-# ifdef TLS
   if (!smtps)
-# endif
   code = ehlo();
 
-# ifdef TLS
   if (tls_init())
     /* RFC2487 says we should issue EHLO (even if we might not need
      * extensions); at the same time, it does not prohibit a server
      * to reject the EHLO and make us fallback to HELO */
     code = ehlo();
-# endif
 
   if (code == 250) {
     /* add EHLO response checks here */
@@ -770,9 +752,7 @@ int main(int argc, char **argv)
     if (timeoutconn(smtpfd,&ip.ix[i].ip,(unsigned int) port,timeoutconnect) == 0) {
       tcpto_err(&ip.ix[i].ip,0);
       partner = ip.ix[i].ip;
-#ifdef TLS
       partner_fqdn = ip.ix[i].fqdn;
-#endif
       smtp(); /* does not return */
     }
     tcpto_err(&ip.ix[i].ip,errno == error_timeout);

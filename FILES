@@ -3,6 +3,7 @@ BLURB2
 BLURB3
 BLURB4
 README
+README.auth
 FAQ
 INSTALL
 INSTALL.alias
@@ -40,6 +41,7 @@ TARGETS
 Makefile
 BIN.README
 BIN.Makefile
+LICENSE.authentication
 idedit.c
 conf-break
 auto_break.h
@@ -432,3 +434,12 @@ maildir.c
 tcp-environ.5
 constmap.h
 constmap.c
+base64.c
+base64.h
+case_startb.c
+global.h
+hmac_md5.h
+hmac_md5.c
+install_authentication.sh
+md5.h
+md5c.c

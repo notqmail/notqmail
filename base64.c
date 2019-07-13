@@ -101,7 +101,7 @@ stralloc *out; /* not null terminated */
     return 0;
   }
 
-  i = in->len / 3 * 4 + 4;   
+  i = in->len / 3 * 4 + 4;
   if (!stralloc_ready(out,i)) return -1;
   s = out->s;
 

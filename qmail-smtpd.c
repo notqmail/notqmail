@@ -128,6 +128,7 @@ void setup()
   if (liphostok == -1) die_control();
   if (control_readint(&timeout,"control/timeoutsmtpd") == -1) die_control();
   if (timeout <= 0) timeout = 1;
+
   if (rcpthosts_init() == -1) die_control();
 
   bmfok = control_readfile(&bmf,"control/badmailfrom",0);
@@ -165,6 +166,7 @@ void setup()
   }
   dohelo(remotehost);
 }
+
 
 stralloc addr = {0}; /* will be 0-terminated, if addrparse returns 1 */
 
@@ -247,7 +249,7 @@ int addrallowed()
   return r;
 }
 
-char *auth;
+
 int seenauth = 0;
 int seenmail = 0;
 int flagbarf; /* defined if seenmail */
@@ -268,13 +270,13 @@ int mailfrom_size(arg) char *arg;
   return 0;
 }
 
-void mailfrom_auth(arg,len) 
-char *arg; 
+void mailfrom_auth(arg,len)
+char *arg;
 int len;
 {
   if (!stralloc_copys(&fuser,"")) die_nomem();
   if (case_starts(arg,"<>")) { if (!stralloc_cats(&fuser,"unknown")) die_nomem(); }
-  else 
+  else
     while (len) {
       if (*arg == '+') {
         if (case_starts(arg,"+3D")) { arg=arg+2; len=len-2; if (!stralloc_cats(&fuser,"=")) die_nomem(); }
@@ -302,14 +304,14 @@ void mailfrom_parms(arg) char *arg;
     i = byte_chr(arg,len,'>');
     if (i > 4 && i < len) {
       while (len) {
-        arg++; len--; 
+        arg++; len--;
         if (*arg == ' ' || *arg == '\0' ) {
            if (case_starts(mfparms.s,"SIZE=")) if (mailfrom_size(mfparms.s+5)) { flagsize = 1; return; }
-           if (case_starts(mfparms.s,"AUTH=")) mailfrom_auth(mfparms.s+5,mfparms.len-5);  
+           if (case_starts(mfparms.s,"AUTH=")) mailfrom_auth(mfparms.s+5,mfparms.len-5);
            if (!stralloc_copys(&mfparms,"")) die_nomem();
         }
         else
-          if (!stralloc_catb(&mfparms,arg,1)) die_nomem(); 
+          if (!stralloc_catb(&mfparms,arg,1)) die_nomem();
       }
     }
 }
@@ -323,8 +325,7 @@ void smtp_ehlo(arg) char *arg;
 {
   char size[FMT_ULONG];
   size[fmt_ulong(size,(unsigned int) databytes)] = 0;
-  smtp_greet("250-"); 
-  out("\r\n250-PIPELINING\r\n250-8BITMIME\r\n");
+  smtp_greet("250-"); out("\r\n250-PIPELINING\r\n250-8BITMIME\r\n");
   if (smtpauth == 1 || smtpauth == 11) out("250-AUTH LOGIN PLAIN\r\n");
   if (smtpauth == 2 || smtpauth == 12) out("250-AUTH CRAM-MD5\r\n");
   if (smtpauth == 3 || smtpauth == 13) out("250-AUTH LOGIN PLAIN CRAM-MD5\r\n");
@@ -333,7 +334,7 @@ void smtp_ehlo(arg) char *arg;
 }
 void smtp_rset(arg) char *arg;
 {
-  seenmail = 0; seenauth = 0; 
+  seenmail = 0; seenauth = 0;
   mailfrom.len = 0; rcptto.len = 0;
   out("250 flushed\r\n");
 }
@@ -558,7 +559,7 @@ int authenticate(void)
   substdio_fdbuf(&ssauth,write,pi[1],ssauthbuf,sizeof ssauthbuf);
   if (substdio_put(&ssauth,user.s,user.len) == -1) return err_write();
   if (substdio_put(&ssauth,pass.s,pass.len) == -1) return err_write();
-  if (smtpauth == 2 || smtpauth == 3 || smtpauth == 12 || smtpauth == 13)  
+  if (smtpauth == 2 || smtpauth == 3 || smtpauth == 12 || smtpauth == 13)
     if (substdio_put(&ssauth,chal.s,chal.len) == -1) return err_write();
   if (substdio_flush(&ssauth) == -1) return err_write();
 

@@ -251,12 +251,12 @@ int len;
   int i;
 
   if(!stralloc_copys(sa,"")) temp_nomem();
-  
+
   for (i = 0; i < len; i++) {
     if (s[i] == '=') {
       if (!stralloc_cats(sa,"+3D")) temp_nomem();
-    } else if (s[i] == '+') {  
-        if (!stralloc_cats(sa,"+2B")) temp_nomem(); 
+    } else if (s[i] == '+') {
+        if (!stralloc_cats(sa,"+2B")) temp_nomem();
     } else if ((int) s[i] < 33 || (int) s[i] > 126) {
         if (!stralloc_cats(sa,"+3F")) temp_nomem(); /* ok. not correct */
     } else if (!stralloc_catb(sa,s+i,1)) {
@@ -296,7 +296,7 @@ int mailfrom_plain()
   if (smtpcode() == 235) { mailfrom_xtext(); return 0; }
   else if (smtpcode() == 432) { quit("ZConnected to "," but password expired."); return 1; }
   else { quit("ZConnected to "," but authentication was rejected (plain)."); return 1; }
-  
+
   return 0;
 }
 
@@ -340,13 +340,13 @@ int mailfrom_cram()
     if (!stralloc_copyb(&slop,smtptext.s+4,smtptext.len-5)) temp_nomem();
     if (b64decode(slop.s,slop.len,&chal)) quit("ZConnected to "," but unable to base64decode challenge.");
   }
-   
+
   hmac_md5(chal.s,chal.len,pass.s,pass.len,digest);
 
   for (j = 0;j < 16;j++)				/* HEX => ASCII */
   {
-    digascii[2*j] = hextab[digest[j] >> 4];  
-    digascii[2*j+1] = hextab[digest[j] & 0xf]; 
+    digascii[2*j] = hextab[digest[j] >> 4];
+    digascii[2*j+1] = hextab[digest[j] & 0xf];
   }
   digascii[32]=0;
 
@@ -354,7 +354,7 @@ int mailfrom_cram()
   if (!stralloc_copys(&slop,"")) temp_nomem();
   if (!stralloc_cat(&slop,&user)) temp_nomem();		 /* user-id */
   if (!stralloc_cats(&slop," ")) temp_nomem();
-  if (!stralloc_catb(&slop,digascii,32)) temp_nomem();   /* digest */ 
+  if (!stralloc_catb(&slop,digascii,32)) temp_nomem();   /* digest */
 
   if (!stralloc_copys(&auth,"")) temp_nomem();
   if (b64encode(&slop,&auth)) quit("ZConnected to "," but unable to base64encode username+digest.");
@@ -363,25 +363,25 @@ int mailfrom_cram()
   substdio_flush(&smtpto);
   if (smtpcode() == 235) { mailfrom_xtext(); return 0; }
   else if (smtpcode() == 432) { quit("ZConnected to "," but password expired."); return 1; }
-  else { quit("ZConnected to "," but authentication was rejected (username+digest)."); return 1; } 
+  else { quit("ZConnected to "," but authentication was rejected (username+digest)."); return 1; }
 }
 
 void smtp_auth()
 {
-  int i, j; 
+  int i, j;
 
   for (i = 0; i + 8 < smtptext.len; i += str_chr(smtptext.s+i,'\n')+1)
-    if (!str_diffn(smtptext.s+i+4,"AUTH",4)) {  
+    if (!str_diffn(smtptext.s+i+4,"AUTH",4)) {
       if (j = str_chr(smtptext.s+i+8,'C') > 0)
         if (case_starts(smtptext.s+i+8+j,"CRAM"))
           if (mailfrom_cram() >= 0) return;
 
       if (j = str_chr(smtptext.s+i+8,'P') > 0)
-        if (case_starts(smtptext.s+i+8+j,"PLAIN")) 
+        if (case_starts(smtptext.s+i+8+j,"PLAIN"))
           if (mailfrom_plain() >= 0) return;
 
       if (j = str_chr(smtptext.s+i+8,'L') > 0)
-        if (case_starts(smtptext.s+i+8+j,"LOGIN")) 
+        if (case_starts(smtptext.s+i+8+j,"LOGIN"))
           if (mailfrom_login() >= 0) return;
 
       err_authprot();
@@ -416,7 +416,7 @@ void smtp()
 
   if (user.len && pass.len)
     smtp_auth();
-  else 
+  else
     mailfrom();
 
   code = smtpcode();
@@ -509,7 +509,7 @@ void getcontrols()
     case 1:
       if (!constmap_init(&maproutes,routes.s,routes.len,1)) temp_nomem(); break;
   }
-  
+
   switch(control_readfile(&authsenders,"control/authsenders",0)) {
     case -1:
        temp_control();
@@ -532,7 +532,7 @@ char **argv;
   int flagallaliases;
   int flagalias;
   char *relayhost;
-   
+
   sig_pipeignore();
   if (argc < 4) perm_usage();
   if (chdir(auto_qmail) == -1) temp_chdir();

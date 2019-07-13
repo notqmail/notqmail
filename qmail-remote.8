@@ -53,7 +53,6 @@ does not take options
 and does not follow the
 .B getopt
 standard.
-
 .SH TRANSPARENCY
 End-of-file in SMTP is encoded as dot CR LF.
 A dot at the beginning of a line is encoded as dot dot.
@@ -110,17 +109,17 @@ K
 no supported AUTH method found, continuing without authentication.
 .TP 5
 Z
-Connected to 
+Connected to
 .I host
 but authentication was rejected (AUTH PLAIN).
 .TP 5
 Z
-Connected to 
-.I host 
+Connected to
+.I host
 but unable to base64encode (plain).
 .TP 5
 Z
-Connected to 
+Connected to
 .I host
 but authentication was rejected (plain)."
 .TP 5
@@ -130,18 +129,18 @@ Connected to
 but authentication was rejected (AUTH LOGIN).
 .TP 5
 Z
-Connected to 
+Connected to
 .I host
 but unable to base64encode user.
 .TP 5
 Z
-Connected to 
-.I host 
+Connected to
+.I host
 but authentication was rejected (username).
 .TP 5
 Z
-Connected to 
-.I host 
+Connected to
+.I host
 but unable to base64encode pass.
 .TP 5
 Z
@@ -149,23 +148,23 @@ Connected to
 .I host
 but authentication was rejected (AUTH CRAM-MD5).
 Z
-Connected to 
+Connected to
 .I host
 but unable to base64decode challenge.
 .TP 5
 Z
-Connected to 
+Connected to
 .I host
 but unable to base64encode username+digest.
 .TP 5
 Z
-Connected to 
-.I host 
+Connected to
+.I host
 but password expired.
 .TP 5
 Z
-Connected to 
-.I host 
+Connected to
+.I host
 but authentication was rejected (username+digest).
 .PP
 The recipient reports will always be printed in the same order as
@@ -185,36 +184,36 @@ always exits zero.
 .I authsenders
 Authenticated sender.
 For each
-.I sender 
-included in 
+.I sender
+included in
 .IR authsenders :
-.I sender\fB:\fIrelay\fB:\fIport\fB|\fIuser\fB|\fIpassword 
+.I sender\fB:\fIrelay\fB:\fIport\fB|\fIuser\fB|\fIpassword
 .B qmail-remote
-will try SMTP Authentication 
-of type CRAM-MD5, LOGIN, or PLAIN 
+will try SMTP Authentication
+of type CRAM-MD5, LOGIN, or PLAIN
 with the provided user name
-.I user 
+.I user
 and password
-.I password 
-(the authentication information) 
-and eventually relay the 
+.I password
+(the authentication information)
+and eventually relay the
 mail through
 .I relay
 on port
 .IR port .
-The use of 
+The use of
 .I relay
-and 
-.I port 
+and
+.I port
 follows the same rules as for
-.IR smtproutes 
+.IR smtproutes
 Note: In case
 .I sender
-is empty, 
+is empty,
 .B qmail-remote
-will try to deliver each outgoing mail 
+will try to deliver each outgoing mail
 SMTP authenticated. If the authentication
-information is missing, the mail is 
+information is missing, the mail is
 delivered none-authenticated.
 .I authsenders
 can be constructed as follows:
@@ -241,7 +240,7 @@ refuses to run.
 Artificial SMTP routes.
 Each route has the form
 .IR domain\fB:\fIrelay ,
-or 
+or
 .IR domain\fB:\fIrelay\fB|\fIuser\fB|\fIpassword
 in case of authenticated routes without any extra spaces.
 If
@@ -293,13 +292,13 @@ any other address is artificially routed to
 The
 .B qmail
 system does not protect you if you create an artificial
-mail loop between machines. 
+mail loop between machines.
 However,
 you are always safe using
 .I smtproutes
 if you do not accept mail from the network.
-Note:   
-.I authsender 
+Note:
+.I authsender
 routes have precedence over
 .IR smtproutes .
 .TP 5

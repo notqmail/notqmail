@@ -4,8 +4,8 @@ README qmail SMTP Authentication
 Scope:
 ------
 
-This patch supports RFC 2554 "SMTP Service Extension for Authentication" and 
-RFC 4409 "Message Submission for Mail" for 
+This patch supports RFC 2554 "SMTP Service Extension for Authentication" and
+RFC 4409 "Message Submission for Mail" for
 
 * qmail-smtpd and
 * qmail-remote
@@ -48,7 +48,7 @@ In order activate SMTP authentication, you need to provide the environment
 variable 'SMTPAUTH' to qmail-smtpd.
 
 Possible choices:
-	
+
 	a) SMTPAUTH=""; 	qmail-smtpd supports auth of type PLAIN and/or LOGIN.
 	b) SMTPAUTH="+cram";	qmail-smtpd will additionally annonce CRAM-MD5,
 				this requires a CRAM-MD5 supporting PAM.
@@ -74,7 +74,7 @@ but with additional authentication information (username + password):
 
 Note: The choice of the AUTH method depends on the capabilities of the server.
 
-b) SMTP Authentication by recipient domain: 
+b) SMTP Authentication by recipient domain:
 
 The control file 'smtproutes' is enhanced with the authentication information:
 
@@ -125,7 +125,7 @@ Version:	Notes:					Date:
 0.7.1		cosmetics for qmail-remote		5.8.2010
 0.7.2		authorization-id = authentication-id
 		for qmail-remote;
-		added SMTPAUTH environment variable 
+		added SMTPAUTH environment variable
 		for qmail-smtpd; backport from SC 2.7	29.4.2012
 0.7.3		Fixed missing AUTH for qmai-smtpd announcement.
 		Improved SUBMISSION port handling.	2.5.2012
@@ -134,7 +134,7 @@ Version:	Notes:					Date:
 0.7.5		Fixed bug in qmail-remote not respecting
 		announced AUTH types. Tx. Callum Gibson.
 		Added '432' server code evaluation for
-	 	AUTH password expired in qmail-remote. 	23.10.2012
+		AUTH password expired in qmail-remote. 	23.10.2012
 0.7.6		Fixed order of SMTP commands (tx roberto).
 							02.02.2013
 0.8.0		Added authentication by recipient domain

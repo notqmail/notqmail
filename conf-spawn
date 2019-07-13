@@ -1,5 +1,5 @@
 120
 
-This is a silent concurrency limit. You can't set it above 255. On some
-systems you can't set it above 125. qmail will refuse to compile if the
-limit is too high.
+This is a silent concurrency limit. You can't set it above 65535. On some
+systems you can't set it above 255, or even 125. qmail will refuse to compile
+if the limit is too high.

@@ -180,8 +180,8 @@ void main()
 
  messnum = pidst.st_ino;
  messfn = fnnum("mess/",1);
- todofn = fnnum("todo/",0);
- intdfn = fnnum("intd/",0);
+ todofn = fnnum("todo/",1);
+ intdfn = fnnum("intd/",1);
 
  if (link(pidfn,messfn) == -1) die(64);
  if (unlink(pidfn) == -1) die(63);

@@ -96,7 +96,7 @@ void fnmake_init()
 }
 
 void fnmake_info(id) unsigned long id; { fn.len = fmtqfn(fn.s,"info/",id,1); }
-void fnmake_todo(id) unsigned long id; { fn.len = fmtqfn(fn.s,"todo/",id,0); }
+void fnmake_todo(id) unsigned long id; { fn.len = fmtqfn(fn.s,"todo/",id,1); }
 void fnmake_mess(id) unsigned long id; { fn.len = fmtqfn(fn.s,"mess/",id,1); }
 void fnmake_foop(id) unsigned long id; { fn.len = fmtqfn(fn.s,"foop/",id,0); }
 void fnmake_split(id) unsigned long id; { fn.len = fmtqfn(fn.s,"",id,1); }
@@ -1216,7 +1216,8 @@ void pass_do()
 /* this file is too long ---------------------------------------------- TODO */
 
 datetime_sec nexttodorun;
-DIR *tododir; /* if 0, have to opendir again */
+int flagtododir = 0; /* if 0, have to readsubdir_init again */
+readsubdir todosubdir;
 stralloc todoline = {0};
 char todobuf[SUBSTDIO_INSIZE];
 char todobufinfo[512];
@@ -1224,7 +1225,7 @@ char todobufchan[CHANNELS][1024];
 
 void todo_init()
 {
- tododir = 0;
+ flagtododir = 0;
  nexttodorun = now();
  trigger_set();
 }
@@ -1236,7 +1237,7 @@ datetime_sec *wakeup;
 {
  if (flagexitasap) return;
  trigger_selprep(nfds,rfds);
- if (tododir) *wakeup = 0;
+ if (flagtododir) *wakeup = 0;
  if (*wakeup > nexttodorun) *wakeup = nexttodorun;
 }
 
@@ -1253,8 +1254,7 @@ fd_set *rfds;
  char ch;
  int match;
  unsigned long id;
- unsigned int len;
- direntry *d;
+ int z;
  int c;
  unsigned long uid;
  unsigned long pid;
@@ -1265,32 +1265,26 @@ fd_set *rfds;
 
  if (flagexitasap) return;
 
- if (!tododir)
+ if (!flagtododir)
   {
    if (!trigger_pulled(rfds))
      if (recent < nexttodorun)
        return;
    trigger_set();
-   tododir = opendir("todo");
-   if (!tododir)
-    {
-     pausedir("todo");
-     return;
-    }
+   readsubdir_init(&todosubdir, "todo", pausedir);
+   flagtododir = 1;
    nexttodorun = recent + SLEEP_TODO;
   }
 
- d = readdir(tododir);
- if (!d)
+ switch(readsubdir_next(&todosubdir, &id))
   {
-   closedir(tododir);
-   tododir = 0;
-   return;
+    case 1:
+      break;
+    case 0:
+      flagtododir = 0;
+    default:
+      return;
   }
- if (str_equal(d->d_name,".")) return;
- if (str_equal(d->d_name,"..")) return;
- len = scan_ulong(d->d_name,&id);
- if (!len || d->d_name[len]) return;
 
  fnmake_todo(id);
 

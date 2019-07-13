@@ -43,11 +43,14 @@ control	default	used by
 .I badmailfrom	\fR(none)	\fRqmail-smtpd
 .I bouncefrom	\fRMAILER-DAEMON	\fRqmail-send
 .I bouncehost	\fIme	\fRqmail-send
+.I clientca.pem	\fR(none)	\fRqmail-smtpd
+.I clientcert.pem	\fR(none)	\fRqmail-remote
 .I concurrencylocal	\fR10	\fRqmail-send
 .I concurrencyremote	\fR20	\fRqmail-send
 .I defaultdomain	\fIme	\fRqmail-inject
 .I defaulthost	\fIme	\fRqmail-inject
 .I databytes	\fR0	\fRqmail-smtpd
+.I dh2048.pem	\fR(none)	\fRqmail-smtpd
 .I doublebouncehost	\fIme	\fRqmail-send
 .I doublebounceto	\fRpostmaster	\fRqmail-send
 .I envnoathost	\fIme	\fRqmail-send
@@ -61,11 +64,17 @@ control	default	used by
 .I qmqpservers	\fR(none)	\fRqmail-qmqpc
 .I queuelifetime	\fR604800	\fRqmail-send
 .I rcpthosts	\fR(none)	\fRqmail-smtpd
+.I rsa2048.pem	\fR(none)	\fRqmail-smtpd
+.I servercert.pem	\fR(none)	\fRqmail-smtpd
 .I smtpgreeting	\fIme	\fRqmail-smtpd
 .I smtproutes	\fR(none)	\fRqmail-remote
 .I timeoutconnect	\fR60	\fRqmail-remote
 .I timeoutremote	\fR1200	\fRqmail-remote
 .I timeoutsmtpd	\fR1200	\fRqmail-smtpd
+.I tlsclients	\fR(none)	\fRqmail-smtpd
+.I tlsclientciphers	\fR(none)	\fRqmail-remote
+.I tlshosts/FQDN.pem	\fR(none)	\fRqmail-remote
+.I tlsserverciphers	\fR(none)	\fRqmail-smtpd
 .I virtualdomains	\fR(none)	\fRqmail-send
 .fi
 .RE

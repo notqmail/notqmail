@@ -114,6 +114,10 @@ arguments.
 always exits zero.
 .SH "CONTROL FILES"
 .TP 5
+.I clientcert.pem
+SSL certificate that is used to authenticate with the remote server
+during a TLS session.
+.TP 5
 .I helohost
 Current host name,
 for use solely in saying hello to the remote SMTP server.
@@ -123,6 +127,16 @@ if that is supplied;
 otherwise
 .B qmail-remote
 refuses to run.
+
+.TP 5
+.I notlshosts/<FQDN>
+.B qmail-remote
+will not try TLS on servers for which this file exists
+.RB ( <FQDN>
+is the fully-qualified domain name of the server). 
+.IR (tlshosts/<FQDN>.pem 
+takes precedence over this file however).
+
 .TP 5
 .I smtproutes
 Artificial SMTP routes.
@@ -156,6 +170,8 @@ may be empty;
 this tells
 .B qmail-remote
 to look up MX records as usual.
+.I port 
+value of 465 (deprecated smtps port) causes TLS session to be started.
 .I smtproutes
 may include wildcards:
 
@@ -195,6 +211,33 @@ Number of seconds
 .B qmail-remote
 will wait for each response from the remote SMTP server.
 Default: 1200.
+
+.TP 5
+.I tlsclientciphers
+A set of OpenSSL client cipher strings. Multiple ciphers
+contained in a string should be separated by a colon.
+
+.TP 5
+.I tlshosts/<FQDN>.pem
+.B qmail-remote
+requires TLS authentication from servers for which this file exists
+.RB ( <FQDN>
+is the fully-qualified domain name of the server). One of the
+.I dNSName
+or the
+.I CommonName
+attributes have to match. The file contains the trusted CA certificates.
+
+.B WARNING:
+this option may cause mail to be delayed, bounced, doublebounced, or lost.
+
+.TP 5
+.I tlshosts/exhaustivelist
+if this file exists
+no TLS will be tried on hosts other than those for which a file
+.B tlshosts/<FQDN>.pem
+exists.
+
 .SH "SEE ALSO"
 addresses(5),
 envelopes(5),

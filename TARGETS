@@ -96,6 +96,7 @@ error.o
 error_str.o
 error_temp.o
 error.a
+errbits.o
 str_len.o
 str_diff.o
 str_diffn.o

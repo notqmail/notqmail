@@ -508,6 +508,10 @@ envread.o: \
 compile envread.c env.h str.h
 	./compile envread.c
 
+errbits.o: \
+compile errbits.c errbits.h stralloc.h gen_alloc.h fmt.h exit.h
+	./compile errbits.c
+
 error.a: \
 makelib error.o error_str.o error_temp.o
 	./makelib error.a error.o error_str.o error_temp.o
@@ -1535,12 +1539,14 @@ qmail-smtpd: \
 load qmail-smtpd.o rcpthosts.o commands.o timeoutread.o \
 timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
 date822fmt.o now.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
-open.a sig.a case.a env.a stralloc.a alloc.a substdio.a error.a str.a \
+open.a sig.a case.a env.a stralloc.a errbits.o \
+alloc.a substdio.a error.a str.a \
 fs.a auto_qmail.o socket.lib
 	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
 	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
+	errbits.o \
 	alloc.a substdio.a error.a str.a fs.a auto_qmail.o  `cat \
 	socket.lib`
 

@@ -23,16 +23,35 @@
 #include "timeoutread.h"
 #include "timeoutwrite.h"
 #include "commands.h"
+#include "errbits.h"
 
+#define enew()	{ eout("qmail-smtpd: pid "); epid(); eout3(" from ",remoteip,": "); }
+/* Or if you prefer shorter log messages (deduce IP from tcpserver PID entry), */
+/*              { eout("qmail-smtpd: pid "); epid(); eout(": "); } */
 #define MAXHOPS 100
 unsigned int databytes = 0;
 int timeout = 1200;
+
+char *remoteip="(not yet set)";
+char *remotehost;
+char *remoteinfo;
+char *local;
+char *relayclient;
+
+stralloc mailfrom = {0};
+stralloc rcptto = {0};
+int rcptcount;
+stralloc addr = {0}; /* will be 0-terminated, if addrparse returns 1 */
 
 int safewrite(fd,buf,len) int fd; char *buf; int len;
 {
   int r;
   r = timeoutwrite(timeout,fd,buf,len);
-  if (r <= 0) _exit(1);
+  if (r <= 0)
+  {
+    enew(); eout("Write error (disconnect?): quitting\n"); eflush();
+    _exit(1);
+  }
   return r;
 }
 
@@ -42,22 +61,91 @@ substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof ssoutbuf);
 void flush() { substdio_flush(&ssout); }
 void out(s) char *s; { substdio_puts(&ssout,s); }
 
-void die_read() { _exit(1); }
-void die_alarm() { out("451 timeout (#4.4.2)\r\n"); flush(); _exit(1); }
-void die_nomem() { out("421 out of memory (#4.3.0)\r\n"); flush(); _exit(1); }
-void die_control() { out("421 unable to read controls (#4.3.0)\r\n"); flush(); _exit(1); }
-void die_ipme() { out("421 unable to figure out my IP addresses (#4.3.0)\r\n"); flush(); _exit(1); }
-void straynewline() { out("451 See http://pobox.com/~djb/docs/smtplf.html.\r\n"); flush(); _exit(1); }
+void die_read()
+{
+  enew(); eout("Read error (disconnect?): quitting\n"); eflush(); _exit(1);
+}
+void die_alarm()
+{
+  enew(); eout("Connection timed out: quitting\n"); eflush();
+  out("451 timeout (#4.4.2)\r\n"); flush(); _exit(1);
+}
+void die_nomem()
+{
+  enew(); eout("Out of memory: quitting\n"); eflush();
+  out("421 out of memory (#4.3.0)\r\n"); flush(); _exit(1);
+}
+void die_control()
+{
+  enew(); eout("Unable to read controls: quitting\n"); eflush();
+  out("421 unable to read controls (#4.3.0)\r\n"); flush(); _exit(1);
+}
+void die_ipme()
+{
+  enew(); eout("Unable to figure out my IP addresses: quitting\n"); eflush();
+  out("421 unable to figure out my IP addresses (#4.3.0)\r\n"); flush(); _exit(1);
+}
+void straynewline()
+{
+  enew(); eout("Stray newline: quitting\n"); eflush();
+  out("451 See http://pobox.com/~djb/docs/smtplf.html.\r\n"); flush(); _exit(1);
+}
 
-void err_bmf() { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
-void err_nogateway() { out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n"); }
-void err_unimpl(arg) char *arg; { out("502 unimplemented (#5.5.1)\r\n"); }
-void err_syntax() { out("555 syntax error (#5.5.4)\r\n"); }
-void err_wantmail() { out("503 MAIL first (#5.5.1)\r\n"); }
-void err_wantrcpt() { out("503 RCPT first (#5.5.1)\r\n"); }
-void err_noop(arg) char *arg; { out("250 ok\r\n"); }
-void err_vrfy(arg) char *arg; { out("252 send some mail, i'll try my best\r\n"); }
-void err_qqt() { out("451 qqt failure (#4.3.0)\r\n"); }
+void err_bmf()
+{
+  enew(); eout("Sender address in badmailfrom\n"); eflush();
+  out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n");
+}
+void err_nogateway()
+{
+  enew(); eout("Recipient domain not in rcpthosts <"); eoutclean(addr.s); eout(">\n"); eflush();
+  out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n");
+}
+void err_unimpl(arg) char *arg;
+{
+  enew(); eout("Unimplemented command\n"); eflush();
+  out("502 unimplemented (#5.5.1)\r\n");
+}
+void err_syntax(cmd) char *cmd;
+{
+  enew(); eout2(cmd," with too long address ("); eoutulong((unsigned long)addr.len); eout(" bytes) given\n"); eflush();
+  out("555 syntax error (#5.5.4)\r\n");
+}
+void err_wantmail()
+{
+  enew(); eout("Attempted RCPT or DATA before MAIL\n"); eflush();
+  out("503 MAIL first (#5.5.1)\r\n");
+}
+void err_wantrcpt()
+{
+  enew(); eout("Attempted DATA before RCPT\n"); eflush();
+  out("503 RCPT first (#5.5.1)\r\n");
+}
+void err_noop(arg) char *arg;
+{
+  enew(); eout("NOOP\n"); eflush();
+  out("250 ok\r\n");
+}
+void err_vrfy(arg) char *arg;
+{
+  enew(); eout("VRFY requested\n"); eflush();
+  out("252 send some mail, i'll try my best\r\n");
+}
+void err_qqt()
+{
+  enew(); eout("qqt failure\n"); eflush();
+  out("451 qqt failure (#4.3.0)\r\n");
+}
+void err_hops()
+{
+  enew(); eout("Exceeded hop count\n"); eflush();
+  out("554 too many hops, this message is looping (#5.4.6)\r\n");
+}
+void err_databytes()
+{
+  enew(); eout("Exceeded DATABYTES limit\n"); eflush();
+  out("552 sorry, that message size exceeds my databytes limit (#5.3.4)\r\n");
+}
 
 
 stralloc greeting = {0};
@@ -73,14 +161,9 @@ void smtp_help(arg) char *arg;
 }
 void smtp_quit(arg) char *arg;
 {
+  enew(); eout("Remote end QUIT: quitting\n"); eflush();
   smtp_greet("221 "); out("\r\n"); flush(); _exit(0);
 }
-
-char *remoteip;
-char *remotehost;
-char *remoteinfo;
-char *local;
-char *relayclient;
 
 stralloc helohost = {0};
 char *fakehelo; /* pointer into helohost, or 0 */
@@ -132,10 +215,9 @@ void setup()
   remoteinfo = env_get("TCPREMOTEINFO");
   relayclient = env_get("RELAYCLIENT");
   dohelo(remotehost);
+  enew(); eout("New session\n"); eflush();
 }
 
-
-stralloc addr = {0}; /* will be 0-terminated, if addrparse returns 1 */
 
 int addrparse(arg)
 char *arg;
@@ -219,37 +301,40 @@ int addrallowed()
 
 int seenmail = 0;
 int flagbarf; /* defined if seenmail */
-stralloc mailfrom = {0};
-stralloc rcptto = {0};
 
 void smtp_helo(arg) char *arg;
 {
+  enew(); eout("Received HELO "); eoutclean(arg); eout("\n"); eflush();
   smtp_greet("250 "); out("\r\n");
   seenmail = 0; dohelo(arg);
 }
 void smtp_ehlo(arg) char *arg;
 {
+  enew(); eout("Received EHLO "); eoutclean(arg); eout("\n"); eflush();
   smtp_greet("250-"); out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
   seenmail = 0; dohelo(arg);
 }
 void smtp_rset(arg) char *arg;
 {
   seenmail = 0;
+  enew(); eout("Session RSET\n"); eflush();
   out("250 flushed\r\n");
 }
 void smtp_mail(arg) char *arg;
 {
-  if (!addrparse(arg)) { err_syntax(); return; }
+  if (!addrparse(arg)) { err_syntax("MAIL"); return; }
   flagbarf = bmfcheck();
   seenmail = 1;
   if (!stralloc_copys(&rcptto,"")) die_nomem();
   if (!stralloc_copys(&mailfrom,addr.s)) die_nomem();
   if (!stralloc_0(&mailfrom)) die_nomem();
+  rcptcount = 0;
+  enew(); eout("Sender <"); eoutclean(mailfrom.s); eout(">\n"); eflush();
   out("250 ok\r\n");
 }
 void smtp_rcpt(arg) char *arg; {
   if (!seenmail) { err_wantmail(); return; }
-  if (!addrparse(arg)) { err_syntax(); return; }
+  if (!addrparse(arg)) { err_syntax("RCPT"); return; }
   if (flagbarf) { err_bmf(); return; }
   if (relayclient) {
     --addr.len;
@@ -261,6 +346,8 @@ void smtp_rcpt(arg) char *arg; {
   if (!stralloc_cats(&rcptto,"T")) die_nomem();
   if (!stralloc_cats(&rcptto,addr.s)) die_nomem();
   if (!stralloc_0(&rcptto)) die_nomem();
+  ++rcptcount;
+  enew(); eout("Recipient <"); eoutclean(addr.s); eout(">\n"); eflush();
   out("250 ok\r\n");
 }
 
@@ -280,6 +367,7 @@ substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof ssinbuf);
 
 struct qmail qqt;
 unsigned int bytestooverflow = 0;
+unsigned int messagebytes = 0;
 
 void put(ch)
 char *ch;
@@ -287,6 +375,7 @@ char *ch;
   if (bytestooverflow)
     if (!--bytestooverflow)
       qmail_fail(&qqt);
+  messagebytes++;
   qmail_put(&qqt,ch,1);
 }
 
@@ -363,6 +452,10 @@ void acceptmessage(qp) unsigned long qp;
   accept_buf[fmt_ulong(accept_buf,qp)] = 0;
   out(accept_buf);
   out("\r\n");
+  enew(); eout3("Message accepted, qp ",accept_buf," (");
+  eoutulong((unsigned long)rcptcount); eout(" recipients, ");
+  eoutulong((unsigned long)messagebytes); eout(" bytes)\n");
+  eflush();
 }
 
 void smtp_data(arg) char *arg; {
@@ -374,6 +467,7 @@ void smtp_data(arg) char *arg; {
   if (!rcptto.len) { err_wantrcpt(); return; }
   seenmail = 0;
   if (databytes) bytestooverflow = databytes + 1;
+  messagebytes = 0;
   if (qmail_open(&qqt) == -1) { err_qqt(); return; }
   qp = qmail_qp(&qqt);
   out("354 go ahead\r\n");
@@ -387,11 +481,15 @@ void smtp_data(arg) char *arg; {
  
   qqx = qmail_close(&qqt);
   if (!*qqx) { acceptmessage(qp); return; }
-  if (hops) { out("554 too many hops, this message is looping (#5.4.6)\r\n"); return; }
-  if (databytes) if (!bytestooverflow) { out("552 sorry, that message size exceeds my databytes limit (#5.3.4)\r\n"); return; }
+  if (hops) { err_hops(); return; }
+  if (databytes) if (!bytestooverflow) { err_databytes(); return; }
   if (*qqx == 'D') out("554 "); else out("451 ");
   out(qqx + 1);
   out("\r\n");
+  enew(); eout("Message rejected (");
+  if (*qqx == 'D') eout("554 "); else eout("451 ");
+  eoutclean(qqx + 1); eout(")\n");
+  eflush();
 }
 
 struct commands smtpcommands[] = {
@@ -411,6 +509,7 @@ struct commands smtpcommands[] = {
 void main()
 {
   sig_pipeignore();
+  /* esetfd(2); Errors default to FD2 (stderr), change here if needed */
   if (chdir(auto_qmail) == -1) die_control();
   setup();
   if (ipme_init() != 1) die_ipme();

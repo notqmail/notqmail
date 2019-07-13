@@ -1,5 +1,7 @@
 # Don't edit Makefile! Use conf-* for configuration.
 
+DEFINES=-DEXTERNAL_TODO # use to enable external todo
+
 SHELL=/bin/sh
 NROFF=nroff
 
@@ -670,7 +672,7 @@ compile hfield.c hfield.h
 
 hier.o: \
 compile hier.c auto_qmail.h auto_split.h auto_uids.h fmt.h fifo.h hier.h
-	./compile hier.c
+	./compile $(DEFINES) hier.c
 
 home: \
 home.sh conf-qmail
@@ -775,7 +777,7 @@ dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
 forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox install instpackage instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
-binm3 binm3+df
+binm3 binm3+df qmail-todo
 
 load: \
 make-load warn-auto.sh
@@ -1415,7 +1417,7 @@ substdio.h alloc.h error.h stralloc.h gen_alloc.h str.h byte.h fmt.h \
 scan.h case.h auto_qmail.h trigger.h newfield.h stralloc.h quote.h \
 qmail.h substdio.h qsutil.h prioq.h datetime.h gen_alloc.h constmap.h \
 fmtqfn.h readsubdir.h direntry.h
-	./compile qmail-send.c
+	./compile $(DEFINES) qmail-send.c
 
 qmail-send.service: \
 qmail-send.service.in conf-qmail
@@ -1482,7 +1484,7 @@ qmail-start.9 conf-qmail conf-break conf-spawn
 
 qmail-start.o: \
 compile qmail-start.c fd.h prot.h exit.h fork.h uidgid.h auto_uids.h auto_users.h
-	./compile qmail-start.c
+	./compile $(DEFINES) qmail-start.c
 
 qmail-tcpok: \
 load qmail-tcpok.o open.a lock.a strerr.a substdio.a error.a str.a \
@@ -1511,6 +1513,20 @@ qmail-tcpto.o: \
 compile qmail-tcpto.c substdio.h subfd.h substdio.h auto_qmail.h byte.h \
 fmt.h ip.h lock.h error.h exit.h datetime.h now.h datetime.h open.h
 	./compile qmail-tcpto.c
+
+qmail-todo: \
+load qmail-todo.o control.o constmap.o trigger.o fmtqfn.o now.o \
+readsubdir.o case.a ndelay.a getln.a sig.a open.a stralloc.a alloc.a \
+substdio.a error.a str.a fs.a auto_qmail.o auto_split.o
+	./load qmail-todo control.o constmap.o trigger.o fmtqfn.o now.o \
+	readsubdir.o case.a ndelay.a getln.a sig.a open.a stralloc.a \
+	alloc.a substdio.a error.a str.a fs.a auto_qmail.o auto_split.o
+
+qmail-todo.o: \
+compile alloc.h auto_qmail.h byte.h constmap.h control.h direntry.h error.h \
+exit.h fmt.h fmtqfn.h getln.h open.h ndelay.h now.h readsubdir.h readwrite.h \
+scan.h select.h str.h stralloc.h substdio.h trigger.h
+	./compile $(DEFINES) qmail-todo.c
 
 qmail-upq: \
 warn-auto.sh qmail-upq.sh conf-qmail conf-break conf-split

@@ -1,0 +1,114 @@
+EXTTODO by Claudio Jeker <jeker@n-r-g.com> and 
+Andre Oppermann <opi@nrg4u.com>
+(c) 1998,1999,2000,2001,2002 Internet Business Solutions Ltd.
+
+The EXTTODO patch is a part of the qmail-ldap patch.
+This patches for qmail come with NO WARRANTY.
+
+These patches are under the BSD license.
+
+RELEASE: 5. Jan. 2003
+
+EXTTODO:
+======================
+
+TOC:
+ WHAT DOES IT DO
+ INSTALL
+ CONFIG FILES
+ SETUP
+ BIG PICTURE
+
+NEWS:
+ 
+ This is the first release of the EXTTODO patch.
+
+================================================================================
+
+WHAT DOES IT DO
+
+ The exttodo patch addresses a problem known as the silly qmail (queue)
+ problem. This problem is found only on system with high injection rates.
+
+ qmail with a big local and remote concurrency could deliver a tremendous 
+ amount of messages but normally this can not be achieved because qmail-send
+ becomes a bottleneck on those high volumes servers.
+ qmail-send preprocesses all new messages before distributing them for local
+ or remote delivering. In one run qmail-send does one todo run but has the 
+ ability to close multiple jobs. Because of this layout qmail-send can not 
+ feed all the new available (local/remote) delivery slots and therefor it is 
+ not possible to achieve the maximum throughput.
+ This would be a minor problem if one qmail-send run could be done in extreme
+ short time but because of many file system calls (fsync and (un)link) a todo
+ run is expensive and throttles the throughput.
+
+ The exttodo patch tries to solve the problem by moving the todo routine into 
+ an external program. This reduces the run time in qmail-send.
+
+ exttodo adds a new program to qmail called qmail-todo. qmail-todo prepares
+ incoming messages for local and remote delivering (by creating info/<messid>
+ local/<messid> and remote/<messid> and removing todo/<messid>). See also
+ INTERNALS. As next qmail-todo transmits the <messid> to qmail-send which will
+ add this message into the priority queue which schedules the message for 
+ delivery. 
+
+INSTALL
+
+ To enable the exttodo patch you need to define EXTERNAL_TODO while compiling
+ qmail(-ldap) this can be done with the -D flag of cc (e.g. cc -DEXTERNAL_TODO).
+
+ NOTE: the exttodo patch can also be used on qmail systems without the 
+ qmail-ldap patch.
+ 
+================================================================================
+
+CONFIG FILES
+
+ No additional control files are used or needed.
+
+================================================================================
+
+SETUP
+
+ qmail-todo will be started by qmail-start and therefor no additional setup
+ is needed.
+
+ To verify that exttodo is running just check if qmail-todo is running.
+
+================================================================================
+
+BIG PICTURE
+
+               +-------+   +-------+
+               | clean |   | clean |
+               +--0-1--+   +--0-1--+       +-----------+
+         trigger  ^ |         ^ |        +->0,1 lspawn |
+            |     | v         | v       /  +-----------+
+ +-------+  v  +--2-3--+   +--5-6--+   /
+ |       |  |  |       0<--7     1,2<-+
+ | queue |--+--| todo  |   | send  |
+ |       |  |  |       1-->8     3,4<-+
+ +-------+     +-------+   +---0---+   \
+                               |        \  +-----------+
+                               v         +->0,1 rspwan |
+                           +---0---+       +-----------+
+                           | logger|
+                           +-------+
+
+Communication between qmail-send and qmail-todo
+
+todo -> send:
+   D[LRB]<mesgid>\0
+          Start delivery for new message with id <messid>.
+          the character L, R or B defines the type
+          of delivery, local, remote or both respectively.
+   L<string>\0
+          Dump string to the logger without adding additional \n or similar.
+send -> todo:
+   H      Got a SIGHUP reread ~/control/locals and ~/control/virtualdomains
+   X      Quit ASAP.
+
+qmail-todo sends "\0" terminated messages whereas qmail-send just send one
+character to qmail-todo.
+
+

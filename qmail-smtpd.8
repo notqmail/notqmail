@@ -23,7 +23,30 @@ or
 header fields.
 
 .B qmail-smtpd
-supports ESMTP, including the 8BITMIME and PIPELINING options.
+supports ESMTP, including the 8BITMIME, DATA, PIPELINING, SIZE, and AUTH options.
+.B qmail-smtpd
+includes a \'MAIL FROM:\' parameter parser and obeys \'Auth\' and \'Size\' advertisements.
+.B qmail-smtpd
+can accept LOGIN, PLAIN, and CRAM-MD5 AUTH types. It invokes
+.IR checkprogram ,
+which reads on file descriptor 3 the username, a 0 byte, the password
+or CRAM-MD5 digest/response derived from the SMTP client,
+another 0 byte, a CRAM-MD5 challenge (if applicable to the AUTH type),
+and a final 0 byte.
+.I checkprogram
+invokes
+.I subprogram
+upon successful authentication, which should in turn return 0 to
+.BR qmail-smtpd ,
+effectively setting the environment variables $RELAYCLIENT and $TCPREMOTEINFO
+(any supplied value replaced with the authenticated username).
+.B qmail-smtpd
+will reject the authentication attempt if it receives a nonzero return
+value from
+.I checkprogram
+or
+.IR subprogram .
+
 .SH TRANSPARENCY
 .B qmail-smtpd
 converts the SMTP newline convention into the UNIX newline convention
@@ -169,6 +192,67 @@ Number of seconds
 .B qmail-smtpd
 will wait for each new buffer of data from the remote SMTP client.
 Default: 1200.
+
+.SH "ENVIRONMENT VARIABLES READ"
+Environment variables may be defined globally in the
+.B qmail-smtpd
+startup script and/or individually as part of the
+.B tcpserver's
+cdb database.
+The environment variables may be quoted ("variable", or 'variable') and
+in case of global use, have to be exported.
+.B qmail-smtpd
+supports the following legacy environment variables, typically
+provided by
+.B tcpserver
+or
+.B sslserver
+or
+.BR tcp-env :
+.IR TCPREMOTEIP ,
+.IR TCPREMOTEHOST
+.IR TCPREMOTEINFO
+and
+.IR TCPLOCALPORT
+as well as
+.IR RELAYCLIENT .
+
+.B qmail-smtpd
+may use the following environment variables for SMTP authentication:
+.TP 5
+.IR SMTPAUTH
+is used to enable SMTP Authentication for the AUTH types
+LOGIN and PLAIN.
+In case
+.TP 5
+.IR SMTPAUTH='+cram'
+is defined,
+.B qmail-smtpd
+honors LOGIN, PLAIN, and additionally CRAM-MD5 authentication.
+Simply 
+.TP 5
+.IR SMTPAUTH='cram'
+restricts authentication just to CRAM-MD5.
+If however
+.TP 5
+.IR SMTPAUTH='!'
+starts with an exclamation mark, AUTH is required. 
+You can enforce 'Submission' using this option 
+and binding
+.B qmail-smtpd
+to the SUBMISSION port \'587'\.
+In particular,
+.TP 5
+.IR SMTPAUTH='!cram'
+may be useful.
+In opposite, if
+.TP 5
+.IR SMTPAUTH='-'
+starts with a dash, AUTH is disabled for particular
+connections.
+
+Note: The use of 'cram' requires a CRAM-MD5 enabled PAM.
+
 .SH "SEE ALSO"
 tcp-env(1),
 tcp-environ(5),

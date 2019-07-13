@@ -1,0 +1,154 @@
+README qmail SMTP Authentication
+================================
+
+Scope:
+------
+
+This patch supports RFC 2554 "SMTP Service Extension for Authentication" and 
+RFC 4409 "Message Submission for Mail" for 
+
+* qmail-smtpd and
+* qmail-remote
+
+and supports commonly the AUTH methods
+
+- CRAM-MD5
+- LOGIN (unsecure)
+- PLAIN (unsecure)
+
+Additionally, RFC 1870 is honoured ("SMTP Service Extension for Message Size Declaration").
+For more technical details see: http://www.fehcom.de/qmail/docu/smtpauth.html.
+
+
+Installation:
+-------------
+
+* Untar the source in the qmail-1.03 home direcotry.
+* Run ./install_auth.
+* Re-make qmail.
+
+
+Setup for qmail-smtpd:
+----------------------
+
+1. Prereqs:
+
+In order to use SMTP Authentication you have to use a 'Pluggable Authentication Module'
+PAM to be called by qmail-smtpd; typically
+
+	/var/qmail/bin/qmail-smtpd /bin/checkpassword true 2>&1
+
+Since qmail-smtpd does not run as root, checkpassword has to be made sticky.
+There is no need to include additionally the hostname in the call.
+In order to compute the CRAM-MD5 challenge, qmail-smtpd uses the 'tcplocalhost' information.
+
+2. Invocation:
+
+In order activate SMTP authentication, you need to provide the environment
+variable 'SMTPAUTH' to qmail-smtpd.
+
+Possible choices:
+	
+	a) SMTPAUTH=""; 	qmail-smtpd supports auth of type PLAIN and/or LOGIN.
+	b) SMTPAUTH="+cram";	qmail-smtpd will additionally annonce CRAM-MD5,
+				this requires a CRAM-MD5 supporting PAM.
+	c) SMTPAUTH="cram";	qmail-smtpd will only annonce CRAM-MD5.
+	d) SMTPAUTH="!";	this instructs qmail-smtpd to require (any type) authentication for this connection.
+				This behavior is equivalent to the Submission feaure.
+	e) SMTPAUTH="!cram";	same as d) but now CRAM-MD5 is the only method instead.
+
+
+Setup for qmail-remote:
+-----------------------
+
+SMTP Authentication with qmail-remote is faclitated by two means:
+
+a) SMTP Authentication by sender/sending domain as provided in the 'Mail From:'
+
+The control file 'authsenders' which works similar to 'control/smtproutes'
+but with additional authentication information (username + password):
+
+    @example.com:relay.example.com|user|passwd
+    info@example.com:relay.example.com:26|infouser|infopasswd
+    :mailrelay.example.com:587|e=mc2|testpass
+
+Note: The choice of the AUTH method depends on the capabilities of the server.
+
+b) SMTP Authentication by recipient domain: 
+
+The control file 'smtproutes' is enhanced with the authentication information:
+
+    authdomain.com:mx.authdomain.com:125|myuserid|mypassword
+    :mailrelay.example.com:587|e=mc2|testpass
+
+
+Historical Notes:
+-----------------
+
+SMTP authentication for qmail-smtpd was initially provided by Krysztof Dabrowski (version 0.31):
+
+
+Changes wrt. Krysztof Dabrowski's patch:
+
+* Avoid the 'hostname' in the call of the PAM.
+* Confirm to Dan Bernstein's checkpassword interface even for CRAM-MD5.
+* Doesn't close FD 2; thus not inhibiting logging to STDERR.
+* Fixed bugs in base64.c.
+* Modified unconditional close of FD 3 in order to sustain reading of 'control/morecpthosts.cdb'.
+* Evaluation of the (informational) Mail From: < > Auth=username.
+* Additional support for the advertised "Size" via 'Mail From: <return-path> SIZE=123456780' (RFC 1870).
+* RFC 3848 conformance for Received header in case of SMTP Auth (keyword ESMTPA).
+* Added SMTPAUTH environment variable.
+* The particular Submission feature has been removed; obsolete.
+
+
+SMTP authentication for qmail-remote is taken from Bjoern Kalkbrenner.
+
+Changes wrt. Bjoern Kalkbrenner's patch (version 0.0.1 / 20020715):
+
+* Uniform, modular support for LOGIN and PLAIN.
+* Added 'Mail From: < > Auth=username' information in provisionally XTEXT format.
+* Added CRAM-MD5 support.
+* Added authentication by recipient domain.
+
+
+Release Notes:
+--------------
+
+Version:	Notes:					Date:
+-------------------------------------------------------------------
+0.5.9		qmail-smtpd AUTH (only)			25.3.2008
+0.6.9		qmail-authentication			1.2.2010
+0.7.0		Based on qmail-authentication 0.69
+		including now CRAM-MD5 support
+		for qmail-remote			31.7.2010
+0.7.1		cosmetics for qmail-remote		5.8.2010
+0.7.2		authorization-id = authentication-id
+		for qmail-remote;
+		added SMTPAUTH environment variable 
+		for qmail-smtpd; backport from SC 2.7	29.4.2012
+0.7.3		Fixed missing AUTH for qmai-smtpd announcement.
+		Improved SUBMISSION port handling.	2.5.2012
+0.7.4		Fixed missing 250 statements for AUTH.
+		Changed SMTPAUTH settings for cram-md5 	18.5.2012
+0.7.5		Fixed bug in qmail-remote not respecting
+		announced AUTH types. Tx. Callum Gibson.
+		Added '432' server code evaluation for
+	 	AUTH password expired in qmail-remote. 	23.10.2012
+0.7.6		Fixed order of SMTP commands (tx roberto).
+							02.02.2013
+0.8.0		Added authentication by recipient domain
+		for qmail-remote.
+		Removed SUBMISSION port feature for
+		qmail-smtpd.				22.03.2013
+0.8.1		Added SMTPAUTH="!+crom" feature.	24.03.2013
+0.8.2		Bug fix: qmail-smtpd ACCEPTS auth commands
+		even if SMTPAUTH="-". (tx chris).	21.01.2015
+0.8.3		Fixed bug in MD5 calculation for AMD64.
+		Fixed 'die_nomem' bug in qmail-smtpd.	23.08.2015
+
+
+
+Erwin Hoffmann - Hoehn 2015-08-23 (www.fehcom.de)
+
+

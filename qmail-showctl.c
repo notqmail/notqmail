@@ -214,6 +214,7 @@ void main()
     _exit(111);
   }
 
+  do_lst("authsenders","No authenticated SMTP sender.","Authenicated SMTP sender: ","");
   do_lst("badmailfrom","Any MAIL FROM is allowed.",""," not accepted in MAIL FROM.");
   do_str("bouncefrom",0,"MAILER-DAEMON","Bounce user name is ");
   do_str("bouncehost",1,"bouncehost","Bounce host name is ");
@@ -265,8 +266,7 @@ void main()
   while (d = readdir(dir)) {
     if (str_equal(d->d_name,".")) continue;
     if (str_equal(d->d_name,"..")) continue;
-    if (str_equal(d->d_name,"bouncefrom")) continue;
-    if (str_equal(d->d_name,"bouncehost")) continue;
+    if (str_equal(d->d_name,"authsenders")) continue;
     if (str_equal(d->d_name,"badmailfrom")) continue;
     if (str_equal(d->d_name,"bouncefrom")) continue;
     if (str_equal(d->d_name,"bouncehost")) continue;

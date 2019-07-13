@@ -240,7 +240,7 @@ void smtp_rset(arg) char *arg;
 void smtp_mail(arg) char *arg;
 {
   if (!addrparse(arg)) { err_syntax(); return; }
-  flagbarf = bmfcheck();
+  if (!relayclient) flagbarf = bmfcheck();
   seenmail = 1;
   if (!stralloc_copys(&rcptto,"")) die_nomem();
   if (!stralloc_copys(&mailfrom,addr.s)) die_nomem();

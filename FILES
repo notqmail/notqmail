@@ -364,6 +364,8 @@ sgetopt.c
 subgetopt.3
 subgetopt.h
 subgetopt.c
+errbits.c
+errbits.h
 error.3
 error_str.3
 error_temp.3

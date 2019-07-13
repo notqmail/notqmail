@@ -1,0 +1,43 @@
+AUTHOR
+======
+
+Author:
+	Dr. Erwin Hoffmann - FEHCom Germany
+Web-Site: 	
+	http://www.fehcom.de/qmail.html
+E-Mail: 	
+	feh@fehcom.de
+
+
+LICENSE
+=======
+
+qmail AUTHENTICATION is free software.
+This includes:
+	You can download and use qmail AUTHENTICATION (and parts of it) as you like.
+	You can modify the source code without notification to or permission by the author.
+Please check:
+	http://www.cr.yp.to/softwarelaw.html
+
+
+DEPENDENCIES
+============
+
+qmail AUTHENTICATION patches (modifies) parts of the qmail-1.03 source files.
+It should only be applied against the source as supplied by D.J. Bernstein.
+
+
+FITNESS
+=======
+
+The Author does not guarantee a specific fitness of qmail AUTHENTICATION.
+If you use qmail AUTHENTICATION, it's on your own risk.
+
+
+DISTRIBUTION
+============
+
+qmail AUTHENTICATION may be included in ports and packages under the following conditions:
+	The port/package has to show the current version number of qmail AUTHENTICATION.
+	All files (namely this) have to be included.
+

@@ -1,0 +1,27 @@
+The qmail-smtpd Auth patch modifies the following QMAIL 1.03 files:
+
+= TARGETS
+= Makefile
+= qmail-smtpd.c
+= qmail-smtpd.8
+= qmail-remote.c
+= qmail-remote.8
+= qmail-showctl.c
+= qmail-control.9
+
+Added files:
+
++ base64.c
++ base64.h
++ case_startb.c
++ hmac_md5.h
++ hmac_md5.c
++ global.h
++ md5.h
++ md5c.c
+
+Informational files:
+
+% install_auth.sh  (Installation shell script)
+% LICENSE.authentication (some sort of ...)
+% README.auth

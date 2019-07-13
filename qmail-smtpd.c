@@ -28,9 +28,7 @@
 #include "commands.h"
 #include "errbits.h"
 
-#define enew()	{ eout("qmail-smtpd: pid "); epid(); eout3(" from ",remoteip,": "); }
-/* Or if you prefer shorter log messages (deduce IP from tcpserver PID entry), */
-/*              { eout("qmail-smtpd: pid "); epid(); eout(": "); } */
+#define enew()  { eout("qmail-smtpd["); epid(); eout("]: "); }
 #define MAXHOPS 100
 unsigned int databytes = 0;
 int timeout = 1200;

@@ -587,7 +587,7 @@ void tls_init()
   /* relevant in renegotiation */
   SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_OFF);
   if (!SSL_CTX_set_session_id_context(ctx, (void *)&session_id_context,
-                                        sizeof(session_id_context))) 
+                                        sizeof(session_id_context)))
     { SSL_CTX_free(ctx); tls_err("failed to set session_id_context"); return; }
 
   if (!SSL_CTX_use_certificate_chain_file(ctx, SERVERCERT))
@@ -600,7 +600,7 @@ void tls_init()
       (X509_load_crl_file(lookup, CLIENTCRL, X509_FILETYPE_PEM) == 1))
     X509_STORE_set_flags(store, X509_V_FLAG_CRL_CHECK |
                                 X509_V_FLAG_CRL_CHECK_ALL);
-  
+
   SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, NULL);
 
   SSL_CTX_set_dh_auto(ctx, 1);

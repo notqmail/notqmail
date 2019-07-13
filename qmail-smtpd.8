@@ -67,8 +67,8 @@ the client-presented certificates during a TLS-encrypted session.
 .TP 5
 .I clientcrl.pem
 A list of Certificate Revocation Lists (CRLs). If present it
-should contain the CRLs of the CAs in 
-.I clientca.pem 
+should contain the CRLs of the CAs in
+.I clientca.pem
 and client certs will be checked for revocation.
 
 .TP 5
@@ -103,7 +103,7 @@ is set, it overrides
 .I dh2048.pem
 If these 2048 bit DH parameters are provided,
 .B qmail-smtpd
-will use them for TLS sessions instead of generating one on-the-fly 
+will use them for TLS sessions instead of generating one on-the-fly
 (which is very timeconsuming).
 
 .TP 5
@@ -190,7 +190,7 @@ will use it for TLS sessions instead of generating one on-the-fly.
 
 .TP 5
 .I servercert.pem
-SSL certificate to be presented to clients in TLS-encrypted sessions. 
+SSL certificate to be presented to clients in TLS-encrypted sessions.
 Should contain both the certificate and the private key. Certifying Authority
 (CA) and intermediate certificates can be added at the end of the file.
 

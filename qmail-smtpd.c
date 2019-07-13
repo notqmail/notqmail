@@ -203,8 +203,13 @@ int bmfcheck()
   if (!bmfok) return 0;
   if (constmap(&mapbmf,addr.s,addr.len - 1)) return 1;
   j = byte_rchr(addr.s,addr.len,'@');
-  if (j < addr.len)
+  if (j < addr.len) {
     if (constmap(&mapbmf,addr.s + j,addr.len - j - 1)) return 1;
+    for (j++; j < addr.len; j++)
+      if (addr.s[j] == '.') {
+	if(constmap(&mapbmf,addr.s + j,addr.len - j - 1)) return 1;
+      }
+  }
   return 0;
 }
 

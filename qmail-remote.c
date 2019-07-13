@@ -57,7 +57,7 @@ struct ip_address partner;
 
 int tls_init();
 const char *ssl_err_str = 0;
-#endif 
+#endif
 
 void out(s) char *s; { if (substdio_puts(subfdoutsmall,s) == -1) _exit(0); }
 void zero() { if (substdio_put(subfdoutsmall,"\0",1) == -1) _exit(0); }
@@ -142,7 +142,7 @@ int safewrite(fd,buf,len) int fd; char *buf; int len;
     r = ssl_timeoutwrite(timeout, smtpfd, smtpfd, ssl, buf, len);
     if (r < 0) ssl_err_str = ssl_error_str();
   } else
-#endif 
+#endif
   r = timeoutwrite(timeout,smtpfd,buf,len);
   if (r <= 0) dropped();
   return r;
@@ -269,7 +269,6 @@ char *append;
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
   OSSL_HANDSHAKE_STATE state = ssl ? SSL_get_state(ssl) : TLS_ST_BEFORE;
   if (state & TLS_ST_OK || (!smtps && state & TLS_ST_BEFORE))
-  
 #else
   int state = ssl ? ssl->state : SSL_ST_BEFORE;
   if (state & SSL_ST_OK || (!smtps && state & SSL_ST_BEFORE))
@@ -382,7 +381,7 @@ int tls_init()
     if (!stralloc_copys(&tmp, "control/tlshosts/")
       || !stralloc_catb(&tmp, partner_fqdn, str_len(partner_fqdn))
       || !stralloc_catb(&tmp, ".pem", 5)) temp_nomem();
-    if (stat(tmp.s, &st) == 0) 
+    if (stat(tmp.s, &st) == 0)
       servercert = tmp.s;
     else {
       if (!stralloc_copys(&tmp, "control/notlshosts/")
@@ -396,7 +395,7 @@ int tls_init()
       alloc_free(tmp.s);
     }
   }
- 
+
   if (!smtps) {
     stralloc *sa = ehlokw.sa;
     unsigned int len = ehlokw.len;
@@ -592,7 +591,7 @@ void smtp()
     /* and if EHLO failed, use HELO */
   } else {
 #endif
- 
+
   substdio_puts(&smtpto,"HELO ");
   substdio_put(&smtpto,helohost.s,helohost.len);
   substdio_puts(&smtpto,"\r\n");

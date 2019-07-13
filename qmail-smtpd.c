@@ -473,7 +473,7 @@ RSA *tmp_rsa_cb(SSL *ssl, int export, int keylen)
   }
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
   BIGNUM *e; /*exponent */
-  e = BN_new(); 
+  e = BN_new();
   BN_set_word(e, RSA_F4);
   if (RSA_generate_key_ex(rsa, keylen, e, NULL) == 1)
     return rsa;
@@ -503,7 +503,7 @@ DH *tmp_dh_cb(SSL *ssl, int export, int keylen)
 #else
   return DH_generate_parameters(keylen, DH_GENERATOR_2, NULL, NULL);
 #endif
-} 
+}
 
 /* don't want to fail handshake if cert isn't verifiable */
 int verify_cb(int preverify_ok, X509_STORE_CTX *x509_ctx) { return 1; }
@@ -636,7 +636,7 @@ void tls_init()
   /* relevant in renegotiation */
   SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_OFF);
   if (!SSL_CTX_set_session_id_context(ctx, (void *)&session_id_context,
-                                        sizeof(session_id_context))) 
+                                        sizeof(session_id_context)))
     { SSL_CTX_free(ctx); tls_err("failed to set session_id_context"); return; }
 
   if (!SSL_CTX_use_certificate_chain_file(ctx, SERVERCERT))
@@ -649,7 +649,7 @@ void tls_init()
       (X509_load_crl_file(lookup, CLIENTCRL, X509_FILETYPE_PEM) == 1))
     X509_STORE_set_flags(store, X509_V_FLAG_CRL_CHECK |
                                 X509_V_FLAG_CRL_CHECK_ALL);
-  
+
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
   /* support ECDH */
   SSL_CTX_set_ecdh_auto(ctx,1);

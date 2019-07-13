@@ -30,7 +30,6 @@ int timeout = 1200;
 
 static const char *protocol = "SMTP";
 
-#ifdef TLS
 #include <sys/stat.h>
 #include "tls.h"
 #include "ssl_timeoutio.h"
@@ -39,16 +38,13 @@ void tls_init();
 int tls_verify();
 void tls_nogateway();
 int ssl_rfd = -1, ssl_wfd = -1; /* SSL_get_Xfd() are broken */
-#endif
 
 int safewrite(fd,buf,len) int fd; char *buf; int len;
 {
   int r;
-#ifdef TLS
   if (ssl && fd == ssl_wfd)
     r = ssl_timeoutwrite(timeout, ssl_rfd, ssl_wfd, ssl, buf, len);
   else
-#endif
   r = timeoutwrite(timeout,fd,buf,len);
   if (r <= 0) _exit(1);
   return r;
@@ -68,16 +64,12 @@ void die_ipme() { out("421 unable to figure out my IP addresses (#4.3.0)\r\n"); 
 void straynewline() { out("451 See https://cr.yp.to/docs/smtplf.html.\r\n"); flush(); _exit(1); }
 
 void err_bmf() { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
-#ifndef TLS
-void err_nogateway() { out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n"); }
-#else
 void err_nogateway()
 {
   out("553 sorry, that domain isn't in my list of allowed rcpthosts");
   tls_nogateway();
   out(" (#5.7.1)\r\n");
 }
-#endif
 void err_unimpl(arg) char *arg; { out("502 unimplemented (#5.5.1)\r\n"); }
 void err_syntax() { out("555 syntax error (#5.5.4)\r\n"); }
 void err_wantmail() { out("503 MAIL first (#5.5.1)\r\n"); }
@@ -159,10 +151,8 @@ void setup()
   remoteinfo = env_get("TCPREMOTEINFO");
   relayclient = env_get("RELAYCLIENT");
 
-#ifdef TLS
   if (env_get("SMTPS")) { smtps = 1; tls_init(); }
   else
-#endif
   dohelo(remotehost);
 }
 
@@ -245,9 +235,7 @@ int addrallowed()
   int r;
   r = rcpthosts(addr.s,str_len(addr.s));
   if (r == -1) die_control();
-#ifdef TLS
   if (r == 0) if (tls_verify()) r = -2;
-#endif
   return r;
 }
 
@@ -265,14 +253,10 @@ void smtp_helo(arg) char *arg;
 /* ESMTP extensions are published here */
 void smtp_ehlo(arg) char *arg;
 {
-#ifdef TLS
   struct stat st;
-#endif
   smtp_greet("250-");
-#ifdef TLS
   if (!ssl && (stat("control/servercert.pem",&st) == 0))
     out("\r\n250-STARTTLS");
-#endif
   out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
   seenmail = 0; dohelo(arg);
 }
@@ -313,11 +297,9 @@ int saferead(fd,buf,len) int fd; char *buf; int len;
 {
   int r;
   flush();
-#ifdef TLS
   if (ssl && fd == ssl_rfd)
     r = ssl_timeoutread(timeout, ssl_rfd, ssl_wfd, ssl, buf, len);
   else
-#endif
   r = timeoutread(timeout,fd,buf,len);
   if (r == -1) if (errno == error_timeout) die_alarm();
   if (r <= 0) die_read();
@@ -326,9 +308,7 @@ int saferead(fd,buf,len) int fd; char *buf; int len;
 
 char ssinbuf[1024];
 substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof ssinbuf);
-#ifdef TLS
 void flush_io() { ssin.p = 0; flush(); }
-#endif
 
 struct qmail qqt;
 unsigned int bytestooverflow = 0;
@@ -446,7 +426,6 @@ void smtp_data(arg) char *arg; {
   out("\r\n");
 }
 
-#ifdef TLS
 stralloc proto = {0};
 int ssl_verified = 0;
 const char *ssl_verify_err = 0;
@@ -709,8 +688,6 @@ void tls_init()
 # undef SERVERCERT
 # undef CLIENTCA
 
-#endif
-
 struct commands smtpcommands[] = {
   { "rcpt", smtp_rcpt, 0 }
 , { "mail", smtp_mail, 0 }
@@ -720,9 +697,7 @@ struct commands smtpcommands[] = {
 , { "ehlo", smtp_ehlo, flush }
 , { "rset", smtp_rset, 0 }
 , { "help", smtp_help, flush }
-#ifdef TLS
 , { "starttls", smtp_tls, flush_io }
-#endif
 , { "noop", err_noop, flush }
 , { "vrfy", err_vrfy, flush }
 , { 0, err_unimpl, flush }

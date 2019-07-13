@@ -1,4 +1,3 @@
-#ifdef TLS
 #include "select.h"
 #include "error.h"
 #include "ndelay.h"
@@ -123,4 +122,3 @@ int ssl_timeoutwrite(int t, int rfd, int wfd, SSL *ssl, char *buf, int len)
   if (!buf) return 0;
   return ssl_timeoutio(SSL_write, t, rfd, wfd, ssl, buf, len);
 }
-#endif

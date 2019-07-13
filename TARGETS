@@ -7,6 +7,7 @@ compile
 qmail-local.o
 qmail.o
 quote.o
+base64.o
 gfrom.o
 myctime.o
 slurpclose.o
@@ -182,6 +183,8 @@ dns.lib
 qmail-remote
 qmail-rspawn.o
 tcpto_clean.o
+md5c.o
+hmac_md5.o
 qmail-rspawn
 direntry.h
 qmail-clean.o

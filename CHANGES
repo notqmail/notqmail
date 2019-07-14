@@ -1,3 +1,4 @@
+20190714 code: removed idedit, install-big. var-qmail packages are no more.
 20190708 code: lookup uid/gid at runtime.
 20190711 portability problem: explicitly initialize strerr_sys and
          define BIND_8_COMPAT to work around Mac OS X.

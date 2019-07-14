@@ -38,9 +38,6 @@ VERSION
 SYSDEPS
 TARGETS
 Makefile
-BIN.README
-BIN.Makefile
-idedit.c
 conf-break
 auto_break.h
 conf-spawn
@@ -215,7 +212,6 @@ auto-uid.c
 hier.c
 install.c
 instcheck.c
-install-big.c
 alloc.3
 alloc.h
 alloc.c

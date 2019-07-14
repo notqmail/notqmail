@@ -1,3 +1,4 @@
+20190714 code: removed idedit, install-big.  var-qmail packages are no more.
 20190708 code: use DESTDIR environment variable as root directory in install.
 20071130 version: netqmail 1.06
 20071130 legal: qmail-1.03 is now in the public domain

@@ -728,36 +728,12 @@ hostname.o: \
 compile hostname.c substdio.h subfd.h substdio.h readwrite.h exit.h
 	./compile hostname.c
 
-idedit: \
-load idedit.o strerr.a substdio.a error.a str.a fs.a wait.a open.a \
-seek.a
-	./load idedit strerr.a substdio.a error.a str.a fs.a \
-	wait.a open.a seek.a 
-
-idedit.o: \
-compile idedit.c readwrite.h exit.h scan.h fmt.h strerr.h open.h \
-seek.h fork.h
-	./compile idedit.c
-
 install: \
 load install.o fifo.o hier.o auto_qmail.o auto_split.o auto_uids.o \
 strerr.a substdio.a open.a error.a env.a str.a fs.a stralloc.a alloc.a
 	./load install fifo.o hier.o auto_qmail.o auto_split.o \
 	auto_uids.o strerr.a substdio.a open.a error.a env.a str.a fs.a \
 	stralloc.a alloc.a
-
-install-big: \
-load install-big.o fifo.o install.o auto_qmail.o auto_split.o \
-auto_uids.o strerr.a substdio.a open.a error.a env.a str.a fs.a stralloc.a \
-alloc.a
-	./load install-big fifo.o install.o auto_qmail.o \
-	auto_split.o auto_uids.o strerr.a substdio.a open.a error.a \
-	env.a str.a fs.a stralloc.a alloc.a
-
-install-big.o: \
-compile install-big.c auto_qmail.h auto_split.h auto_uids.h fmt.h \
-fifo.h
-	./compile install-big.c
 
 install.o: \
 compile install.c substdio.h strerr.h env.h error.h fifo.h open.h \
@@ -808,9 +784,8 @@ qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast dnscname \
 dnsptr dnsip dnsmxip dnsfq hostname ipmeprint qreceipt qsmhook qbiff \
 forward preline condredirect bouncesaying except maildirmake \
-maildir2mbox maildirwatch qail elq pinq idedit install-big install \
-instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
-binm3 binm3+df
+maildir2mbox maildirwatch qail elq pinq install instcheck home home+df \
+proc proc+df binm1 binm1+df binm2 binm2+df binm3 binm3+df
 
 load: \
 make-load warn-auto.sh systype

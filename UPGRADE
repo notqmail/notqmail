@@ -58,9 +58,7 @@ How to install:
 10. Read TEST.receive.
 
 
-That's it! To report success:
-       % ( echo 'First M. Last'; cat `cat SYSDEPS` ) | mail djb-qst@cr.yp.to
-Replace First M. Last with your name.
+That's it!
 
 If you have questions about qmail, join the qmail mailing list; see
 http://pobox.com/~djb/qmail.html.

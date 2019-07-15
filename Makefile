@@ -361,8 +361,8 @@ case.h
 	./compile commands.c
 
 compile: \
-make-compile warn-auto.sh systype
-	( cat warn-auto.sh; ./make-compile "`cat systype`" ) > \
+make-compile warn-auto.sh
+	( cat warn-auto.sh; ./make-compile ) > \
 	compile
 	chmod 755 compile
 
@@ -573,11 +573,6 @@ compile fd_move.c fd.h
 fifo.o: \
 compile fifo.c hasmkffo.h fifo.h
 	./compile fifo.c
-
-find-systype: \
-find-systype.sh auto-ccld.sh
-	cat auto-ccld.sh find-systype.sh > find-systype
-	chmod 755 find-systype
 
 fmt_str.o: \
 compile fmt_str.c fmt.h
@@ -830,8 +825,8 @@ instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
 binm3 binm3+df
 
 load: \
-make-load warn-auto.sh systype
-	( cat warn-auto.sh; ./make-load "`cat systype`" ) > load
+make-load warn-auto.sh
+	( cat warn-auto.sh; ./make-load ) > load
 	chmod 755 load
 
 lock.a: \
@@ -938,8 +933,8 @@ make-makelib.sh auto-ccld.sh
 	chmod 755 make-makelib
 
 makelib: \
-make-makelib warn-auto.sh systype
-	( cat warn-auto.sh; ./make-makelib "`cat systype`" ) > \
+make-makelib warn-auto.sh
+	( cat warn-auto.sh; ./make-makelib ) > \
 	makelib
 	chmod 755 makelib
 
@@ -2017,10 +2012,6 @@ trysyslog.c compile load
 	./load trysyslog -lgen ) >/dev/null 2>&1 \
 	&& echo -lgen || exit 0 ) > syslog.lib
 	rm -f trysyslog.o trysyslog
-
-systype: \
-find-systype trycpp.c
-	./find-systype > systype
 
 tcp-env: \
 load tcp-env.o dns.o remoteinfo.o timeoutread.o timeoutwrite.o \

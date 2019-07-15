@@ -1,7 +1,5 @@
 auto-ccld.sh
 make-load
-find-systype
-systype
 load
 make-compile
 compile

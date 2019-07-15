@@ -12,6 +12,7 @@ hassgprm.h
 haswaitp.h
 hasmkffo.h
 uint32.h
+qtmp.h
 dns.lib
 socket.lib
 syslog.lib

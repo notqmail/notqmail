@@ -115,7 +115,7 @@ and is essentially part of the UA.
 
 6. Keep it simple, stupid.
 
-See BLURB for some of the reasons that qmail is so much smaller than
+See BLURB.md for some of the reasons that qmail is so much smaller than
 sendmail. There's nothing inherently complicated about writing a mailer.
 (Except RFC 822 support; but that's only in qmail-inject.) Security
 holes can't show up in features that don't exist. 

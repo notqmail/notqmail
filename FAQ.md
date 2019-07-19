@@ -240,7 +240,7 @@ Answer: Put
 into ~/.qmail. You'll have to use a full path for procmail unless
 procmail is in the system's startup PATH. Note that procmail will try to
 deliver to /var/spool/mail/$USER by default; to change this, see
-INSTALL.mbox.
+INSTALL.mbox.md.
 
 
 4.5. How do I use elm's filter with qmail?

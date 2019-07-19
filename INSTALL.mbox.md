@@ -10,7 +10,7 @@ that don't have flock (HP/UX, Solaris), and flock locking otherwise.
 This file explains how to switch your system to ~user/Mailbox. You
 aren't required to do this; for further discussion of /var/spool/mail,
 and an explanation of how to continue using binmail for local
-deliveries, see INSTALL.vsm.
+deliveries, see INSTALL.vsm.md.
 
 The basic procedure for switching to ~user/Mailbox is simple:
 

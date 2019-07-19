@@ -49,13 +49,13 @@ How to install:
  7. Reenable deliveries:
        # csh -cf '/var/qmail/rc &'
 
- 8. Read TEST.deliver.
+ 8. Read TEST.deliver.md.
 
  9. Reenable SMTP service by restoring the smtp line in inetd.conf; kill
     -HUP your inetd. (If you are using tcpserver, simply kill -CONT your
     tcpserver. If you are running a QMTP server, reenable that too.)
 
-10. Read TEST.receive.
+10. Read TEST.receive.md.
 
 
 That's it!

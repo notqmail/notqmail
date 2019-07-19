@@ -33,6 +33,6 @@ checking if a recipient is local, etc.---without talking to the network.
 The point is that qmail can continue accepting and delivering local mail
 even if your network connection goes down.)
 
-Next, read through FAQ for information on setting up optional features
+Next, read through FAQ.md for information on setting up optional features
 like masquerading. If you really want to learn right now what all the
 configuration possibilities are, see qmail-control.0.

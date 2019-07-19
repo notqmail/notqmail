@@ -1,5 +1,5 @@
 Thanks to lots of people for success and failure reports, code, ideas,
-and documentation. See CHANGES for details of specific contributions.
+and documentation. See CHANGES.md for details of specific contributions.
 Sorry if I left anyone out.
 
 A2B = Are Bryne

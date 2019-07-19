@@ -1,3 +1,4 @@
+20200523 doc: give text files .md extensions.
 20200523 cleanup: remove qsmhook, replaced by preline.
 20200520 remove wrappers for obsolete mail clients without maildir support
 20200520 version: notqmail 1.08.

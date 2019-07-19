@@ -112,7 +112,7 @@ char *post;
   substdio_puts(subfdout,"\n");
   substdio_puts(subfdout,fn);
   substdio_puts(subfdout,": ");
-  switch(control_readfile(&line,fn)) {
+  switch(control_readfile(&line,fn,0)) {
     case 0:
       substdio_puts(subfdout,"(Default.) ");
       substdio_puts(subfdout,def);

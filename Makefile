@@ -4,6 +4,8 @@ SHELL=/bin/sh
 
 default: it
 
+.PHONY: check clean default it man
+
 addresses.0: \
 addresses.5
 	nroff -man addresses.5 > addresses.0

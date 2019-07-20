@@ -14,8 +14,8 @@ static unsigned int avail = SPACE; /* multiple of ALIGNMENT; 0<=avail<=SPACE */
 unsigned int n;
 {
   char *x;
-  unsigned int m = n;
-  if ((n = ALIGNMENT + n - (n & (ALIGNMENT - 1))) < m) { /* XXX: handle overflow */
+  unsigned int m;
+  if (__builtin_add_overflow(ALIGNMENT, n - (n & (ALIGNMENT - 1)), &m)) {
     errno = error_nomem;
     return 0;
   }

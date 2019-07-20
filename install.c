@@ -47,7 +47,7 @@ int mode;
   sl = str_rchr(home, '/');
   if (!stralloc_copyb(&parent,home,sl)) die_nomem();
   if (!stralloc_0(&parent)) die_nomem();
-  r = mkdir_p(parent.s);
+  r = mkdir_p(parent.s,mode);
   alloc_free(parent.s);
   if (r && errno != error_exist)
     return r;

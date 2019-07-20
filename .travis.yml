@@ -4,6 +4,10 @@ compiler:
  - gcc
  - clang
 script:
+ - echo "${CC} -O2 -Wall" > conf-cc
+ - make it man
+ - env DESTDIR=/tmp/qmail make package
+ - sudo make package
  - sudo groupadd -g 200 nofiles
  - sudo groupadd -g 201 qmail
  - sudo useradd -u 200 -g 200 -d /var/qmail/alias alias
@@ -13,6 +17,7 @@ script:
  - sudo useradd -u 204 -g 201 -d /var/qmail qmailq
  - sudo useradd -u 205 -g 201 -d /var/qmail qmailr
  - sudo useradd -u 206 -g 201 -d /var/qmail qmails
- - echo "${CC} -O2 -Wall" > conf-cc
- - make
+ - sudo ./instchown
+ - sudo make check
+ - sudo rm -rf /var/qmail
  - sudo make setup check

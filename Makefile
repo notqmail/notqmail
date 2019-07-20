@@ -15,12 +15,18 @@ makelib alloc.o alloc_re.o
 	./makelib alloc.a alloc.o alloc_re.o
 
 alloc.o: \
-compile alloc.c alloc.h error.h
+compile alloc.c alloc.h error.h hasbltnoverflow.h
 	./compile alloc.c
 
 alloc_re.o: \
 compile alloc_re.c alloc.h byte.h
 	./compile alloc_re.c
+
+hasbltnoverflow.h: \
+trybltnoverflow.c compile load
+	(./compile trybltnoverflow.c >/dev/null 2>&1 \
+	&& echo \#define HAS_BUILTIN_OVERFLOW 1 || exit 0 ) > hasbltnoverflow.h
+	rm -f trybltnoverflow.o trybltnoverflow
 
 auto-ccld.sh: \
 conf-cc conf-ld warn-auto.sh

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "alloc.h"
 #include "error.h"
+#include "hasbltnoverflow.h"
 
 #define ALIGNMENT 16 /* XXX: assuming that this alignment is enough */
 #define SPACE 4096 /* must be multiple of ALIGNMENT */
@@ -15,7 +16,12 @@ unsigned int n;
 {
   char *x;
   unsigned int m;
+#ifdef HAS_BUILTIN_OVERFLOW
   if (__builtin_add_overflow(ALIGNMENT, n - (n & (ALIGNMENT - 1)), &m)) {
+#else
+  m = n;
+  if ((n = ALIGNMENT + n - (n & (ALIGNMENT - 1))) < m) { /*- handle overflow */
+#endif
     errno = error_nomem;
     return 0;
   }

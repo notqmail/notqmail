@@ -1,3 +1,7 @@
+20190711 portability problem: explicitly initialize strerr_sys and
+         define BIND_8_COMPAT to work around Mac OS X.
+20190709 doc: rename INSTALL, SENDMAIL to INSTALL.md, SENDMAIL.md to
+         support building on case-insensitive filesystems.
 20190715 code: detect and prefer utmpx where available.
 20190708 code: use DESTDIR environment variable as root directory in install.
 20071130 version: netqmail 1.06

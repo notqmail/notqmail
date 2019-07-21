@@ -69,7 +69,7 @@ void smtp_greet(code) char *code;
 }
 void smtp_help(arg) char *arg;
 {
-  out("214 netqmail home page: http://qmail.org/netqmail\r\n");
+  out("214 notqmail home page: https://notqmail.org\r\n");
 }
 void smtp_quit(arg) char *arg;
 {

@@ -5,8 +5,8 @@
 #include "stralloc.h"
 
 int getln(ss,sa,match,sep)
-register substdio *ss;
-register stralloc *sa;
+substdio *ss;
+stralloc *sa;
 int *match;
 int sep;
 {

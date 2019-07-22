@@ -1,11 +1,11 @@
 #include "str.h"
 
 unsigned int str_chr(s,c)
-register char *s;
+char *s;
 int c;
 {
-  register char ch;
-  register char *t;
+  char ch;
+  char *t;
 
   ch = c;
   t = s;

@@ -2,12 +2,12 @@
 
 unsigned int byte_rchr(s,n,c)
 char *s;
-register unsigned int n;
+unsigned int n;
 int c;
 {
-  register char ch;
-  register char *t;
-  register char *u;
+  char ch;
+  char *t;
+  char *u;
 
   ch = c;
   t = s;

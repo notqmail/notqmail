@@ -1,3 +1,4 @@
+- 20210122 code: remove register storage class declaration from codebase.
 - 20201206 code: extend qmail-queue(8) interface so a custom rejection
            message can be communicated to the caller.
 - 20201120 code: add instqueue for packagers, extracted from instpackage.

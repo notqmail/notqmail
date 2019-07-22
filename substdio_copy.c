@@ -1,10 +1,10 @@
 #include "substdio.h"
 
 int substdio_copy(ssout,ssin)
-register substdio *ssout;
-register substdio *ssin;
+substdio *ssout;
+substdio *ssin;
 {
-  register char *x;
+  char *x;
 
   for (;;) {
     ssize_t n;

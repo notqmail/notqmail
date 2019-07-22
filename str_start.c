@@ -1,10 +1,10 @@
 #include "str.h"
 
 int str_start(s,t)
-register char *s;
-register char *t;
+char *s;
+char *t;
 {
-  register char x;
+  char x;
 
   for (;;) {
     x = *t++; if (!x) return 1; if (x != *s++) return 0;

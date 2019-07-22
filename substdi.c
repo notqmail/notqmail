@@ -12,12 +12,12 @@ static ssize_t oneread(ssize_t (*op)(), int fd, char *buf, size_t len)
 }
 
 static int getthis(s,buf,len)
-register substdio *s;
-register char *buf;
-register int len;
+substdio *s;
+char *buf;
+int len;
 {
-  register int r;
-  register int q;
+  int r;
+  int q;
  
   r = s->p;
   q = r - len;
@@ -30,7 +30,7 @@ register int len;
 ssize_t substdio_feed(substdio *s)
 {
   ssize_t r;
-  register int q;
+  int q;
 
   if (s->p) return s->p;
   q = s->n;
@@ -69,14 +69,14 @@ ssize_t substdio_get(substdio *s, char *buf, size_t len)
 }
 
 char *substdio_peek(s)
-register substdio *s;
+substdio *s;
 {
   return s->x + s->n;
 }
 
 void substdio_seek(s,len)
-register substdio *s;
-register int len;
+substdio *s;
+int len;
 {
   s->n += len;
   s->p -= len;

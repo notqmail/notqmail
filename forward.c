@@ -1,5 +1,5 @@
+#include <unistd.h>
 #include "sig.h"
-#include "readwrite.h"
 #include "exit.h"
 #include "env.h"
 #include "qmail.h"

@@ -2,10 +2,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 #include "ndelay.h"
 #include "select.h"
 #include "error.h"
-#include "readwrite.h"
 #include "ip.h"
 #include "byte.h"
 #include "timeoutconn.h"

@@ -1,6 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "readwrite.h"
+#include <unistd.h>
 #include "sig.h"
 #include "direntry.h"
 #include "control.h"

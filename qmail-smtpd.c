@@ -1,5 +1,5 @@
+#include <unistd.h>
 #include "sig.h"
-#include "readwrite.h"
 #include "stralloc.h"
 #include "substdio.h"
 #include "alloc.h"

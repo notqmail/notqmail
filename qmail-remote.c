@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 #include "sig.h"
 #include "stralloc.h"
 #include "substdio.h"
@@ -24,7 +25,6 @@
 #include "exit.h"
 #include "constmap.h"
 #include "tcpto.h"
-#include "readwrite.h"
 #include "timeoutconn.h"
 #include "timeoutread.h"
 #include "timeoutwrite.h"

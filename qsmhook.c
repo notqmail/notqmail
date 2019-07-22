@@ -1,6 +1,6 @@
+#include <unistd.h>
 #include "fd.h"
 #include "stralloc.h"
-#include "readwrite.h"
 #include "sgetopt.h"
 #include "wait.h"
 #include "env.h"

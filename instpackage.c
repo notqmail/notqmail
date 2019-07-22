@@ -1,10 +1,10 @@
+#include <unistd.h>
 #include "substdio.h"
 #include "strerr.h"
 #include "env.h"
 #include "error.h"
 #include "fifo.h"
 #include "open.h"
-#include "readwrite.h"
 #include "exit.h"
 #include "alloc.h"
 #include "str.h"

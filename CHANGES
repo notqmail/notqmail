@@ -1,3 +1,4 @@
+20190822 code: remove register storage class declaration from codebase.
 20190826 code: if $QMAILREMOTE is set, it's invoked instead of qmail-remote.
 20190822 cleanup: remove unused dnsmxip.
 20190822 cleanup: remove unused dnscname.

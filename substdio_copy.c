@@ -1,11 +1,11 @@
 #include "substdio.h"
 
 int substdio_copy(ssout,ssin)
-register substdio *ssout;
-register substdio *ssin;
+substdio *ssout;
+substdio *ssin;
 {
-  register int n;
-  register char *x;
+  int n;
+  char *x;
 
   for (;;) {
     n = substdio_feed(ssin);

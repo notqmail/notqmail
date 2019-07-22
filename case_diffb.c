@@ -1,12 +1,12 @@
 #include "case.h"
 
 int case_diffb(s,len,t)
-register char *s;
+char *s;
 unsigned int len;
-register char *t;
+char *t;
 {
-  register unsigned char x;
-  register unsigned char y;
+  unsigned char x;
+  unsigned char y;
 
   while (len > 0) {
     --len;

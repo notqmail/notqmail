@@ -1,8 +1,8 @@
 #include "fmt.h"
 
-unsigned int fmt_ulong(s,u) register char *s; register unsigned long u;
+unsigned int fmt_ulong(s,u) char *s; unsigned long u;
 {
-  register unsigned int len; register unsigned long q;
+  unsigned int len; unsigned long q;
   len = 1; q = u;
   while (q > 9) { ++len; q /= 10; }
   if (s) {

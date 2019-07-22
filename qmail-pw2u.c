@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "byte.h"
 #include "substdio.h"
 #include "readwrite.h"
@@ -14,7 +15,6 @@
 #include "open.h"
 #include "error.h"
 #include "getln.h"
-#include "exit.h"
 #include "auto_break.h"
 #include "auto_qmail.h"
 #include "auto_users.h"

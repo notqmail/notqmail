@@ -1,6 +1,6 @@
+#include <unistd.h>
 #include "substdio.h"
 #include "readwrite.h"
-#include "exit.h"
 
 char buf1[256];
 substdio ss1 = SUBSTDIO_FDBUF(write,1,buf1,sizeof(buf1));

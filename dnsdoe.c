@@ -1,6 +1,6 @@
+#include <unistd.h>
 #include "substdio.h"
 #include "subfd.h"
-#include "exit.h"
 #include "dns.h"
 #include "dnsdoe.h"
 

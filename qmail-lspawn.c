@@ -1,10 +1,10 @@
+#include <unistd.h>
 #include "fd.h"
 #include "wait.h"
 #include "prot.h"
 #include "substdio.h"
 #include "stralloc.h"
 #include "scan.h"
-#include "exit.h"
 #include "fork.h"
 #include "error.h"
 #include "byte.h"

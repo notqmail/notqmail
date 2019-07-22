@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "stralloc.h"
 #include "substdio.h"
 #include "subfd.h"
@@ -14,7 +15,6 @@
 #include "date822fmt.h"
 #include "readwrite.h"
 #include "error.h"
-#include "exit.h"
 
 readsubdir rs;
 

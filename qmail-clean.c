@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "readwrite.h"
 #include "sig.h"
 #include "now.h"
@@ -13,7 +14,6 @@
 #include "scan.h"
 #include "fmt.h"
 #include "error.h"
-#include "exit.h"
 #include "fmtqfn.h"
 #include "auto_qmail.h"
 

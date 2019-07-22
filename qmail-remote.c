@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 #include "sig.h"
 #include "stralloc.h"
 #include "substdio.h"
@@ -21,7 +22,6 @@
 #include "gen_allocdefs.h"
 #include "str.h"
 #include "now.h"
-#include "exit.h"
 #include "constmap.h"
 #include "tcpto.h"
 #include "readwrite.h"

@@ -1,9 +1,9 @@
 #include <sys/types.h>
+#include <unistd.h>
 #include <pwd.h>
 #include "uidgid.h"
 #include "subfd.h"
 #include "substdio.h"
-#include "exit.h"
 
 int
 inituid(user)

@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "sig.h"
 #include "substdio.h"
 #include "stralloc.h"
@@ -16,7 +17,6 @@
 #include "error.h"
 #include "qmail.h"
 #include "now.h"
-#include "exit.h"
 #include "quote.h"
 #include "headerbody.h"
 #include "auto_qmail.h"

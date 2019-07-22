@@ -1,6 +1,6 @@
+#include <unistd.h>
 #include "fd.h"
 #include "prot.h"
-#include "exit.h"
 #include "fork.h"
 #include "uidgid.h"
 #include "auto_uids.h"

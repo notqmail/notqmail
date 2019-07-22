@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "sig.h"
 #include "env.h"
 #include "substdio.h"
@@ -12,7 +13,6 @@
 #include "gen_alloc.h"
 #include "gen_allocdefs.h"
 #include "headerbody.h"
-#include "exit.h"
 #include "open.h"
 #include "quote.h"
 #include "qmail.h"

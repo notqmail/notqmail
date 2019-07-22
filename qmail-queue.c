@@ -1,8 +1,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "readwrite.h"
 #include "sig.h"
-#include "exit.h"
 #include "open.h"
 #include "seek.h"
 #include "fmt.h"

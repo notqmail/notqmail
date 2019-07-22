@@ -1,8 +1,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "substdio.h"
 #include "subfd.h"
-#include "exit.h"
 #include "fmt.h"
 #include "str.h"
 #include "control.h"

@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "stralloc.h"
 #include "substdio.h"
 #include "qmail.h"
@@ -12,7 +13,6 @@
 #include "readwrite.h"
 #include "control.h"
 #include "received.h"
-#include "exit.h"
 
 void badproto() { _exit(100); }
 void resources() { _exit(111); }

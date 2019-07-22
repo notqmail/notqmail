@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "fd.h"
 #include "stralloc.h"
 #include "readwrite.h"
@@ -7,7 +8,6 @@
 #include "byte.h"
 #include "str.h"
 #include "alloc.h"
-#include "exit.h"
 #include "fork.h"
 #include "case.h"
 #include "subfd.h"

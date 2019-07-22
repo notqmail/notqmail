@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "commands.h"
 #include "fd.h"
 #include "sig.h"
@@ -9,7 +10,6 @@
 #include "byte.h"
 #include "now.h"
 #include "fmt.h"
-#include "exit.h"
 #include "readwrite.h"
 #include "timeoutread.h"
 #include "timeoutwrite.h"

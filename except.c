@@ -1,8 +1,8 @@
+#include <unistd.h>
 #include "fork.h"
 #include "strerr.h"
 #include "wait.h"
 #include "error.h"
-#include "exit.h"
 
 #define FATAL "except: fatal: "
 

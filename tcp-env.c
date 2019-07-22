@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <sys/param.h>
 #include <netinet/in.h>
+#include <unistd.h>
 #include "sig.h"
 #include "stralloc.h"
 #include "str.h"
@@ -13,7 +14,6 @@
 #include "dns.h"
 #include "byte.h"
 #include "remoteinfo.h"
-#include "exit.h"
 #include "case.h"
 
 void die() { _exit(111); }

@@ -1,6 +1,6 @@
+#include <unistd.h>
 #include "strerr.h"
 #include "error.h"
-#include "exit.h"
 
 extern void init_uidgid();
 extern void hier();

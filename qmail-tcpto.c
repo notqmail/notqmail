@@ -1,5 +1,6 @@
 /* XXX: this program knows quite a bit about tcpto's internals */
 
+#include <unistd.h>
 #include "substdio.h"
 #include "subfd.h"
 #include "auto_qmail.h"
@@ -9,7 +10,6 @@
 #include "lock.h"
 #include "open.h"
 #include "error.h"
-#include "exit.h"
 #include "datetime.h"
 #include "now.h"
 

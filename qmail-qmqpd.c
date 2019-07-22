@@ -1,10 +1,10 @@
+#include <unistd.h>
 #include "auto_qmail.h"
 #include "qmail.h"
 #include "received.h"
 #include "sig.h"
 #include "substdio.h"
 #include "readwrite.h"
-#include "exit.h"
 #include "now.h"
 #include "fmt.h"
 #include "byte.h"

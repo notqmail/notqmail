@@ -30,7 +30,7 @@ struct substdio ssout;
 datetime_sec starttime;
 struct datetime dt;
 unsigned long mypid;
-unsigned long uid;
+uid_t uid;
 char *pidfn;
 struct stat pidst;
 unsigned long messnum;
@@ -42,9 +42,9 @@ int intdfd;
 int flagmademess = 0;
 int flagmadeintd = 0;
 
-int auto_uida;
-int auto_uidd;
-int auto_uids;
+uid_t auto_uida;
+uid_t auto_uidd;
+uid_t auto_uids;
 
 void cleanup()
 {

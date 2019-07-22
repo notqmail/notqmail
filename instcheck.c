@@ -18,8 +18,8 @@ char *prefix2;
 char *prefix3;
 char *file;
 int type;
-int uid;
-int gid;
+uid_t uid;
+gid_t gid;
 int mode;
 {
   struct stat st;
@@ -46,8 +46,8 @@ int mode;
 
 void h(home,uid,gid,mode)
 char *home;
-int uid;
-int gid;
+uid_t uid;
+gid_t gid;
 int mode;
 {
   perm("","","",home,S_IFDIR,uid,gid,mode);
@@ -56,8 +56,8 @@ int mode;
 void d(home,subdir,uid,gid,mode)
 char *home;
 char *subdir;
-int uid;
-int gid;
+uid_t uid;
+gid_t gid;
 int mode;
 {
   if (chdir(home) == -1)
@@ -68,8 +68,8 @@ int mode;
 void p(home,fifo,uid,gid,mode)
 char *home;
 char *fifo;
-int uid;
-int gid;
+uid_t uid;
+gid_t gid;
 int mode;
 {
   if (chdir(home) == -1)
@@ -81,8 +81,8 @@ void c(home,subdir,file,uid,gid,mode)
 char *home;
 char *subdir;
 char *file;
-int uid;
-int gid;
+uid_t uid;
+gid_t gid;
 int mode;
 {
   if (chdir(home) == -1)
@@ -100,8 +100,8 @@ void z(home,file,len,uid,gid,mode)
 char *home;
 char *file;
 int len;
-int uid;
-int gid;
+uid_t uid;
+gid_t gid;
 int mode;
 {
   if (chdir(home) == -1)

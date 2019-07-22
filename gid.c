@@ -5,7 +5,7 @@
 #include "subfd.h"
 #include "substdio.h"
 
-int
+gid_t
 initgid(char *group)
 {
   struct group *gr;

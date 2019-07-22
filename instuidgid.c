@@ -1,14 +1,15 @@
+#include <sys/types.h>
 #include "uidgid.h"
 #include "auto_uids.h"
 #include "auto_users.h"
 
-int auto_uida;
-int auto_uido;
-int auto_uidq;
-int auto_uidr;
-int auto_uids;
+uid_t auto_uida;
+uid_t auto_uido;
+uid_t auto_uidq;
+uid_t auto_uidr;
+uid_t auto_uids;
 
-int auto_gidq;
+gid_t auto_gidq;
 
 void
 init_uidgid()

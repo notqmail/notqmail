@@ -137,9 +137,6 @@ auto_spawn.c
 auto_spawn.o
 chkspawn
 spawn.o
-chkshsgr.o
-chkshsgr
-hasshsgr.h
 prot.o
 coe.o
 cdb_hash.o

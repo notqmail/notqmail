@@ -1,4 +1,5 @@
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <string.h>
 #include <unistd.h>
 #include "substdio.h"
@@ -53,7 +54,7 @@ static int mkdir_p(char *home, int mode)
   return mkdir(home,mode);
 }
 
-void h(char *home, int uid, int gid, int mode)
+void h(char *home, uid_t uid, gid_t gid, int mode)
 {
   stralloc dh = { 0 };
   ddhome(&dh, home);
@@ -66,7 +67,7 @@ void h(char *home, int uid, int gid, int mode)
   alloc_free(dh.s);
 }
 
-void d(char *home, char *subdir, int uid, int gid, int mode)
+void d(char *home, char *subdir, uid_t uid, gid_t gid, int mode)
 {
   stralloc dh = { 0 };
   ddhome(&dh, home);
@@ -81,7 +82,7 @@ void d(char *home, char *subdir, int uid, int gid, int mode)
   alloc_free(dh.s);
 }
 
-void p(char *home, char *fifo, int uid, int gid, int mode)
+void p(char *home, char *fifo, uid_t uid, gid_t gid, int mode)
 {
   stralloc dh = { 0 };
   ddhome(&dh, home);
@@ -101,7 +102,7 @@ char outbuf[SUBSTDIO_OUTSIZE];
 substdio ssin;
 substdio ssout;
 
-void c(char *home, char *subdir, char *file, int uid, int gid, int mode)
+void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
 {
   int fdin;
   int fdout;
@@ -164,7 +165,7 @@ void c(char *home, char *subdir, char *file, int uid, int gid, int mode)
   alloc_free(dh.s);
 }
 
-void z(char *home, char *file, int len, int uid, int gid, int mode)
+void z(char *home, char *file, int len, uid_t uid, gid_t gid, int mode)
 {
   int fdout;
   stralloc dh = { 0 };
@@ -196,13 +197,13 @@ void z(char *home, char *file, int len, int uid, int gid, int mode)
 }
 
 /* these are ignored, but hier() passes them to h() and friends */
-int auto_uida = -1;
-int auto_uido = -1;
-int auto_uidq = -1;
-int auto_uidr = -1;
-int auto_uids = -1;
+uid_t auto_uida = -1;
+uid_t auto_uido = -1;
+uid_t auto_uidq = -1;
+uid_t auto_uidr = -1;
+uid_t auto_uids = -1;
 
-int auto_gidq = -1;
+gid_t auto_gidq = -1;
 
 void main()
 {

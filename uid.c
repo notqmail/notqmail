@@ -5,7 +5,7 @@
 #include "subfd.h"
 #include "substdio.h"
 
-int
+uid_t
 inituid(char *user)
 {
   struct passwd *pw;

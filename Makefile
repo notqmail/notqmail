@@ -332,14 +332,6 @@ check: \
 it man
 	./instcheck
 
-chkshsgr: \
-load chkshsgr.o
-	./load chkshsgr 
-
-chkshsgr.o: \
-compile chkshsgr.c exit.h
-	./compile chkshsgr.c
-
 chkspawn: \
 load chkspawn.o substdio.a error.a str.a fs.a auto_spawn.o
 	./load chkspawn substdio.a error.a str.a fs.a auto_spawn.o 
@@ -686,15 +678,6 @@ trysgprm.c compile load
 	2>&1 \
 	&& echo \#define HASSIGPROCMASK 1 || exit 0 ) > hassgprm.h
 	rm -f trysgprm.o trysgprm
-
-hasshsgr.h: \
-chkshsgr warn-shsgr tryshsgr.c compile load
-	./chkshsgr || ( cat warn-shsgr; exit 1 )
-	( ( ./compile tryshsgr.c \
-	&& ./load tryshsgr && ./tryshsgr ) >/dev/null 2>&1 \
-	&& echo \#define HASSHORTSETGROUPS 1 || exit 0 ) > \
-	hasshsgr.h
-	rm -f tryshsgr.o tryshsgr
 
 haswaitp.h: \
 trywaitp.c compile load
@@ -1055,7 +1038,7 @@ proc+df.sh conf-qmail
 	chmod 755 proc+df
 
 prot.o: \
-compile prot.c hasshsgr.h prot.h
+compile prot.c prot.h
 	./compile prot.c
 
 qail: \

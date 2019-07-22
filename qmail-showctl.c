@@ -24,17 +24,17 @@ int meok;
 stralloc line = {0};
 char num[FMT_ULONG];
 
-int auto_uida;
-int auto_uidd;
-int auto_uidl;
-int auto_uido;
-int auto_uidp;
-int auto_uidq;
-int auto_uidr;
-int auto_uids;
+uid_t auto_uida;
+uid_t auto_uidd;
+uid_t auto_uidl;
+uid_t auto_uido;
+uid_t auto_uidp;
+uid_t auto_uidq;
+uid_t auto_uidr;
+uid_t auto_uids;
 
-int auto_gidn;
-int auto_gidq;
+gid_t auto_gidn;
+gid_t auto_gidq;
 
 void safeput(buf,len)
 char *buf;

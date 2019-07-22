@@ -1,3 +1,4 @@
+20200511 code: remove tryshsgr.c and use uid_t, gid_t types.
 20200511 add first unittest, run with "make test"
 20191227 fixed possible overflow in alloc() with allocations close to 4GiB
 20191226 add missing return types to main()

@@ -21,13 +21,13 @@ int pi4[2];
 int pi5[2];
 int pi6[2];
 
-int auto_uidl;
-int auto_uidq;
-int auto_uidr;
-int auto_uids;
+uid_t auto_uidl;
+uid_t auto_uidq;
+uid_t auto_uidr;
+uid_t auto_uids;
 
-int auto_gidn;
-int auto_gidq;
+gid_t auto_gidn;
+gid_t auto_gidq;
 
 void close23456() { close(2); close(3); close(4); close(5); close(6); }
 

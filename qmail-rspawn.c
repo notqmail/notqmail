@@ -10,7 +10,7 @@
 #include "auto_users.h"
 #include "env.h"
 
-int auto_uidq;
+uid_t auto_uidq;
 
 void initialize(argc,argv)
 int argc;

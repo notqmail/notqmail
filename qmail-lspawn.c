@@ -20,10 +20,10 @@
 
 char *aliasempty;
 
-int auto_uidp;
-int auto_uidq;
+uid_t auto_uidp;
+uid_t auto_uidq;
 
-int auto_gidn;
+gid_t auto_gidn;
 
 void initialize(argc,argv)
 int argc;
@@ -190,8 +190,8 @@ char *s; char *r; int at;
    char *(args[11]);
    unsigned long u;
    int n;
-   int uid;
-   int gid;
+   uid_t uid;
+   gid_t gid;
    char *x;
    unsigned int xlen;
    

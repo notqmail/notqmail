@@ -1,32 +1,12 @@
-netqmail 1.06
-20071130
-James Craig Burley claims copyright on the qmail-isoc patch. For
-more details, see COPYRIGHT.
+notqmail 1.07
+20190805
 
-Apart from James' copyrights, no other copyright is claimed by the
-distributors of netqmail for changes from qmail 1.03 to netqmail 1.05.
-Daniel J. Bernstein has abandoned copyright for qmail 1.03.
-D. J. Bernstein did not participate in, nor has he been asked to
-approve of this distribution.
+notqmail 1.07 was produced by this motley krewe:
 
-With this distribution, we thank Daniel Bernstein for his dedication
-of qmail to the public domain.  We have taken advantage of this event
-to remove the need to apply a patch.  We will distribute a Netqmail 1.07
-shortly which includes enhancements.
-
-Netqmail 1.06 is produced by this motley krewe:
-
-Russ Nelson <nelson@qmail.org>
-Charles Cazabon <charlesc-software-netqmail@pyropus.ca>
-Dave Sill <de5@sws5.ornl.gov>
-Peter Samuel <Peter.Samuel@gormand.com.au>
-Henning Brauer <henning@bsws.de>
-Andrew Richards <ar-nq@acrconsulting.co.uk>
-Richard Lyons <rick-netqmail@frob.com.au>
-John Levine <netqmail@johnlevine.com>
-Scott Gifford <sgifford@suspectclass.com>
-Kyle Wheeler <kyle-netqmail@memoryhole.net>
-Wayne Marshall
+Rolf Eike Beer <eike@sf-mail.de>
+Manvendra Bhangui <mbhangui@gmail.com>
+Alan Post <adp@prgmr.com>
+Amitai Schleier <schmonz@schmonz.com>
 
 qmail is a secure, reliable, efficient, simple message transfer agent.
 It is meant as a replacement for the entire sendmail-binmail system on

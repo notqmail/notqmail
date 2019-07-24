@@ -1483,11 +1483,11 @@ tcpto.h readwrite.h timeoutconn.h timeoutread.h timeoutwrite.h
 
 qmail-rspawn: \
 load qmail-rspawn.o spawn.o tcpto_clean.o now.o coe.o sig.a open.a \
-seek.a lock.a wait.a fd.a stralloc.a alloc.a substdio.a error.a str.a \
+seek.a lock.a wait.a fd.a stralloc.a alloc.a substdio.a error.a env.a str.a \
 auto_qmail.o uid.o auto_userq.o auto_spawn.o
 	./load qmail-rspawn spawn.o tcpto_clean.o now.o coe.o \
 	sig.a open.a seek.a lock.a wait.a fd.a stralloc.a alloc.a \
-	auto_qmail.o uid.o auto_userq.o substdio.a error.a str.a \
+	auto_qmail.o uid.o auto_userq.o substdio.a error.a env.a str.a \
 	auto_spawn.o
 
 qmail-rspawn.0: \
@@ -1495,7 +1495,7 @@ qmail-rspawn.8
 	nroff -man qmail-rspawn.8 > qmail-rspawn.0
 
 qmail-rspawn.o: \
-compile qmail-rspawn.c fd.h wait.h substdio.h exit.h fork.h error.h \
+compile qmail-rspawn.c fd.h wait.h substdio.h exit.h fork.h error.h env.h \
 tcpto.h
 	./compile qmail-rspawn.c
 

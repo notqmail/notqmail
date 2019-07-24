@@ -8,6 +8,7 @@
 #include "uidgid.h"
 #include "auto_uids.h"
 #include "auto_users.h"
+#include "env.h"
 
 int auto_uidq;
 
@@ -83,6 +84,16 @@ int len;
     }
 }
 
+static char *setup_qrargs()
+{
+ static char *qr;
+ if (qr) return qr;
+ qr = env_get("QMAILREMOTE");
+ if (qr) return qr;
+ qr = "qmail-remote";
+ return qr;
+}
+
 int spawn(fdmess,fdout,s,r,at)
 int fdmess; int fdout;
 char *s; char *r; int at;
@@ -90,7 +101,7 @@ char *s; char *r; int at;
  int f;
  char *(args[5]);
 
- args[0] = "qmail-remote";
+ args[0] = setup_qrargs();
  args[1] = r + at + 1;
  args[2] = s;
  args[3] = r;

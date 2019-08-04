@@ -5,6 +5,7 @@
 #include "str.h"
 #include "fmt.h"
 #include "env.h"
+#include "scan.h"
 #include "sig.h"
 #include "rcpthosts.h"
 #include "auto_qmail.h"

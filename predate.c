@@ -5,6 +5,7 @@
 #include "wait.h"
 #include "fd.h"
 #include "fmt.h"
+#include "sig.h"
 #include "strerr.h"
 #include "substdio.h"
 #include "subfd.h"

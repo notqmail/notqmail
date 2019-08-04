@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "byte.h"
 #include "substdio.h"
 #include "readwrite.h"
 #include "subfd.h"

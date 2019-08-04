@@ -2,6 +2,7 @@
 #include "subfd.h"
 #include "getln.h"
 #include "substdio.h"
+#include "byte.h"
 #include "cdbmss.h"
 #include "exit.h"
 #include "readwrite.h"

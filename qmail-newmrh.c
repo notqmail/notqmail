@@ -1,3 +1,4 @@
+#include "case.h"
 #include "strerr.h"
 #include "stralloc.h"
 #include "substdio.h"

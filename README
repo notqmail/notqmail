@@ -19,10 +19,10 @@ previous version, read UPGRADE instead.
 See PIC.* for some ``end-to-end'' pictures of mail flowing through the
 qmail system.
 
-See http://pobox.com/~djb/qmail.html for other qmail-related software
+See https://cr.yp.to/qmail.html for other qmail-related software
 and a pointer to the qmail mailing list.
 
-Other documentation: http://pobox.com/~djb/proto.html shows solutions to
+Other documentation: https://cr.yp.to/proto.html shows solutions to
 several Internet mail problems; many of these solutions are implemented
 in qmail. CHANGES and THANKS show how qmail has changed since it was
 first released. SECURITY, INTERNALS, and THOUGHTS record many of the qmail

@@ -9,7 +9,7 @@ the queue before you have had a chance to test it.
 
 
 WARNING for upgrades from 1.00 or 1.01: qlist has been split into a
-separate package. You can obtain it from http://pobox.com/~djb/qlist.html
+separate package. You can obtain it from https://cr.yp.to/qlist.html
 if you have any users who need it.
 
 WARNING for upgrades from 1.01: recipientmap is gone. The virtualdomains
@@ -61,4 +61,4 @@ How to install:
 That's it!
 
 If you have questions about qmail, join the qmail mailing list; see
-http://pobox.com/~djb/qmail.html.
+https://cr.yp.to/qmail.html.

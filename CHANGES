@@ -1,3 +1,4 @@
+20190805 doc: don't build or install catted manpages.
 20190805 version: notqmail 1.07.
 20190710 code: add instchown to set ownership and mode on installed files.
 20190709 code: add instpackage to install without root access.

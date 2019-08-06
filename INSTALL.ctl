@@ -35,4 +35,4 @@ even if your network connection goes down.)
 
 Next, read through FAQ for information on setting up optional features
 like masquerading. If you really want to learn right now what all the
-configuration possibilities are, see qmail-control.0.
+configuration possibilities are, see qmail-control.5.

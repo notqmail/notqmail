@@ -25,7 +25,7 @@ The qmail system is started from /var/qmail/rc with
 
 The first argument to qmail-start, ./Mailbox, is the default delivery
 instruction. You can change it to run a program such as binmail or
-procmail. (See dot-qmail.0 for the format of delivery instructions.)
+procmail. (See dot-qmail.5 for the format of delivery instructions.)
 
 
 2. Using procmail

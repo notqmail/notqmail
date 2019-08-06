@@ -298,8 +298,8 @@ Answer: If you do
 
    # chown root ~www
 
-then qmail will no longer consider www to be a user; see qmail-getpw.0.
-For more precise control over address assignments, see qmail-users.0.
+then qmail will no longer consider www to be a user; see qmail-getpw.8.
+For more precise control over address assignments, see qmail-users.5.
 
 
 

@@ -1,13 +1,18 @@
 dist: xenial
 language: c
+env:
+  matrix:
+    - BUILD_NAME="default"
+    - BUILD_NAME="utmp" FORCE_UTMP="1"
 compiler:
  - gcc
  - clang
 script:
  - echo "${CC} -O2 -Wall" > conf-cc
- - make it man
- - env DESTDIR=/tmp/qmail make package
- - sudo make package
+ - if [ -n "${FORCE_UTMP}" ]; then export MAKEFLAGS="${MAKEFLAGS} -o qtmp.h"; cp qtmp.h1 qtmp.h; fi
+ - make ${MAKEFLAGS} it man
+ - env DESTDIR=/tmp/qmail make ${MAKEFLAGS} package
+ - sudo make ${MAKEFLAGS} package
  - sudo groupadd -g 200 nofiles
  - sudo groupadd -g 201 qmail
  - sudo useradd -u 200 -g 200 -d /var/qmail/alias alias
@@ -18,6 +23,6 @@ script:
  - sudo useradd -u 205 -g 201 -d /var/qmail qmailr
  - sudo useradd -u 206 -g 201 -d /var/qmail qmails
  - sudo ./instchown
- - sudo make check
+ - sudo make ${MAKEFLAGS} check
  - sudo rm -rf /var/qmail
- - sudo make setup check
+ - sudo make ${MAKEFLAGS} setup check

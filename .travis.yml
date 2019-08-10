@@ -3,13 +3,13 @@ language: c
 env:
   matrix:
     - BUILD_NAME="default"
-    - BUILD_NAME="utmp" FORCE_UTMP="1"
+    - BUILD_NAME="utmp" FORCE_UTMP="1" MAKEFLAGS="-o qtmp.h"
 compiler:
  - gcc
  - clang
 script:
  - echo "${CC} -O2 -Wall" > conf-cc
- - if [ -n "${FORCE_UTMP}" ]; then export MAKEFLAGS="${MAKEFLAGS} -o qtmp.h"; cp qtmp.h1 qtmp.h; fi
+ - if [ -n "${FORCE_UTMP}" ]; then cp qtmp.h1 qtmp.h; fi
  - make ${MAKEFLAGS} it man
  - env DESTDIR=/tmp/qmail make ${MAKEFLAGS} package
  - sudo make ${MAKEFLAGS} package

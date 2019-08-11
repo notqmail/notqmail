@@ -1,6 +1,7 @@
 #ifndef FORK_H
 #define FORK_H
 
-extern int fork();
+#include <sys/types.h>
+#include <unistd.h>
 
 #endif

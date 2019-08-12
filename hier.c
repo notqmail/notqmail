@@ -28,6 +28,25 @@ void dsplit(char *base, /* must be under 100 bytes */
   }
 }
 
+void hier_queue()
+{
+  d(auto_qmail,"queue",auto_uidq,auto_gidq,0750);
+  d(auto_qmail,"queue/pid",auto_uidq,auto_gidq,0700);
+  d(auto_qmail,"queue/intd",auto_uidq,auto_gidq,0700);
+  d(auto_qmail,"queue/todo",auto_uidq,auto_gidq,0750);
+  d(auto_qmail,"queue/bounce",auto_uids,auto_gidq,0700);
+
+  dsplit("queue/mess",auto_uidq,0750);
+  dsplit("queue/info",auto_uids,0700);
+  dsplit("queue/local",auto_uids,0700);
+  dsplit("queue/remote",auto_uids,0700);
+
+  d(auto_qmail,"queue/lock",auto_uidq,auto_gidq,0750);
+  z(auto_qmail,"queue/lock/tcpto",1024,auto_uidr,auto_gidq,0644);
+  z(auto_qmail,"queue/lock/sendmutex",0,auto_uids,auto_gidq,0600);
+  p(auto_qmail,"queue/lock/trigger",auto_uids,auto_gidq,0622);
+}
+
 void hier()
 {
   h(auto_qmail,auto_uido,auto_gidq,0755);
@@ -49,21 +68,7 @@ void hier()
 
   d(auto_qmail,"alias",auto_uida,auto_gidq,02755);
 
-  d(auto_qmail,"queue",auto_uidq,auto_gidq,0750);
-  d(auto_qmail,"queue/pid",auto_uidq,auto_gidq,0700);
-  d(auto_qmail,"queue/intd",auto_uidq,auto_gidq,0700);
-  d(auto_qmail,"queue/todo",auto_uidq,auto_gidq,0750);
-  d(auto_qmail,"queue/bounce",auto_uids,auto_gidq,0700);
-
-  dsplit("queue/mess",auto_uidq,0750);
-  dsplit("queue/info",auto_uids,0700);
-  dsplit("queue/local",auto_uids,0700);
-  dsplit("queue/remote",auto_uids,0700);
-
-  d(auto_qmail,"queue/lock",auto_uidq,auto_gidq,0750);
-  z(auto_qmail,"queue/lock/tcpto",1024,auto_uidr,auto_gidq,0644);
-  z(auto_qmail,"queue/lock/sendmutex",0,auto_uids,auto_gidq,0600);
-  p(auto_qmail,"queue/lock/trigger",auto_uids,auto_gidq,0622);
+  hier_queue();
 
   c(auto_qmail,"boot","home",auto_uido,auto_gidq,0755);
   c(auto_qmail,"boot","home+df",auto_uido,auto_gidq,0755);

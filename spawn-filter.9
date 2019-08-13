@@ -1,0 +1,101 @@
+.TH spawn-filter 8
+.SH NAME
+spawn-filter \- run filters for qmail-local and qmail-remote
+.SH SYNOPSIS
+.B spawn-filter args
+.SH DESCRIPTION
+.B spawn-filter
+is a utility to help qmail run any filter during local or remote delivery. It
+can run any filter which expects to read mess on fd 0 and writes back the message on fd 1.
+The filter can be turned on individually for local and remote mails by defining
+.B QMAILLOCAL
+and
+.B QMAILREMOTE
+environment variables respectively in
+.B qmail-send
+supervise or rc script. If spawn-filter is invoked as qmail-local, it executes the
+original
+.B qmail-local
+after runing the mail through the filter. If spawn-filter is invoked as qmail-remote, it
+executes the original
+.B qmail-remote
+after running the mail through the filter. Hence QMAILLOCAL should be set as QMAILHOME/bin/spawn-filter
+for filtering local mails and QMAILREMOTE as QMAILHOME/bin/spawn-filter for filtering
+remote mails.
+
+Filters can be run by setting the environment variable
+.B FILTERARGS
+or by using a control file
+.BR filterargs.
+The environment variable overrides the control file.
+.B spawn-filter
+uses /bin/sh to run the filter (with arguments) specified by the FILTERARGS environment variable or the control file
+.BR filterargs .
+The environment variable FILTERARGS apply to both local and remote mails. For individual domain level control,
+it is best to set using the control file filterargs.
+
+.TP 5
+.I filterargs
+The format of this file is of the form
+.B domain:args
+for both local and remote mails.
+.B domain:remote:args
+for remote mails and
+.B domain:local:args
+for local mails.
+
+.EX
+notqmail.org:remote:QMAILHOME/bin/dk-filter
+.EE
+
+.TP 0
+The sequence in which the filter program is run is given below
+
+.TP 5
+1. create two pipes and fork
+.TP 5
+2. dup write end of the first pipe to descriptor 1, dup write end of the second pipe to descriptor 2 in the child and exec the filter program
+.TP 5
+3. dup read end of the pipe to descriptor 0 in parent and exec qmail-local for local mails and qmail-remote for remote mails.
+.TP 5
+4. Wait for filter to exit and read read end of second pipe for any error messages.
+.TP 5
+5. Report success or failure
+.TP 0
+
+This gives the ability for the any filter program to read the mail message from descriptor 0 before
+passing it to qmail-local/qmail-remote through the pipe.
+
+.B spawn-filter
+will attempt to make the descriptor 0 seekable if the environment variable MAKE_SEEKABLE
+is defined. This may be necessary for certain filter programs which could do lseek().
+
+.SH Environment Variables
+\fBspawn-filter\fR sets few environment variables. The following environment variables
+are set for both local and remote deliveries
+
+.TS
+l l.
+Environment variable | Description
+------------------------------------------------------------
+DOMAIN               | domain part of recipient address
+_SENDER              | envelope sender address
+_RECIPIENT           | envelope recipient address
+QMAILREMOTE          | set for remote deliveries
+QMAILLOCAL           | set for local deliveries
+
+.TE
+
+.SH "EXIT CODES"
+.B spawn-filter
+exits 111 for any error or if it is not able to exec
+QMAILHOME/bin/qmail-local (for local mails) or
+QMAILHOME/bin/qmail-remote (for remote mails).
+
+.SH "SEE ALSO"
+qmail-lspawn(8),
+qmail-rspawn(8),
+qmail-local(8),
+qmail-remote(8),
+qmail-control(5),
+qmail-queue(8)

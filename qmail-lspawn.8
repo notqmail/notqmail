@@ -21,7 +21,9 @@ as the default delivery instruction.
 invokes
 .B qmail-local
 asynchronously,
-so the results may not be in the same order as the commands.
+so the results may not be in the same order as the commands. If the environment
+variable QMAILLOCAL is defined, the executable defined by QMAILLOCAL is invoked
+instead.
 
 For each recipient address,
 .B qmail-lspawn

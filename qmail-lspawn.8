@@ -23,7 +23,9 @@ invokes
 asynchronously,
 so the results may not be in the same order as the commands. If the environment
 variable QMAILLOCAL is defined, the executable defined by QMAILLOCAL is invoked
-instead.
+instead. This can be set to 
+.B spawn-filter
+which can run the email message through a filter before calling qmail-local
 
 For each recipient address,
 .B qmail-lspawn
@@ -45,4 +47,5 @@ envelopes(5),
 qmail-users(5),
 qmail-getpw(8),
 qmail-send(8),
-qmail-local(8)
+qmail-local(8),
+spawn-filter(8)

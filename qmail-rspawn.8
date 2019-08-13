@@ -9,7 +9,8 @@ reads a series of remote delivery commands from descriptor 0,
 invokes
 .B qmail-remote
 to perform the deliveries,
-and prints the results to descriptor 1.
+and prints the results to descriptor 1. If the environment variable QMAILREMOTE
+is defined, the executable defined by QMAILREMOTE is invoked instead.
 
 .B qmail-rspawn
 invokes

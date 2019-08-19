@@ -1,5 +1,5 @@
-201908xx version: notqmail 1.07.
-20190819 remove incorrect usage of vfork()
+20190819 version: notqmail 1.07.
+20190810 code: remove incorrect usage of vfork()
 20190710 code: add instchown to set ownership and mode on installed files.
 20190709 code: add instpackage to install without root access.
 20190714 code: removed idedit, install-big. var-qmail packages are no more.

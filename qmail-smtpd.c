@@ -29,9 +29,9 @@
 unsigned int databytes = 0;
 int timeout = 1200;
 
-int safewrite(fd,buf,len) int fd; char *buf; int len;
+ssize_t safewrite(int fd, const void *buf, size_t len)
 {
-  int r;
+  ssize_t r;
   r = timeoutwrite(timeout,fd,buf,len);
   if (r <= 0) _exit(1);
   return r;
@@ -266,9 +266,9 @@ void smtp_rcpt(arg) char *arg; {
 }
 
 
-int saferead(fd,buf,len) int fd; char *buf; int len;
+ssize_t saferead(int fd, void *buf, size_t len)
 {
-  int r;
+  ssize_t r;
   flush();
   r = timeoutread(timeout,fd,buf,len);
   if (r == -1) if (errno == error_timeout) die_alarm();

@@ -2,7 +2,7 @@
 #include "substdio.h"
 #include "subfd.h"
 
-int subfd_read(fd,buf,len) int fd; char *buf; int len;
+ssize_t subfd_read(int fd, void *buf, size_t len)
 {
   if (substdio_flush(subfdout) == -1) return -1;
   return read(fd,buf,len);

@@ -48,7 +48,7 @@ void sigchld()
 
 int flagwriting = 1;
 
-int okwrite(fd,buf,n) int fd; char *buf; int n;
+ssize_t okwrite(int fd, const void *buf, size_t n)
 {
  int w;
  if (!flagwriting) return n;

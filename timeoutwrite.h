@@ -1,6 +1,8 @@
 #ifndef TIMEOUTWRITE_H
 #define TIMEOUTWRITE_H
 
-extern int timeoutwrite();
+#include <sys/types.h>
+
+extern ssize_t timeoutwrite(int t, int fd, const void *buf, size_t len);
 
 #endif

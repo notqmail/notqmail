@@ -17,9 +17,9 @@
 void badproto() { _exit(100); }
 void resources() { _exit(111); }
 
-int safewrite(fd,buf,len) int fd; char *buf; int len;
+ssize_t safewrite(int fd, const void *buf, size_t len)
 {
-  int r;
+  ssize_t r;
   r = write(fd,buf,len);
   if (r <= 0) _exit(0);
   return r;
@@ -28,9 +28,9 @@ int safewrite(fd,buf,len) int fd; char *buf; int len;
 char ssoutbuf[256];
 substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof ssoutbuf);
 
-int saferead(fd,buf,len) int fd; char *buf; int len;
+ssize_t saferead(int fd, void *buf, size_t len)
 {
-  int r;
+  ssize_t r;
   substdio_flush(&ssout);
   r = read(fd,buf,len);
   if (r <= 0) _exit(0);

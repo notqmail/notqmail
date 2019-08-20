@@ -15,11 +15,11 @@
 static char line[999];
 static int t;
 
-static int mywrite(fd,buf,len) int fd; char *buf; int len;
+static ssize_t mywrite(int fd, const void *buf, size_t len)
 {
   return timeoutwrite(t,fd,buf,len);
 }
-static int myread(fd,buf,len) int fd; char *buf; int len;
+static ssize_t myread(int fd, void *buf, size_t len)
 {
   return timeoutread(t,fd,buf,len);
 }

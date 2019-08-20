@@ -1,6 +1,8 @@
 #ifndef TIMEOUTREAD_H
 #define TIMEOUTREAD_H
 
-extern int timeoutread();
+#include <sys/types.h>
+
+extern ssize_t timeoutread(int t, int fd, char *buf, size_t len);
 
 #endif

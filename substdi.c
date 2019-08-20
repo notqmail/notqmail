@@ -2,16 +2,10 @@
 #include "byte.h"
 #include "error.h"
 
-static int oneread(op,fd,buf,len)
-register int (*op)();
-register int fd;
-register char *buf;
-register int len;
+static int oneread(ssize_t (*op)(), int fd, char *buf, size_t len)
 {
-  register int r;
-
   for (;;) {
-    r = op(fd,buf,len);
+    ssize_t r = op(fd,buf,len);
     if (r == -1) if (errno == error_intr) continue;
     return r;
   }

@@ -3,7 +3,7 @@
 #include "error.h"
 #include "readwrite.h"
 
-int timeoutwrite(t,fd,buf,len) int t; int fd; char *buf; int len;
+ssize_t timeoutwrite(int t, int fd, const void *buf, size_t len)
 {
   fd_set wfds;
   struct timeval tv;

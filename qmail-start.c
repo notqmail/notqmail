@@ -1,4 +1,5 @@
 #include <sys/stat.h>
+#include <sys/types.h>
 #include "fd.h"
 #include "prot.h"
 #include "exit.h"

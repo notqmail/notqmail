@@ -3,6 +3,7 @@
 #include "auto_uids.h"
 #include "fmt.h"
 #include "fifo.h"
+#include "hier.h"
 
 char buf[100 + FMT_ULONG];
 

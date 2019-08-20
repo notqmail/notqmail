@@ -716,7 +716,7 @@ compile hfield.c hfield.h
 	./compile hfield.c
 
 hier.o: \
-compile hier.c auto_qmail.h auto_split.h auto_uids.h fmt.h fifo.h
+compile hier.c auto_qmail.h auto_split.h auto_uids.h fmt.h fifo.h hier.h
 	./compile hier.c
 
 home: \
@@ -756,7 +756,7 @@ auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
 	str.a fs.a
 
 instcheck.o: \
-compile instcheck.c strerr.h error.h readwrite.h exit.h
+compile instcheck.c strerr.h error.h readwrite.h exit.h hier.h
 	./compile instcheck.c
 
 instchown: \
@@ -768,7 +768,7 @@ auto_groupq.o strerr.a substdio.a error.a str.a fs.a
 	auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
 
 instchown.o: \
-compile instchown.c strerr.h error.h exit.h
+compile instchown.c strerr.h error.h exit.h hier.h
 	./compile instchown.c
 
 instpackage: \
@@ -779,7 +779,7 @@ substdio.a open.a error.a env.a str.a fs.a stralloc.a alloc.a
 
 instpackage.o: \
 compile instpackage.c substdio.h strerr.h env.h error.h fifo.h open.h \
-readwrite.h exit.h alloc.h str.h stralloc.h
+readwrite.h exit.h alloc.h str.h stralloc.h hier.h
 	./compile instpackage.c
 
 instuidgid.o: \

@@ -3,6 +3,7 @@
 #include "env.h"
 #include "error.h"
 #include "fifo.h"
+#include "hier.h"
 #include "open.h"
 #include "readwrite.h"
 #include "exit.h"

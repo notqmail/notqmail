@@ -4,6 +4,7 @@
 #include "error.h"
 #include "readwrite.h"
 #include "exit.h"
+#include "hier.h"
 
 extern void init_uidgid();
 extern void hier();

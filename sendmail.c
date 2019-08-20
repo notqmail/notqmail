@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "sgetopt.h"
 #include "substdio.h"
 #include "subfd.h"

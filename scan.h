@@ -24,4 +24,6 @@ extern unsigned int scan_memcmp();
 
 extern unsigned int scan_long();
 
+extern unsigned int scan_8long();
+
 #endif

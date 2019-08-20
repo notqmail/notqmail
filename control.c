@@ -1,5 +1,6 @@
 #include "control.h"
 
+#include <unistd.h>
 #include "readwrite.h"
 #include "open.h"
 #include "getln.h"

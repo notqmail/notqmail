@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "fd.h"
 #include "sgetopt.h"
 #include "readwrite.h"

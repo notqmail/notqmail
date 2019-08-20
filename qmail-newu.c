@@ -1,4 +1,5 @@
 #include <sys/stat.h>
+#include <unistd.h>
 #include "stralloc.h"
 #include "subfd.h"
 #include "getln.h"

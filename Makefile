@@ -481,19 +481,6 @@ compile dnsip.c substdio.h subfd.h substdio.h stralloc.h gen_alloc.h \
 dns.h dnsdoe.h ip.h ipalloc.h ip.h gen_alloc.h exit.h
 	./compile dnsip.c
 
-dnsmxip: \
-load dnsmxip.o dns.o dnsdoe.o ip.o ipalloc.o now.o stralloc.a alloc.a \
-substdio.a error.a str.a fs.a dns.lib socket.lib
-	./load dnsmxip dns.o dnsdoe.o ip.o ipalloc.o now.o \
-	stralloc.a alloc.a substdio.a error.a str.a fs.a  `cat \
-	dns.lib` `cat socket.lib`
-
-dnsmxip.o: \
-compile dnsmxip.c substdio.h subfd.h substdio.h stralloc.h \
-gen_alloc.h fmt.h dns.h dnsdoe.h ip.h ipalloc.h ip.h gen_alloc.h \
-now.h datetime.h exit.h
-	./compile dnsmxip.c
-
 dnsptr: \
 load dnsptr.o dns.o dnsdoe.o ip.o ipalloc.o stralloc.a alloc.a \
 substdio.a error.a str.a fs.a dns.lib socket.lib
@@ -836,7 +823,7 @@ predate datemail mailsubj qmail-upq qmail-showctl qmail-newu \
 qmail-pw2u qmail-qread qmail-qstat qmail-tcpto qmail-tcpok \
 qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
-dnsptr dnsip dnsmxip dnsfq hostname ipmeprint qreceipt qsmhook qbiff \
+dnsptr dnsip dnsfq hostname ipmeprint qreceipt qsmhook qbiff \
 forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox maildirwatch qail elq pinq install instpackage instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \

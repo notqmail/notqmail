@@ -289,8 +289,6 @@ dnsptr.o
 dnsptr
 dnsip.o
 dnsip
-dnsmxip.o
-dnsmxip
 dnsfq.o
 dnsfq
 hostname.o

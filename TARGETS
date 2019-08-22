@@ -284,9 +284,7 @@ qmail-newmrh.o
 qmail-newmrh
 config
 config-fast
-dnscname.o
 dnsdoe.o
-dnscname
 dnsptr.o
 dnsptr
 dnsip.o

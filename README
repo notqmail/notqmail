@@ -25,5 +25,5 @@ and a pointer to the qmail mailing list.
 Other documentation: http://pobox.com/~djb/proto.html shows solutions to
 several Internet mail problems; many of these solutions are implemented
 in qmail. CHANGES and THANKS show how qmail has changed since it was
-first released. SECURITY, INTERNALS, THOUGHTS, and TODO record many of
-the qmail design decisions.
+first released. SECURITY, INTERNALS, and THOUGHTS record many of the qmail
+design decisions.

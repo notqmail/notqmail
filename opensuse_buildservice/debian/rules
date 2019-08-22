@@ -1,0 +1,100 @@
+#!/usr/bin/make -f
+
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This is the debhelper compatibility version to use.
+# export DH_COMPAT=4
+CFLAGS=-g
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0 -fno-strict-aliasing -Wno-unused-result -Wno-unused-result
+else
+	CFLAGS += -O2 -fno-strict-aliasing -Wno-unused-result -Wno-unused-result
+endif
+
+qmaildir=/var/qmail
+
+mandir=$(qmaildir)/man
+
+cp=/bin/cp
+rm=/bin/rm
+
+DESTDIR=$(CURDIR)/debian/notqmail.tmp
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+	#
+	# Extract source archives
+	#
+	#
+	# run configure script
+	#
+	#
+	# run make
+	#
+	$(MAKE) -s it man
+	touch build-stamp
+
+clean:
+	rm -f build-stamp configure-stamp
+	${rm} -rf $(DESTDIR)
+	$(MAKE) -s clean||true
+	dh_testdir
+	dh_testroot
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep || dh_clean -k
+	dh_installdirs
+	env DESTDIR=$(DESTDIR) ./instpackage
+	${cp} COPYRIGHT $(DESTDIR)$(qmaildir)/doc
+	${cp} instchown $(DESTDIR)$(qmaildir)/bin
+	( \
+	echo "[Unit]"; \
+	echo "Description=Qmail mail delivery daemons"; \
+	echo "After=local-fs.target network.target"; \
+	echo ""; \
+	echo "[Service]"; \
+	echo "ExecStart=/var/qmail/bin/qmail-start ./Maildir/ splogger qmail"; \
+	echo "Environment=PATH=$(qmaildir)/bin:\$\{PATH\}"; \
+	echo "Restart=always"; \
+	echo ""; \
+	echo "[Install]"; \
+	echo "Alias=qmail.service"; \
+	echo "WantedBy=multi-user.target"; \
+	) > $(DESTDIR)$(qmaildir)/boot/notqmail.service
+	${rm} -rf $(DESTDIR)$(mandir)/man3
+
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_install --sourcedir=$(DESTDIR) -pnotqmail
+	dh_installchangelogs
+	dh_installcron
+	dh_installdocs
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_makeshlibs -V
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-dependent files here. 
+binary-arch: build install
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure

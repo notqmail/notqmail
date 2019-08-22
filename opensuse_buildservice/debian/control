@@ -1,0 +1,16 @@
+Source: notqmail
+Section: mail
+Priority: extra
+Maintainer: Manvendra Bhangui <manvendra@indimail.org>
+Standards-Version: 3.9.1
+Homepage: https://github.com/notqmail/notqmail
+
+Package: notqmail
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, net-tools, coreutils, binutils
+Description: notqmail is a community-driven fork of qmail, beginning where netqmail
+ left off: providing stable, compatible, small releases to which existing
+ qmail users can safely update.
+ notqmail also aims higher: developing an extensible, easily packaged, and
+ increasingly useful modern mail server.
+

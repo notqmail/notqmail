@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2001 SuSE GmbH Nuernberg, Germany.  All rights reserved.
+#
+# Author: Roman Drahtmueller <draht@suse.de>, 2001
+#
+# 
+# See /etc/permissions for general hints on how to use this file.
+#
+# /etc/permissions.easy is set up for the use in a standalone and single-user
+# installation to make things "work" out-of-the box.
+# Some of the settings might be considered somewhat lax from the security
+# standpoint. These aspects are handled differently in the permissions.secure
+# file.
+# 
+#
+/var/qmail/bin/qmail-queue      qmailq:qmail   6511
+
+#
+# Directories
+#
+/var/qmail/alias                 alias:qmail    2555

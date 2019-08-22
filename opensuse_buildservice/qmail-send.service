@@ -1,0 +1,11 @@
+[Unit]
+Description=Qmail mail delivery daemons
+After=network.target
+
+[Service]
+ExecStart=/var/qmail/bin/qmail-start ./Maildir/ splogger qmail
+Environment=PATH=/var/qmail/bin:${PATH}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

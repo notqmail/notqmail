@@ -1,0 +1,35 @@
+# /etc/permissions.paranoid
+#
+# Copyright (c) 2001 SuSE GmbH Nuernberg, Germany.  All rights reserved.
+#
+# Author: Roman Drahtmueller <draht@suse.de>, 2001
+#
+# 
+# See /etc/permissions for general hints on how to use this file.
+#
+# /etc/permissions.paranoid is NOT designed to be used in a single-user as
+# well as a multi-user installation, be it networked or not.
+# Derived from /etc/permissions.secure, it has _all_ sgid and suid bits
+# cleared - therefore, the system might be useable for non-privileged users
+# except for simple tasks like changing passwords and such. In addition, 
+# some of the configuration files are not readable for world any more.
+#
+# Feel free to use this file as a basis of a system configuration that meets
+# your understanding of "secure", for the case that you're a bit paranoid.
+# Since there is no such thing as "it works" with this configuration, please
+# use these settings with care. Some experience on behalf of the administrator
+# is needed to have a system running flawlessly when users are present.
+# In particular, all terminal emulators will not be able to write to utmp
+# and wtmp any more, which renders who(1) and finger(1) useless.
+#
+# Please always keep in mind that your system listens on network sockets
+# in the default configuration. Change this by disabling the services that 
+# you do not need or by restricting access to them using packet filters
+# or tcp wrappers (see hosts_access(5)) to gain a higher level of security
+# in your system.
+/var/qmail/bin/qmail-queue      qmailq:qmail   6511
+
+#
+# Directories
+#
+/var/qmail/alias                 alias:qmail    2555

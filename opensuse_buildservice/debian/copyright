@@ -1,0 +1,41 @@
+netqmail-1.04
+-------------
+No copyright is claimed by the distributors of netqmail for changes from
+qmail 1.03 to netqmail 1.04.
+NOTE: netqmail 1.04 is a community-assembled distribution of qmail from
+the official qmail-1.03.tar.gz and patches approved by the community.
+D. J. Bernstein did not participate in, nor has he been asked to approve
+of this distribution.
+
+netqmail-1.05
+-------------
+James Craig Burley claims copyright on the qmail-isoc patch. See the file
+
+    old-patches/qmail-isoc.patch
+
+for details on James' copyright claim and distribution license.
+
+James' patch has been combined with the original netqmail-1.04 patch
+and the result incorporated into a unified netqmail-1.05 patch.
+
+Apart from James' copyrights, no other copyright is claimed by the
+distributors of netqmail for changes from qmail 1.03 to netqmail 1.05.
+
+NOTE: netqmail 1.05 is a community-assembled distribution of qmail from
+the official qmail-1.03.tar.gz and patches approved by the community.
+D. J. Bernstein did not participate in, nor has he been asked to approve
+of this distribution.
+
+netqmail-1.06
+-------------
+The same copyright information as netqmail-1.05 applies to netqmail-1.06
+with the addition of D. J. Bernstein's dedication of qmail to the public
+domain.
+
+notqmail-1.07
+-------------
+No copyright is claimed by the distributors of notqmail for changes from
+netqmail 1.06 to notqmail 1.07.
+NOTE: notqmail 1.07 is a community-driven fork of qmail.
+Neither D. J. Bernstein nor any of the netqmail developers has
+participated in or been asked to approve of this distribution.

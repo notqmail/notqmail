@@ -1,0 +1,61 @@
+# /etc/permissions.secure
+#
+# Copyright (c) 2001 SuSE GmbH Nuernberg, Germany.  All rights reserved.
+#
+# Author: Roman Drahtmueller <draht@suse.de>, 2001
+#
+# 
+# See /etc/permissions for general hints on how to use this file.
+#
+# /etc/permissions.secure is designed for the use in a multi-user and
+# networked installation. Most privileged file modes are disabled here.
+# Many programs that still have their suid- or sgid-modes have had their
+# security problems in the past already.
+# The primary target of this configuration is to make the basic things
+# such as changing passwords, the basic networking programs as well as
+# some of the all-day work programs properly function for the unprivileged
+# user. The dial-out packages are executable for users belonging to the
+# "dialout" group - therefore, these users are to be treated "privileged".
+# Packages such as (remote-) batch queueing systems, games, programs for 
+# the linux text console, everything linked against OOP libraries and
+# most other exotic utilities are turned into unprivileged binary files
+# in order for them not to cause any security problems if one or more of
+# the programs turn out to have buffer overruns or otherwise locally 
+# exploitable programming errors.
+# This file is not designed to make your system as closed and as restrictive
+# as at all possible. In many cases, restricted access to a configuration 
+# file is of no use since the data used can be obtained from the /proc file
+# system or interface configuration as well. Also, system programs such as
+# /sbin/ifconfig or /sbin/route are not changed because nosey users can
+# bring their own. "Security by obscurity" will add any significant 
+# security-related advantage to the system. Keep in mind that curiosity
+# is a major motivation for your users to try to see behind the curtain.
+#
+# If you need the functionality of a program that usually runs as a
+# privileged user, then use it as root, or, if you are not root, ask your 
+# system administrator for advice. In many cases, adding a user to the 
+# "trusted" group gives her access to the resources that are not accessible
+# any more if the admin chose to select "secure" as the permissions default.
+#
+# Please make use of the diff program to see the differences between the
+# permissions.easy and permissions.secure files if things don't work as
+# they should and you suspect a permission or privilege problem.
+# The word "easy" is a reference for the /etc/permissions.easy file.
+#
+# As usual, these settings are "suggested". If you feel so inclined, 
+# please feel free to change the modes in this files, but keep a log 
+# of your changes for future reference.
+
+# Please always keep in mind that your system listens on network sockets
+# in the default configuration. Change this by disabling the services that 
+# you do not need or by restricting access to them using packet filters
+# or tcp wrappers (see hosts_access(5)) to gain a higher level of security
+# in your system.
+
+#
+/var/qmail/bin/qmail-queue      qmailq:qmail   6511
+
+#
+# Directories
+#
+/var/qmail/alias                 alias:qmail    2555

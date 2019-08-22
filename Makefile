@@ -814,7 +814,7 @@ ipalloc.h ip.h gen_alloc.h exit.h
 it: \
 qmail-local qmail-lspawn qmail-getpw qmail-remote qmail-rspawn \
 qmail-clean qmail-send qmail-start splogger qmail-queue qmail-inject \
-predate datemail mailsubj qmail-upq qmail-showctl qmail-newu \
+predate datemail mailsubj qmail-showctl qmail-newu \
 qmail-pw2u qmail-qread qmail-qstat qmail-tcpto qmail-tcpok \
 qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
@@ -1631,15 +1631,6 @@ qmail-tcpto.o: \
 compile qmail-tcpto.c substdio.h subfd.h substdio.h auto_qmail.h byte.h \
 fmt.h ip.h lock.h error.h exit.h datetime.h now.h datetime.h open.h
 	./compile qmail-tcpto.c
-
-qmail-upq: \
-warn-auto.sh qmail-upq.sh conf-qmail conf-break conf-split
-	cat warn-auto.sh qmail-upq.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
-	> qmail-upq
-	chmod 755 qmail-upq
 
 qmail-users.0: \
 qmail-users.5

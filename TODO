@@ -1,7 +1,6 @@
 consider stripping vdoms for VERPs; tnx PJH
 consider ~ in qmail-local for doing defaultdelivery (not recursively)
 consider POP bulletins
-turn qmail-upq into a more serious queue-moving utility
 consider fast-greeting option in qmail-smtpd
 build a returnmail package
 

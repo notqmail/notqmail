@@ -238,7 +238,6 @@ predate.o
 predate
 datemail
 mailsubj
-qmail-upq
 qmail-showctl.o
 qmail-showctl
 qmail-newu.o

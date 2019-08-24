@@ -1304,7 +1304,7 @@ qmail-pw2u.9 conf-qmail conf-break conf-spawn
 qmail-pw2u.o: \
 compile qmail-pw2u.c substdio.h readwrite.h subfd.h substdio.h \
 sgetopt.h subgetopt.h control.h constmap.h stralloc.h gen_alloc.h \
-fmt.h str.h scan.h open.h error.h getln.h auto_break.h auto_qmail.h \
+fmt.h str.h scan.h open.h error.h getln.h exit.h auto_break.h auto_qmail.h \
 auto_users.h byte.h
 	./compile qmail-pw2u.c
 
@@ -1357,7 +1357,7 @@ qmail-qmtpd.8
 qmail-qmtpd.o: \
 compile qmail-qmtpd.c stralloc.h gen_alloc.h substdio.h qmail.h \
 substdio.h now.h datetime.h str.h fmt.h env.h sig.h rcpthosts.h \
-auto_qmail.h readwrite.h control.h received.h
+auto_qmail.h readwrite.h control.h received.h exit.h
 	./compile qmail-qmtpd.c
 
 qmail-qread: \

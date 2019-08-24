@@ -4,7 +4,6 @@
 #include "prioq.h"
 #include "stralloc.h"
 #include "str.h"
-#include "exit.h"
 #include "hfield.h"
 #include "readwrite.h"
 #include "open.h"

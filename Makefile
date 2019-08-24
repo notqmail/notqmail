@@ -613,7 +613,7 @@ forward.1
 	nroff -man forward.1 > forward.0
 
 forward.o: \
-compile forward.c sig.h readwrite.h exit.h env.h qmail.h substdio.h \
+compile forward.c sig.h readwrite.h env.h qmail.h substdio.h \
 strerr.h substdio.h fmt.h
 	./compile forward.c
 
@@ -900,7 +900,7 @@ maildirwatch.1
 
 maildirwatch.o: \
 compile maildirwatch.c getln.h substdio.h subfd.h substdio.h prioq.h \
-datetime.h gen_alloc.h stralloc.h gen_alloc.h str.h exit.h hfield.h \
+datetime.h gen_alloc.h stralloc.h gen_alloc.h str.h hfield.h \
 readwrite.h open.h headerbody.h maildir.h strerr.h
 	./compile maildirwatch.c
 

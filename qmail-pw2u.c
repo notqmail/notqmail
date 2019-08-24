@@ -14,6 +14,7 @@
 #include "open.h"
 #include "error.h"
 #include "getln.h"
+#include "exit.h"
 #include "auto_break.h"
 #include "auto_qmail.h"
 #include "auto_users.h"

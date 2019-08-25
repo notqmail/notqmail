@@ -1,7 +1,7 @@
+#include <unistd.h>
 #include "timeoutwrite.h"
 #include "select.h"
 #include "error.h"
-#include "readwrite.h"
 
 int timeoutwrite(t,fd,buf,len) int t; int fd; char *buf; int len;
 {

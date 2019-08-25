@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "stralloc.h"
 #include "subfd.h"
 #include "getln.h"
@@ -5,7 +6,6 @@
 #include "byte.h"
 #include "cdbmss.h"
 #include "exit.h"
-#include "readwrite.h"
 #include "open.h"
 #include "error.h"
 #include "case.h"

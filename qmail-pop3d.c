@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "commands.h"
 #include "sig.h"
 #include "getln.h"
@@ -13,7 +14,6 @@
 #include "str.h"
 #include "exit.h"
 #include "maildir.h"
-#include "readwrite.h"
 #include "timeoutread.h"
 #include "timeoutwrite.h"
 

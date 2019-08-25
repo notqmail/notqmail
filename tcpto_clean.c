@@ -1,7 +1,7 @@
+#include <unistd.h>
 #include "tcpto.h"
 #include "open.h"
 #include "substdio.h"
-#include "readwrite.h"
 
 char tcpto_cleanbuf[1024];
 

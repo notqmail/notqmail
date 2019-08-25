@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "tcpto.h"
 #include "open.h"
 #include "lock.h"
@@ -6,7 +7,6 @@
 #include "ip.h"
 #include "byte.h"
 #include "datetime.h"
-#include "readwrite.h"
 
 char tcpto_buf[1024];
 

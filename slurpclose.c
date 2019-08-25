@@ -1,5 +1,5 @@
+#include <unistd.h>
 #include "stralloc.h"
-#include "readwrite.h"
 #include "slurpclose.h"
 #include "error.h"
 

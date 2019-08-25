@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "getln.h"
 #include "substdio.h"
 #include "subfd.h"
@@ -6,7 +7,6 @@
 #include "str.h"
 #include "exit.h"
 #include "hfield.h"
-#include "readwrite.h"
 #include "open.h"
 #include "headerbody.h"
 #include "maildir.h"

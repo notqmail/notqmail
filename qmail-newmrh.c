@@ -1,10 +1,10 @@
+#include <unistd.h>
 #include "case.h"
 #include "strerr.h"
 #include "stralloc.h"
 #include "substdio.h"
 #include "getln.h"
 #include "exit.h"
-#include "readwrite.h"
 #include "open.h"
 #include "auto_qmail.h"
 #include "cdbmss.h"

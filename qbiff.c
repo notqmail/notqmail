@@ -1,7 +1,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "qtmp.h"
-#include "readwrite.h"
 #include "stralloc.h"
 #include "substdio.h"
 #include "subfd.h"

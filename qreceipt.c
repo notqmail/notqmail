@@ -119,9 +119,7 @@ stralloc *h;
 
 void dobody(h) stralloc *h; { ; }
 
-void main(argc,argv)
-int argc;
-char **argv;
+void main(int argc,char *argv[])
 {
  sig_pipeignore();
  if (!(target = argv[1])) die_usage();

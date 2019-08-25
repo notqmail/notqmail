@@ -10,9 +10,7 @@
 stralloc sa = {0};
 ipalloc ia = {0};
 
-void main(argc,argv)
-int argc;
-char **argv;
+void main(int argc,char *argv[])
 {
  if (!argv[1]) _exit(100);
 

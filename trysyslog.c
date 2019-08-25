@@ -2,7 +2,8 @@
 #include <sys/time.h>
 #include <syslog.h>
 
-main()
+void
+main(void)
 {
   openlog("foo",0,LOG_MAIL);
   syslog(0,"foo");

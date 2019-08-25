@@ -682,9 +682,7 @@ void getcontrols()
 #define RECIP_HEADER 3
 #define RECIP_AH 4
 
-void main(argc,argv)
-int argc;
-char **argv;
+void main(int argc,char *argv[])
 {
  int i;
  int opt;

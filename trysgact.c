@@ -1,6 +1,6 @@
 #include <signal.h>
 
-void main()
+void main(void)
 {
   struct sigaction sa;
   sa.sa_handler = 0;

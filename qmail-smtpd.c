@@ -408,7 +408,7 @@ struct commands smtpcommands[] = {
 , { 0, err_unimpl, flush }
 } ;
 
-void main()
+void main(void)
 {
   sig_pipeignore();
   if (chdir(auto_qmail) == -1) die_control();

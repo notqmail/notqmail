@@ -444,9 +444,7 @@ int len;
  substdio_putsflush(subfdoutsmall,"\n");
 }
 
-void main(argc,argv)
-int argc;
-char **argv;
+void main(int argc,char *argv[])
 {
  int opt;
  int i;

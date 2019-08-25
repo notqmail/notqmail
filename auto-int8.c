@@ -13,9 +13,7 @@ char *s;
   if (substdio_puts(&ss1,s) == -1) _exit(111);
 }
 
-void main(argc,argv)
-int argc;
-char **argv;
+void main(int argc,char *argv[])
 {
   char *name;
   char *value;

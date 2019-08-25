@@ -84,7 +84,7 @@ int mode;
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",file,": ");
 }
 
-void main()
+void main(void)
 {
   umask(077);
   init_uidgid();

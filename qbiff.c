@@ -40,7 +40,7 @@ void doheader(h) stralloc *h;
 }
 void finishheader() { ; }
 
-void main()
+void main(void)
 {
  char *user;
  char *sender;

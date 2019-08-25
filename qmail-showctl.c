@@ -150,7 +150,7 @@ char *post;
   }
 }
 
-void main()
+void main(void)
 {
   DIR *dir;
   direntry *d;

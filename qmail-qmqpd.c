@@ -108,7 +108,7 @@ int getbuf()
 int flagok = 1;
 
 void
-main()
+main(void)
 {
   char *result;
   unsigned long qp;

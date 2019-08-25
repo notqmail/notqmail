@@ -76,7 +76,7 @@ char *relayclient;
 int relayclientlen;
 
 void
-main()
+main(void)
 {
   char ch;
   int i;

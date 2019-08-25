@@ -1,6 +1,6 @@
+#include <unistd.h>
 #include "substdio.h"
 #include "subfd.h"
-#include "exit.h"
 #include "strerr.h"
 
 void strerr_warn(x1,x2,x3,x4,x5,x6,se)

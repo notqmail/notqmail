@@ -1,8 +1,8 @@
+#include <unistd.h>
 #include "substdio.h"
 #include "subfd.h"
 #include "fmt.h"
 #include "select.h"
-#include "exit.h"
 #include "auto_spawn.h"
 
 char num[FMT_ULONG];

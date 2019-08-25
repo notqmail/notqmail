@@ -1,7 +1,7 @@
+#include <unistd.h>
 #include "fd.h"
 #include "wait.h"
 #include "substdio.h"
-#include "exit.h"
 #include "fork.h"
 #include "error.h"
 #include "tcpto.h"

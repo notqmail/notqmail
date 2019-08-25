@@ -1,8 +1,8 @@
+#include <unistd.h>
 #include "subfd.h"
 #include "substdio.h"
 #include "ip.h"
 #include "ipme.h"
-#include "exit.h"
 
 char temp[IPFMT];
 

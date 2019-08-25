@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "substdio.h"
 #include "subfd.h"
 #include "stralloc.h"
@@ -5,7 +6,6 @@
 #include "dnsdoe.h"
 #include "ip.h"
 #include "ipalloc.h"
-#include "exit.h"
 
 stralloc sa = {0};
 ipalloc ia = {0};

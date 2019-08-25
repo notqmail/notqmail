@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "sig.h"
 #include "readwrite.h"
 #include "stralloc.h"
@@ -18,7 +19,6 @@
 #include "case.h"
 #include "env.h"
 #include "now.h"
-#include "exit.h"
 #include "rcpthosts.h"
 #include "timeoutread.h"
 #include "timeoutwrite.h"

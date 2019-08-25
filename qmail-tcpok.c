@@ -1,10 +1,10 @@
+#include <unistd.h>
 #include "strerr.h"
 #include "substdio.h"
 #include "lock.h"
 #include "open.h"
 #include "readwrite.h"
 #include "auto_qmail.h"
-#include "exit.h"
 
 #define FATAL "qmail-tcpok: fatal: "
 

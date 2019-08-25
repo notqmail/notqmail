@@ -1,5 +1,5 @@
+#include <unistd.h>
 #include "strerr.h"
-#include "exit.h"
 
 #define FATAL "maildirmake: fatal: "
 

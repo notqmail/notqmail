@@ -1,10 +1,10 @@
 #include <sys/types.h>
 #include <sys/time.h>
+#include <unistd.h>
 #include <syslog.h>
 #include "error.h"
 #include "substdio.h"
 #include "subfd.h"
-#include "exit.h"
 #include "str.h"
 #include "scan.h"
 #include "fmt.h"

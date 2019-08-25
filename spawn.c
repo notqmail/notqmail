@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "sig.h"
 #include "wait.h"
 #include "substdio.h"
@@ -8,7 +9,6 @@
 #include "alloc.h"
 #include "stralloc.h"
 #include "select.h"
-#include "exit.h"
 #include "coe.h"
 #include "open.h"
 #include "error.h"

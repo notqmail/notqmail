@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "substdio.h"
 #include "subfd.h"
 #include "stralloc.h"
@@ -6,7 +7,6 @@
 #include "dns.h"
 #include "dnsdoe.h"
 #include "ip.h"
-#include "exit.h"
 
 stralloc sa = {0};
 struct ip_address ip;

@@ -1,4 +1,4 @@
-#include "exit.h"
+#include <unistd.h>
 void main()
 {
  short x[4];

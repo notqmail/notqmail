@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "qtmp.h"
 #include "readwrite.h"
 #include "stralloc.h"
@@ -11,7 +12,6 @@
 #include "headerbody.h"
 #include "hfield.h"
 #include "env.h"
-#include "exit.h"
 
 substdio sstty;
 char buftty[1024];

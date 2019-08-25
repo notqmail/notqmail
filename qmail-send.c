@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "readwrite.h"
 #include "sig.h"
 #include "direntry.h"
@@ -7,7 +8,6 @@
 #include "select.h"
 #include "open.h"
 #include "seek.h"
-#include "exit.h"
 #include "lock.h"
 #include "ndelay.h"
 #include "now.h"

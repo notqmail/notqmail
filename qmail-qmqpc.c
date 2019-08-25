@@ -2,10 +2,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 #include "substdio.h"
 #include "getln.h"
 #include "readwrite.h"
-#include "exit.h"
 #include "stralloc.h"
 #include "slurpclose.h"
 #include "error.h"

@@ -1,9 +1,9 @@
+#include <unistd.h>
 #include "fork.h"
 #include "strerr.h"
 #include "error.h"
 #include "wait.h"
 #include "sig.h"
-#include "exit.h"
 
 #define FATAL "bouncesaying: fatal: "
 

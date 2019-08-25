@@ -1,7 +1,7 @@
+#include <unistd.h>
 #include "substdio.h"
 #include "subfd.h"
 #include "readwrite.h"
-#include "exit.h"
 
 char host[256];
 

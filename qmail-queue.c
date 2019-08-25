@@ -164,8 +164,7 @@ void main()
 
  sig_blocknone();
  umask(033);
- if (chdir(auto_qmail) == -1) die(61);
- if (chdir("queue") == -1) die(62);
+ if (chdir(auto_qmail_queue) == -1) die(61);
 
  mypid = getpid();
  uid = getuid();

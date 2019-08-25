@@ -56,8 +56,7 @@ void main()
  int cleanuploop;
  unsigned long id;
 
- if (chdir(auto_qmail) == -1) _exit(111);
- if (chdir("queue") == -1) _exit(111);
+ if (chdir(auto_qmail_queue) == -1) _exit(111);
 
  sig_pipeignore();
 

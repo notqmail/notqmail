@@ -1,0 +1,4 @@
+/var/qmail/bin
+
+This is the qmail binaries directory. The bin directory is where all qmail
+binaries are run from.

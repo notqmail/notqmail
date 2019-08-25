@@ -1,0 +1,4 @@
+/var/qmail/alias
+
+This is the alias user home directory. The alias directory is where qmail
+delivers local, non-user mail.

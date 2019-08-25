@@ -93,14 +93,14 @@ main()
   sig_alarmcatch(resources);
   alarm(3600);
  
-  if (chdir(auto_qmail) == -1) resources();
+  if (chdir(auto_qmail_control) == -1) resources();
  
   if (control_init() == -1) resources();
   if (rcpthosts_init() == -1) resources();
   relayclient = env_get("RELAYCLIENT");
   relayclientlen = relayclient ? str_len(relayclient) : 0;
  
-  if (control_readint(&databytes,"control/databytes") == -1) resources();
+  if (control_readint(&databytes,"databytes") == -1) resources();
   x = env_get("DATABYTES");
   if (x) { scan_ulong(x,&u); databytes = u; }
   if (!(databytes + 1)) --databytes;

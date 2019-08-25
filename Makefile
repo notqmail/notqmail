@@ -79,13 +79,69 @@ auto_patrn.o: \
 compile auto_patrn.c
 	./compile auto_patrn.c
 
-auto_qmail.c: \
-auto-str conf-qmail
-	./auto-str auto_qmail `head -1 conf-qmail` > auto_qmail.c
+auto_qmail_alias.c: \
+auto-str conf-qmail-alias
+	./auto-str auto_qmail_alias `head -1 conf-qmail-alias` > auto_qmail_alias.c
 
-auto_qmail.o: \
-compile auto_qmail.c
-	./compile auto_qmail.c
+auto_qmail_alias.o: \
+compile auto_qmail_alias.c
+	./compile auto_qmail_alias.c
+
+auto_qmail_bin.c: \
+auto-str conf-qmail-bin
+	./auto-str auto_qmail_bin `head -1 conf-qmail-bin` > auto_qmail_bin.c
+
+auto_qmail_bin.o: \
+compile auto_qmail_bin.c
+	./compile auto_qmail_bin.c
+
+auto_qmail_boot.c: \
+auto-str conf-qmail-boot
+	./auto-str auto_qmail_boot `head -1 conf-qmail-boot` > auto_qmail_boot.c
+
+auto_qmail_boot.o: \
+compile auto_qmail_boot.c
+	./compile auto_qmail_boot.c
+
+auto_qmail_doc.c: \
+auto-str conf-qmail-doc
+	./auto-str auto_qmail_doc `head -1 conf-qmail-doc` > auto_qmail_doc.c
+
+auto_qmail_doc.o: \
+compile auto_qmail_doc.c
+	./compile auto_qmail_doc.c
+
+auto_qmail_control.c: \
+auto-str conf-qmail-control
+	./auto-str auto_qmail_control `head -1 conf-qmail-control` > auto_qmail_control.c
+
+auto_qmail_control.o: \
+compile auto_qmail_control.c
+	./compile auto_qmail_control.c
+
+auto_qmail_man.c: \
+auto-str conf-qmail-man
+	./auto-str auto_qmail_man `head -1 conf-qmail-man` > auto_qmail_man.c
+
+auto_qmail_man.o: \
+compile auto_qmail_man.c
+	./compile auto_qmail_man.c
+
+auto_qmail_queue.c: \
+auto-str conf-qmail-queue
+	./auto-str auto_qmail_queue `head -1 conf-qmail-queue` > auto_qmail_queue.c
+
+auto_qmail_queue.o: \
+compile auto_qmail_queue.c
+	./compile auto_qmail_queue.c
+
+auto_qmail_users.c: \
+auto-str conf-qmail-users
+	./auto-str auto_qmail_users `head -1 conf-qmail-users` > auto_qmail_users.c
+
+auto_qmail_users.o: \
+compile auto_qmail_users.c
+	./compile auto_qmail_users.c
 
 auto_spawn.c: \
 auto-int conf-spawn
@@ -184,44 +240,44 @@ compile auto_groupq.c
 	./compile auto_groupq.c
 
 binm1: \
-binm1.sh conf-qmail
+binm1.sh conf-qmail-bin
 	cat binm1.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> binm1
 	chmod 755 binm1
 
 binm1+df: \
-binm1+df.sh conf-qmail
+binm1+df.sh conf-qmail-bin
 	cat binm1+df.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> binm1+df
 	chmod 755 binm1+df
 
 binm2: \
-binm2.sh conf-qmail
+binm2.sh conf-qmail-bin
 	cat binm2.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> binm2
 	chmod 755 binm2
 
 binm2+df: \
-binm2+df.sh conf-qmail
+binm2+df.sh conf-qmail-bin
 	cat binm2+df.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> binm2+df
 	chmod 755 binm2+df
 
 binm3: \
-binm3.sh conf-qmail
+binm3.sh conf-qmail-bin
 	cat binm3.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> binm3
 	chmod 755 binm3
 
 binm3+df: \
-binm3+df.sh conf-qmail
+binm3+df.sh conf-qmail-bin
 	cat binm3+df.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> binm3+df
 	chmod 755 binm3+df
 
@@ -368,9 +424,9 @@ make-compile warn-auto.sh
 
 condredirect: \
 load condredirect.o qmail.o strerr.a fd.a sig.a wait.a seek.a env.a \
-substdio.a error.a str.a fs.a auto_qmail.o
+substdio.a error.a str.a fs.a auto_qmail_bin.o
 	./load condredirect qmail.o strerr.a fd.a sig.a wait.a \
-	seek.a env.a substdio.a error.a str.a fs.a auto_qmail.o 
+	seek.a env.a substdio.a error.a str.a fs.a auto_qmail_bin.o
 
 condredirect.0: \
 condredirect.1
@@ -382,20 +438,16 @@ wait.h seek.h qmail.h substdio.h strerr.h substdio.h fmt.h
 	./compile condredirect.c
 
 config: \
-warn-auto.sh config.sh conf-qmail conf-break conf-split
+warn-auto.sh config.sh conf-qmail-control
 	cat warn-auto.sh config.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
+	| sed s}QMAILCONTROL}"`head -1 conf-qmail-control`"}g \
 	> config
 	chmod 755 config
 
 config-fast: \
-warn-auto.sh config-fast.sh conf-qmail conf-break conf-split
+warn-auto.sh config-fast.sh conf-qmail-control
 	cat warn-auto.sh config-fast.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
+	| sed s}QMAILCONTROL}"`head -1 conf-qmail-control`"}g \
 	> config-fast
 	chmod 755 config-fast
 
@@ -413,11 +465,9 @@ compile date822fmt.c datetime.h fmt.h date822fmt.h
 	./compile date822fmt.c
 
 datemail: \
-warn-auto.sh datemail.sh conf-qmail conf-break conf-split
+warn-auto.sh datemail.sh conf-qmail-bin
 	cat warn-auto.sh datemail.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> datemail
 	chmod 755 datemail
 
@@ -498,19 +548,15 @@ dot-qmail.5
 	nroff -man dot-qmail.5 > dot-qmail.0
 
 dot-qmail.5: \
-dot-qmail.9 conf-qmail conf-break conf-spawn
+dot-qmail.9 conf-break
 	cat dot-qmail.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> dot-qmail.5
 
 elq: \
-warn-auto.sh elq.sh conf-qmail conf-break conf-split
+warn-auto.sh elq.sh conf-qmail-bin
 	cat warn-auto.sh elq.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> elq
 	chmod 755 elq
 
@@ -604,9 +650,9 @@ forgeries.7
 
 forward: \
 load forward.o qmail.o strerr.a alloc.a fd.a wait.a sig.a env.a \
-substdio.a error.a str.a fs.a auto_qmail.o
+substdio.a error.a str.a fs.a auto_qmail_bin.o
 	./load forward qmail.o strerr.a alloc.a fd.a wait.a sig.a \
-	env.a substdio.a error.a str.a fs.a auto_qmail.o 
+	env.a substdio.a error.a str.a fs.a auto_qmail_bin.o
 
 forward.0: \
 forward.1
@@ -720,16 +766,16 @@ compile hier.c auto_qmail.h auto_split.h auto_uids.h fmt.h fifo.h
 	./compile hier.c
 
 home: \
-home.sh conf-qmail
+home.sh conf-qmail-bin
 	cat home.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> home
 	chmod 755 home
 
 home+df: \
-home+df.sh conf-qmail
+home+df.sh conf-qmail-bin
 	cat home+df.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> home+df
 	chmod 755 home+df
 
@@ -747,34 +793,48 @@ install:
 	chmod 755 install
 
 instcheck: \
-load instcheck.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o uid.o \
+load instcheck.o instuidgid.o fifo.o hier.o auto_qmail_alias.o \
+auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o auto_qmail_doc.o \
+auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o auto_split.o uid.o \
 gid.o auto_usera.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
 auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
-	./load instcheck instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o \
-	uid.o gid.o auto_usera.o auto_usero.o auto_userp.o auto_userq.o \
-	auto_userr.o auto_users.o auto_groupq.o strerr.a substdio.a error.a \
-	str.a fs.a
+	./load instcheck instuidgid.o fifo.o hier.o auto_qmail_alias.o \
+	auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o \
+	auto_qmail_doc.o auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o \
+	auto_split.o uid.o gid.o auto_usera.o auto_usero.o auto_userp.o \
+	auto_userq.o auto_userr.o auto_users.o auto_groupq.o strerr.a \
+	substdio.a error.a str.a fs.a
 
 instcheck.o: \
 compile instcheck.c strerr.h error.h readwrite.h exit.h
 	./compile instcheck.c
 
 instchown: \
-load instchown.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o uid.o \
+load instchown.o instuidgid.o fifo.o hier.o auto_qmail_alias.o \
+auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o auto_qmail_doc.o \
+auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o auto_split.o uid.o \
 gid.o auto_usera.o auto_usero.o auto_userq.o auto_userr.o auto_users.o \
 auto_groupq.o strerr.a substdio.a error.a str.a fs.a
-	./load instchown instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o \
-	uid.o gid.o auto_usera.o auto_usero.o auto_userq.o auto_userr.o \
-	auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
+	./load instchown instuidgid.o fifo.o hier.o auto_qmail_alias.o \
+	auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o \
+	auto_qmail_doc.o auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o \
+	auto_split.o uid.o gid.o auto_usera.o auto_usero.o auto_userq.o \
+	auto_userr.o auto_users.o auto_groupq.o strerr.a substdio.a error.a \
+	str.a fs.a
 
 instchown.o: \
 compile instchown.c strerr.h error.h exit.h
 	./compile instchown.c
 
 instpackage: \
-load instpackage.o fifo.o hier.o auto_qmail.o auto_split.o strerr.a \
+load instpackage.o fifo.o hier.o auto_qmail_alias.o \
+auto_qmail_bin.o auto_qmail_boot.o auto_qmail_control.o auto_qmail_doc.o \
+auto_qmail_man.o auto_qmail_queue.o auto_qmail_users.o auto_split.o strerr.a \
 substdio.a open.a error.a env.a str.a fs.a stralloc.a alloc.a
-	./load instpackage fifo.o hier.o auto_qmail.o auto_split.o \
+	./load instpackage fifo.o hier.o \
+	auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
+	auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o \
+	auto_qmail_queue.o auto_qmail_users.o auto_split.o \
 	strerr.a substdio.a open.a error.a env.a str.a fs.a stralloc.a alloc.a
 
 instpackage.o: \
@@ -905,11 +965,9 @@ readwrite.h open.h headerbody.h maildir.h strerr.h
 	./compile maildirwatch.c
 
 mailsubj: \
-warn-auto.sh mailsubj.sh conf-qmail conf-break conf-split
+warn-auto.sh mailsubj.sh conf-qmail-bin
 	cat warn-auto.sh mailsubj.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> mailsubj
 	chmod 755 mailsubj
 
@@ -1011,11 +1069,9 @@ it man
 	./instpackage
 
 pinq: \
-warn-auto.sh pinq.sh conf-qmail conf-break conf-split
+warn-auto.sh pinq.sh conf-qmail-bin
 	cat warn-auto.sh pinq.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> pinq
 	chmod 755 pinq
 
@@ -1051,16 +1107,16 @@ gen_alloc.h
 	./compile prioq.c
 
 proc: \
-proc.sh conf-qmail
+proc.sh conf-qmail-bin
 	cat proc.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> proc
 	chmod 755 proc
 
 proc+df: \
-proc+df.sh conf-qmail
+proc+df.sh conf-qmail-bin
 	cat proc+df.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> proc+df
 	chmod 755 proc+df
 
@@ -1069,11 +1125,9 @@ compile prot.c hasshsgr.h prot.h
 	./compile prot.c
 
 qail: \
-warn-auto.sh qail.sh conf-qmail conf-break conf-split
+warn-auto.sh qail.sh conf-qmail-bin
 	cat warn-auto.sh qail.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> qail
 	chmod 755 qail
 
@@ -1094,9 +1148,9 @@ substdio.h open.h byte.h str.h headerbody.h hfield.h env.h exit.h qtmp.h
 
 qmail-clean: \
 load qmail-clean.o fmtqfn.o now.o getln.a sig.a stralloc.a alloc.a \
-substdio.a error.a str.a fs.a auto_qmail.o auto_split.o
+substdio.a error.a str.a fs.a auto_qmail_queue.o auto_split.o
 	./load qmail-clean fmtqfn.o now.o getln.a sig.a stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a auto_qmail.o \
+	alloc.a substdio.a error.a str.a fs.a auto_qmail_queue.o \
 	auto_split.o 
 
 qmail-clean.0: \
@@ -1118,11 +1172,9 @@ qmail-control.5
 	nroff -man qmail-control.5 > qmail-control.0
 
 qmail-control.5: \
-qmail-control.9 conf-qmail conf-break conf-spawn
+qmail-control.9 conf-qmail-control
 	cat qmail-control.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
+	| sed s}QMAILCONTROL}"`head -1 conf-qmail-control`"}g \
 	> qmail-control.5
 
 qmail-getpw: \
@@ -1136,11 +1188,9 @@ qmail-getpw.8
 	nroff -man qmail-getpw.8 > qmail-getpw.0
 
 qmail-getpw.8: \
-qmail-getpw.9 conf-qmail conf-break conf-spawn
+qmail-getpw.9 conf-break
 	cat qmail-getpw.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> qmail-getpw.8
 
 qmail-getpw.o: \
@@ -1157,12 +1207,12 @@ qmail-inject: \
 load qmail-inject.o headerbody.o hfield.o newfield.o quote.o now.o \
 control.o date822fmt.o constmap.o qmail.o case.a fd.a wait.a open.a \
 getln.a sig.a getopt.a datetime.a token822.o env.a stralloc.a alloc.a \
-substdio.a error.a str.a fs.a auto_qmail.o
+substdio.a error.a str.a fs.a auto_qmail_bin.o auto_qmail_control.o
 	./load qmail-inject headerbody.o hfield.o newfield.o \
 	quote.o now.o control.o date822fmt.o constmap.o qmail.o \
 	case.a fd.a wait.a open.a getln.a sig.a getopt.a datetime.a \
 	token822.o env.a stralloc.a alloc.a substdio.a error.a \
-	str.a fs.a auto_qmail.o 
+	str.a fs.a auto_qmail_bin.o auto_qmail_control.o
 
 qmail-inject.0: \
 qmail-inject.8
@@ -1181,10 +1231,8 @@ qmail-limits.7
 	nroff -man qmail-limits.7 > qmail-limits.0
 
 qmail-limits.7: \
-qmail-limits.9 conf-qmail conf-break conf-spawn
+qmail-limits.9 conf-spawn
 	cat qmail-limits.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> qmail-limits.7
 
@@ -1192,11 +1240,11 @@ qmail-local: \
 load qmail-local.o qmail.o quote.o now.o gfrom.o myctime.o \
 slurpclose.o case.a getln.a getopt.a sig.a open.a seek.a lock.a fd.a \
 wait.a env.a stralloc.a alloc.a strerr.a substdio.a error.a str.a \
-fs.a datetime.a auto_qmail.o auto_patrn.o socket.lib
+fs.a datetime.a auto_qmail_bin.o auto_patrn.o socket.lib
 	./load qmail-local qmail.o quote.o now.o gfrom.o myctime.o \
 	slurpclose.o case.a getln.a getopt.a sig.a open.a seek.a \
 	lock.a fd.a wait.a env.a stralloc.a alloc.a strerr.a \
-	substdio.a error.a str.a fs.a datetime.a auto_qmail.o \
+	substdio.a error.a str.a fs.a datetime.a auto_qmail_bin.o \
 	auto_patrn.o  `cat socket.lib`
 
 qmail-local.0: \
@@ -1218,12 +1266,12 @@ qmail-log.5
 qmail-lspawn: \
 load qmail-lspawn.o spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
 case.a cdb.a fd.a open.a stralloc.a alloc.a substdio.a error.a str.a \
-fs.a auto_qmail.o uid.o gid.o auto_userp.o auto_userq.o auto_groupn.o \
-auto_spawn.o
+fs.a auto_qmail_bin.o auto_qmail_queue.o auto_qmail_users.o uid.o gid.o \
+auto_userp.o auto_userq.o auto_groupn.o auto_spawn.o
 	./load qmail-lspawn spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
-	case.a cdb.a fd.a open.a stralloc.a alloc.a auto_qmail.o uid.o gid.o \
-	auto_userp.o auto_userq.o auto_groupn.o auto_spawn.o substdio.a \
-	error.a str.a fs.a
+	case.a cdb.a fd.a open.a stralloc.a alloc.a auto_qmail_bin.o \
+	auto_qmail_queue.o auto_qmail_users.o uid.o gid.o auto_userp.o \
+	auto_userq.o auto_groupn.o auto_spawn.o substdio.a error.a str.a fs.a
 
 qmail-lspawn.0: \
 qmail-lspawn.8
@@ -1238,21 +1286,19 @@ open.h
 
 qmail-newmrh: \
 load qmail-newmrh.o cdbmss.o getln.a open.a cdbmake.a seek.a case.a \
-stralloc.a alloc.a strerr.a substdio.a error.a str.a auto_qmail.o
+stralloc.a alloc.a strerr.a substdio.a error.a str.a auto_qmail_control.o
 	./load qmail-newmrh cdbmss.o getln.a open.a cdbmake.a \
 	seek.a case.a stralloc.a alloc.a strerr.a substdio.a \
-	error.a str.a auto_qmail.o 
+	error.a str.a auto_qmail_control.o
 
 qmail-newmrh.0: \
 qmail-newmrh.8
 	nroff -man qmail-newmrh.8 > qmail-newmrh.0
 
 qmail-newmrh.8: \
-qmail-newmrh.9 conf-qmail conf-break conf-spawn
+qmail-newmrh.9 conf-qmail-control
 	cat qmail-newmrh.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
+	| sed s}QMAILCONTROL}"`head -1 conf-qmail-control`"}g \
 	> qmail-newmrh.8
 
 qmail-newmrh.o: \
@@ -1263,21 +1309,19 @@ uint32.h substdio.h case.h
 
 qmail-newu: \
 load qmail-newu.o cdbmss.o getln.a open.a seek.a cdbmake.a case.a \
-stralloc.a alloc.a substdio.a error.a str.a auto_qmail.o
+stralloc.a alloc.a substdio.a error.a str.a auto_qmail_users.o
 	./load qmail-newu cdbmss.o getln.a open.a seek.a cdbmake.a \
 	case.a stralloc.a alloc.a substdio.a error.a str.a \
-	auto_qmail.o 
+	auto_qmail_users.o
 
 qmail-newu.0: \
 qmail-newu.8
 	nroff -man qmail-newu.8 > qmail-newu.0
 
 qmail-newu.8: \
-qmail-newu.9 conf-qmail conf-break conf-spawn
+qmail-newu.9 conf-qmail-users
 	cat qmail-newu.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
+	| sed s}QMAILUSERS}"`head -1 conf-qmail-users`"}g \
 	> qmail-newu.8
 
 qmail-newu.o: \
@@ -1327,21 +1371,20 @@ readwrite.h timeoutread.h timeoutwrite.h
 qmail-pw2u: \
 load qmail-pw2u.o constmap.o control.o open.a getln.a case.a getopt.a \
 stralloc.a alloc.a substdio.a error.a str.a fs.a auto_usera.o \
-auto_break.o auto_qmail.o
+auto_break.o auto_qmail_users.o
 	./load qmail-pw2u constmap.o control.o open.a getln.a \
 	case.a getopt.a stralloc.a alloc.a substdio.a error.a str.a \
-	fs.a auto_usera.o auto_break.o auto_qmail.o 
+	fs.a auto_usera.o auto_break.o auto_qmail_users.o
 
 qmail-pw2u.0: \
 qmail-pw2u.8
 	nroff -man qmail-pw2u.8 > qmail-pw2u.0
 
 qmail-pw2u.8: \
-qmail-pw2u.9 conf-qmail conf-break conf-spawn
+qmail-pw2u.9 conf-qmail-users conf-break
 	cat qmail-pw2u.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
+	| sed s}QMAILUSERS}"`head -1 conf-qmail-users`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> qmail-pw2u.8
 
 qmail-pw2u.o: \
@@ -1353,10 +1396,10 @@ auto_users.h byte.h
 
 qmail-qmqpc: \
 load qmail-qmqpc.o slurpclose.o timeoutread.o timeoutwrite.o \
-timeoutconn.o ip.o control.o auto_qmail.o sig.a ndelay.a open.a \
+timeoutconn.o ip.o control.o auto_qmail_control.o sig.a ndelay.a open.a \
 getln.a substdio.a stralloc.a alloc.a error.a str.a fs.a socket.lib
 	./load qmail-qmqpc slurpclose.o timeoutread.o \
-	timeoutwrite.o timeoutconn.o ip.o control.o auto_qmail.o \
+	timeoutwrite.o timeoutconn.o ip.o control.o auto_qmail_control.o \
 	sig.a ndelay.a open.a getln.a substdio.a stralloc.a alloc.a \
 	error.a str.a fs.a  `cat socket.lib`
 
@@ -1371,11 +1414,12 @@ timeoutread.h timeoutwrite.h auto_qmail.h control.h fmt.h
 	./compile qmail-qmqpc.c
 
 qmail-qmqpd: \
-load qmail-qmqpd.o received.o now.o date822fmt.o qmail.o auto_qmail.o \
-env.a substdio.a sig.a error.a wait.a fd.a str.a datetime.a fs.a
+load qmail-qmqpd.o received.o now.o date822fmt.o qmail.o auto_qmail_bin.o \
+auto_qmail_queue.o env.a substdio.a sig.a error.a wait.a fd.a str.a \
+datetime.a fs.a
 	./load qmail-qmqpd received.o now.o date822fmt.o qmail.o \
-	auto_qmail.o env.a substdio.a sig.a error.a wait.a fd.a \
-	str.a datetime.a fs.a 
+	auto_qmail_bin.o auto_qmail_queue.o env.a substdio.a sig.a error.a \
+	wait.a fd.a str.a datetime.a fs.a
 
 qmail-qmqpd.0: \
 qmail-qmqpd.8
@@ -1390,11 +1434,12 @@ qmail-qmtpd: \
 load qmail-qmtpd.o rcpthosts.o control.o constmap.o received.o \
 date822fmt.o now.o qmail.o cdb.a fd.a wait.a datetime.a open.a \
 getln.a sig.a case.a env.a stralloc.a alloc.a substdio.a error.a \
-str.a fs.a auto_qmail.o
+str.a fs.a auto_qmail_bin.o auto_qmail_control.o
 	./load qmail-qmtpd rcpthosts.o control.o constmap.o \
 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
 	datetime.a open.a getln.a sig.a case.a env.a stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a auto_qmail.o 
+	alloc.a substdio.a error.a str.a fs.a auto_qmail_bin.o \
+	auto_qmail_control.o
 
 qmail-qmtpd.0: \
 qmail-qmtpd.8
@@ -1409,10 +1454,10 @@ auto_qmail.h readwrite.h control.h received.h
 qmail-qread: \
 load qmail-qread.o fmtqfn.o readsubdir.o date822fmt.o datetime.a \
 open.a getln.a stralloc.a alloc.a substdio.a error.a str.a fs.a \
-auto_qmail.o auto_split.o
+auto_qmail_queue.o auto_split.o
 	./load qmail-qread fmtqfn.o readsubdir.o date822fmt.o \
 	datetime.a open.a getln.a stralloc.a alloc.a substdio.a \
-	error.a str.a fs.a auto_qmail.o auto_split.o 
+	error.a str.a fs.a auto_qmail_queue.o auto_split.o
 
 qmail-qread.0: \
 qmail-qread.8
@@ -1426,11 +1471,9 @@ exit.h
 	./compile qmail-qread.c
 
 qmail-qstat: \
-warn-auto.sh qmail-qstat.sh conf-qmail conf-break conf-split
+warn-auto.sh qmail-qstat.sh conf-qmail-queue
 	cat warn-auto.sh qmail-qstat.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
+	| sed s}QMAILQUEUE}"`head -1 conf-qmail-queue`"}g \
 	> qmail-qstat
 	chmod 755 qmail-qstat
 
@@ -1441,11 +1484,11 @@ qmail-qstat.8
 qmail-queue: \
 load qmail-queue.o triggerpull.o fmtqfn.o now.o date822fmt.o \
 datetime.a seek.a ndelay.a open.a sig.a alloc.a substdio.a error.a \
-str.a fs.a auto_qmail.o auto_split.o uid.o auto_usera.o auto_userd.o \
+str.a fs.a auto_qmail_queue.o auto_split.o uid.o auto_usera.o auto_userd.o \
 auto_users.o
 	./load qmail-queue triggerpull.o fmtqfn.o now.o \
 	date822fmt.o datetime.a seek.a ndelay.a open.a sig.a \
-	alloc.a auto_qmail.o auto_split.o uid.o auto_usera.o \
+	alloc.a auto_qmail_queue.o auto_split.o uid.o auto_usera.o \
 	auto_userd.o auto_users.o substdio.a error.a str.a fs.a
 
 qmail-queue.0: \
@@ -1462,12 +1505,14 @@ qmail-remote: \
 load qmail-remote.o control.o constmap.o timeoutread.o timeoutwrite.o \
 timeoutconn.o tcpto.o now.o dns.o ip.o ipalloc.o ipme.o quote.o \
 ndelay.a case.a sig.a open.a lock.a seek.a getln.a stralloc.a alloc.a \
-substdio.a error.a str.a fs.a auto_qmail.o dns.lib socket.lib
+substdio.a error.a str.a fs.a auto_qmail_control.o auto_qmail_queue.o \
+dns.lib socket.lib
 	./load qmail-remote control.o constmap.o timeoutread.o \
 	timeoutwrite.o timeoutconn.o tcpto.o now.o dns.o ip.o \
 	ipalloc.o ipme.o quote.o ndelay.a case.a sig.a open.a \
 	lock.a seek.a getln.a stralloc.a alloc.a substdio.a error.a \
-	str.a fs.a auto_qmail.o  `cat dns.lib` `cat socket.lib`
+	str.a fs.a auto_qmail_queue.o auto_qmail_control.o  `cat dns.lib` \
+	`cat socket.lib`
 
 qmail-remote.0: \
 qmail-remote.8
@@ -1484,11 +1529,11 @@ tcpto.h readwrite.h timeoutconn.h timeoutread.h timeoutwrite.h
 qmail-rspawn: \
 load qmail-rspawn.o spawn.o tcpto_clean.o now.o coe.o sig.a open.a \
 seek.a lock.a wait.a fd.a stralloc.a alloc.a substdio.a error.a str.a \
-auto_qmail.o uid.o auto_userq.o auto_spawn.o
+auto_qmail_bin.o auto_qmail_queue.o uid.o auto_userq.o auto_spawn.o
 	./load qmail-rspawn spawn.o tcpto_clean.o now.o coe.o \
 	sig.a open.a seek.a lock.a wait.a fd.a stralloc.a alloc.a \
-	auto_qmail.o uid.o auto_userq.o substdio.a error.a str.a \
-	auto_spawn.o
+	auto_qmail_bin.o auto_qmail_queue.o uid.o auto_userq.o substdio.a \
+	error.a str.a auto_spawn.o
 
 qmail-rspawn.0: \
 qmail-rspawn.8
@@ -1503,22 +1548,22 @@ qmail-send: \
 load qmail-send.o qsutil.o control.o constmap.o newfield.o prioq.o \
 trigger.o fmtqfn.o quote.o now.o readsubdir.o qmail.o date822fmt.o \
 datetime.a case.a ndelay.a getln.a wait.a seek.a fd.a sig.a open.a \
-lock.a stralloc.a alloc.a substdio.a error.a str.a fs.a auto_qmail.o \
-auto_split.o env.a
+lock.a stralloc.a alloc.a substdio.a error.a str.a fs.a auto_qmail_bin.o \
+auto_qmail_control.o auto_qmail_queue.o auto_split.o env.a
 	./load qmail-send qsutil.o control.o constmap.o newfield.o \
 	prioq.o trigger.o fmtqfn.o quote.o now.o readsubdir.o \
 	qmail.o date822fmt.o datetime.a case.a ndelay.a getln.a \
 	wait.a seek.a fd.a sig.a open.a lock.a stralloc.a alloc.a \
-	substdio.a error.a str.a fs.a auto_qmail.o auto_split.o env.a
+	substdio.a error.a str.a fs.a auto_qmail_bin.o auto_qmail_control.o \
+	auto_qmail_queue.o auto_split.o env.a
 
 qmail-send.0: \
 qmail-send.8
 	nroff -man qmail-send.8 > qmail-send.0
 
 qmail-send.8: \
-qmail-send.9 conf-qmail conf-break conf-spawn
+qmail-send.9 conf-break conf-spawn
 	cat qmail-send.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> qmail-send.8
@@ -1536,12 +1581,17 @@ qmail-showctl: \
 load qmail-showctl.o uid.o gid.o auto_usera.o auto_userd.o auto_userl.o \
 auto_usero.o auto_userp.o auto_userq.o auto_userr.o auto_users.o auto_groupn.o \
 auto_groupq.o control.o open.a getln.a stralloc.a alloc.a substdio.a error.a \
-str.a fs.a auto_qmail.o auto_break.o auto_patrn.o auto_spawn.o auto_split.o
+str.a fs.a auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
+auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o auto_qmail_queue.o \
+auto_qmail_users.o auto_break.o auto_patrn.o auto_spawn.o auto_split.o
 	./load qmail-showctl uid.o gid.o auto_usera.o auto_userd.o \
 	auto_userl.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
 	auto_users.o auto_groupn.o auto_groupq.o control.o open.a getln.a \
-	stralloc.a alloc.a substdio.a error.a str.a fs.a auto_qmail.o \
-	auto_break.o auto_patrn.o auto_spawn.o auto_split.o
+	stralloc.a alloc.a substdio.a error.a str.a fs.a \
+	auto_qmail_alias.o auto_qmail_bin.o auto_qmail_boot.o \
+	auto_qmail_control.o auto_qmail_doc.o auto_qmail_man.o \
+	auto_qmail_queue.o auto_qmail_users.o auto_break.o auto_patrn.o \
+	auto_spawn.o auto_split.o
 
 qmail-showctl.0: \
 qmail-showctl.8
@@ -1559,13 +1609,13 @@ load qmail-smtpd.o rcpthosts.o commands.o timeoutread.o \
 timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
 date822fmt.o now.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
 open.a sig.a case.a env.a stralloc.a alloc.a substdio.a error.a str.a \
-fs.a auto_qmail.o socket.lib
+fs.a auto_qmail_bin.o auto_qmail_control.o socket.lib
 	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
 	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a auto_qmail.o  `cat \
-	socket.lib`
+	alloc.a substdio.a error.a str.a fs.a auto_qmail_bin.o \
+	auto_qmail_control.o  `cat socket.lib`
 
 qmail-smtpd.0: \
 qmail-smtpd.8
@@ -1591,11 +1641,9 @@ qmail-start.8
 	nroff -man qmail-start.8 > qmail-start.0
 
 qmail-start.8: \
-qmail-start.9 conf-qmail conf-break conf-spawn
+qmail-start.9 conf-qmail-bin
 	cat qmail-start.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
+	| sed s}QMAILBIN}"`head -1 conf-qmail-bin`"}g \
 	> qmail-start.8
 
 qmail-start.o: \
@@ -1604,9 +1652,9 @@ compile qmail-start.c fd.h prot.h exit.h fork.h uidgid.h auto_uids.h auto_users.
 
 qmail-tcpok: \
 load qmail-tcpok.o open.a lock.a strerr.a substdio.a error.a str.a \
-auto_qmail.o
+auto_qmail_queue.o
 	./load qmail-tcpok open.a lock.a strerr.a substdio.a \
-	error.a str.a auto_qmail.o 
+	error.a str.a auto_qmail_queue.o
 
 qmail-tcpok.0: \
 qmail-tcpok.8
@@ -1619,9 +1667,9 @@ auto_qmail.h exit.h
 
 qmail-tcpto: \
 load qmail-tcpto.o ip.o now.o open.a lock.a substdio.a error.a str.a \
-fs.a auto_qmail.o
+fs.a auto_qmail_queue.o
 	./load qmail-tcpto ip.o now.o open.a lock.a substdio.a \
-	error.a str.a fs.a auto_qmail.o 
+	error.a str.a fs.a auto_qmail_queue.o
 
 qmail-tcpto.0: \
 qmail-tcpto.8
@@ -1633,10 +1681,9 @@ fmt.h ip.h lock.h error.h exit.h datetime.h now.h datetime.h open.h
 	./compile qmail-tcpto.c
 
 qmail-upq: \
-warn-auto.sh qmail-upq.sh conf-qmail conf-break conf-split
+warn-auto.sh qmail-upq.sh conf-qmail-queue conf-split
 	cat warn-auto.sh qmail-upq.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
+	| sed s}QMAILQUEUE}"`head -1 conf-qmail-queue`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
 	> qmail-upq
 	chmod 755 qmail-upq
@@ -1646,11 +1693,10 @@ qmail-users.5
 	nroff -man qmail-users.5 > qmail-users.0
 
 qmail-users.5: \
-qmail-users.9 conf-qmail conf-break conf-spawn
+qmail-users.9 conf-qmail-alias conf-qmail-users
 	cat qmail-users.9 \
-	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
+	| sed s}QMAILALIAS}"`head -1 conf-qmail-alias`"}g \
+	| sed s}QMAILUSERS}"`head -1 conf-qmail-users`"}g \
 	> qmail-users.5
 
 qmail.0: \
@@ -1665,10 +1711,10 @@ qmail.h auto_qmail.h env.h
 qreceipt: \
 load qreceipt.o headerbody.o hfield.o quote.o token822.o qmail.o \
 getln.a fd.a wait.a sig.a env.a stralloc.a alloc.a substdio.a error.a \
-str.a auto_qmail.o
+str.a auto_qmail_bin.o
 	./load qreceipt headerbody.o hfield.o quote.o token822.o \
 	qmail.o getln.a fd.a wait.a sig.a env.a stralloc.a alloc.a \
-	substdio.a error.a str.a auto_qmail.o 
+	substdio.a error.a str.a auto_qmail_bin.o
 
 qreceipt.0: \
 qreceipt.1
@@ -1765,9 +1811,9 @@ compile trysysel.c select.h1 select.h2
 
 sendmail: \
 load sendmail.o env.a getopt.a alloc.a substdio.a error.a str.a \
-auto_qmail.o
+auto_qmail_bin.o
 	./load sendmail env.a getopt.a alloc.a substdio.a error.a \
-	str.a auto_qmail.o 
+	str.a auto_qmail_bin.o
 
 sendmail.o: \
 compile sendmail.c sgetopt.h subgetopt.h substdio.h subfd.h \

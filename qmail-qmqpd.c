@@ -122,7 +122,7 @@ main()
 
   len = getlen();
 
-  if (chdir(auto_qmail) == -1) resources();
+  if (chdir(auto_qmail_queue) == -1) resources();
   if (qmail_open(&qq) == -1) resources();
   qp = qmail_qp(&qq);
   identify();

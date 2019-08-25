@@ -1,5 +1,4 @@
-cd QMAIL
-cd queue
+cd QMAILQUEUE
 for dir in mess info local remote
 do
   ( cd $dir; find . -type f -print ) | (

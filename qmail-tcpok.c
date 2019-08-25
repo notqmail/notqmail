@@ -16,20 +16,20 @@ void main()
   int fd;
   int i;
 
-  if (chdir(auto_qmail) == -1)
-    strerr_die4sys(111,FATAL,"unable to chdir to ",auto_qmail,": ");
-  if (chdir("queue/lock") == -1)
-    strerr_die4sys(111,FATAL,"unable to chdir to ",auto_qmail,"/queue/lock: ");
+  if (chdir(auto_qmail_queue) == -1)
+    strerr_die4sys(111,FATAL,"unable to chdir to ",auto_qmail_queue,": ");
+  if (chdir("lock") == -1)
+    strerr_die4sys(111,FATAL,"unable to chdir to ",auto_qmail_queue,"lock: ");
 
   fd = open_write("tcpto");
   if (fd == -1)
-    strerr_die4sys(111,FATAL,"unable to write ",auto_qmail,"/queue/lock/tcpto: ");
+    strerr_die4sys(111,FATAL,"unable to write ",auto_qmail_queue,"/lock/tcpto: ");
   if (lock_ex(fd) == -1)
-    strerr_die4sys(111,FATAL,"unable to lock ",auto_qmail,"/queue/lock/tcpto: ");
+    strerr_die4sys(111,FATAL,"unable to lock ",auto_qmail_queue,"/lock/tcpto: ");
 
   substdio_fdbuf(&ss,write,fd,buf,sizeof buf);
   for (i = 0;i < sizeof buf;++i) substdio_put(&ss,"",1);
   if (substdio_flush(&ss) == -1)
-    strerr_die4sys(111,FATAL,"unable to clear ",auto_qmail,"/queue/lock/tcpto: ");
+    strerr_die4sys(111,FATAL,"unable to clear ",auto_qmail_queue,"/lock/tcpto: ");
   _exit(0);
 }

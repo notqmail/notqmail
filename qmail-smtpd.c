@@ -103,21 +103,21 @@ void setup()
   unsigned long u;
  
   if (control_init() == -1) die_control();
-  if (control_rldef(&greeting,"control/smtpgreeting",1,(char *) 0) != 1)
+  if (control_rldef(&greeting,"smtpgreeting",1,(char *) 0) != 1)
     die_control();
-  liphostok = control_rldef(&liphost,"control/localiphost",1,(char *) 0);
+  liphostok = control_rldef(&liphost,"localiphost",1,(char *) 0);
   if (liphostok == -1) die_control();
-  if (control_readint(&timeout,"control/timeoutsmtpd") == -1) die_control();
+  if (control_readint(&timeout,"timeoutsmtpd") == -1) die_control();
   if (timeout <= 0) timeout = 1;
 
   if (rcpthosts_init() == -1) die_control();
 
-  bmfok = control_readfile(&bmf,"control/badmailfrom",0);
+  bmfok = control_readfile(&bmf,"badmailfrom",0);
   if (bmfok == -1) die_control();
   if (bmfok)
     if (!constmap_init(&mapbmf,bmf.s,bmf.len,0)) die_nomem();
  
-  if (control_readint(&databytes,"control/databytes") == -1) die_control();
+  if (control_readint(&databytes,"databytes") == -1) die_control();
   x = env_get("DATABYTES");
   if (x) { scan_ulong(x,&u); databytes = u; }
   if (!(databytes + 1)) --databytes;
@@ -411,7 +411,7 @@ struct commands smtpcommands[] = {
 void main()
 {
   sig_pipeignore();
-  if (chdir(auto_qmail) == -1) die_control();
+  if (chdir(auto_qmail_control) == -1) die_control();
   setup();
   if (ipme_init() != 1) die_ipme();
   smtp_greet("220 ");

@@ -169,8 +169,36 @@ void main()
   auto_gidn = initgid(auto_groupn);
   auto_gidq = initgid(auto_groupq);
 
-  substdio_puts(subfdout,"qmail home directory: ");
-  substdio_puts(subfdout,auto_qmail);
+  substdio_puts(subfdout,"qmail alias directory: ");
+  substdio_puts(subfdout,auto_qmail_alias);
+  substdio_puts(subfdout,".\n");
+
+  substdio_puts(subfdout,"qmail binaries directory: ");
+  substdio_puts(subfdout,auto_qmail_bin);
+  substdio_puts(subfdout,".\n");
+
+  substdio_puts(subfdout,"qmail boot directory: ");
+  substdio_puts(subfdout,auto_qmail_boot);
+  substdio_puts(subfdout,".\n");
+
+  substdio_puts(subfdout,"qmail documents directory: ");
+  substdio_puts(subfdout,auto_qmail_doc);
+  substdio_puts(subfdout,".\n");
+
+  substdio_puts(subfdout,"qmail control directory: ");
+  substdio_puts(subfdout,auto_qmail_control);
+  substdio_puts(subfdout,".\n");
+
+  substdio_puts(subfdout,"qmail manpage directory: ");
+  substdio_puts(subfdout,auto_qmail_man);
+  substdio_puts(subfdout,".\n");
+
+  substdio_puts(subfdout,"qmail queue directory: ");
+  substdio_puts(subfdout,auto_qmail_queue);
+  substdio_puts(subfdout,".\n");
+
+  substdio_puts(subfdout,"qmail users directory: ");
+  substdio_puts(subfdout,auto_qmail_users);
   substdio_puts(subfdout,".\n");
 
   substdio_puts(subfdout,"user-ext delimiter: ");
@@ -213,15 +241,10 @@ void main()
   substdio_put(subfdout,num,fmt_ulong(num,(unsigned long) auto_gidq));
   substdio_puts(subfdout,".\n");
 
-  if (chdir(auto_qmail) == -1) {
+  if (chdir(auto_qmail_control) == -1) {
     substdio_puts(subfdout,"Oops! Unable to chdir to ");
-    substdio_puts(subfdout,auto_qmail);
+    substdio_puts(subfdout,auto_qmail_control);
     substdio_puts(subfdout,".\n");
-    substdio_flush(subfdout);
-    _exit(111);
-  }
-  if (chdir("control") == -1) {
-    substdio_puts(subfdout,"Oops! Unable to chdir to control.\n");
     substdio_flush(subfdout);
     _exit(111);
   }

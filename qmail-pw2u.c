@@ -251,19 +251,19 @@ char **argv;
 	_exit(100);
     }
 
-  if (chdir(auto_qmail) == -1) die_chdir();
+  if (chdir(auto_qmail_users) == -1) die_chdir();
 
   /* no need for control_init() */
 
-  okincl = control_readfile(&incl,"users/include",0);
+  okincl = control_readfile(&incl,"include",0);
   if (okincl == -1) die_control();
   if (okincl) if (!constmap_init(&mapincl,incl.s,incl.len,0)) die_nomem();
 
-  okexcl = control_readfile(&excl,"users/exclude",0);
+  okexcl = control_readfile(&excl,"exclude",0);
   if (okexcl == -1) die_control();
   if (okexcl) if (!constmap_init(&mapexcl,excl.s,excl.len,0)) die_nomem();
 
-  okmana = control_readfile(&mana,"users/mailnames",0);
+  okmana = control_readfile(&mana,"mailnames",0);
   if (okmana == -1) die_control();
   if (okmana) if (!constmap_init(&mapmana,mana.s,mana.len,1)) die_nomem();
 
@@ -276,7 +276,7 @@ char **argv;
   }
   if (!flagalias) die_alias();
 
-  fd = open_read("users/subusers");
+  fd = open_read("subusers");
   if (fd == -1) {
     if (errno != error_noent) die_control();
   }
@@ -294,7 +294,7 @@ char **argv;
     close(fd);
   }
 
-  fd = open_read("users/append");
+  fd = open_read("append");
   if (fd == -1) {
     if (errno != error_noent) die_control();
   }

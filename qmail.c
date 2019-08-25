@@ -15,7 +15,7 @@ static void setup_qqargs()
   if(!binqqargs[0])
     binqqargs[0] = env_get("QMAILQUEUE");
   if(!binqqargs[0])
-    binqqargs[0] = "bin/qmail-queue";
+    binqqargs[0] = "qmail-queue";
 }
 
 int qmail_open(qq)
@@ -39,7 +39,7 @@ struct qmail *qq;
       close(pie[1]);
       if (fd_move(0,pim[0]) == -1) _exit(120);
       if (fd_move(1,pie[0]) == -1) _exit(120);
-      if (chdir(auto_qmail) == -1) _exit(61);
+      if (chdir(auto_qmail_bin) == -1) _exit(61);
       execv(*binqqargs,binqqargs);
       _exit(120);
   }

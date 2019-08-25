@@ -66,8 +66,10 @@ void temp_dnscanon() { out("Z\
 CNAME lookup failed temporarily. (#4.4.3)\n"); zerodie(); }
 void temp_dns() { out("Z\
 Sorry, I couldn't find any host by that name. (#4.1.2)\n"); zerodie(); }
-void temp_chdir() { out("Z\
-Unable to switch to home directory. (#4.3.0)\n"); zerodie(); }
+void temp_chdir_control() { out("Z\
+Unable to switch to control directory. (#4.3.0)\n"); zerodie(); }
+void temp_chdir_queue() { out("Z\
+Unable to switch to queue directory. (#4.3.0)\n"); zerodie(); }
 void temp_control() { out("Z\
 Unable to read control files. (#4.3.0)\n"); zerodie(); }
 void perm_partialline() { out("D\
@@ -311,12 +313,12 @@ int flagcname;
 void getcontrols()
 {
   if (control_init() == -1) temp_control();
-  if (control_readint(&timeout,"control/timeoutremote") == -1) temp_control();
-  if (control_readint(&timeoutconnect,"control/timeoutconnect") == -1)
+  if (control_readint(&timeout,"timeoutremote") == -1) temp_control();
+  if (control_readint(&timeoutconnect,"timeoutconnect") == -1)
     temp_control();
-  if (control_rldef(&helohost,"control/helohost",1,(char *) 0) != 1)
+  if (control_rldef(&helohost,"helohost",1,(char *) 0) != 1)
     temp_control();
-  switch(control_readfile(&routes,"control/smtproutes",0)) {
+  switch(control_readfile(&routes,"smtproutes",0)) {
     case -1:
       temp_control();
     case 0:
@@ -341,9 +343,10 @@ char **argv;
  
   sig_pipeignore();
   if (argc < 4) perm_usage();
-  if (chdir(auto_qmail) == -1) temp_chdir();
+  if (chdir(auto_qmail_control) == -1) temp_chdir_control();
   getcontrols();
- 
+  if (chdir(auto_qmail_queue) == -1) temp_chdir_queue();
+
  
   if (!stralloc_copys(&host,argv[1])) temp_nomem();
  

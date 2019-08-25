@@ -75,14 +75,14 @@ void main()
   int numcolons;
 
   umask(033);
-  if (chdir(auto_qmail) == -1) die_chdir();
+  if (chdir(auto_qmail_users) == -1) die_chdir();
 
-  fd = open_read("users/assign");
+  fd = open_read("assign");
   if (fd == -1) die_opena();
 
   substdio_fdbuf(&ssin,read,fd,inbuf,sizeof(inbuf));
 
-  fdtemp = open_trunc("users/cdb.tmp");
+  fdtemp = open_trunc("cdb.tmp");
   if (fdtemp == -1) die_opent();
 
   if (cdbmss_start(&cdbmss,fdtemp) == -1) die_writet();
@@ -132,7 +132,7 @@ void main()
   if (cdbmss_finish(&cdbmss) == -1) die_writet();
   if (fsync(fdtemp) == -1) die_writet();
   if (close(fdtemp) == -1) die_writet(); /* NFS stupidity */
-  if (rename("users/cdb.tmp","users/cdb") == -1) die_rename();
+  if (rename("cdb.tmp","cdb") == -1) die_rename();
 
   _exit(0);
 }

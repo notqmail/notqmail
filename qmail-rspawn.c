@@ -8,6 +8,7 @@
 #include "uidgid.h"
 #include "auto_uids.h"
 #include "auto_users.h"
+#include "auto_qmail.h"
 
 int auto_uidq;
 
@@ -101,6 +102,7 @@ char *s; char *r; int at;
    if (fd_move(0,fdmess) == -1) _exit(111);
    if (fd_move(1,fdout) == -1) _exit(111);
    if (fd_copy(2,1) == -1) _exit(111);
+   if (chdir(auto_qmail_bin)) _exit(111);
    execvp(*args,args);
    if (error_temp(errno)) _exit(111);
    _exit(100);

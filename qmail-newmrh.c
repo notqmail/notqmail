@@ -33,15 +33,15 @@ int match;
 void main()
 {
   umask(033);
-  if (chdir(auto_qmail) == -1)
-    strerr_die4sys(111,FATAL,"unable to chdir to ",auto_qmail,": ");
+  if (chdir(auto_qmail_control) == -1)
+    strerr_die4sys(111,FATAL,"unable to chdir to ",auto_qmail_control,": ");
 
-  fd = open_read("control/morercpthosts");
+  fd = open_read("morercpthosts");
   if (fd == -1) die_read();
 
   substdio_fdbuf(&ssin,read,fd,inbuf,sizeof inbuf);
 
-  fdtemp = open_trunc("control/morercpthosts.tmp");
+  fdtemp = open_trunc("morercpthosts.tmp");
   if (fdtemp == -1) die_write();
 
   if (cdbmss_start(&cdbmss,fdtemp) == -1) die_write();
@@ -64,7 +64,7 @@ void main()
   if (cdbmss_finish(&cdbmss) == -1) die_write();
   if (fsync(fdtemp) == -1) die_write();
   if (close(fdtemp) == -1) die_write(); /* NFS stupidity */
-  if (rename("control/morercpthosts.tmp","control/morercpthosts.cdb") == -1)
+  if (rename("morercpthosts.tmp","morercpthosts.cdb") == -1)
     strerr_die2sys(111,FATAL,"unable to move control/morercpthosts.tmp to control/morercpthosts.cdb");
 
   _exit(0);

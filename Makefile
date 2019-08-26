@@ -568,6 +568,10 @@ fmt_ulong.o: \
 compile fmt_ulong.c fmt.h
 	./compile fmt_ulong.c
 
+fmt_xlong.o: \
+compile fmt_xlong.c fmt.h
+	./compile fmt_xlong.c
+
 fmtqfn.o: \
 compile fmtqfn.c fmtqfn.h fmt.h auto_split.h
 	./compile fmtqfn.c
@@ -591,9 +595,9 @@ strerr.h substdio.h fmt.h
 
 fs.a: \
 makelib fmt_str.o fmt_strn.o fmt_uint.o fmt_uint0.o fmt_ulong.o \
-scan_ulong.o scan_8long.o
+fmt_xlong.o scan_ulong.o scan_8long.o
 	./makelib fs.a fmt_str.o fmt_strn.o fmt_uint.o fmt_uint0.o \
-	fmt_ulong.o scan_ulong.o scan_8long.o
+	fmt_ulong.o fmt_xlong.o scan_ulong.o scan_8long.o
 
 getln.a: \
 makelib getln.o getln2.o

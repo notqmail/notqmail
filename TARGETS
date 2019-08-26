@@ -105,6 +105,7 @@ fmt_strn.o
 fmt_uint.o
 fmt_uint0.o
 fmt_ulong.o
+fmt_xlong.o
 scan_ulong.o
 scan_8long.o
 fs.a

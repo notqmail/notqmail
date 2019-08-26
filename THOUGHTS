@@ -386,9 +386,7 @@ separately; they're almost entirely different objects!
 
 9. Miscellany
 
-sendmail-clone and qsmhook are too bletcherous to be documented. (The
-official replacement for qsmhook is preline, together with the
-qmail-command environment variables.)
+sendmail-clone is too bletcherous to be documented.
 
 I've considered making install atomic, but this is very difficult to do
 right, and pointless if it isn't done right.

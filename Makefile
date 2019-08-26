@@ -785,7 +785,7 @@ predate datemail mailsubj qmail-upq qmail-showctl qmail-newu \
 qmail-pw2u qmail-qread qmail-qstat qmail-tcpto qmail-tcpok \
 qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
-dnsptr dnsip dnsfq hostname ipmeprint qreceipt qsmhook qbiff \
+dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
 forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox maildirwatch install instpackage instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
@@ -1603,18 +1603,6 @@ subfd.h substdio.h getln.h alloc.h str.h hfield.h token822.h \
 gen_alloc.h error.h gen_alloc.h gen_allocdefs.h headerbody.h exit.h \
 open.h quote.h qmail.h substdio.h oflops.h error.h
 	./compile qreceipt.c
-
-qsmhook: \
-load qsmhook.o sig.a case.a fd.a wait.a getopt.a env.a stralloc.a \
-substdio.a error.a str.a
-	./load qsmhook sig.a case.a fd.a wait.a getopt.a env.a \
-	stralloc.a substdio.a error.a str.a
-
-qsmhook.o: \
-compile qsmhook.c fd.h stralloc.h gen_alloc.h readwrite.h sgetopt.h \
-subgetopt.h wait.h env.h byte.h str.h alloc.h exit.h fork.h case.h \
-subfd.h substdio.h error.h substdio.h sig.h
-	./compile qsmhook.c
 
 qsutil.o: \
 compile qsutil.c stralloc.h gen_alloc.h readwrite.h substdio.h \

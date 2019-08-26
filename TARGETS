@@ -289,8 +289,6 @@ ipmeprint.o
 ipmeprint
 qreceipt.o
 qreceipt
-qsmhook.o
-qsmhook
 qbiff.o
 qbiff
 forward.o

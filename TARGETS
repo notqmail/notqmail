@@ -290,8 +290,6 @@ maildirmake.o
 maildirmake
 maildir2mbox.o
 maildir2mbox
-maildirwatch.o
-maildirwatch
 hier.o
 install
 instcheck.o
@@ -353,7 +351,6 @@ bouncesaying.0
 except.0
 maildirmake.0
 maildir2mbox.0
-maildirwatch.0
 qmail.0
 qmail-limits.7
 qmail-limits.0

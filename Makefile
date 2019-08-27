@@ -783,7 +783,7 @@ qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
 dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
 forward preline condredirect bouncesaying except maildirmake \
-maildir2mbox maildirwatch install instpackage instchown \
+maildir2mbox install instpackage instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
 binm3 binm3+df
 
@@ -846,23 +846,6 @@ maildirmake.o: \
 compile maildirmake.c strerr.h
 	./compile maildirmake.c
 
-maildirwatch: \
-load maildirwatch.o hfield.o headerbody.o maildir.o prioq.o now.o \
-getln.a env.a open.a strerr.a stralloc.a substdio.a error.a \
-str.a
-	./load maildirwatch hfield.o headerbody.o maildir.o \
-	prioq.o now.o getln.a env.a open.a strerr.a stralloc.a \
-	substdio.a error.a str.a
-
-maildirwatch.0: \
-maildirwatch.1
-
-maildirwatch.o: \
-compile maildirwatch.c getln.h substdio.h subfd.h substdio.h prioq.h \
-datetime.h gen_alloc.h stralloc.h gen_alloc.h str.h hfield.h \
-readwrite.h open.h headerbody.h maildir.h strerr.h
-	./compile maildirwatch.c
-
 mailsubj: \
 warn-auto.sh mailsubj.sh conf-qmail conf-break conf-split
 	cat warn-auto.sh mailsubj.sh \
@@ -904,7 +887,7 @@ qmail-pw2u.0 qmail-qread.0 qmail-qstat.0 qmail-tcpto.0 qmail-tcpok.0 \
 qmail-pop3d.0 qmail-popup.0 qmail-qmqpc.0 qmail-qmqpd.0 qmail-qmtpd.0 \
 qmail-smtpd.0 tcp-env.0 qmail-newmrh.0 qreceipt.0 qbiff.0 forward.0 \
 preline.0 condredirect.0 bouncesaying.0 except.0 maildirmake.0 \
-maildir2mbox.0 maildirwatch.0 qmail.0 qmail-limits.0 qmail-log.0 \
+maildir2mbox.0 qmail.0 qmail-limits.0 qmail-log.0 \
 qmail-control.0 qmail-header.0 qmail-users.0 dot-qmail.0 \
 qmail-command.0 tcp-environ.0 maildir.0 mbox.0 addresses.0 \
 envelopes.0 forgeries.0

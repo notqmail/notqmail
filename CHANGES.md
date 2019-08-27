@@ -1,3 +1,4 @@
+- 20200614 remove maildirwatch
 - 20200614 stop rewriting RCPT TO: domains when they are a CNAME (RFC 5321 5.1)
 - 20200523 doc: give text files .md extensions.
 - 20200523 cleanup: remove qsmhook, replaced by preline.

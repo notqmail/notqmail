@@ -88,7 +88,6 @@ char *pass;
   int wstat;
   int pi[2];
  
-  if (fd_copy(2,1) == -1) die_pipe();
   close(3);
   if (pipe(pi) == -1) die_pipe();
   if (pi[0] != 3) die_pipe();

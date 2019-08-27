@@ -31,9 +31,8 @@ It reads a username and password from descriptor 0
 in POP's USER-PASS style or APOP style.
 It invokes
 .IR subprogram ,
-with the same descriptors 0 and 1;
-descriptor 2 writing to the network;
-and descriptor 3 reading the username, a 0 byte, the password,
+with the same descriptors 0 and 1,
+and with descriptor 3 reading the username, a 0 byte, the password,
 another 0 byte, 
 an APOP timestamp derived from
 .IR hostname ,

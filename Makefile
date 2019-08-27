@@ -742,10 +742,6 @@ hostname.o: \
 compile hostname.c substdio.h subfd.h substdio.h readwrite.h exit.h
 	./compile hostname.c
 
-install:
-	echo './instpackage && ./instchown' > install
-	chmod 755 install
-
 instcheck: \
 load instcheck.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o uid.o \
 gid.o auto_usera.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
@@ -820,7 +816,7 @@ qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
 dnsptr dnsip dnsfq hostname ipmeprint qreceipt qsmhook qbiff \
 forward preline condredirect bouncesaying except maildirmake \
-maildir2mbox maildirwatch qail elq pinq install instpackage instchown \
+maildir2mbox maildirwatch qail elq pinq instpackage instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
 binm3 binm3+df
 

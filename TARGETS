@@ -319,7 +319,6 @@ qail
 elq
 pinq
 hier.o
-install
 instcheck.o
 instcheck
 instchown.o

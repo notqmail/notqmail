@@ -1512,7 +1512,7 @@ void reread()
   }
 }
 
-void main()
+void main(void)
 {
  int fd;
  datetime_sec wakeup;

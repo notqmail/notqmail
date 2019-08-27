@@ -1,9 +1,8 @@
+#include <unistd.h>
 #include <fcntl.h>
 #include "fd.h"
 
-int fd_copy(to,from)
-int to;
-int from;
+int fd_copy(int to,int from)
 {
   if (to == from) return 0;
   if (fcntl(from,F_GETFL,0) == -1) return -1;

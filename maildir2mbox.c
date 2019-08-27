@@ -33,7 +33,7 @@ char outbuf[SUBSTDIO_OUTSIZE];
 
 void die_nomem() { strerr_die2x(111,FATAL,"out of memory"); }
 
-void main()
+void main(void)
 {
  substdio ssin;
  substdio ssout;

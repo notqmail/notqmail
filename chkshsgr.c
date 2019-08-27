@@ -1,5 +1,5 @@
 #include "exit.h"
-void main()
+void main(void)
 {
  short x[4];
 

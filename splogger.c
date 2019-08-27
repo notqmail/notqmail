@@ -45,9 +45,7 @@ void flush()
   bufpos = 0;
 }
 
-void main(argc,argv)
-int argc;
-char **argv;
+void main(int argc,char *argv[])
 {
   char ch;
 

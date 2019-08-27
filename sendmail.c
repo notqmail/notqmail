@@ -80,9 +80,7 @@ const char *s;
 int flagh;
 char *sender;
 
-void main(argc,argv)
-int argc;
-char **argv;
+void main(int argc,char *argv[])
 {
   int opt;
   char **qiargv;

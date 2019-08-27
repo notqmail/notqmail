@@ -103,7 +103,7 @@ int mode;
   perm("",home,"/",file,S_IFREG,uid,gid,mode);
 }
 
-void main()
+void main(void)
 {
   init_uidgid();
   hier();

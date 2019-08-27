@@ -11,9 +11,7 @@
 stralloc sa = {0};
 struct ip_address ip;
 
-void main(argc,argv)
-int argc;
-char **argv;
+void main(int argc,char *argv[])
 {
  if (!argv[1]) _exit(100);
 

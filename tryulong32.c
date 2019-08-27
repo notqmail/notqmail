@@ -1,4 +1,4 @@
-void main()
+void main(void)
 {
   unsigned long u;
   u = 1;

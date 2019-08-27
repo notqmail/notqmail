@@ -1,4 +1,5 @@
-main()
+void
+main(void)
 {
   ;
 }

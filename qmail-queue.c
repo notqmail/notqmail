@@ -157,7 +157,7 @@ void pidopen()
 
 char tmp[FMT_ULONG];
 
-void main()
+void main(void)
 {
  unsigned int len;
  char ch;

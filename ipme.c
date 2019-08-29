@@ -89,6 +89,9 @@ int ipme_init()
     len = sizeof(ifr->ifr_name) + ifr->ifr_addr.sa_len;
     if (len < sizeof(*ifr))
       len = sizeof(*ifr);
+#else
+    len = sizeof(*ifr);
+#endif
     if (ifr->ifr_addr.sa_family == AF_INET) {
       sin = (struct sockaddr_in *) &ifr->ifr_addr;
       byte_copy(&ix.ip,4,&sin->sin_addr);
@@ -96,17 +99,6 @@ int ipme_init()
         if (ifr->ifr_flags & IFF_UP)
           if (!ipalloc_append(&ipme,&ix)) { close(s); return 0; }
     }
-#else
-    len = sizeof(*ifr);
-    if (ioctl(s,SIOCGIFFLAGS,x) == 0)
-      if (ifr->ifr_flags & IFF_UP)
-        if (ioctl(s,SIOCGIFADDR,x) == 0)
-	  if (ifr->ifr_addr.sa_family == AF_INET) {
-	    sin = (struct sockaddr_in *) &ifr->ifr_addr;
-	    byte_copy(&ix.ip,4,&sin->sin_addr);
-	    if (!ipalloc_append(&ipme,&ix)) { close(s); return 0; }
-	  }
-#endif
     x += len;
   }
   close(s);

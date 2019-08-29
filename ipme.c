@@ -52,20 +52,35 @@ int ipme_init()
   byte_copy(&ix.ip,4,"\0\0\0\0");
   if (!ipalloc_append(&ipme,&ix)) { return 0; }
   if ((s = socket(AF_INET,SOCK_STREAM,0)) == -1) return -1;
- 
-  len = 256;
-  for (;;) {
-    if (!stralloc_ready(&buf,len)) { close(s); return 0; }
-    buf.len = 0;
+
+  ifc.ifc_buf = 0;
+  ifc.ifc_len = 0;
+
+  /* first pass: just ask what the correct length for all addresses is */
+  len = 0;
+  if (ioctl(s,SIOCGIFCONF,&ifc) >= 0 && ifc.ifc_len > 0) { /* > is for System V */
+    if (!stralloc_ready(&buf,ifc.ifc_len)) { close(s); return 0; }
     ifc.ifc_buf = buf.s;
-    ifc.ifc_len = len;
-    if (ioctl(s,SIOCGIFCONF,&ifc) >= 0) /* > is for System V */
-      if (ifc.ifc_len + sizeof(*ifr) + 64 < len) { /* what a stupid interface */
-        buf.len = ifc.ifc_len;
-        break;
-      }
-    if (len > 200000) { close(s); return -1; }
-    len += 100 + (len >> 2);
+    if (ioctl(s,SIOCGIFCONF,&ifc) >= 0)
+      buf.len = ifc.ifc_len;
+  }
+
+  /* check if we have complete length, otherwise try so sort that out */
+  if (buf.len == 0) {
+    len = 256;
+    for (;;) {
+      if (!stralloc_ready(&buf,len)) { close(s); return 0; }
+      buf.len = 0;
+      ifc.ifc_buf = buf.s;
+      ifc.ifc_len = len;
+      if (ioctl(s,SIOCGIFCONF,&ifc) >= 0) /* > is for System V */
+        if (ifc.ifc_len + sizeof(*ifr) + 64 < len) { /* what a stupid interface */
+          buf.len = ifc.ifc_len;
+          break;
+        }
+      if (len > 200000) { close(s); return -1; }
+      len += 100 + (len >> 2);
+    }
   }
   x = buf.s;
   while (x < buf.s + buf.len) {

@@ -509,15 +509,6 @@ dot-qmail.9 conf-qmail conf-break conf-spawn
 	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> dot-qmail.5
 
-elq: \
-warn-auto.sh elq.sh conf-qmail conf-break conf-split
-	cat warn-auto.sh deprecated.sh elq.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
-	> elq
-	chmod 755 elq
-
 env.a: \
 makelib env.o envread.o
 	./makelib env.a env.o envread.o
@@ -811,7 +802,7 @@ qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
 dnsptr dnsip dnsfq hostname ipmeprint qreceipt qsmhook qbiff \
 forward preline condredirect bouncesaying except maildirmake \
-maildir2mbox maildirwatch qail elq pinq install instpackage instchown \
+maildir2mbox maildirwatch install instpackage instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
 binm3 binm3+df
 
@@ -1002,15 +993,6 @@ package: \
 it man
 	./instpackage
 
-pinq: \
-warn-auto.sh pinq.sh conf-qmail conf-break conf-split
-	cat warn-auto.sh deprecated.sh pinq.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
-	> pinq
-	chmod 755 pinq
-
 predate: \
 load predate.o datetime.a strerr.a sig.a fd.a wait.a substdio.a \
 error.a str.a fs.a
@@ -1058,15 +1040,6 @@ proc+df.sh conf-qmail
 prot.o: \
 compile prot.c prot.h
 	./compile prot.c
-
-qail: \
-warn-auto.sh qail.sh conf-qmail conf-break conf-split
-	cat warn-auto.sh deprecated.sh qail.sh \
-	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -1 conf-break`"}g \
-	| sed s}SPLIT}"`head -1 conf-split`"}g \
-	> qail
-	chmod 755 qail
 
 qbiff: \
 load qbiff.o headerbody.o hfield.o getln.a env.a open.a stralloc.a \

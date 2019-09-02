@@ -312,9 +312,6 @@ maildir2mbox.o
 maildir2mbox
 maildirwatch.o
 maildirwatch
-qail
-elq
-pinq
 hier.o
 install
 instcheck.o

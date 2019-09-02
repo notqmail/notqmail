@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "commands.h"
 #include "sig.h"
 #include "getln.h"
@@ -35,6 +36,9 @@ int safewrite(fd,buf,len) int fd; char *buf; int len;
   return r;
 }
 
+char sserrbuf[128];
+substdio sserr = SUBSTDIO_FDBUF(safewrite,2,sserrbuf,sizeof sserrbuf);
+
 char ssoutbuf[1024];
 substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof ssoutbuf);
 
@@ -63,6 +67,10 @@ void err(s) char *s;
 
 void die_nomem() { err("out of memory"); die(); }
 void die_nomaildir() { err("this user has no $HOME/Maildir"); die(); }
+void die_root() {
+  substdio_putsflush(&sserr,"qmail-pop3d invoked as uid 0, terminating\n");
+  _exit(1);
+}
 void die_scan() { err("unable to scan $HOME/Maildir"); die(); }
 
 void err_syntax() { err("syntax error"); }
@@ -294,6 +302,7 @@ char **argv;
   sig_alarmcatch(die);
   sig_pipeignore();
  
+  if (!getuid()) die_root();
   if (!argv[1]) die_nomaildir();
   if (chdir(argv[1]) == -1) die_nomaildir();
  

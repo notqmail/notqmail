@@ -1,3 +1,6 @@
+20200514 bug: qmail-pop3d runs as root if root authenticates.
+         impact: vector for dictionary attack on root password.
+         fix: exit 1, same as a failed checkpassword login.
 20200514 code: changed qmail-popup interface (leave kid's fd 2 alone).
 20200511 code: remove tryshsgr.c and use uid_t, gid_t types.
 20200511 add first unittest, run with "make test"

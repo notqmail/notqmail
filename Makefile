@@ -1217,13 +1217,13 @@ qmail-log.5
 
 qmail-lspawn: \
 load qmail-lspawn.o spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
-case.a cdb.a fd.a open.a stralloc.a alloc.a substdio.a error.a str.a \
+case.a cdb.a fd.a open.a stralloc.a alloc.a substdio.a error.a env.a str.a \
 fs.a auto_qmail.o uid.o gid.o auto_userp.o auto_userq.o auto_groupn.o \
-envread.o auto_spawn.o
+auto_spawn.o
 	./load qmail-lspawn spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
 	case.a cdb.a fd.a open.a stralloc.a alloc.a auto_qmail.o uid.o gid.o \
 	auto_userp.o auto_userq.o auto_groupn.o auto_spawn.o substdio.a \
-	envread.o error.a str.a fs.a
+	error.a env.a str.a fs.a
 
 qmail-lspawn.0: \
 qmail-lspawn.8
@@ -1867,15 +1867,15 @@ stralloc.h error.h control.h wait.h auto_qmail.h
 
 spawn-filter: \
 load spawn-filter.o str_len.o str_diffn.o env.o error_str.o error.o \
-alloc.o alloc_re.o fmt_ulong.o envread.o auto_qmail.o control.o \
+alloc.o alloc_re.o fmt_ulong.o auto_qmail.o control.o \
 getln.o getln2.o byte_cr.o byte_copy.o byte_chr.o str_diff.o \
 str_cpy.o scan_ulong.o wildmat.o wait_pid.o open_read.o \
-strerr_sys.o strerr_die.o substdio.a stralloc.a
+strerr_sys.o strerr_die.o substdio.a stralloc.a env.a str.a
 	./load spawn-filter str_len.o str_diffn.o env.o error_str.o error.o \
-	alloc.o alloc_re.o fmt_ulong.o envread.o auto_qmail.o control.o \
+	alloc.o alloc_re.o fmt_ulong.o auto_qmail.o control.o \
 	getln.o getln2.o byte_cr.o byte_copy.o byte_chr.o str_diff.o \
 	str_cpy.o scan_ulong.o wildmat.o wait_pid.o open_read.o \
-	strerr_sys.o strerr_die.o substdio.a stralloc.a
+	strerr_sys.o strerr_die.o substdio.a stralloc.a env.a str.a
 
 wildmat.o: \
 compile wildmat.c

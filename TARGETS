@@ -400,3 +400,7 @@ envelopes.0
 forgeries.0
 setup
 qtmp.h
+spawn-filter
+spawn-filter.o
+spawn-filter.8
+wildmat.o

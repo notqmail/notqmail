@@ -821,7 +821,7 @@ qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
 dnsptr dnsip dnsfq hostname ipmeprint qreceipt qsmhook qbiff \
 forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox maildirwatch qail elq pinq install instpackage instchown \
-instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
+spawn-filter instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
 binm3 binm3+df
 
 load: \
@@ -949,7 +949,7 @@ preline.0 condredirect.0 bouncesaying.0 except.0 maildirmake.0 \
 maildir2mbox.0 maildirwatch.0 qmail.0 qmail-limits.0 qmail-log.0 \
 qmail-control.0 qmail-header.0 qmail-users.0 dot-qmail.0 \
 qmail-command.0 tcp-environ.0 maildir.0 mbox.0 addresses.0 \
-envelopes.0 forgeries.0
+envelopes.0 forgeries.0 spawn-filter.0
 
 mbox.0: \
 mbox.5
@@ -1217,13 +1217,13 @@ qmail-log.5
 
 qmail-lspawn: \
 load qmail-lspawn.o spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
-case.a cdb.a fd.a open.a stralloc.a alloc.a substdio.a error.a str.a \
+case.a cdb.a fd.a open.a stralloc.a alloc.a substdio.a error.a env.a str.a \
 fs.a auto_qmail.o uid.o gid.o auto_userp.o auto_userq.o auto_groupn.o \
 auto_spawn.o
 	./load qmail-lspawn spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
 	case.a cdb.a fd.a open.a stralloc.a alloc.a auto_qmail.o uid.o gid.o \
 	auto_userp.o auto_userq.o auto_groupn.o auto_spawn.o substdio.a \
-	error.a str.a fs.a
+	error.a env.a str.a fs.a
 
 qmail-lspawn.0: \
 qmail-lspawn.8
@@ -1849,6 +1849,33 @@ stralloc.h gen_alloc.h select.h exit.h alloc.h coe.h open.h error.h \
 auto_qmail.h auto_uids.h auto_spawn.h
 	./chkspawn
 	./compile spawn.c
+
+spawn-filter.0: \
+spawn-filter.8
+	nroff -man spawn-filter.8 > spawn-filter.0
+
+spawn-filter.8: \
+spawn-filter.9 conf-qmail
+	cat spawn-filter.9 \
+	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
+	> spawn-filter.8
+
+spawn-filter.o: \
+compile spawn-filter.c fmt.h str.h strerr.h env.h substdio.h subfd.h \
+stralloc.h error.h control.h wait.h auto_qmail.h
+	./compile spawn-filter.c
+
+spawn-filter: \
+load spawn-filter.o str_len.o str_diffn.o env.o error_str.o error.o \
+alloc.o alloc_re.o fmt_ulong.o auto_qmail.o control.o \
+getln.o getln2.o byte_cr.o byte_copy.o byte_chr.o str_diff.o \
+str_cpy.o scan_ulong.o wait_pid.o open_read.o \
+strerr_sys.o strerr_die.o substdio.a stralloc.a env.a str.a
+	./load spawn-filter str_len.o str_diffn.o env.o error_str.o error.o \
+	alloc.o alloc_re.o fmt_ulong.o auto_qmail.o control.o \
+	getln.o getln2.o byte_cr.o byte_copy.o byte_chr.o str_diff.o \
+	str_cpy.o scan_ulong.o wait_pid.o open_read.o \
+	strerr_sys.o strerr_die.o substdio.a stralloc.a env.a str.a
 
 splogger: \
 load splogger.o substdio.a error.a str.a fs.a syslog.lib socket.lib

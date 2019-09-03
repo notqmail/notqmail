@@ -9,7 +9,11 @@ reads a series of remote delivery commands from descriptor 0,
 invokes
 .B qmail-remote
 to perform the deliveries,
-and prints the results to descriptor 1.
+and prints the results to descriptor 1. If the environment variable QMAILREMOTE
+is defined, the executable defined by QMAILREMOTE is invoked instead. This can
+be set to
+.B spawn-filter
+which can run the email message through a filter before calling qmail-remote.
 
 .B qmail-rspawn
 invokes
@@ -25,4 +29,5 @@ instead of
 if that environment variable is set.
 .SH "SEE ALSO"
 qmail-send(8),
-qmail-remote(8)
+qmail-remote(8),
+spawn-filter(8)

@@ -17,6 +17,7 @@
 #include "auto_uids.h"
 #include "auto_users.h"
 #include "qlx.h"
+#include "env.h"
 
 char *aliasempty;
 
@@ -24,6 +25,17 @@ int auto_uidp;
 int auto_uidq;
 
 int auto_gidn;
+
+static char *setup_qlargs()
+{
+ static char *qlargs;
+
+ if (!qlargs)
+  qlargs = env_get("QMAILLOCAL");
+ if (!qlargs)
+  qlargs = "bin/qmail-local";
+ return qlargs;
+}
 
 void initialize(argc,argv)
 int argc;
@@ -205,9 +217,9 @@ char *s; char *r; int at;
    x = nughde.s;
    xlen = nughde.len;
 
-   args[0] = "bin/qmail-local";
+   args[0] = setup_qlargs();
    args[1] = "--";
-   args[2] = x;
+   args[2] = x; /*- user */
    n = byte_chr(x,xlen,0); if (n++ == xlen) _exit(QLX_USAGE); x += n; xlen -= n;
 
    scan_ulong(x,&u);
@@ -218,19 +230,19 @@ char *s; char *r; int at;
    gid = u;
    n = byte_chr(x,xlen,0); if (n++ == xlen) _exit(QLX_USAGE); x += n; xlen -= n;
 
-   args[3] = x;
+   args[3] = x; /*- homedir */
    n = byte_chr(x,xlen,0); if (n++ == xlen) _exit(QLX_USAGE); x += n; xlen -= n;
 
-   args[4] = r;
-   args[5] = x;
+   args[4] = r; /*- local */
+   args[5] = x; /*- dash */
    n = byte_chr(x,xlen,0); if (n++ == xlen) _exit(QLX_USAGE); x += n; xlen -= n;
 
-   args[6] = x;
+   args[6] = x; /*- ext */
    n = byte_chr(x,xlen,0); if (n++ == xlen) _exit(QLX_USAGE); x += n; xlen -= n;
 
-   args[7] = r + at + 1;
-   args[8] = s;
-   args[9] = aliasempty;
+   args[7] = r + at + 1; /*- domain */
+   args[8] = s; /*- sender */
+   args[9] = aliasempty; /*-default delivery */
    args[10] = 0;
 
    if (fd_move(0,fdmess) == -1) _exit(QLX_SYS);

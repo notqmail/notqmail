@@ -22,7 +22,6 @@ static int      mkTempFile(int);
 static void     report(int, char *, char *, char *, char *, char *, char *);
 char           *getDomainToken(char *, stralloc *);
 static int      run_mailfilter(char *, char *, char **);
-int             wildmat_internal(char *, char *);
 
 static int      remotE;
 stralloc        sender = { 0 };
@@ -196,16 +195,13 @@ getDomainToken(char *domain, stralloc *sa)
 			*p = 0;
 			/*- build the regex */
 			if ((retval = str_diff(ptr, domain))) {
-				if (env_get("QREGEX")) {
-					if ((retval = REGCOMP(qreg, ptr)) != 0) {
-						regerror(retval, &qreg, errbuf, sizeof(errbuf));
-						regfree(&qreg);
-						report(111, "spawn-filter: ", ptr, ": ", errbuf, ". (#4.3.0)", 0);
-					}
-					retval = REGEXEC(qreg, domain);
+				if ((retval = REGCOMP(qreg, ptr)) != 0) {
+					regerror(retval, &qreg, errbuf, sizeof(errbuf));
 					regfree(&qreg);
-				} else
-					retval = !wildmat_internal(domain, ptr);
+					report(111, "spawn-filter: ", ptr, ": ", errbuf, ". (#4.3.0)", 0);
+				}
+				retval = REGEXEC(qreg, domain);
+				regfree(&qreg);
 			}
 			*p = ':';
 			if (!retval) {/*- match occurred for domain or wildcard */

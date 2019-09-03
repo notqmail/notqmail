@@ -1869,18 +1869,13 @@ spawn-filter: \
 load spawn-filter.o str_len.o str_diffn.o env.o error_str.o error.o \
 alloc.o alloc_re.o fmt_ulong.o auto_qmail.o control.o \
 getln.o getln2.o byte_cr.o byte_copy.o byte_chr.o str_diff.o \
-str_cpy.o scan_ulong.o wildmat.o wait_pid.o open_read.o \
+str_cpy.o scan_ulong.o wait_pid.o open_read.o \
 strerr_sys.o strerr_die.o substdio.a stralloc.a env.a str.a
 	./load spawn-filter str_len.o str_diffn.o env.o error_str.o error.o \
 	alloc.o alloc_re.o fmt_ulong.o auto_qmail.o control.o \
 	getln.o getln2.o byte_cr.o byte_copy.o byte_chr.o str_diff.o \
-	str_cpy.o scan_ulong.o wildmat.o wait_pid.o open_read.o \
+	str_cpy.o scan_ulong.o wait_pid.o open_read.o \
 	strerr_sys.o strerr_die.o substdio.a stralloc.a env.a str.a
-
-wildmat.o: \
-compile wildmat.c
-	./compile wildmat.c
-
 
 splogger: \
 load splogger.o substdio.a error.a str.a fs.a syslog.lib socket.lib

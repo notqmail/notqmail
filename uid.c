@@ -6,8 +6,7 @@
 #include "exit.h"
 
 int
-inituid(user)
-  char *user;
+inituid(char *user)
 {
   struct passwd *pw;
   pw = getpwnam(user);

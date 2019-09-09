@@ -1,3 +1,5 @@
+#include <sys/stat.h>
+#include <unistd.h>
 #include "substdio.h"
 #include "strerr.h"
 #include "env.h"
@@ -5,8 +7,6 @@
 #include "fifo.h"
 #include "hier.h"
 #include "open.h"
-#include "readwrite.h"
-#include "exit.h"
 #include "alloc.h"
 #include "str.h"
 #include "stralloc.h"

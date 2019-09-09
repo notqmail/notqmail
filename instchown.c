@@ -1,6 +1,7 @@
+#include <sys/stat.h>
+#include <unistd.h>
 #include "strerr.h"
 #include "error.h"
-#include "exit.h"
 #include "hier.h"
 
 extern void init_uidgid();

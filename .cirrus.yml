@@ -13,11 +13,13 @@ task:
         NROFF: true
 
   pkginstall_script:
-    - pkg install -y groff
+    - pkg install -y groff pkgconf check
   configure_script:
     - echo "clang -O2 -Wall" > conf-cc
   compile_script:
     - make it man
+  test_script:
+    - make test
   install_script:
     - env DESTDIR=/tmp/qmail make package
     - make package

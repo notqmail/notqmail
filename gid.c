@@ -6,8 +6,7 @@
 #include "exit.h"
 
 int
-initgid(group)
-  char *group;
+initgid(char *group)
 {
   struct group *gr;
   gr = getgrnam(group);

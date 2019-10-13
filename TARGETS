@@ -1,8 +1,6 @@
 auto-ccld.sh
 make-load
 load
-make-compile
-compile
 qmail-local.o
 qmail.o
 quote.o

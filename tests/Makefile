@@ -27,6 +27,6 @@ unittest_stralloc: \
 	`pkg-config --libs check`
 
 unittest_stralloc.o: \
-../compile unittest_stralloc.c ../alloc.h ../stralloc.h
-	../compile unittest_stralloc.c -I.. \
+unittest_stralloc.c ../alloc.h ../stralloc.h
+	$(CC) $(CFLAGS) -c unittest_stralloc.c -I.. \
 	`pkg-config --cflags check`

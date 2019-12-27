@@ -128,7 +128,6 @@ auto_patrn.c
 auto_patrn.o
 socket.lib
 qmail-local
-uint32.h
 qmail-lspawn.o
 select.h
 chkspawn.o

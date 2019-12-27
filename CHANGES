@@ -1,3 +1,8 @@
+20191226 add missing return types to main()
+20190919 fix ipme with multiple addresses on the same interface on platforms
+         without sa_len
+20190904 code: use stdint.h to get the definition for uint32
+20190903 code: do not parse header recipients for "qmail-inject -a"
 20190826 code: if $QMAILREMOTE is set, it's invoked instead of qmail-remote.
 20190822 cleanup: remove unused dnsmxip.
 20190822 cleanup: remove unused dnscname.

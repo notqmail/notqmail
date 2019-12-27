@@ -2080,13 +2080,6 @@ uid.o: \
 compile uid.c uidgid.h subfd.h substdio.h exit.h
 	./compile uid.c
 
-uint32.h: \
-tryulong32.c compile load uint32.h1 uint32.h2
-	( ( ./compile tryulong32.c && ./load tryulong32 && \
-	./tryulong32 ) >/dev/null 2>&1 \
-	&& cat uint32.h2 || cat uint32.h1 ) > uint32.h
-	rm -f tryulong32.o tryulong32
-
 wait.a: \
 makelib wait_pid.o wait_nohang.o
 	./makelib wait.a wait_pid.o wait_nohang.o

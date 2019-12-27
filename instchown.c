@@ -1,6 +1,7 @@
+#include <sys/stat.h>
+#include <unistd.h>
 #include "strerr.h"
 #include "error.h"
-#include "exit.h"
 #include "hier.h"
 
 extern void init_uidgid();
@@ -8,11 +9,7 @@ extern void hier();
 
 #define FATAL "instchown: fatal: "
 
-void h(home,uid,gid,mode)
-char *home;
-int uid;
-int gid;
-int mode;
+void h(char *home, int uid, int gid, int mode)
 {
   if (chown(home,uid,gid) == -1)
     strerr_die4sys(111,FATAL,"unable to chown ",home,": ");
@@ -20,12 +17,7 @@ int mode;
     strerr_die4sys(111,FATAL,"unable to chmod ",home,": ");
 }
 
-void d(home,subdir,uid,gid,mode)
-char *home;
-char *subdir;
-int uid;
-int gid;
-int mode;
+void d(char *home, char *subdir, int uid, int gid, int mode)
 {
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
@@ -35,12 +27,7 @@ int mode;
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",subdir,": ");
 }
 
-void p(home,fifo,uid,gid,mode)
-char *home;
-char *fifo;
-int uid;
-int gid;
-int mode;
+void p(char *home, char *fifo, int uid, int gid, int mode)
 {
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
@@ -50,13 +37,7 @@ int mode;
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",fifo,": ");
 }
 
-void c(home,subdir,file,uid,gid,mode)
-char *home;
-char *subdir;
-char *file;
-int uid;
-int gid;
-int mode;
+void c(char *home, char *subdir, char *file, int uid, int gid, int mode)
 {
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
@@ -68,13 +49,7 @@ int mode;
     strerr_die6sys(111,FATAL,"unable to chmod .../",subdir,"/",file,": ");
 }
 
-void z(home,file,len,uid,gid,mode)
-char *home;
-char *file;
-int len;
-int uid;
-int gid;
-int mode;
+void z(char *home, char *file, int len, int uid, int gid, int mode)
 {
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");

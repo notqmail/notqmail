@@ -1,0 +1,33 @@
+task:
+  name: FreeBSD
+  freebsd_instance:
+    matrix:
+      image: freebsd-12-0-release-amd64
+      image: freebsd-11-2-release-amd64
+      image: freebsd-10-4-release-amd64
+
+  env:
+    MAKE_FLAGS: -j 2
+
+  pkginstall_script:
+    - pkg install -y groff
+  configure_script:
+    - echo "clang -O2 -Wall" > conf-cc
+  compile_script:
+    - make it man
+  install_script:
+    - env DESTDIR=/tmp/qmail make package
+    - make package
+    - pw groupadd -g 200 -n nofiles
+    - pw groupadd -g 201 -n qmail
+    - pw useradd -u 200 -g nofiles -d /var/qmail/alias -n alias
+    - pw useradd -u 201 -g nofiles -d /var/qmail -n qmaild
+    - pw useradd -u 202 -g nofiles -d /var/qmail -n qmaill
+    - pw useradd -u 203 -g nofiles -d /var/qmail -n qmailp
+    - pw useradd -u 204 -g qmail -d /var/qmail -n qmailq
+    - pw useradd -u 205 -g qmail -d /var/qmail -n qmailr
+    - pw useradd -u 206 -g qmail -d /var/qmail -n qmails
+    - ./instchown
+    - make check
+    - rm -rf /var/qmail
+    - make setup check

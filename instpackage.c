@@ -1,3 +1,5 @@
+#include <sys/stat.h>
+#include <unistd.h>
 #include "substdio.h"
 #include "strerr.h"
 #include "env.h"
@@ -5,8 +7,6 @@
 #include "fifo.h"
 #include "hier.h"
 #include "open.h"
-#include "readwrite.h"
-#include "exit.h"
 #include "alloc.h"
 #include "str.h"
 #include "stralloc.h"
@@ -22,9 +22,7 @@ static void die_nomem()
   strerr_die2sys(111,FATAL,"out of memory");
 }
 
-static void ddhome(dd,home)
-stralloc *dd;
-char *home;
+static void ddhome(stralloc *dd, char *home)
 {
   const char *denv = env_get("DESTDIR");
   if (denv)
@@ -34,9 +32,7 @@ char *home;
   if (!stralloc_0(dd)) die_nomem();
 }
 
-static int mkdir_p(home,mode)
-char *home;
-int mode;
+static int mkdir_p(char *home, int mode)
 {
   stralloc parent = { 0 };
   unsigned int sl;
@@ -56,11 +52,7 @@ int mode;
   return mkdir(home,mode);
 }
 
-void h(home,uid,gid,mode)
-char *home;
-int uid;
-int gid;
-int mode;
+void h(char *home, int uid, int gid, int mode)
 {
   stralloc dh = { 0 };
   ddhome(&dh, home);
@@ -73,12 +65,7 @@ int mode;
   alloc_free(dh.s);
 }
 
-void d(home,subdir,uid,gid,mode)
-char *home;
-char *subdir;
-int uid;
-int gid;
-int mode;
+void d(char *home, char *subdir, int uid, int gid, int mode)
 {
   stralloc dh = { 0 };
   ddhome(&dh, home);
@@ -93,12 +80,7 @@ int mode;
   alloc_free(dh.s);
 }
 
-void p(home,fifo,uid,gid,mode)
-char *home;
-char *fifo;
-int uid;
-int gid;
-int mode;
+void p(char *home, char *fifo, int uid, int gid, int mode)
 {
   stralloc dh = { 0 };
   ddhome(&dh, home);
@@ -118,13 +100,7 @@ char outbuf[SUBSTDIO_OUTSIZE];
 substdio ssin;
 substdio ssout;
 
-void c(home,subdir,file,uid,gid,mode)
-char *home;
-char *subdir;
-char *file;
-int uid;
-int gid;
-int mode;
+void c(char *home, char *subdir, char *file, int uid, int gid, int mode)
 {
   int fdin;
   int fdout;
@@ -170,13 +146,7 @@ int mode;
   alloc_free(dh.s);
 }
 
-void z(home,file,len,uid,gid,mode)
-char *home;
-char *file;
-int len;
-int uid;
-int gid;
-int mode;
+void z(char *home, char *file, int len, int uid, int gid, int mode)
 {
   int fdout;
   stralloc dh = { 0 };

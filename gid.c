@@ -1,13 +1,12 @@
 #include <sys/types.h>
 #include <grp.h>
+#include <unistd.h>
 #include "uidgid.h"
 #include "subfd.h"
 #include "substdio.h"
-#include "exit.h"
 
 int
-initgid(group)
-  char *group;
+initgid(char *group)
 {
   struct group *gr;
   gr = getgrnam(group);

@@ -17,6 +17,9 @@
 
 #define REGCOMP(X,Y)    regcomp(&X, Y, REG_EXTENDED|REG_ICASE)
 #define REGEXEC(X,Y)    regexec(&X, Y, (size_t) 0, (regmatch_t *) 0, (int) 0)
+#ifndef REG_NOERROR /*- OSX */
+#define REG_NOERROR 0
+#endif
 
 static int      mkTempFile(int);
 static void     report(int, char *, char *, char *, char *, char *, char *);
@@ -121,7 +124,7 @@ run_mailfilter(char *domain, char *mailprog, char **argv)
 		/*- Avoid loop if program(s) defined by FILTERARGS call qmail-inject, etc */
 		if (!env_unset("FILTERARGS"))
 			report(111, "spawn-filter: out of mem: ", error_str(errno), ". (#4.3.0)", 0, 0, 0);
-		execl("/bin/sh", "IndiMailfilter", "-c", filterargs, (char *) 0);
+		execl("/bin/sh", "sh", "-c", filterargs, (char *) 0);
 		report(111, "spawn-filter: could not exec /bin/sh: ",  filterargs, ": ", error_str(errno), ". (#4.3.0)", 0);
 	default:
 		close(pipefe[1]);
@@ -195,12 +198,8 @@ getDomainToken(char *domain, stralloc *sa)
 			*p = 0;
 			/*- build the regex */
 			if ((retval = str_diff(ptr, domain))) {
-				if ((retval = REGCOMP(qreg, ptr)) != 0) {
-					regerror(retval, &qreg, errbuf, sizeof(errbuf));
-					regfree(&qreg);
-					report(111, "spawn-filter: ", ptr, ": ", errbuf, ". (#4.3.0)", 0);
-				}
-				retval = REGEXEC(qreg, domain);
+				if ((retval = REGCOMP(qreg, ptr)) == 0)
+					retval = (REGEXEC(qreg, domain) == REG_NOMATCH ? 1 : REG_NOERROR);
 				regfree(&qreg);
 			}
 			*p = ':';
@@ -218,7 +217,7 @@ getDomainToken(char *domain, stralloc *sa)
 						return (p + 7);
 					if (!str_diffn(p + 1, "remote:", 7)) {
 						ptr = sa->s + len;
-						continue; /*- skip remote directives for remote mails */
+						continue; /*- skip remote directives for local mails */
 					}
 				}
 				return (p + 1);

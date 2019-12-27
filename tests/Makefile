@@ -22,8 +22,8 @@ test: it
 	done
 
 unittest_stralloc: \
-../load unittest_stralloc.o ../stralloc.a ../alloc.a ../str.a ../error.a
-	../load unittest_stralloc ../stralloc.a ../alloc.a ../str.a ../error.a \
+../load unittest_stralloc.o ../stralloc.a ../str.a ../error.a
+	../load unittest_stralloc ../stralloc.a ../str.a ../error.a \
 	`pkg-config --libs check`
 
 unittest_stralloc.o: \

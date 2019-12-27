@@ -24,18 +24,6 @@ default: it
 addresses.0: \
 addresses.5
 
-alloc.a: \
-makelib alloc.o alloc_re.o
-	./makelib alloc.a alloc.o alloc_re.o
-
-alloc.o: \
-compile alloc.c alloc.h error.h
-	./compile alloc.c
-
-alloc_re.o: \
-compile alloc_re.c alloc.h byte.h
-	./compile alloc_re.c
-
 auto-ccld.sh: \
 conf-cc conf-ld warn-auto.sh
 	( cat warn-auto.sh; \
@@ -446,9 +434,9 @@ compile trydrent.c direntry.h1 direntry.h2
 
 dns.lib: \
 tryrsolv.c compile load socket.lib dns.o ipalloc.o ip.o stralloc.a \
-alloc.a error.a fs.a str.a
+error.a fs.a str.a
 	( ( ./compile tryrsolv.c && ./load tryrsolv dns.o \
-	ipalloc.o ip.o stralloc.a alloc.a error.a fs.a str.a \
+	ipalloc.o ip.o stralloc.a error.a fs.a str.a \
 	-lresolv `cat socket.lib` ) >/dev/null 2>&1 \
 	&& echo -lresolv || exit 0 ) > dns.lib
 	rm -f tryrsolv.o tryrsolv
@@ -463,11 +451,10 @@ compile dnsdoe.c substdio.h subfd.h substdio.h exit.h dns.h dnsdoe.h
 	./compile dnsdoe.c
 
 dnsfq: \
-load dnsfq.o dns.o dnsdoe.o ip.o ipalloc.o stralloc.a alloc.a \
+load dnsfq.o dns.o dnsdoe.o ip.o ipalloc.o stralloc.a \
 substdio.a error.a str.a fs.a dns.lib socket.lib
 	./load dnsfq dns.o dnsdoe.o ip.o ipalloc.o stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a  `cat dns.lib` `cat \
-	socket.lib`
+	substdio.a error.a str.a fs.a  `cat dns.lib` `cat socket.lib`
 
 dnsfq.o: \
 compile dnsfq.c substdio.h subfd.h substdio.h stralloc.h gen_alloc.h \
@@ -475,11 +462,10 @@ dns.h dnsdoe.h ip.h ipalloc.h ip.h gen_alloc.h exit.h
 	./compile dnsfq.c
 
 dnsip: \
-load dnsip.o dns.o dnsdoe.o ip.o ipalloc.o stralloc.a alloc.a \
+load dnsip.o dns.o dnsdoe.o ip.o ipalloc.o stralloc.a \
 substdio.a error.a str.a fs.a dns.lib socket.lib
 	./load dnsip dns.o dnsdoe.o ip.o ipalloc.o stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a  `cat dns.lib` `cat \
-	socket.lib`
+	substdio.a error.a str.a fs.a  `cat dns.lib` `cat socket.lib`
 
 dnsip.o: \
 compile dnsip.c substdio.h subfd.h substdio.h stralloc.h gen_alloc.h \
@@ -487,11 +473,10 @@ dns.h dnsdoe.h ip.h ipalloc.h ip.h gen_alloc.h exit.h
 	./compile dnsip.c
 
 dnsptr: \
-load dnsptr.o dns.o dnsdoe.o ip.o ipalloc.o stralloc.a alloc.a \
+load dnsptr.o dns.o dnsdoe.o ip.o ipalloc.o stralloc.a \
 substdio.a error.a str.a fs.a dns.lib socket.lib
 	./load dnsptr dns.o dnsdoe.o ip.o ipalloc.o stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a  `cat dns.lib` `cat \
-	socket.lib`
+	substdio.a error.a str.a fs.a  `cat dns.lib` `cat socket.lib`
 
 dnsptr.o: \
 compile dnsptr.c substdio.h subfd.h substdio.h stralloc.h gen_alloc.h \
@@ -595,9 +580,9 @@ forgeries.0: \
 forgeries.7
 
 forward: \
-load forward.o qmail.o strerr.a alloc.a fd.a wait.a sig.a env.a \
+load forward.o qmail.o strerr.a fd.a wait.a sig.a env.a \
 substdio.a error.a str.a fs.a auto_qmail.o
-	./load forward qmail.o strerr.a alloc.a fd.a wait.a sig.a \
+	./load forward qmail.o strerr.a fd.a wait.a sig.a \
 	env.a substdio.a error.a str.a fs.a auto_qmail.o 
 
 forward.0: \
@@ -755,9 +740,9 @@ compile instchown.c strerr.h error.h exit.h hier.h
 
 instpackage: \
 load instpackage.o fifo.o hier.o auto_qmail.o auto_split.o strerr.a \
-substdio.a open.a error.a env.a str.a fs.a stralloc.a alloc.a
+substdio.a open.a error.a env.a str.a fs.a stralloc.a
 	./load instpackage fifo.o hier.o auto_qmail.o auto_split.o \
-	strerr.a substdio.a open.a error.a env.a str.a fs.a stralloc.a alloc.a
+	strerr.a substdio.a open.a error.a env.a str.a fs.a stralloc.a
 
 instpackage.o: \
 compile instpackage.c substdio.h strerr.h env.h error.h fifo.h open.h \
@@ -783,9 +768,9 @@ stralloc.h gen_alloc.h ipme.h ip.h ipalloc.h
 	./compile ipme.c
 
 ipmeprint: \
-load ipmeprint.o ipme.o ip.o ipalloc.o stralloc.a alloc.a substdio.a \
+load ipmeprint.o ipme.o ip.o ipalloc.o stralloc.a substdio.a \
 error.a str.a fs.a socket.lib
-	./load ipmeprint ipme.o ip.o ipalloc.o stralloc.a alloc.a \
+	./load ipmeprint ipme.o ip.o ipalloc.o stralloc.a \
 	substdio.a error.a str.a fs.a  `cat socket.lib`
 
 ipmeprint.o: \
@@ -838,11 +823,11 @@ strerr.h
 
 maildir2mbox: \
 load maildir2mbox.o maildir.o prioq.o now.o myctime.o gfrom.o lock.a \
-getln.a env.a open.a strerr.a stralloc.a alloc.a substdio.a error.a \
+getln.a env.a open.a strerr.a stralloc.a substdio.a error.a \
 str.a fs.a datetime.a
 	./load maildir2mbox maildir.o prioq.o now.o myctime.o \
 	gfrom.o lock.a getln.a env.a open.a strerr.a stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a datetime.a 
+	substdio.a error.a str.a fs.a datetime.a
 
 maildir2mbox.0: \
 maildir2mbox.1
@@ -867,11 +852,11 @@ compile maildirmake.c strerr.h exit.h
 
 maildirwatch: \
 load maildirwatch.o hfield.o headerbody.o maildir.o prioq.o now.o \
-getln.a env.a open.a strerr.a stralloc.a alloc.a substdio.a error.a \
+getln.a env.a open.a strerr.a stralloc.a substdio.a error.a \
 str.a
 	./load maildirwatch hfield.o headerbody.o maildir.o \
 	prioq.o now.o getln.a env.a open.a strerr.a stralloc.a \
-	alloc.a substdio.a error.a str.a 
+	substdio.a error.a str.a
 
 maildirwatch.0: \
 maildirwatch.1
@@ -1043,9 +1028,9 @@ compile prot.c prot.h
 
 qbiff: \
 load qbiff.o headerbody.o hfield.o getln.a env.a open.a stralloc.a \
-alloc.a substdio.a error.a str.a
+substdio.a error.a str.a
 	./load qbiff headerbody.o hfield.o getln.a env.a open.a \
-	stralloc.a alloc.a substdio.a error.a str.a 
+	stralloc.a substdio.a error.a str.a
 
 qbiff.0: \
 qbiff.1
@@ -1056,10 +1041,10 @@ substdio.h open.h byte.h str.h headerbody.h hfield.h env.h exit.h qtmp.h
 	./compile qbiff.c
 
 qmail-clean: \
-load qmail-clean.o fmtqfn.o now.o getln.a sig.a stralloc.a alloc.a \
+load qmail-clean.o fmtqfn.o now.o getln.a sig.a stralloc.a \
 substdio.a error.a str.a fs.a auto_qmail.o auto_split.o
 	./load qmail-clean fmtqfn.o now.o getln.a sig.a stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a auto_qmail.o \
+	substdio.a error.a str.a fs.a auto_qmail.o \
 	auto_split.o 
 
 qmail-clean.0: \
@@ -1114,12 +1099,12 @@ qmail-header.5
 qmail-inject: \
 load qmail-inject.o headerbody.o hfield.o newfield.o quote.o now.o \
 control.o date822fmt.o constmap.o qmail.o case.a fd.a wait.a open.a \
-getln.a sig.a getopt.a datetime.a token822.o env.a stralloc.a alloc.a \
+getln.a sig.a getopt.a datetime.a token822.o env.a stralloc.a \
 substdio.a error.a str.a fs.a auto_qmail.o
 	./load qmail-inject headerbody.o hfield.o newfield.o \
 	quote.o now.o control.o date822fmt.o constmap.o qmail.o \
 	case.a fd.a wait.a open.a getln.a sig.a getopt.a datetime.a \
-	token822.o env.a stralloc.a alloc.a substdio.a error.a \
+	token822.o env.a stralloc.a substdio.a error.a \
 	str.a fs.a auto_qmail.o 
 
 qmail-inject.0: \
@@ -1147,11 +1132,11 @@ qmail-limits.9 conf-qmail conf-break conf-spawn
 qmail-local: \
 load qmail-local.o qmail.o quote.o now.o gfrom.o myctime.o \
 slurpclose.o case.a getln.a getopt.a sig.a open.a seek.a lock.a fd.a \
-wait.a env.a stralloc.a alloc.a strerr.a substdio.a error.a str.a \
+wait.a env.a stralloc.a strerr.a substdio.a error.a str.a \
 fs.a datetime.a auto_qmail.o auto_patrn.o socket.lib
 	./load qmail-local qmail.o quote.o now.o gfrom.o myctime.o \
 	slurpclose.o case.a getln.a getopt.a sig.a open.a seek.a \
-	lock.a fd.a wait.a env.a stralloc.a alloc.a strerr.a \
+	lock.a fd.a wait.a env.a stralloc.a strerr.a \
 	substdio.a error.a str.a fs.a datetime.a auto_qmail.o \
 	auto_patrn.o  `cat socket.lib`
 
@@ -1171,11 +1156,11 @@ qmail-log.5
 
 qmail-lspawn: \
 load qmail-lspawn.o spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
-case.a cdb.a fd.a open.a stralloc.a alloc.a substdio.a error.a str.a \
+case.a cdb.a fd.a open.a stralloc.a substdio.a error.a str.a \
 fs.a auto_qmail.o uid.o gid.o auto_userp.o auto_userq.o auto_groupn.o \
 auto_spawn.o
 	./load qmail-lspawn spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
-	case.a cdb.a fd.a open.a stralloc.a alloc.a auto_qmail.o uid.o gid.o \
+	case.a cdb.a fd.a open.a stralloc.a auto_qmail.o uid.o gid.o \
 	auto_userp.o auto_userq.o auto_groupn.o auto_spawn.o substdio.a \
 	error.a str.a fs.a
 
@@ -1191,9 +1176,9 @@ open.h
 
 qmail-newmrh: \
 load qmail-newmrh.o cdbmss.o getln.a open.a cdbmake.a seek.a case.a \
-stralloc.a alloc.a strerr.a substdio.a error.a str.a auto_qmail.o
+stralloc.a strerr.a substdio.a error.a str.a auto_qmail.o
 	./load qmail-newmrh cdbmss.o getln.a open.a cdbmake.a \
-	seek.a case.a stralloc.a alloc.a strerr.a substdio.a \
+	seek.a case.a stralloc.a strerr.a substdio.a \
 	error.a str.a auto_qmail.o 
 
 qmail-newmrh.0: \
@@ -1215,9 +1200,9 @@ uint32.h substdio.h case.h
 
 qmail-newu: \
 load qmail-newu.o cdbmss.o getln.a open.a seek.a cdbmake.a case.a \
-stralloc.a alloc.a substdio.a error.a str.a auto_qmail.o
+stralloc.a substdio.a error.a str.a auto_qmail.o
 	./load qmail-newu cdbmss.o getln.a open.a seek.a cdbmake.a \
-	case.a stralloc.a alloc.a substdio.a error.a str.a \
+	case.a stralloc.a substdio.a error.a str.a \
 	auto_qmail.o 
 
 qmail-newu.0: \
@@ -1240,10 +1225,10 @@ readwrite.h open.h error.h case.h auto_qmail.h byte.h
 qmail-pop3d: \
 load qmail-pop3d.o commands.o case.a timeoutread.o timeoutwrite.o \
 maildir.o prioq.o now.o env.a strerr.a sig.a open.a getln.a \
-stralloc.a alloc.a substdio.a error.a str.a fs.a socket.lib
+stralloc.a substdio.a error.a str.a fs.a socket.lib
 	./load qmail-pop3d commands.o case.a timeoutread.o \
 	timeoutwrite.o maildir.o prioq.o now.o env.a strerr.a sig.a \
-	open.a getln.a stralloc.a alloc.a substdio.a error.a str.a \
+	open.a getln.a stralloc.a substdio.a error.a str.a \
 	fs.a  `cat socket.lib`
 
 qmail-pop3d.0: \
@@ -1258,10 +1243,10 @@ timeoutwrite.h
 
 qmail-popup: \
 load qmail-popup.o commands.o timeoutread.o timeoutwrite.o now.o \
-case.a fd.a sig.a wait.a stralloc.a alloc.a substdio.a error.a str.a \
+case.a fd.a sig.a wait.a stralloc.a substdio.a error.a str.a \
 fs.a socket.lib
 	./load qmail-popup commands.o timeoutread.o timeoutwrite.o \
-	now.o case.a fd.a sig.a wait.a stralloc.a alloc.a \
+	now.o case.a fd.a sig.a wait.a stralloc.a \
 	substdio.a error.a str.a fs.a  `cat socket.lib`
 
 qmail-popup.0: \
@@ -1275,10 +1260,10 @@ readwrite.h timeoutread.h timeoutwrite.h
 
 qmail-pw2u: \
 load qmail-pw2u.o constmap.o control.o open.a getln.a case.a getopt.a \
-stralloc.a alloc.a substdio.a error.a str.a fs.a auto_usera.o \
+stralloc.a substdio.a error.a str.a fs.a auto_usera.o \
 auto_break.o auto_qmail.o
 	./load qmail-pw2u constmap.o control.o open.a getln.a \
-	case.a getopt.a stralloc.a alloc.a substdio.a error.a str.a \
+	case.a getopt.a stralloc.a substdio.a error.a str.a \
 	fs.a auto_usera.o auto_break.o auto_qmail.o 
 
 qmail-pw2u.0: \
@@ -1302,10 +1287,10 @@ auto_users.h byte.h
 qmail-qmqpc: \
 load qmail-qmqpc.o slurpclose.o timeoutread.o timeoutwrite.o \
 timeoutconn.o ip.o control.o auto_qmail.o sig.a ndelay.a open.a \
-getln.a substdio.a stralloc.a alloc.a error.a str.a fs.a socket.lib
+getln.a substdio.a stralloc.a error.a str.a fs.a socket.lib
 	./load qmail-qmqpc slurpclose.o timeoutread.o \
 	timeoutwrite.o timeoutconn.o ip.o control.o auto_qmail.o \
-	sig.a ndelay.a open.a getln.a substdio.a stralloc.a alloc.a \
+	sig.a ndelay.a open.a getln.a substdio.a stralloc.a \
 	error.a str.a fs.a  `cat socket.lib`
 
 qmail-qmqpc.0: \
@@ -1335,12 +1320,12 @@ sig.h substdio.h readwrite.h exit.h now.h datetime.h fmt.h env.h byte.h
 qmail-qmtpd: \
 load qmail-qmtpd.o rcpthosts.o control.o constmap.o received.o \
 date822fmt.o now.o qmail.o cdb.a fd.a wait.a datetime.a open.a \
-getln.a sig.a case.a env.a stralloc.a alloc.a substdio.a error.a \
+getln.a sig.a case.a env.a stralloc.a substdio.a error.a \
 str.a fs.a auto_qmail.o
 	./load qmail-qmtpd rcpthosts.o control.o constmap.o \
 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
 	datetime.a open.a getln.a sig.a case.a env.a stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a auto_qmail.o 
+	substdio.a error.a str.a fs.a auto_qmail.o
 
 qmail-qmtpd.0: \
 qmail-qmtpd.8
@@ -1353,10 +1338,10 @@ auto_qmail.h readwrite.h control.h received.h exit.h
 
 qmail-qread: \
 load qmail-qread.o fmtqfn.o readsubdir.o date822fmt.o datetime.a \
-open.a getln.a stralloc.a alloc.a substdio.a error.a str.a fs.a \
+open.a getln.a stralloc.a substdio.a error.a str.a fs.a \
 auto_qmail.o auto_split.o
 	./load qmail-qread fmtqfn.o readsubdir.o date822fmt.o \
-	datetime.a open.a getln.a stralloc.a alloc.a substdio.a \
+	datetime.a open.a getln.a stralloc.a substdio.a \
 	error.a str.a fs.a auto_qmail.o auto_split.o 
 
 qmail-qread.0: \
@@ -1383,12 +1368,12 @@ qmail-qstat.8
 
 qmail-queue: \
 load qmail-queue.o triggerpull.o fmtqfn.o now.o date822fmt.o \
-datetime.a seek.a ndelay.a open.a sig.a alloc.a substdio.a error.a \
+datetime.a seek.a ndelay.a open.a sig.a substdio.a error.a \
 str.a fs.a auto_qmail.o auto_split.o uid.o auto_usera.o auto_userd.o \
 auto_users.o
 	./load qmail-queue triggerpull.o fmtqfn.o now.o \
 	date822fmt.o datetime.a seek.a ndelay.a open.a sig.a \
-	alloc.a auto_qmail.o auto_split.o uid.o auto_usera.o \
+	auto_qmail.o auto_split.o uid.o auto_usera.o \
 	auto_userd.o auto_users.o substdio.a error.a str.a fs.a
 
 qmail-queue.0: \
@@ -1403,12 +1388,12 @@ uidgid.h auto_qmail.h auto_uids.h auto_users.h date822fmt.h fmtqfn.h
 qmail-remote: \
 load qmail-remote.o control.o constmap.o timeoutread.o timeoutwrite.o \
 timeoutconn.o tcpto.o now.o dns.o ip.o ipalloc.o ipme.o quote.o \
-ndelay.a case.a sig.a open.a lock.a seek.a getln.a stralloc.a alloc.a \
+ndelay.a case.a sig.a open.a lock.a seek.a getln.a stralloc.a \
 substdio.a error.a str.a fs.a auto_qmail.o dns.lib socket.lib
 	./load qmail-remote control.o constmap.o timeoutread.o \
 	timeoutwrite.o timeoutconn.o tcpto.o now.o dns.o ip.o \
 	ipalloc.o ipme.o quote.o ndelay.a case.a sig.a open.a \
-	lock.a seek.a getln.a stralloc.a alloc.a substdio.a error.a \
+	lock.a seek.a getln.a stralloc.a substdio.a error.a \
 	str.a fs.a auto_qmail.o  `cat dns.lib` `cat socket.lib`
 
 qmail-remote.0: \
@@ -1425,10 +1410,10 @@ error.h
 
 qmail-rspawn: \
 load qmail-rspawn.o spawn.o tcpto_clean.o now.o coe.o sig.a open.a \
-seek.a lock.a wait.a fd.a stralloc.a alloc.a substdio.a error.a env.a str.a \
+seek.a lock.a wait.a fd.a stralloc.a substdio.a error.a env.a str.a \
 auto_qmail.o uid.o auto_userq.o auto_spawn.o
 	./load qmail-rspawn spawn.o tcpto_clean.o now.o coe.o \
-	sig.a open.a seek.a lock.a wait.a fd.a stralloc.a alloc.a \
+	sig.a open.a seek.a lock.a wait.a fd.a stralloc.a \
 	auto_qmail.o uid.o auto_userq.o substdio.a error.a env.a str.a \
 	auto_spawn.o
 
@@ -1444,12 +1429,12 @@ qmail-send: \
 load qmail-send.o qsutil.o control.o constmap.o newfield.o prioq.o \
 trigger.o fmtqfn.o quote.o now.o readsubdir.o qmail.o date822fmt.o \
 datetime.a case.a ndelay.a getln.a wait.a seek.a fd.a sig.a open.a \
-lock.a stralloc.a alloc.a substdio.a error.a str.a fs.a auto_qmail.o \
+lock.a stralloc.a substdio.a error.a str.a fs.a auto_qmail.o \
 auto_split.o env.a
 	./load qmail-send qsutil.o control.o constmap.o newfield.o \
 	prioq.o trigger.o fmtqfn.o quote.o now.o readsubdir.o \
 	qmail.o date822fmt.o datetime.a case.a ndelay.a getln.a \
-	wait.a seek.a fd.a sig.a open.a lock.a stralloc.a alloc.a \
+	wait.a seek.a fd.a sig.a open.a lock.a stralloc.a \
 	substdio.a error.a str.a fs.a auto_qmail.o auto_split.o env.a
 
 qmail-send.0: \
@@ -1481,12 +1466,12 @@ qmail-send.service.in conf-qmail
 qmail-showctl: \
 load qmail-showctl.o uid.o gid.o auto_usera.o auto_userd.o auto_userl.o \
 auto_usero.o auto_userp.o auto_userq.o auto_userr.o auto_users.o auto_groupn.o \
-auto_groupq.o control.o open.a getln.a stralloc.a alloc.a substdio.a error.a \
+auto_groupq.o control.o open.a getln.a stralloc.a substdio.a error.a \
 str.a fs.a auto_qmail.o auto_break.o auto_patrn.o auto_spawn.o auto_split.o
 	./load qmail-showctl uid.o gid.o auto_usera.o auto_userd.o \
 	auto_userl.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
 	auto_users.o auto_groupn.o auto_groupq.o control.o open.a getln.a \
-	stralloc.a alloc.a substdio.a error.a str.a fs.a auto_qmail.o \
+	stralloc.a substdio.a error.a str.a fs.a auto_qmail.o \
 	auto_break.o auto_patrn.o auto_spawn.o auto_split.o
 
 qmail-showctl.0: \
@@ -1503,13 +1488,13 @@ qmail-smtpd: \
 load qmail-smtpd.o rcpthosts.o commands.o timeoutread.o \
 timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
 date822fmt.o now.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
-open.a sig.a case.a env.a stralloc.a alloc.a substdio.a error.a str.a \
+open.a sig.a case.a env.a stralloc.a substdio.a error.a str.a \
 fs.a auto_qmail.o socket.lib
 	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
 	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a auto_qmail.o  `cat \
+	substdio.a error.a str.a fs.a auto_qmail.o  `cat \
 	socket.lib`
 
 qmail-smtpd.0: \
@@ -1603,10 +1588,10 @@ qmail.h auto_qmail.h env.h
 
 qreceipt: \
 load qreceipt.o headerbody.o hfield.o quote.o token822.o qmail.o \
-getln.a fd.a wait.a sig.a env.a stralloc.a alloc.a substdio.a error.a \
+getln.a fd.a wait.a sig.a env.a stralloc.a substdio.a error.a \
 str.a auto_qmail.o
 	./load qreceipt headerbody.o hfield.o quote.o token822.o \
-	qmail.o getln.a fd.a wait.a sig.a env.a stralloc.a alloc.a \
+	qmail.o getln.a fd.a wait.a sig.a env.a stralloc.a \
 	substdio.a error.a str.a auto_qmail.o 
 
 qreceipt.0: \
@@ -1621,9 +1606,9 @@ open.h quote.h qmail.h substdio.h oflops.h error.h
 
 qsmhook: \
 load qsmhook.o sig.a case.a fd.a wait.a getopt.a env.a stralloc.a \
-alloc.a substdio.a error.a str.a
+substdio.a error.a str.a
 	./load qsmhook sig.a case.a fd.a wait.a getopt.a env.a \
-	stralloc.a alloc.a substdio.a error.a str.a 
+	stralloc.a substdio.a error.a str.a
 
 qsmhook.o: \
 compile qsmhook.c fd.h stralloc.h gen_alloc.h readwrite.h sgetopt.h \
@@ -1702,9 +1687,9 @@ compile trysysel.c select.h1 select.h2
 	rm -f trysysel.o trysysel
 
 sendmail: \
-load sendmail.o env.a getopt.a alloc.a substdio.a error.a str.a \
+load sendmail.o env.a getopt.a substdio.a error.a str.a \
 auto_qmail.o
-	./load sendmail env.a getopt.a alloc.a substdio.a error.a \
+	./load sendmail env.a getopt.a substdio.a error.a \
 	str.a auto_qmail.o 
 
 sendmail.o: \
@@ -1953,10 +1938,10 @@ trysyslog.c compile load
 tcp-env: \
 load tcp-env.o dns.o remoteinfo.o timeoutread.o timeoutwrite.o \
 timeoutconn.o ip.o ipalloc.o case.a ndelay.a sig.a env.a getopt.a \
-stralloc.a alloc.a substdio.a error.a str.a fs.a dns.lib socket.lib
+stralloc.a substdio.a error.a str.a fs.a dns.lib socket.lib
 	./load tcp-env dns.o remoteinfo.o timeoutread.o \
 	timeoutwrite.o timeoutconn.o ip.o ipalloc.o case.a ndelay.a \
-	sig.a env.a getopt.a stralloc.a alloc.a substdio.a error.a \
+	sig.a env.a getopt.a stralloc.a substdio.a error.a \
 	str.a fs.a  `cat dns.lib` `cat socket.lib`
 
 tcp-env.0: \

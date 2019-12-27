@@ -74,9 +74,6 @@ stralloc_cats.o
 stralloc_catb.o
 stralloc_arts.o
 stralloc.a
-alloc.o
-alloc_re.o
-alloc.a
 strerr_sys.o
 strerr_die.o
 strerr.a

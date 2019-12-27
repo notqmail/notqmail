@@ -507,7 +507,7 @@ dot-qmail.9 conf-qmail conf-break conf-spawn
 
 elq: \
 warn-auto.sh elq.sh conf-qmail conf-break conf-split
-	cat warn-auto.sh elq.sh \
+	cat warn-auto.sh deprecated.sh elq.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
@@ -1012,7 +1012,7 @@ it man
 
 pinq: \
 warn-auto.sh pinq.sh conf-qmail conf-break conf-split
-	cat warn-auto.sh pinq.sh \
+	cat warn-auto.sh deprecated.sh pinq.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \
@@ -1070,7 +1070,7 @@ compile prot.c hasshsgr.h prot.h
 
 qail: \
 warn-auto.sh qail.sh conf-qmail conf-break conf-split
-	cat warn-auto.sh qail.sh \
+	cat warn-auto.sh deprecated.sh qail.sh \
 	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
 	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPLIT}"`head -1 conf-split`"}g \

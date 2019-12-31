@@ -79,7 +79,7 @@ char *dir;
 {
  unsigned long pid;
  unsigned long time;
- char host[64];
+ char myhost[64];
  char *s;
  int loop;
  struct stat st;
@@ -90,8 +90,8 @@ char *dir;
  sig_alarmcatch(sigalrm);
  if (chdir(dir) == -1) { if (error_temp(errno)) _exit(1); _exit(2); }
  pid = getpid();
- host[0] = 0;
- gethostname(host,sizeof(host));
+ myhost[0] = 0;
+ gethostname(myhost,sizeof(myhost));
  for (loop = 0;;++loop)
   {
    time = now();
@@ -99,7 +99,7 @@ char *dir;
    s += fmt_str(s,"tmp/");
    s += fmt_ulong(s,time); *s++ = '.';
    s += fmt_ulong(s,pid); *s++ = '.';
-   s += fmt_strn(s,host,sizeof(host)); *s++ = 0;
+   s += fmt_strn(s,myhost,sizeof(myhost)); *s++ = 0;
    if (stat(fntmptph,&st) == -1) if (errno == error_noent) break;
    /* really should never get to this point */
    if (loop == 2) _exit(1);
@@ -531,7 +531,7 @@ char **argv;
  if (!stralloc_copys(&ufline,"From ")) temp_nomem();
  if (*sender)
   {
-   int len; int i; char ch;
+   int len; char ch;
 
    len = str_len(sender);
    if (!stralloc_readyplus(&ufline,len)) temp_nomem();

@@ -14,7 +14,7 @@ addons:
     - pkg-config
     - check
 script:
- - echo "${CC} -O2 -Wall" > conf-cc
+ - echo "${CC} -O2 -Wall -Wshadow" > conf-cc
  - if [ -n "${FORCE_UTMP}" ]; then cp qtmp.h1 qtmp.h; fi
  - make ${MAKEFLAGS} it man
  - make test

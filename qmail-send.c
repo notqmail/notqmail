@@ -1254,7 +1254,7 @@ fd_set *rfds;
  int match;
  unsigned long id;
  unsigned int len;
- direntry *d;
+ direntry *dent;
  int c;
  unsigned long uid;
  unsigned long pid;
@@ -1280,17 +1280,17 @@ fd_set *rfds;
    nexttodorun = recent + SLEEP_TODO;
   }
 
- d = readdir(tododir);
- if (!d)
+ dent = readdir(tododir);
+ if (!dent)
   {
    closedir(tododir);
    tododir = 0;
    return;
   }
- if (str_equal(d->d_name,".")) return;
- if (str_equal(d->d_name,"..")) return;
- len = scan_ulong(d->d_name,&id);
- if (!len || d->d_name[len]) return;
+ if (str_equal(dent->d_name,".")) return;
+ if (str_equal(dent->d_name,"..")) return;
+ len = scan_ulong(dent->d_name,&id);
+ if (!len || dent->d_name[len]) return;
 
  fnmake_todo(id);
 

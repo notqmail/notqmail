@@ -198,18 +198,18 @@ void dosubuser()
   int i;
   char *x;
   unsigned int xlen;
-  char *uugh;
+  char *u;
 
   x = line.s; xlen = line.len; i = byte_chr(x,xlen,':'); if (i == xlen) return;
   if (!stralloc_copyb(&sub,x,i)) die_nomem();
   ++i; x += i; xlen -= i; i = byte_chr(x,xlen,':'); if (i == xlen) return;
-  uugh = constmap(&mapuser,x,i);
-  if (!uugh) die_user(x,i);
+  u = constmap(&mapuser,x,i);
+  if (!u) die_user(x,i);
   ++i; x += i; xlen -= i; i = byte_chr(x,xlen,':'); if (i == xlen) return;
 
   if (substdio_puts(subfdout,"=") == -1) die_write();
   if (substdio_put(subfdout,sub.s,sub.len) == -1) die_write();
-  if (substdio_puts(subfdout,uugh) == -1) die_write();
+  if (substdio_puts(subfdout,u) == -1) die_write();
   if (substdio_puts(subfdout,dashcolon) == -1) die_write();
   if (substdio_put(subfdout,x,i) == -1) die_write();
   if (substdio_puts(subfdout,":\n") == -1) die_write();
@@ -218,7 +218,7 @@ void dosubuser()
     if (substdio_puts(subfdout,"+") == -1) die_write();
     if (substdio_put(subfdout,sub.s,sub.len) == -1) die_write();
     if (substdio_put(subfdout,auto_break,1) == -1) die_write();
-    if (substdio_puts(subfdout,uugh) == -1) die_write();
+    if (substdio_puts(subfdout,u) == -1) die_write();
     if (substdio_puts(subfdout,dashcolon) == -1) die_write();
     if (substdio_put(subfdout,x,i) == -1) die_write();
     if (substdio_puts(subfdout,"-:\n") == -1) die_write();

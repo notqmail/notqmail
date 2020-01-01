@@ -1532,6 +1532,12 @@ qmail.h substdio.h qsutil.h prioq.h datetime.h gen_alloc.h constmap.h \
 fmtqfn.h readsubdir.h direntry.h
 	./compile qmail-send.c
 
+qmail-send.service: \
+qmail-send.service.in conf-qmail
+	cat qmail-send.service.in \
+	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
+	> qmail-send.service
+
 qmail-showctl: \
 load qmail-showctl.o uid.o gid.o auto_usera.o auto_userd.o auto_userl.o \
 auto_usero.o auto_userp.o auto_userq.o auto_userr.o auto_users.o auto_groupn.o \

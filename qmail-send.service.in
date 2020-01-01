@@ -1,0 +1,11 @@
+[Unit]
+Description=notqmail mail delivery daemons
+After=local-fs.target network.target
+
+[Service]
+ExecStart=QMAILHOME/bin/qmail-start ./Maildir/ splogger qmail
+Environment=PATH=QMAILHOME/bin:${PATH}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

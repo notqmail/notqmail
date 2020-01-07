@@ -426,6 +426,10 @@ int tls_init()
     SSL_CTX_use_RSAPrivateKey_file(ctx, CLIENTCERT, SSL_FILETYPE_PEM);
 # undef CLIENTCERT
 
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+  SSL_CTX_set_post_handshake_auth(ctx, 1);
+#endif
+
   myssl = SSL_new(ctx);
   SSL_CTX_free(ctx);
   if (!myssl) {

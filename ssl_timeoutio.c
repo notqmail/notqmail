@@ -73,7 +73,16 @@ int ssl_timeoutrehandshake(int t, int rfd, int wfd, SSL *ssl)
 {
   int r=0;
 
-  SSL_renegotiate(ssl);
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+  if (SSL_version(ssl) >= TLS1_3_VERSION){
+    if(SSL_verify_client_post_handshake(ssl) != 1)
+      return -EPROTO;
+  } else
+#endif
+  { 
+    r =  SSL_renegotiate(ssl);
+    if (r<=0) return r;
+  }
 
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
   char buf[1]; /* dummy read buffer */
@@ -81,6 +90,9 @@ int ssl_timeoutrehandshake(int t, int rfd, int wfd, SSL *ssl)
   fd_set fds;
   r = ssl_timeoutio(SSL_do_handshake, t, rfd, wfd, ssl, NULL, 0);
   if (r <=0) return r;
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+  if (SSL_version(ssl) >= TLS1_3_VERSION) return r;
+#endif
 
   tv.tv_sec = (time_t)t; tv.tv_usec = 0;
   FD_ZERO(&fds);  FD_SET(rfd, &fds);

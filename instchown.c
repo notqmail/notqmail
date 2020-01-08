@@ -1,4 +1,5 @@
 #include <sys/stat.h>
+#include <string.h>
 #include <unistd.h>
 #include "strerr.h"
 #include "error.h"
@@ -41,10 +42,18 @@ void c(char *home, char *subdir, char *file, int uid, int gid, int mode)
 {
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
-  if (chdir(subdir) == -1)
+  if (chdir(subdir) == -1) {
+    /* assume cat man pages are simply not installed */
+    if (errno == error_noent && strncmp(subdir, "man/cat", 7) == 0)
+      return;
     strerr_die6sys(111,FATAL,"unable to switch to ",home,"/",subdir,": ");
-  if (chown(file,uid,gid) == -1)
+  }
+  if (chown(file,uid,gid) == -1) {
+    /* assume cat man pages are simply not installed */
+    if (errno == error_noent && strncmp(subdir, "man/cat", 7) == 0)
+      return;
     strerr_die6sys(111,FATAL,"unable to chown .../",subdir,"/",file,": ");
+  }
   if (chmod(file,mode) == -1)
     strerr_die6sys(111,FATAL,"unable to chmod .../",subdir,"/",file,": ");
 }

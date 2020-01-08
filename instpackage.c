@@ -1,4 +1,5 @@
 #include <sys/stat.h>
+#include <string.h>
 #include <unistd.h>
 #include "substdio.h"
 #include "strerr.h"
@@ -106,14 +107,31 @@ void c(char *home, char *subdir, char *file, int uid, int gid, int mode)
   int fdout;
   stralloc dh = { 0 };
 
-  ddhome(&dh, home);
-  home=dh.s;
   if (fchdir(fdsourcedir) == -1)
     strerr_die2sys(111,FATAL,"unable to switch back to source directory: ");
 
   fdin = open_read(file);
-  if (fdin == -1)
+  if (fdin == -1) {
+    /* silently ignore missing catman pages */
+    if (errno == error_noent && strncmp(subdir, "man/cat", 7) == 0)
+      return;
     strerr_die4sys(111,FATAL,"unable to read ",file,": ");
+  }
+
+  /* if the user decided to build only dummy catman pages then don't install */
+  if (strncmp(subdir, "man/cat", 7) == 0) {
+    struct stat st;
+    if (fstat(fdin, &st) != 0)
+      strerr_die4sys(111,FATAL,"unable to stat ",file,": ");
+    if (st.st_size == 0) {
+      close(fdin);
+      return;
+    }
+  }
+
+  ddhome(&dh, home);
+  home=dh.s;
+
   substdio_fdbuf(&ssin,read,fdin,inbuf,sizeof inbuf);
 
   if (chdir(home) == -1)

@@ -7,7 +7,10 @@ task:
       image: freebsd-10-4-release-amd64
 
   env:
-    MAKE_FLAGS: -j 2
+    matrix:
+      - MAKE_FLAGS: -j 2
+      - MAKE_FLAGS: -j 2
+        NROFF: true
 
   pkginstall_script:
     - pkg install -y groff

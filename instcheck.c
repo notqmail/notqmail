@@ -25,9 +25,11 @@ int mode;
   struct stat st;
 
   if (stat(file,&st) == -1) {
-    if (errno == error_noent)
-      strerr_warn6(WARNING,prefix1,prefix2,prefix3,file," does not exist",0);
-    else
+    if (errno == error_noent) {
+      /* assume cat man pages are simply not installed */
+      if (strncmp(prefix2, "man/cat", 7) != 0 && strncmp(file, "man/cat", 7) != 0)
+        strerr_warn6(WARNING,prefix1,prefix2,prefix3,file," does not exist",0);
+    } else
       strerr_warn4(WARNING,"unable to stat .../",file,": ",&strerr_sys);
     return;
   }
@@ -85,8 +87,12 @@ int mode;
 {
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
-  if (chdir(subdir) == -1)
+  if (chdir(subdir) == -1) {
+    /* assume cat man pages are simply not installed */
+    if (errno == error_noent && strncmp(subdir, "man/cat", 7) == 0)
+      return;
     strerr_die6sys(111,FATAL,"unable to switch to ",home,"/",subdir,": ");
+  }
   perm(".../",subdir,"/",file,S_IFREG,uid,gid,mode);
 }
 

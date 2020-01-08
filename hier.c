@@ -49,7 +49,7 @@ void hier()
 
   d(auto_qmail,"alias",auto_uida,auto_gidq,02755);
 
-  d(auto_qmail,"queue",auto_uidq,auto_gidq,0750);
+  d(auto_qmail,"queue",auto_uidq,auto_gidq,0755);
   d(auto_qmail,"queue/pid",auto_uidq,auto_gidq,0700);
   d(auto_qmail,"queue/intd",auto_uidq,auto_gidq,0700);
   d(auto_qmail,"queue/todo",auto_uidq,auto_gidq,0750);

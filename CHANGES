@@ -40,7 +40,8 @@
 20031027 code: qmail-smtpd identifies itself as netqmail
 20031027 code: if $QMAILQUEUE is set, it's invoked instead of qmail-queue
 20031024 code: changed errno from int to #include.
-20031024 code: fixed .qmail parsing bug.
+20031024 code: fixed .qmail parsing bug (accessing an array out of bounds)
+         that was discovered by Erik Sjölund <erik.sjolund@gmail.com>).
 20031024 code: recognize 0.0.0.0 as a local address.
 20031024 code: sendmail's -f flag now overrides environment variables.
 19980615 version: qmail 1.03.

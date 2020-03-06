@@ -84,7 +84,6 @@ char *dir;
  char myhost[64];
  char *s;
  int loop;
- struct stat st;
  int fd;
  substdio ss;
  substdio ssout;
@@ -102,17 +101,20 @@ char *dir;
    s += fmt_ulong(s,time); *s++ = '.';
    s += fmt_ulong(s,pid); *s++ = '.';
    s += fmt_strn(s,myhost,sizeof(myhost)); *s++ = 0;
-   if (stat(fntmptph,&st) == -1) if (errno == error_noent) break;
-   /* really should never get to this point */
-   if (loop == 2) _exit(1);
-   sleep(2);
+   alarm(86400);
+   fd = open_excl(fntmptph);
+   if (fd >= 0)
+     break;
+   if (errno == error_exist) {
+     /* really should never get to this point */
+     if (loop == 2) _exit(1);
+     sleep(2);
+   } else {
+     _exit(1);
+   }
   }
  str_copy(fnnewtph,fntmptph);
  byte_copy(fnnewtph,3,"new");
-
- alarm(86400);
- fd = open_excl(fntmptph);
- if (fd == -1) _exit(1);
 
  substdio_fdbuf(&ss,read,0,buf,sizeof(buf));
  substdio_fdbuf(&ssout,write,fd,outbuf,sizeof(outbuf));

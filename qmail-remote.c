@@ -275,15 +275,14 @@ void smtp()
 stralloc canonhost = {0};
 stralloc canonbox = {0};
 
-void addrmangle(saout,s,flagalias,flagcname)
+void addrmangle(saout,s,flagalias)
 stralloc *saout; /* host has to be canonical, box has to be quoted */
 char *s;
 int *flagalias;
-int flagcname;
 {
   int j;
  
-  *flagalias = flagcname;
+  *flagalias = 0;
  
   j = str_rchr(s,'@');
   if (!s[j]) {
@@ -296,13 +295,6 @@ int flagcname;
   if (!stralloc_cats(saout,"@")) temp_nomem();
  
   if (!stralloc_copys(&canonhost,s + j + 1)) temp_nomem();
-  if (flagcname)
-    switch(dns_cname(&canonhost)) {
-      case 0: *flagalias = 0; break;
-      case DNS_MEM: temp_nomem();
-      case DNS_SOFT: temp_dnscanon();
-      case DNS_HARD: ; /* alias loop, not our problem */
-    }
 
   if (!stralloc_cat(saout,&canonhost)) temp_nomem();
 }
@@ -361,7 +353,7 @@ int main(int argc, char **argv)
   }
 
 
-  addrmangle(&sender,argv[2],&flagalias,0);
+  addrmangle(&sender,argv[2],&flagalias);
  
   if (!saa_readyplus(&reciplist,0)) temp_nomem();
   if (ipme_init() != 1) temp_oserr();
@@ -371,7 +363,7 @@ int main(int argc, char **argv)
   while (*recips) {
     if (!saa_readyplus(&reciplist,1)) temp_nomem();
     reciplist.sa[reciplist.len] = sauninit;
-    addrmangle(reciplist.sa + reciplist.len,*recips,&flagalias,!relayhost);
+    addrmangle(reciplist.sa + reciplist.len,*recips,&flagalias);
     if (!flagalias) flagallaliases = 0;
     ++reciplist.len;
     ++recips;

@@ -25,10 +25,12 @@ addresses.0: \
 addresses.5
 
 auto-ccld.sh: \
-conf-cc conf-ld warn-auto.sh
+conf-cc conf-ld conf-ar conf-ranlib warn-auto.sh
 	( cat warn-auto.sh; \
 	echo CC=\'`head -n 1 conf-cc`\'; \
-	echo LD=\'`head -n 1 conf-ld`\' \
+	echo LD=\'`head -n 1 conf-ld`\'; \
+	echo AR=\'`head -n 1 conf-ar`\'; \
+	echo RANLIB=\'`head -n 1 conf-ranlib`\' \
 	) > auto-ccld.sh
 
 auto-int: \

@@ -1,7 +1,5 @@
 auto-ccld.sh
-make-load
 load
-make-compile
 compile
 qmail-local.o
 qmail.o
@@ -10,7 +8,6 @@ now.o
 gfrom.o
 myctime.o
 slurpclose.o
-make-makelib
 makelib
 case_diffb.o
 case_diffs.o

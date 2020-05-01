@@ -187,37 +187,6 @@ int flagsearch;
  if (flagsearch) lookup = res_search;
 }
 
-int dns_cname(sa)
-stralloc *sa;
-{
- int r;
- int loop;
- for (loop = 0;loop < 10;++loop)
-  {
-   if (!sa->len) return loop;
-   if (sa->s[sa->len - 1] == ']') return loop;
-   if (sa->s[sa->len - 1] == '.') { --sa->len; continue; }
-   switch(resolve(sa,T_CNAME))
-    {
-     case DNS_MEM: return DNS_MEM;
-     case DNS_SOFT: return DNS_SOFT;
-     case DNS_HARD: return loop;
-     default:
-       while ((r = findname(T_CNAME)) != 2)
-	{
-	 if (r == DNS_SOFT) return DNS_SOFT;
-	 if (r == 1)
-	  {
-	   if (!stralloc_copys(sa,name)) return DNS_MEM;
-	   break;
-	  }
-	}
-       if (r == 2) return loop;
-    }
-  }
- return DNS_HARD; /* alias loop */
-}
-
 #define FMT_IAA 40
 
 static int iaafmt(char *s, struct ip_address *ipa)

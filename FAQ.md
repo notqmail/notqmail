@@ -11,7 +11,6 @@ document, and <http://qmail.org/> for qmail community contributions.
 2.2. How do I set up a null client?  
 2.3. How do I send outgoing mail through UUCP?  
 2.4. How do I set up a separate queue for a SLIP/PPP link?  
-2.5. How do I deal with "CNAME lookup failed temporarily"?  
 
 3. Routing incoming messages by host  
 3.1. How do I receive mail for another host name?  
@@ -134,16 +133,6 @@ running, give it a HUP.
 2.4. How do I set up a separate queue for a SLIP/PPP link?
 
 Answer: Use serialmail (<https://cr.yp.to/serialmail.html>).
-
-
-2.5. How do I deal with "CNAME lookup failed temporarily"? The log
-showed that a message was deferred for this reason. Why is qmail doing
-CNAME lookups, anyway?
-
-Answer: The SMTP standard does not permit aliased hostnames, so qmail
-has to do a CNAME lookup in DNS for every recipient host. If the
-relevant DNS server is down, qmail defers the message. It will try again
-soon.
 
 
 

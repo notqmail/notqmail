@@ -9,7 +9,7 @@ compiler:
  - gcc
  - clang
 script:
- - echo "${CC} -O2 -Wall" > conf-cc
+ - CC=${CC} CFLAGS="-O2 -Wall" ./configure
  - if [ -n "${FORCE_UTMP}" ]; then cp qtmp.h1 qtmp.h; fi
  - make ${MAKEFLAGS} it man
  - env DESTDIR=/tmp/qmail make ${MAKEFLAGS} package

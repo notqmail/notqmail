@@ -77,7 +77,7 @@ void doordie(sa,r) stralloc *sa; int r; {
  substdio_putflush(subfderr,sa->s,sa->len); perm(); }
 
 GEN_ALLOC_typedef(saa,stralloc,sa,len,a)
-GEN_ALLOC_readyplus(saa,stralloc,sa,len,a,i,n,x,10,saa_readyplus)
+GEN_ALLOC_readyplus(saa,stralloc,sa,len,a,10,saa_readyplus)
 
 static stralloc sauninit = {0};
 

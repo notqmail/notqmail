@@ -2,7 +2,7 @@
 #include "gen_allocdefs.h"
 #include "prioq.h"
 
-GEN_ALLOC_readyplus(prioq,struct prioq_elt,p,len,a,i,n,x,100,prioq_readyplus)
+GEN_ALLOC_readyplus(prioq,struct prioq_elt,p,len,a,100,prioq_readyplus)
 
 int prioq_insert(pq,pe)
 prioq *pq;

@@ -3,13 +3,13 @@
 #include <grp.h>
 #include "prot.h"
 
-int prot_gid(gid) gid_t gid;
+int prot_gid(gid_t gid)
 {
   if (setgroups(1,&gid) == -1) return -1;
   return setgid(gid); /* _should_ be redundant, but on some systems it isn't */
 }
 
-int prot_uid(uid) uid_t uid;
+int prot_uid(uid_t uid)
 {
   return setuid(uid);
 }

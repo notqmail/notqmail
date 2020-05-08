@@ -3,13 +3,16 @@
 
 #define GEN_ALLOC_readyplus(ta,type,field,len,a,base,ta_rplus) \
 static int ta_rplus ## _internal (ta *x, unsigned int n, unsigned int pluslen) \
-{ register unsigned int i; \
+{ \
   if (x->field) { \
-    i = x->a; n += pluslen; \
-    if (n > i) { \
-      x->a = base + n + (n >> 3); \
-      if (alloc_re(&x->field,i * sizeof(type),x->a * sizeof(type))) return 1; \
-      x->a = i; return 0; } \
+    unsigned int nnum; \
+    n += pluslen; \
+    if (n <= x->a) \
+      return 1; \
+    nnum = base + n + (n >> 3); \
+    if (!alloc_re(&x->field,x->a * sizeof(type),nnum * sizeof(type))) \
+      return 0; \
+    x->a = nnum; \
     return 1; } \
   x->len = 0; \
   return !!(x->field = (type *) alloc((x->a = n) * sizeof(type))); } \

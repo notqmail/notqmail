@@ -2,16 +2,21 @@
 #define GEN_ALLOC_DEFS_H
 
 #include "alloc.h"
+#include "error.h"
+#include "oflops.h"
 
 #define GEN_ALLOC_readyplus(ta,type,field,len,a,base,ta_rplus) \
 static int ta_rplus ## _internal (ta *x, unsigned int n, unsigned int pluslen) \
 { \
+  errno = error_nomem; \
   if (x->field) { \
     unsigned int nnum; \
-    n += pluslen; \
+    if (__builtin_add_overflow(n, pluslen, &n)) \
+      return 0; \
     if (n <= x->a) \
       return 1; \
-    nnum = base + n + (n >> 3); \
+    if (__builtin_add_overflow(n, (n >> 3) + base, &nnum)) \
+      return 0; \
     if (!alloc_re(&x->field,x->a * sizeof(type),nnum * sizeof(type))) \
       return 0; \
     x->a = nnum; \

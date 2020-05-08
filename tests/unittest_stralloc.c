@@ -64,6 +64,13 @@ START_TEST(test_stralloc_sizes)
   ck_assert_uint_eq(thingy.len, strlen(input) + 1);
   ck_assert_uint_ge(thingy.a, olen);
 
+  unsigned int ofl = -30;
+
+  r = stralloc_readyplus(&thingy, ofl);
+  ck_assert_int_eq(r, 0);
+  ck_assert_uint_eq(thingy.len, strlen(input) + 1);
+  ck_assert_uint_ge(thingy.a, olen);
+
   ck_assert_str_eq(input, thingy.s);
 
   alloc_free(thingy.s);

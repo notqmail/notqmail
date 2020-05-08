@@ -8,6 +8,7 @@
 #define GEN_ALLOC_readyplus(ta,type,field,len,a,base,ta_rplus) \
 static int ta_rplus ## _internal (ta *x, unsigned int n, unsigned int pluslen) \
 { \
+  unsigned int nlen; \
   errno = error_nomem; \
   if (x->field) { \
     unsigned int nnum; \
@@ -17,12 +18,16 @@ static int ta_rplus ## _internal (ta *x, unsigned int n, unsigned int pluslen) \
       return 1; \
     if (__builtin_add_overflow(n, (n >> 3) + base, &nnum)) \
       return 0; \
-    if (!alloc_re(&x->field,x->a * sizeof(type),nnum * sizeof(type))) \
+    if (__builtin_mul_overflow(nnum, sizeof(type), &nlen)) \
+      return 0; \
+    if (!alloc_re(&x->field,x->a * sizeof(type),nlen)) \
       return 0; \
     x->a = nnum; \
     return 1; } \
   x->len = 0; \
-  x->field = (type *) alloc(n * sizeof(type)); \
+  if (__builtin_mul_overflow(n, sizeof(type), &nlen)) \
+    return 0; \
+  x->field = alloc(nlen); \
   if (!x->field) \
     return 0; \
   x->a = n; \

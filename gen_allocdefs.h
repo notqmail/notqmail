@@ -15,7 +15,11 @@ static int ta_rplus ## _internal (ta *x, unsigned int n, unsigned int pluslen) \
     x->a = nnum; \
     return 1; } \
   x->len = 0; \
-  return !!(x->field = (type *) alloc((x->a = n) * sizeof(type))); } \
+  x->field = (type *) alloc(n * sizeof(type)); \
+  if (!x->field) \
+    return 0; \
+  x->a = n; \
+  return 1; } \
 int ta_rplus(ta *x, unsigned int n) \
 { return ta_rplus ## _internal (x, n, x->len); }
 

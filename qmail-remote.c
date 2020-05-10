@@ -12,7 +12,6 @@
 #include "auto_qmail.h"
 #include "control.h"
 #include "dns.h"
-#include "alloc.h"
 #include "quote.h"
 #include "ip.h"
 #include "ipalloc.h"

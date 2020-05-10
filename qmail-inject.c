@@ -4,7 +4,6 @@
 #include "subfd.h"
 #include "sgetopt.h"
 #include "getln.h"
-#include "alloc.h"
 #include "str.h"
 #include "fmt.h"
 #include "hfield.h"

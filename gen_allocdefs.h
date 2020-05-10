@@ -1,6 +1,8 @@
 #ifndef GEN_ALLOC_DEFS_H
 #define GEN_ALLOC_DEFS_H
 
+#include "alloc.h"
+
 #define GEN_ALLOC_readyplus(ta,type,field,len,a,base,ta_rplus) \
 static int ta_rplus ## _internal (ta *x, unsigned int n, unsigned int pluslen) \
 { \

@@ -25,6 +25,7 @@ subgetopt.o
 sgetopt.o
 getopt.a
 sig_alarm.o
+oflops.h
 hassgprm.h
 sig_block.o
 hassgact.h

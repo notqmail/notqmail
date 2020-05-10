@@ -10,13 +10,13 @@ struct cdbmake *cdbm;
   cdbm->numentries = 0;
 }
 
-int cdbmake_add(struct cdbmake *cdbm, uint32 h, uint32 p, char *(*alloc_fun)())
+int cdbmake_add(struct cdbmake *cdbm, uint32 h, uint32 p)
 {
   struct cdbmake_hplist *head;
 
   head = cdbm->head;
   if (!head || (head->num >= CDBMAKE_HPLIST)) {
-    head = (struct cdbmake_hplist *) alloc_fun(sizeof(struct cdbmake_hplist));
+    head = (struct cdbmake_hplist *) alloc(sizeof(struct cdbmake_hplist));
     if (!head) return 0;
     head->num = 0;
     head->next = cdbm->head;
@@ -29,7 +29,7 @@ int cdbmake_add(struct cdbmake *cdbm, uint32 h, uint32 p, char *(*alloc_fun)())
   return 1;
 }
 
-int cdbmake_split(struct cdbmake *cdbm, char *(*alloc_fun)())
+int cdbmake_split(struct cdbmake *cdbm)
 {
   int i;
   uint32 u;
@@ -57,7 +57,7 @@ int cdbmake_split(struct cdbmake *cdbm, char *(*alloc_fun)())
   u /= sizeof(struct cdbmake_hp);
   if (memsize > u) return 0;
 
-  cdbm->split = (struct cdbmake_hp *) alloc_fun(memsize * sizeof(struct cdbmake_hp));
+  cdbm->split = (struct cdbmake_hp *) alloc(memsize * sizeof(struct cdbmake_hp));
   if (!cdbm->split) return 0;
 
   cdbm->hash = cdbm->split + cdbm->numentries;

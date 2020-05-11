@@ -7,7 +7,7 @@ static int allwrite(op,fd,buf,len)
 register int (*op)();
 register int fd;
 register char *buf;
-register int len;
+register unsigned int len;
 {
   register int w;
 
@@ -55,16 +55,18 @@ register int len;
 int substdio_put(s,buf,len)
 register substdio *s;
 register char *buf;
-register int len;
+register unsigned int len;
 {
-  register int n;
+  register unsigned int n = s->n; /* how many bytes to write in next chunk */
  
-  n = s->n;
-  if (len > n - s->p) {
+  /* check if the input would fit in the buffer without flushing */
+  if (len > n - (unsigned int)s->p) {
     if (substdio_flush(s) == -1) return -1;
     /* now s->p == 0 */
     if (n < SUBSTDIO_OUTSIZE) n = SUBSTDIO_OUTSIZE;
-    while (len > s->n) {
+    /* as long as the remainder would not fit into s->x write it directly
+     * from buf to s->fd. */
+    while (len > (unsigned int)s->n) {
       if (n > len) n = len;
       if (allwrite(s->op,s->fd,buf,n) == -1) return -1;
       buf += n;

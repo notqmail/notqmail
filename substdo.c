@@ -43,7 +43,10 @@ register int len;
   register int n;
  
   while (len > (n = s->n - s->p)) {
-    byte_copy(s->x + s->p,n,buf); s->p += n; buf += n; len -= n;
+    byte_copy(s->x + s->p,n,buf);
+    s->p += n;
+    buf += n;
+    len -= n;
     if (substdio_flush(s) == -1) return -1;
   }
   /* now len <= s->n - s->p */

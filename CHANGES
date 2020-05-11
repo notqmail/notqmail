@@ -1,3 +1,4 @@
+20200511 add first unittest, run with "make test"
 20191227 fixed possible overflow in alloc() with allocations close to 4GiB
 20191226 add missing return types to main()
 20190919 fix ipme with multiple addresses on the same interface on platforms

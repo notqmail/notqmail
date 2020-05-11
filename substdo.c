@@ -38,9 +38,9 @@ register substdio *s;
 int substdio_bput(s,buf,len)
 register substdio *s;
 register char *buf;
-register int len;
+register unsigned int len;
 {
-  register int n;
+  register unsigned int n;
  
   while (len > (n = s->n - s->p)) {
     byte_copy(s->x + s->p,n,buf);

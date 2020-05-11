@@ -1673,7 +1673,7 @@ qsutil.h
 	./compile qsutil.c
 
 quote.o: \
-compile quote.c stralloc.h gen_alloc.h str.h quote.h
+compile quote.c stralloc.h gen_alloc.h str.h quote.h error.h
 	./compile quote.c
 
 rcpthosts.o: \
@@ -1965,7 +1965,7 @@ compile stralloc_cat.c byte.h stralloc.h gen_alloc.h
 	./compile stralloc_cat.c
 
 stralloc_catb.o: \
-compile stralloc_catb.c stralloc.h gen_alloc.h byte.h
+compile stralloc_catb.c stralloc.h gen_alloc.h byte.h error.h
 	./compile stralloc_catb.c
 
 stralloc_cats.o: \
@@ -1982,7 +1982,7 @@ gen_allocdefs.h
 	./compile stralloc_eady.c
 
 stralloc_opyb.o: \
-compile stralloc_opyb.c stralloc.h gen_alloc.h byte.h
+compile stralloc_opyb.c stralloc.h gen_alloc.h byte.h error.h
 	./compile stralloc_opyb.c
 
 stralloc_opys.o: \

@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <stdlib.h>
 #include "commands.h"
 #include "sig.h"
 #include "getln.h"
@@ -131,7 +132,7 @@ void getlist()
   if (maildir_scan(&pq,&filenames,1,1) == -1) die_scan();
  
   numm = pq.p ? pq.len : 0;
-  m = (struct message *) alloc(numm * sizeof(struct message));
+  m = (struct message *) calloc(numm, sizeof(struct message));
   if (!m) die_nomem();
  
   for (i = 0;i < numm;++i) {

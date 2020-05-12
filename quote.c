@@ -1,3 +1,5 @@
+#include "error.h"
+#include "oflops.h"
 #include "stralloc.h"
 #include "str.h"
 #include "quote.h"
@@ -23,8 +25,15 @@ stralloc *sain;
  char ch;
  int i;
  int j;
+ unsigned int nlen;
 
- if (!stralloc_ready(saout,sain->len * 2 + 2)) return 0;
+ /* make sure the size calculation below does not overflow */
+ if (__builtin_mul_overflow(sain->len, 2, &nlen) ||
+     __builtin_add_overflow(nlen, 2, &nlen)) {
+   errno = error_nomem;
+   return 0;
+ }
+ if (!stralloc_ready(saout,nlen)) return 0;
  j = 0;
  saout->s[j++] = '"';
  for (i = 0;i < sain->len;++i)

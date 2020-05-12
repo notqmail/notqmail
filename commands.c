@@ -10,16 +10,17 @@ int commands(ss,c)
 substdio *ss;
 struct commands *c;
 {
-  int i;
+  unsigned int i;
   char *arg;
 
   for (;;) {
     if (!stralloc_copys(&cmd,"")) return -1;
 
     for (;;) {
+      int j;
       if (!stralloc_readyplus(&cmd,1)) return -1;
-      i = substdio_get(ss,cmd.s + cmd.len,1);
-      if (i != 1) return i;
+      j = substdio_get(ss,cmd.s + cmd.len,1);
+      if (j != 1) return j;
       if (cmd.s[cmd.len] == '\n') break;
       ++cmd.len;
     }

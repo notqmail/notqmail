@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <stdlib.h>
 #include "readwrite.h"
 #include "sig.h"
 #include "env.h"
@@ -633,7 +634,7 @@ char **argv;
      i = j + 1;
     }
 
- recips = (char **) alloc((numforward + 1) * sizeof(char *));
+ recips = calloc(numforward + 1, sizeof(char *));
  if (!recips) temp_nomem();
  numforward = 0;
 

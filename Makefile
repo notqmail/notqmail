@@ -1871,7 +1871,7 @@ compile stralloc_cat.c byte.h stralloc.h gen_alloc.h
 	./compile stralloc_cat.c
 
 stralloc_catb.o: \
-compile stralloc_catb.c stralloc.h gen_alloc.h byte.h
+compile stralloc_catb.c stralloc.h gen_alloc.h byte.h error.h oflops.h
 	./compile stralloc_catb.c
 
 stralloc_cats.o: \
@@ -1888,7 +1888,7 @@ gen_allocdefs.h oflops.h error.h
 	./compile stralloc_eady.c
 
 stralloc_opyb.o: \
-compile stralloc_opyb.c stralloc.h gen_alloc.h byte.h
+compile stralloc_opyb.c stralloc.h gen_alloc.h byte.h error.h oflops.h
 	./compile stralloc_opyb.c
 
 stralloc_opys.o: \

@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-extern unsigned int str_copy();
+#define str_copy(s,t) strcpy((s),(t))
 #define str_diff(s,t) strcmp((s),(t))
 #define str_diffn(s,t,len) strncmp((s),(t),(len))
 #define str_len(s) strlen((s))

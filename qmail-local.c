@@ -435,10 +435,7 @@ void count_print()
  substdio_flush(subfdoutsmall);
 }
 
-void sayit(type,cmd,len)
-char *type;
-char *cmd;
-int len;
+void sayit(char *type, char *cmd, unsigned int len)
 {
  substdio_puts(subfdoutsmall,type);
  substdio_put(subfdoutsmall,cmd,len);
@@ -450,11 +447,10 @@ int argc;
 char **argv;
 {
  int opt;
- int i;
- int j;
- int k;
+ unsigned int i;
+ unsigned int j;
  int fd;
- int numforward;
+ unsigned int numforward;
  char **recips;
  datetime_sec starttime;
  int flagforwardonly;
@@ -532,7 +528,8 @@ char **argv;
  if (!stralloc_copys(&ufline,"From ")) temp_nomem();
  if (*sender)
   {
-   int len; char ch;
+   unsigned int len;
+   char ch;
 
    len = str_len(sender);
    if (!stralloc_readyplus(&ufline,len)) temp_nomem();
@@ -644,8 +641,8 @@ char **argv;
  for (j = 0;j < cmds.len;++j)
    if (cmds.s[j] == '\n')
     {
+     unsigned int k = j;
      cmds.s[j] = 0;
-     k = j;
      while ((k > i) && ((cmds.s[k - 1] == ' ') || (cmds.s[k - 1] == '\t')))
        cmds.s[--k] = 0;
      switch(cmds.s[i])

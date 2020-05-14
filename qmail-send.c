@@ -167,16 +167,14 @@ stralloc *sa;
 char *sender;
 char *recip;
 {
- int i;
- int j;
- int k;
+ unsigned int i;
 
  i = str_len(sender);
  if (i >= 4)
    if (str_equal(sender + i - 4,"-@[]"))
     {
-     j = byte_rchr(sender,i - 4,'@');
-     k = str_rchr(recip,'@');
+     unsigned int j = byte_rchr(sender,i - 4,'@');
+     unsigned int k = str_rchr(recip,'@');
      if (recip[k] && (j + 5 <= i))
       {
        /* owner-@host-@[] -> owner-recipbox=reciphost@host */
@@ -574,9 +572,9 @@ int j;
 char *stripvdomprepend(recip)
 char *recip;
 {
- int i;
+ unsigned int i;
  char *domain;
- int domainlen;
+ unsigned int domainlen;
  char *prepend;
 
  i = str_rchr(recip,'@');

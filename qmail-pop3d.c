@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "commands.h"
@@ -126,7 +127,7 @@ struct message {
   unsigned long size;
   char *fn;
 } *m;
-int numm;
+unsigned int numm;
 
 int last = 0;
 
@@ -134,7 +135,7 @@ void getlist()
 {
   struct prioq_elt pe;
   struct stat st;
-  int i;
+  unsigned int i;
  
   maildir_clean(&line);
   if (maildir_scan(&pq,&filenames,1,1) == -1) die_scan();
@@ -157,7 +158,7 @@ void getlist()
 
 void pop3_stat(arg) char *arg;
 {
-  int i;
+  unsigned int i;
   unsigned long total;
  
   total = 0;
@@ -172,7 +173,7 @@ void pop3_stat(arg) char *arg;
 
 void pop3_rset(arg) char *arg;
 {
-  int i;
+  unsigned int i;
   for (i = 0;i < numm;++i) m[i].flagdeleted = 0;
   last = 0;
   okay(0);
@@ -188,7 +189,7 @@ void pop3_last(arg) char *arg;
 
 void pop3_quit(arg) char *arg;
 {
-  int i;
+  unsigned int i;
   for (i = 0;i < numm;++i)
     if (m[i].flagdeleted) {
       if (unlink(m[i].fn) == -1) err_nounlink();
@@ -211,7 +212,7 @@ int msgno(arg) char *arg;
   if (!scan_ulong(arg,&u)) { err_syntax(); return -1; }
   if (!u) { err_nozero(); return -1; }
   --u;
-  if (u >= numm) { err_toobig(); return -1; }
+  if (u >= numm || u >= INT_MAX) { err_toobig(); return -1; }
   if (m[u].flagdeleted) { err_deleted(); return -1; }
   return u;
 }

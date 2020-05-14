@@ -10,6 +10,8 @@ No known patent problems.
 #include "alloc.h"
 #include "env.h"
 
+#include <string.h>
+
 int env_isinit = 0; /* if env_isinit: */
 static int ea; /* environ is a pointer to ea+1 char*'s. */
 static int en; /* the first en of those are ALLOCATED. environ[en] is 0. */
@@ -65,9 +67,8 @@ int env_put(s) char *s;
 {
  char *u;
  if (!env_isinit) if (!env_init()) return 0;
- u = alloc(str_len(s) + 1);
+ u = strdup(s);
  if (!u) return 0;
- str_copy(u,s);
  if (!env_add(u)) { alloc_free(u); return 0; }
  return 1;
 }
@@ -97,14 +98,13 @@ int env_init()
  if (!newenviron) return 0;
  for (en = 0;environ[en];++en)
   {
-   newenviron[en] = alloc(str_len(environ[en]) + 1);
+   newenviron[en] = strdup(environ[en]);
    if (!newenviron[en])
     {
      for (i = 0;i < en;++i) alloc_free(newenviron[i]);
      alloc_free(newenviron);
      return 0;
     }
-   str_copy(newenviron[en],environ[en]);
   }
  newenviron[en] = 0;
  environ = newenviron;

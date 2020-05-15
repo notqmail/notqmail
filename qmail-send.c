@@ -115,11 +115,10 @@ stralloc rwline = {0};
 int rewrite(recip)
 char *recip;
 {
-  int i;
-  int j;
+  unsigned int i;
   char *x;
   static stralloc addr = {0};
-  int at;
+  unsigned int at;
 
   if (!stralloc_copys(&rwline,"T")) return 0;
   if (!stralloc_copys(&addr,recip)) return 0;
@@ -131,7 +130,7 @@ char *recip;
   }
 
   while (constmap(&mappercenthack,addr.s + i + 1,addr.len - i - 1)) {
-    j = byte_rchr(addr.s,i,'%');
+    unsigned int j = byte_rchr(addr.s,i,'%');
     if (j == i) break;
     addr.len = i;
     i = j;
@@ -466,7 +465,7 @@ void pqfinish()
 void pqrun()
 {
  int c;
- int i;
+ unsigned int i;
  for (c = 0;c < CHANNELS;++c)
    if (pqchan[c].p)
      if (pqchan[c].len)
@@ -603,7 +602,7 @@ char *recip;
 char *report;
 {
  int fd;
- int pos;
+ unsigned int pos;
  int w;
  while (!stralloc_copys(&bouncetext,"<")) nomem();
  while (!stralloc_cats(&bouncetext,stripvdomprepend(recip))) nomem();
@@ -802,7 +801,7 @@ void del_status()
 void del_init()
 {
  int c;
- int i;
+ unsigned int i;
  for (c = 0;c < CHANNELS;++c)
   {
    flagspawnalive[c] = 1;
@@ -836,7 +835,7 @@ int j;
 seek_pos mpos;
 char *recip;
 {
- int i;
+ unsigned int i;
  int c;
 
  c = jo[j].channel;

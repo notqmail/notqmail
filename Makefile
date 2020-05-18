@@ -825,7 +825,7 @@ dnsptr dnsip dnsfq hostname ipmeprint qreceipt qsmhook qbiff \
 forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox maildirwatch qail elq pinq install instpackage instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
-binm3 binm3+df
+binm3 binm3+df update_tmprsadh
 
 load: \
 make-load warn-auto.sh
@@ -1448,6 +1448,7 @@ base64.o md5c.o hmac_md5.o \
 dns.lib socket.lib
 	./load qmail-remote control.o constmap.o timeoutread.o \
 	timeoutwrite.o timeoutconn.o tcpto.o now.o dns.o ip.o \
+	tls.o ssl_timeoutio.o -L/usr/local/ssl/lib -lssl -lcrypto \
 	ipalloc.o ipme.o quote.o ndelay.a case.a sig.a open.a \
 	lock.a seek.a getln.a stralloc.a alloc.a substdio.a error.a \
 	base64.o md5c.o hmac_md5.o \
@@ -1541,18 +1542,24 @@ auto_uids.h auto_users.h auto_qmail.h auto_break.h auto_patrn.h \
 auto_spawn.h auto_split.h
 	./compile qmail-showctl.c
 
+qmail-spp.o: \
+compile qmail-spp.c readwrite.h stralloc.h substdio.h control.h str.h \
+byte.h env.h exit.h wait.h fork.h fd.h fmt.h getln.h
+	./compile qmail-spp.c
+
 qmail-smtpd: \
 load qmail-smtpd.o rcpthosts.o commands.o timeoutread.o \
 timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
 date822fmt.o now.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
 open.a sig.a case.a env.a stralloc.a alloc.a substdio.a error.a str.a \
-fs.a auto_qmail.o base64.o socket.lib
+fs.a auto_qmail.o base64.o qmail-spp.o socket.lib
 	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
+	tls.o ssl_timeoutio.o ndelay.a -L/usr/local/ssl/lib -lssl -lcrypto \
 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
-	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a auto_qmail.o base64.o  `cat \
-	socket.lib`
+	datetime.a getln.a open.a sig.a case.a qmail-spp.o env.a stralloc.a \
+	alloc.a substdio.a error.a str.a fs.a auto_qmail.o base64.o
+	`cat socket.lib`
 
 qmail-smtpd.0: \
 qmail-smtpd.8
@@ -1562,7 +1569,7 @@ compile qmail-smtpd.c sig.h readwrite.h stralloc.h gen_alloc.h \
 substdio.h alloc.h auto_qmail.h control.h received.h constmap.h \
 error.h ipme.h ip.h ipalloc.h ip.h gen_alloc.h ip.h qmail.h \
 substdio.h str.h fmt.h scan.h byte.h case.h env.h now.h datetime.h \
-exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h base64.h
+exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h base64.h qmail-spp.h
 	./compile qmail-smtpd.c
 
 qmail-start: \
@@ -2037,6 +2044,19 @@ timeoutwrite.o: \
 compile timeoutwrite.c timeoutwrite.h select.h error.h readwrite.h
 	./compile timeoutwrite.c
 
+qmail-smtpd: tls.o ssl_timeoutio.o ndelay.a
+qmail-remote: tls.o ssl_timeoutio.o
+qmail-smtpd.o: tls.h ssl_timeoutio.h
+qmail-remote.o: tls.h ssl_timeoutio.h
+
+tls.o: \
+compile tls.c exit.h error.h
+	./compile tls.c
+
+ssl_timeoutio.o: \
+compile ssl_timeoutio.c ssl_timeoutio.h select.h error.h ndelay.h
+	./compile ssl_timeoutio.c
+
 token822.o: \
 compile token822.c stralloc.h gen_alloc.h alloc.h str.h token822.h \
 gen_alloc.h gen_allocdefs.h oflops.h error.h
@@ -2065,3 +2085,26 @@ compile wait_nohang.c haswaitp.h
 wait_pid.o: \
 compile wait_pid.c error.h haswaitp.h
 	./compile wait_pid.c
+
+cert cert-req: \
+Makefile-cert
+	@$(MAKE) -sf $< $@
+
+Makefile-cert: \
+conf-qmail conf-users conf-groups Makefile-cert.mk
+	@cat Makefile-cert.mk \
+	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	> $@
+
+update_tmprsadh: \
+conf-qmail conf-users conf-groups update_tmprsadh.sh
+	@cat update_tmprsadh.sh\
+	| sed s}UGQMAILD}"`head -2 conf-users|tail -1`:`head -1 conf-groups`"}g \
+	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	> $@
+	chmod 755 update_tmprsadh 
+
+tmprsadh: \
+update_tmprsadh
+	echo "Creating new temporary RSA and DH parameters"
+	./update_tmprsadh

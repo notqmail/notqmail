@@ -187,6 +187,8 @@ control.o
 constmap.o
 timeoutread.o
 timeoutwrite.o
+tls.o
+ssl_timeoutio.o
 timeoutconn.o
 tcpto.o
 dns.o
@@ -337,6 +339,7 @@ binm2
 binm2+df
 binm3
 binm3+df
+Makefile-cert
 qmail-local.0
 qmail-lspawn.0
 qmail-getpw.8
@@ -401,3 +404,5 @@ forgeries.0
 setup
 qtmp.h
 qmail-send.service
+update_tmprsadh
+qmail-spp.o

@@ -9,17 +9,16 @@ task:
   env:
     matrix:
       - MAKE_FLAGS: -j 2
-      - MAKE_FLAGS: -j 2
-        NROFF: true
+      - MAKE_FLAGS: "-j 2 NROFF=true"
 
   pkginstall_script:
     - pkg install -y groff pkgconf check
   configure_script:
     - echo "clang -O2 -Wall -Wshadow" > conf-cc
   compile_script:
-    - make it man
+    - make ${MAKE_FLAGS} it man
   test_script:
-    - make test
+    - make ${MAKE_FLAGS} test
   install_script:
     - env DESTDIR=/tmp/qmail make package
     - make package

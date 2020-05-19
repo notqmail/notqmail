@@ -1,7 +1,7 @@
 # Don't edit Makefile! Use conf-* for configuration.
 
 SHELL=/bin/sh
-NROFF=nroff
+NROFF?=nroff
 
 default: it
 

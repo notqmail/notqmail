@@ -7,8 +7,19 @@ default: it
 
 .PHONY: check clean default it man test
 
-%.0:
-	$(NROFF) -man $^ > $@
+.SUFFIXES: .0 .1 .5 .7 .8
+
+.1.0:
+	$(NROFF) -man $< >$@
+
+.5.0:
+	$(NROFF) -man $< >$@
+
+.7.0:
+	$(NROFF) -man $< >$@
+
+.8.0:
+	$(NROFF) -man $< >$@
 
 addresses.0: \
 addresses.5

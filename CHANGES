@@ -1,4 +1,11 @@
 20200520 version: notqmail 1.08.
+20200519 bug: fix several other places where variables could overflow.
+20200519 security: fix signedness wraparound in substdio_{put,bput}().
+         (CVE-2005-1515)
+20200519 security: fix possible signed integer overflow in commands().
+         (CVE-2005-1514)
+20200519 security: fix integer overflow in stralloc_readyplus().
+         (CVE-2005-1513)
 20200514 bug: qmail-pop3d runs as root if root authenticates.
          impact: vector for dictionary attack on root password.
          fix: exit 1, same as a failed checkpassword login.

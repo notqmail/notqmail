@@ -1,3 +1,4 @@
+20200520 version: notqmail 1.08.
 20200514 bug: qmail-pop3d runs as root if root authenticates.
          impact: vector for dictionary attack on root password.
          fix: exit 1, same as a failed checkpassword login.

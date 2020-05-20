@@ -3,7 +3,7 @@ information generally), the qmail system comes with NO WARRANTY. It's
 much more secure and reliable than sendmail, but that's not saying much.
 
 
-Here's how to upgrade to notqmail 1.07. This procedure will overwrite the
+Here's how to upgrade to notqmail 1.08. This procedure will overwrite the
 old qmail binaries. Furthermore, it may begin delivering messages from
 the queue before you have had a chance to test it.
 

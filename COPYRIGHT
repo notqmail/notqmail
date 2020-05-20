@@ -39,3 +39,8 @@ netqmail 1.06 to notqmail 1.07.
 NOTE: notqmail 1.07 is a community-driven fork of qmail.
 Neither D. J. Bernstein nor any of the netqmail developers has
 participated in or been asked to approve of this distribution.
+
+notqmail-1.08
+-------------
+No copyright is claimed by the distributors of notqmail for changes from
+netqmail 1.07 to notqmail 1.08.

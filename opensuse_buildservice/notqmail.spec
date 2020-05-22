@@ -186,9 +186,7 @@ install -m 644 %{S:2} %{buildroot}%{_sysconfdir}/permissions.d/%{name}-permissio
 %attr(0711,root,qmail)            %{qmaildir}/bin/splogger
 %attr(0755,root,qmail)            %{qmaildir}/bin/preline
 %attr(0700,root,qmail)            %{qmaildir}/bin/qmail-newu
-%attr(0755,root,qmail)            %{qmaildir}/bin/qsmhook
 %attr(0711,root,qmail)            %{qmaildir}/bin/qmail-popup
-%attr(0755,root,qmail)            %{qmaildir}/bin/qail
 %attr(0755,root,qmail)            %{qmaildir}/bin/qreceipt
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-showctl
 %attr(0755,root,qmail)            %{qmaildir}/bin/maildir2mbox
@@ -210,7 +208,6 @@ install -m 644 %{S:2} %{buildroot}%{_sysconfdir}/permissions.d/%{name}-permissio
 %attr(0700,root,qmail)            %{qmaildir}/bin/qmail-start
 %attr(4711,qmailq,qmail)          %{qmaildir}/bin/qmail-queue
 %attr(0755,root,qmail)            %{qmaildir}/bin/maildirmake
-%attr(0755,root,qmail)            %{qmaildir}/bin/maildirwatch
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-qmqpd
 %attr(0711,root,qmail)            %{qmaildir}/bin/qmail-pw2u
 %attr(0755,root,qmail)            %{qmaildir}/bin/datemail
@@ -218,14 +215,12 @@ install -m 644 %{S:2} %{buildroot}%{_sysconfdir}/permissions.d/%{name}-permissio
 %attr(0711,root,qmail)            %{qmaildir}/bin/qmail-local
 %attr(0755,root,qmail)            %{qmaildir}/bin/predate
 %attr(0711,root,qmail)            %{qmaildir}/bin/qmail-send
-%attr(0755,root,qmail)            %{qmaildir}/bin/pinq
 %attr(0755,root,qmail)            %{qmaildir}/bin/forward
 %attr(0711,root,qmail)            %{qmaildir}/bin/qmail-rspawn
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-qmqpc
 %attr(0755,root,qmail)            %{qmaildir}/bin/condredirect
 %attr(0755,root,qmail)            %{qmaildir}/bin/tcp-env
 %attr(0711,root,qmail)            %{qmaildir}/bin/qmail-remote
-%attr(0755,root,qmail)            %{qmaildir}/bin/elq
 
 %attr(0755,root,qmail)            %{qmaildir}/boot/proc+df
 %attr(0755,root,qmail)            %{qmaildir}/boot/proc

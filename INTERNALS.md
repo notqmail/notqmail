@@ -2,9 +2,11 @@
 
 Here's the data flow in the qmail suite:
 
+```
  qmail-smtpd --- qmail-queue --- qmail-send --- qmail-rspawn --- qmail-remote
                /                     |      \
 qmail-inject _/                 qmail-clean  \_ qmail-lspawn --- qmail-local
+```
 
 Every message is added to a central queue directory by qmail-queue.
 qmail-queue is invoked as needed, usually by qmail-inject for locally
@@ -26,6 +28,7 @@ Each message in the queue is identified by a unique number, let's say
 457. The queue is organized into several directories, each of which may
 contain files related to message 457:
 
+   ```
    mess/457: the message
    todo/457: the envelope: where the message came from, where it's going
    intd/457: the envelope, under construction by qmail-queue
@@ -33,15 +36,18 @@ contain files related to message 457:
    local/457: local envelope recipient addresses, after preprocessing
    remote/457: remote envelope recipient addresses, after preprocessing
    bounce/457: permanent delivery errors
+   ```
 
 Here are all possible states for a message. + means a file exists; -
 means it does not exist; ? means it may or may not exist.
 
+   ```
    S1. -mess -intd -todo -info -local -remote -bounce
    S2. +mess -intd -todo -info -local -remote -bounce
    S3. +mess +intd -todo -info -local -remote -bounce
    S4. +mess ?intd +todo ?info ?local ?remote -bounce (queued)
    S5. +mess -intd -todo +info ?local ?remote ?bounce (preprocessed)
+   ```
 
 Guarantee: If mess/457 exists, it has inode number 457.
 
@@ -84,13 +90,13 @@ At that instant the message has been successfully preprocessed.
 Messages at S5 are handled as follows. Each address in local/457 and
 remote/457 is marked either NOT DONE or DONE.
 
-   DONE: The message was successfully delivered, or the last delivery
-         attempt met with permanent failure. Either way, qmail-send
-	 should not attempt further delivery to this address.
-
-   NOT DONE: If there have been any delivery attempts, they have all
-             met with temporary failure. Either way, qmail-send should
-             try delivery in the future.
+- DONE: The message was successfully delivered, or the last delivery
+        attempt met with permanent failure. Either way, qmail-send
+        should not attempt further delivery to this address.
+ 
+- NOT DONE: If there have been any delivery attempts, they have all
+            met with temporary failure. Either way, qmail-send should
+            try delivery in the future.
 
 qmail-send may at its leisure try to deliver a message to a NOT DONE
 address. If the message is successfully delivered, qmail-send marks the

@@ -13,7 +13,7 @@ configuration right now. You can always come back and tune things later.
 There's one big exception. You MUST tell qmail your hostname. Just run
 the config-fast script:
 
-   # ./config-fast your.full.host.name
+   `# ./config-fast your.full.host.name`
 
 config-fast puts your.full.host.name into control/me. It also puts it
 into control/locals and control/rcpthosts, so that qmail will accept
@@ -22,7 +22,7 @@ mail for your.full.host.name.
 You can instead use the config script, which looks up your host name in
 DNS:
 
-   # ./config
+   `# ./config`
 
 config also looks up your local IP addresses in DNS to decide which
 hosts to accept mail for.

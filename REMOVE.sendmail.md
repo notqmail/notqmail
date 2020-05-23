@@ -2,7 +2,9 @@ Here's how to remove sendmail from your system.
 
 1. Find sendmail in your boot scripts. It's usually in either /etc/rc or
    /etc/init.d/sendmail. It looks like
-           sendmail -bd -q15m
+
+   `sendmail -bd -q15m`
+
    -q15m means that it should run the queue every 15 minutes; you may
    see a different number. Comment out this line.
 
@@ -19,10 +21,16 @@ Here's how to remove sendmail from your system.
 4. Remove the setuid bit on the sendmail binary, to prevent local users
    from gaining extra privileges through sendmail's security holes. The
    binary may be at several different locations:
-      # chmod 0 /usr/lib/sendmail
-      # chmod 0 /usr/sbin/sendmail
-      # chmod 0 /usr/lib/sendmail.mx
+
+   ```
+   # chmod 0 /usr/lib/sendmail
+   # chmod 0 /usr/sbin/sendmail
+   # chmod 0 /usr/lib/sendmail.mx
+   ```
 
 5. Move the sendmail binary out of the way:
-      # mv /usr/lib/sendmail /usr/lib/sendmail.bak
-      # mv /usr/sbin/sendmail /usr/sbin/sendmail.bak
+
+   ```
+   # mv /usr/lib/sendmail /usr/lib/sendmail.bak
+   # mv /usr/sbin/sendmail /usr/sbin/sendmail.bak
+   ```

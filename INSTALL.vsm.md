@@ -21,7 +21,7 @@ for the security or reliability of any of those tools.
 
 The qmail system is started from /var/qmail/rc with
 
-   qmail-start ./Mailbox splogger qmail
+   `qmail-start ./Mailbox splogger qmail`
 
 The first argument to qmail-start, ./Mailbox, is the default delivery
 instruction. You can change it to run a program such as binmail or

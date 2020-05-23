@@ -26,7 +26,7 @@ versions of your favorite MUAs, and to switch over to maildir as soon as
 you can.
 
 
-2. Sun's Network F_ail_u_re System
+2. Sun's Network Failure System
 
 Anyone who tells you that mail can be safely delivered in mbox format
 over NFS is pulling your leg -- as explained above, mbox format is
@@ -44,8 +44,10 @@ home directory.)
 
 Here's how to set up qmail to use maildir for your incoming mail:
 
+   ```
    % maildirmake $HOME/Maildir
    % echo ./Maildir/ > ~/.qmail
+   ```
 
 Make sure you include the trailing slash on Maildir/.
 

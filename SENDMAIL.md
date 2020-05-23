@@ -14,7 +14,7 @@ see your local sendmail-qmail upgrade announcement (which your system
 administrator may have placed into /var/qmail/doc/ANNOUNCE).
 
 
---- Mailbox location
+### Mailbox location
 
 If your system administrator has configured qmail to use binmail for
 local deliveries, your mailbox will be in /var/spool/mail/you, just as
@@ -26,14 +26,14 @@ symbolic link from /var/spool/mail/you to ~you/Mailbox, so your mail
 reader will find the mailbox at its new location.
 
 
---- Loop control
+### Loop control
 
 qmail-local automatically adds a Delivered-To field at the top of every
 delivered message. It uses Delivered-To to prevent mail forwarding
 loops, including cross-host mailing-list loops.
 
 
---- Outgoing messages
+### Outgoing messages
 
 qmail lets you use environment variables to control the appearance of
 your outgoing mail, supplementing the features offered by your MUA. For
@@ -46,7 +46,7 @@ joe@mac.ee.movie.edu, and joe@mac+ for joe@mac.movie.edu without the ee.
 sendmail has a different interpretation of hostnames without dots.
 
 
---- Forwarding and mailing lists
+### Forwarding and mailing lists
 
 qmail gives you the power to set up your own mailing lists without
 pestering your system administrator.

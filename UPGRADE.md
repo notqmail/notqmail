@@ -28,7 +28,7 @@ How to install:
  2. Inform your users that mail will not be accepted for a few minutes.
 
  3. Disable deliveries by killing your old qmail-send. Wait for it to
-    print ``exiting'' in the log.
+    print "exiting" in the log.
 
  4. Disable SMTP service by commenting out the smtp line in inetd.conf;
     kill -HUP your inetd. (If you are using tcpserver, simply kill -STOP

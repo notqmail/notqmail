@@ -3,16 +3,16 @@ accept messages through SMTP or through /usr/lib/sendmail:
 
 1. After you start qmail, look for a
            qmail: status: local 0/10 remote 0/20
-   line in syslog. qmail-send always prints either ``cannot start'' or
-   ``status''. (The big number is a splogger timestamp.)
+   line in syslog. qmail-send always prints either "cannot start" or
+   "status". (The big number is a splogger timestamp.)
 
 2. Do a ps and look for the qmail daemons. There should be four of
    them, all idle: qmail-send, running as qmails; qmail-lspawn, running
    as root; qmail-rspawn, running as qmailr; and qmail-clean, running
    as qmailq. You will also see splogger, running as qmaill.
 
-3. Local-local test: Send yourself an empty message. (Replace ``me''
-   with your username. Make sure to include the ``to:'' colon.)
+3. Local-local test: Send yourself an empty message. (Replace "me"
+   with your username. Make sure to include the "to:" colon.)
       % echo to: me | /var/qmail/bin/qmail-inject
    The message will show up immediately in your mailbox, and syslog
    will show something like this:
@@ -55,7 +55,7 @@ accept messages through SMTP or through /usr/lib/sendmail:
            qmail: delivery 4: success: 1.2.3.4_accepted_message./...
            qmail: status: local 0/10 remote 0/20
            qmail: end msg 53 
-   There will be a pause between ``starting delivery'' and ``success'';
+   There will be a pause between "starting delivery" and "success";
    SMTP is slow. Check that the message is in your mailbox on the other
    machine.
 

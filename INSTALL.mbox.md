@@ -33,15 +33,15 @@ hlfsd if it is included in your operating system.
 If /var/spool/mail is large, you can gain extra speed by configuring
 all your mail software to look at ~user/Mailbox directly:
 
-   * Most MUAs: Put ``setenv MAIL $HOME/Mailbox'' in your system-wide
-     .cshrc and ``MAIL=$HOME/Mailbox; export MAIL'' in your system-wide
+   * Most MUAs: Put "setenv MAIL $HOME/Mailbox" in your system-wide
+     .cshrc and "MAIL=$HOME/Mailbox; export MAIL" in your system-wide
      .profile.
 
    * elm: Change "mailbox" to "Mailbox" around line 388 of newmbox.c and
      recompile. (elm looks at $MAIL, but without this change elm will
      fail if two users try to read mail simultaneously.)
 
-   * pine: Put ``inbox-path=Mailbox'' in your system-wide pine.conf.
+   * pine: Put "inbox-path=Mailbox" in your system-wide pine.conf.
      (For pine versions more recent than 3.91, see also FAQ 6.2.)
 
    * qpopper 2.2: Change /.mail to /Mailbox in pop_dropcopy.c and

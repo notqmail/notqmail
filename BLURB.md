@@ -39,5 +39,5 @@ relay control, double-bounce recording, arbitrary RFC 822 address lists,
 cross-host mailing list loop detection, per-recipient checkpointing,
 downed host backoffs, independent message retry schedules, etc. In
 short, it's up to speed on modern MTA features. qmail also includes a
-drop-in ``sendmail'' wrapper so that it will be used transparently by
+drop-in "sendmail" wrapper so that it will be used transparently by
 your current UAs.

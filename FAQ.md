@@ -11,7 +11,7 @@ document, and http://qmail.org/ for qmail community contributions.
 2.2. How do I set up a null client?
 2.3. How do I send outgoing mail through UUCP?
 2.4. How do I set up a separate queue for a SLIP/PPP link?
-2.5. How do I deal with ``CNAME lookup failed temporarily''?
+2.5. How do I deal with "CNAME lookup failed temporarily"?
 
 3. Routing incoming messages by host
 3.1. How do I receive mail for another host name?
@@ -65,8 +65,8 @@ document, and http://qmail.org/ for qmail community contributions.
 
 1.1. How do I set up host masquerading? All the users on this host,
 zippy.af.mil, are users on af.mil. When joe sends a message to fred, the
-message should say ``From: joe@af.mil'' and ``To: fred@af.mil'', without
-``zippy'' anywhere.
+message should say "From: joe@af.mil" and "To: fred@af.mil", without
+"zippy" anywhere.
 
 Answer: echo af.mil > /var/qmail/control/defaulthost; chmod 644
 /var/qmail/control/defaulthost.
@@ -82,7 +82,7 @@ environment.
 
 1.3. How do I set up Mail-Followup-To automatically? When I send a
 message to the sos@heaven.af.mil mailing list, I'd like to include
-``Mail-Followup-To: sos@heaven.af.mil''.
+"Mail-Followup-To: sos@heaven.af.mil".
 
 Answer: Add QMAILMFTFILE=$HOME/.lists to your environment, and put
 sos@heaven.af.mil into ~/.lists.
@@ -134,7 +134,7 @@ running, give it a HUP.
 Answer: Use serialmail (https://cr.yp.to/serialmail.html).
 
 
-2.5. How do I deal with ``CNAME lookup failed temporarily''? The log
+2.5. How do I deal with "CNAME lookup failed temporarily"? The log
 showed that a message was deferred for this reason. Why is qmail doing
 CNAME lookups, anyway?
 
@@ -427,7 +427,7 @@ into ~alias/.qmail-fixup-default. Second, put
 
 into /var/qmail/control/virtualdomains, and give qmail-send a HUP.
 Third, follow the procedure in question 5.4, but set RELAYCLIENT to the
-string ``@fixme'':
+string "@fixme":
 
    tcp-env: 1.2.3.6, 1.2.3.7: setenv = RELAYCLIENT @fixme
 
@@ -500,8 +500,8 @@ that MH is neither secure nor reliable.
 
 6.4. How do I stop Sun's dtcm from hanging?
 
-Answer: There is a novice programming error in dtcm, known as ``failure
-to close the output side of the pipe in the child.'' Sun has, at the
+Answer: There is a novice programming error in dtcm, known as "failure
+to close the output side of the pipe in the child." Sun has, at the
 time of this writing, not yet provided a patch. Sorry.
 
 
@@ -514,7 +514,7 @@ sendmail, it was always tricky to kill sendmail without risking the loss
 of current deliveries; what should I do with qmail-send?
 
 Answer: Go ahead and kill the qmail-send process. It will shut down
-cleanly. Wait for ``exiting'' to show up in the log. To restart qmail,
+cleanly. Wait for "exiting" to show up in the log. To restart qmail,
 run /var/qmail/rc the same way it is run from your system boot scripts,
 with the proper PATH, resource limits, etc.
 

@@ -2,12 +2,12 @@ UNIX has traditionally delivered mail into a central spool directory,
 /var/spool/mail. (The original name was /usr/spool/mail; some systems
 now use /var/mail.) There are two basic problems with /var/spool/mail:
 
-   * It's slow. On systems with thousands of users, /var/spool/mail has
-     thousands of entries. A few UNIX systems support fast operations on
-     large directories, but most don't.
+* It's slow. On systems with thousands of users, /var/spool/mail has
+  thousands of entries. A few UNIX systems support fast operations on
+  large directories, but most don't.
 
-   * It's insecure. Writing code that works safely in a world-writable
-     directory is not easy. See, for example, CERT advisory 95:02.
+* It's insecure. Writing code that works safely in a world-writable
+  directory is not easy. See, for example, CERT advisory 95:02.
 
 These may not be problems at your site, so you may want to leave your
 mailboxes in /var/spool/mail.

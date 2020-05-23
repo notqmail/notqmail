@@ -14,18 +14,18 @@ deliveries, see INSTALL.vsm.md.
 
 The basic procedure for switching to ~user/Mailbox is simple:
 
-   * Move each /var/spool/mail/user to ~user/Mailbox. For safety, do
-     this in single-user mode.
+* Move each /var/spool/mail/user to ~user/Mailbox. For safety, do
+  this in single-user mode.
 
-   * As root, set up a symbolic link from /var/spool/mail/user to
-     ~user/Mailbox for each user. /var/spool/mail should be mode 1777,
-     so users will not be able to accidentally remove these links.
+* As root, set up a symbolic link from /var/spool/mail/user to
+  ~user/Mailbox for each user. /var/spool/mail should be mode 1777,
+  so users will not be able to accidentally remove these links.
 
 A few mail programs are unable to handle symbolic links, so you will
 have to configure them to look at ~user/Mailbox directly:
 
-   * procmail: Change SYSTEM_MBOX in config.h and recompile; or, with
-     recent versions, define MAILSPOOLHOME in src/authenticate.c.
+* procmail: Change SYSTEM_MBOX in config.h and recompile; or, with
+  recent versions, define MAILSPOOLHOME in src/authenticate.c.
 
 An alternative to symbolic links is hlfsd. Consult the documentation for
 hlfsd if it is included in your operating system.
@@ -33,19 +33,19 @@ hlfsd if it is included in your operating system.
 If /var/spool/mail is large, you can gain extra speed by configuring
 all your mail software to look at ~user/Mailbox directly:
 
-   * Most MUAs: Put "setenv MAIL $HOME/Mailbox" in your system-wide
-     .cshrc and "MAIL=$HOME/Mailbox; export MAIL" in your system-wide
-     .profile.
+* Most MUAs: Put "setenv MAIL $HOME/Mailbox" in your system-wide
+  .cshrc and "MAIL=$HOME/Mailbox; export MAIL" in your system-wide
+  .profile.
 
-   * elm: Change "mailbox" to "Mailbox" around line 388 of newmbox.c and
-     recompile. (elm looks at $MAIL, but without this change elm will
-     fail if two users try to read mail simultaneously.)
+* elm: Change "mailbox" to "Mailbox" around line 388 of newmbox.c and
+  recompile. (elm looks at $MAIL, but without this change elm will
+  fail if two users try to read mail simultaneously.)
 
-   * pine: Put "inbox-path=Mailbox" in your system-wide pine.conf.
-     (For pine versions more recent than 3.91, see also FAQ 6.2.)
+* pine: Put "inbox-path=Mailbox" in your system-wide pine.conf.
+  (For pine versions more recent than 3.91, see also FAQ 6.2.)
 
-   * qpopper 2.2: Change /.mail to /Mailbox in pop_dropcopy.c and
-     recompile with -DHOMEDIRMAIL in CFLAGS.
+* qpopper 2.2: Change /.mail to /Mailbox in pop_dropcopy.c and
+  recompile with -DHOMEDIRMAIL in CFLAGS.
 
 Some vendors, in a misguided attempt to solve the security problems of
 /var/spool/mail, have made all their mail software setgid mail. After

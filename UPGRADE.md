@@ -23,7 +23,8 @@ changes. You can copy conf* from 1.02 or 1.03.
 How to install:
 
  1. Compile the programs and create the formatted man pages:
-       # make it man
+
+    `# make it man`
 
  2. Inform your users that mail will not be accepted for a few minutes.
 
@@ -36,7 +37,8 @@ How to install:
     Wait for current qmail-smtpd processes to die.
 
  5. Install the new binaries and man pages:
-       # make setup check
+
+    `# make setup check`
 
  6. If your boot scripts are using qmail-start instead of /var/qmail/rc:
     Copy /var/qmail/boot/home to /var/qmail/rc. (Use home+df instead if
@@ -44,10 +46,12 @@ How to install:
     procmail by default for local deliveries.) Compare /var/qmail/rc to
     your qmail-start boot line, and edit /var/qmail/rc if necessary.
     Replace your qmail-start boot line with
-            csh -cf '/var/qmail/rc &'
+
+    `csh -cf '/var/qmail/rc &'`
 
  7. Reenable deliveries:
-       # csh -cf '/var/qmail/rc &'
+
+    `# csh -cf '/var/qmail/rc &'`
 
  8. Read TEST.deliver.md.
 

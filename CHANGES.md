@@ -1,1523 +1,1523 @@
-20200523 doc: give text files .md extensions.
-20200523 cleanup: remove qsmhook, replaced by preline.
-20200520 remove wrappers for obsolete mail clients without maildir support
-20200520 version: notqmail 1.08.
-20200519 bug: fix several other places where variables could overflow.
-20200519 security: fix signedness wraparound in substdio_{put,bput}().
-         (CVE-2005-1515)
-20200519 security: fix possible signed integer overflow in commands().
-         (CVE-2005-1514)
-20200519 security: fix integer overflow in stralloc_readyplus().
-         (CVE-2005-1513)
-20200514 bug: qmail-pop3d runs as root if root authenticates.
-         impact: vector for dictionary attack on root password.
-         fix: exit 1, same as a failed checkpassword login.
-20200514 code: changed qmail-popup interface (leave kid's fd 2 alone).
-20200511 code: remove tryshsgr.c and use uid_t, gid_t types.
-20200511 add first unittest, run with "make test"
-20191227 fixed possible overflow in alloc() with allocations close to 4GiB
-20191226 add missing return types to main()
-20190919 fix ipme with multiple addresses on the same interface on platforms
-         without sa_len
-20190904 code: use stdint.h to get the definition for uint32
-20190903 code: do not parse header recipients for "qmail-inject -a"
-20190826 code: if $QMAILREMOTE is set, it's invoked instead of qmail-remote.
-20190822 cleanup: remove unused dnsmxip.
-20190822 cleanup: remove unused dnscname.
-20190819 version: notqmail 1.07.
-20190810 code: remove incorrect usage of vfork()
-20190710 code: add instchown to set ownership and mode on installed files.
-20190709 code: add instpackage to install without root access.
-20190714 code: removed idedit, install-big. var-qmail packages are no more.
-20190708 code: lookup uid/gid at runtime.
-20190711 portability problem: explicitly initialize strerr_sys and
-         define BIND_8_COMPAT to work around Mac OS X.
-20190709 doc: rename INSTALL, SENDMAIL to INSTALL.md, SENDMAIL.md to
-         support building on case-insensitive filesystems.
-20190715 code: detect and prefer utmpx where available.
-20190708 code: use DESTDIR environment variable as root directory in install.
-20071130 version: netqmail 1.06
-20071130 legal: qmail-1.03 is now in the public domain
-20051103 doc: dot-qmail.9 updated for changed (19980613) conf-patrn default, tnx ADM
-20040121 version: netqmail 1.05
-20040121 code: qmail-smtpd is protected from exceedingly long (eg 2GB)
-         header lines
-20040121 code: qmail_lspawn, qmail-newmrh, qmail-newu, and qmail-rspawn
-         are protected from misbehaving on hosts where the size of an
-         integer is not the same as the size of a character pointer
-         (eg 64 bit hosts with 32 bit ints)
-20031027 version: netqmail 1.04.
-20031027 doc: INSTALL points to http://lifewithqmail.org/lwq.html
-20031027 doc: qmail.7 identifies installation as netqmail and points to
-         http://qmail.org/
-20031027 doc: qmail-queue.8 adds explanation of $QMAILQUEUE
-20031027 doc: qmail-log.5 adds reference to errors from $QMAILQUEUE script
-20031027 doc: FAQ also points to http://cr.yp.to/qmail/faq.html and
-         http://qmail.org/
-20031027 code: qmail-smtpd identifies itself as netqmail
-20031027 code: if $QMAILQUEUE is set, it's invoked instead of qmail-queue
-20031024 code: changed errno from int to #include.
-20031024 code: fixed .qmail parsing bug (accessing an array out of bounds)
-         that was discovered by Erik Sjölund <erik.sjolund@gmail.com>).
-20031024 code: recognize 0.0.0.0 as a local address.
-20031024 code: sendmail's -f flag now overrides environment variables.
-19980615 version: qmail 1.03.
-19980614 doc: eliminated BIN.setup in favor of a web page.
-19980614 code: added other auto* to qmail-showctl output.
-19980614 doc: added pointer to immhf.html in qmail-header.5.
-19980614 doc: added note to TEST.receive about SMTP command format.
-19980614 doc: added FAQ 5.6 on qmail-qmqpd.
-19980614 code: removed unused variables in idedit.c.
-19980613 code: changed conf-patrn to 002.
-19980613 doc: moved SENDMAIL lower in INSTALL.
-19980612 code: added install-big.
-19980612 code: added BIN.Makefile.
-19980612 doc: added BIN.README, BIN.setup.
-19980612 code: switched to new install.
-19980611 code: added idedit.
-19980611 doc: added FAQ 1.3 on $QMAILMFTFILE.
-19980611 doc: used bouncesaying in FAQ 5.5.
-19980611 code: added except.
-19980611 code: added bouncesaying.
-19980611 code: allowed unbracketed IP addresses in dns_ipplus() and
-         dns_mxip().
-19980611 code: allowed spaces after colon in non-bracketed addresses in
-         qmail-smtpd.
-19980611 doc: cleaned up UPGRADE.
-19980528 bug: qmail-smtpd skips first character in rcpthosts() call.
-         tnx NND. impact: qmail-smtpd crashes on empty address; and it
-         allows relaying to ""@any.host. fix: use addr.s.
-19980515 doc: expanded flock discussion in INSTALL.mbox.
-19980515 doc: eliminated flock warning from INSTALL.maildir.
-19980515 doc: split REMOVE.binmail out of INSTALL.
-19980515 doc: split REMOVE.sendmail out of INSTALL.
-19980515 doc: split TEST.deliver and TEST.receive out of INSTALL and
-         UPGRADE.
-19980515 doc: integrated INSTALL.boot into INSTALL.
-19980515 code: cleaned up final output in qmail-qmqpd.c.
-19980514 doc: updated procmail notes in INSTALL.mbox. tnx JRM.
-19980514 doc: changed FAQ 4.4 to point to INSTALL.mbox for procmail.
-         tnx JRM.
-19980514 code: separated HELO and EHLO; single-line response for HELO.
-         tnx to various people.
-19980430 version: qmail 1.02.
-19980430 doc: updated SECURITY.
-19980430 doc: fixed FAQ 4.9. tnx KB.
-19980430 code: changed quote2() to avoid quoting <>.
-19980429 code: changed quote_need() to quote empty local parts. tnx HHO.
-19980428 doc: added status notes to INSTALL and UPGRADE.
-19980428 code: skip setting environment in sendmail.c if PROTO is set.
-19980428 code: eliminated recipientmap.
-19980428 code: added virtual users to qmail-send.c. tnx RN.
-19980428 code: eliminated domain from rewrite() in qmail-send.c.
-19980428 code: added binm1, binm1+df, binm2, binm2+df, binm3, binm3+df.
-19980428 doc: eliminated most Mailbox references from INSTALL, UPGRADE.
-19980428 code: added config-fast.
-19980428 code: renamed qmail-config as config.
-19980428 code: supported QMAILMFTFILE in qmail-inject.c.
-19980428 code: recognized Mail-Followup-To in hfield.c.
-19980428 code: replaced rwrecip() with rwappend() in qmail-inject.c.
-19980428 code: cleaned up doheaderfile() in qmail-inject.c.
-19980426 code: eliminated -type test from qmail-qstat to speed it up.
-         tnx FT.
-19980421 doc: eliminated remove-rcpthosts comments from FAQ.
-19980421 doc: updated FAQ 4.3 to point to Russ Allbery's FAQ. 
-19980421 doc: took account of /var/qmail/boot in INSTALL, UPGRADE, and
-         INSTALL.vsm.
-19980421 code: added /var/qmail/boot, with home, home+df, proc, proc+df.
-19980421 doc: skipped make and make man in INSTALL.
-19980420 doc: cleaned up mbox description in SENDMAIL.
-19980420 code: changed QMQP port to official port 628.
-19980402 doc: updated qmsmac references to fastforward.
-19980402 doc: replaced qmail-upgrade man page with doc/SENDMAIL.
-19980402 code: added qmqpservers output to qmail-showctl.
-19980402 code: added qmail-qmqpd.
-19980402 code: added qmail-qmqpc.
-19980304 code: eliminated del_saywhynoexit in qmail-send.c.
-19980304 code: eliminated concurrencynodel in qmail-send.c.
-19980222 code: added status() to qmail-send.c.
-19980222 code: added concurrencyused to qmail-send.c.
-19980128 doc: added note to qmail-getpw.9 about ETXTBSY.
-19980127 code: eliminated err_seenmail() in qmail-smtpd.c. tnx PO.
-19980126 doc: used $DEFAULT in FAQ where possible.
-19980126 code: added DEFAULT in qmail-local.
-19980126 code: added -/ to qmail-pw2u.
-19980126 code: revamped qmeopen() as qmesearch() with more sensible
-         semantics, separating dash from ext cleanly.
-19980126 code: split qmeexists() out of qmeopen() in qmail-local.c.
-19980126 code: introduced safeext in qmail-local.c.
-19980126 code: changed ~alias to mode 2755, to put files into group
-         qmail rather than group nofiles under System V.
-19980126 doc: switched to /var/qmail/rc in INSTALL*, UPGRADE, FAQ.
-19980126 code: added rc.
-19980119 doc: added .qmail creation warning to condredirect.1.
-19980118 code: made auto_uids.c creation atomic in Makefile. tnx HHO.
-19980118 doc: added PIC.*.
-19980117 portability problem: Solaris 2.5.1 incorrectly converts
-         O_NDELAY into O_NONBLOCK for sockets, so that ndelay_off()
-         fails to undo ndelay_on(). impact: none, since all the network
-         readers here use select() via timeoutread(). fix: use
-         O_NONBLOCK if it is defined.
-19980115 code: reformatted qmail-qmtpd.c.
-19980115 doc: changed tcpcontrol references in FAQ.
-19980115 doc: documented morercpthosts in qmail-qmtpd.9.
-19980115 code: eliminated unused datetime in qmail-qmtpd.c.
-19980115 code: eliminated sigalrm() in qmail-qmtpd.c.
-19980115 code: used rcpthosts() in qmail-smtpd.c, qmail-qmtpd.c.
-19980115 code: introduced rcpthosts.c.
-19980115 code: added morercpthosts.cdb support to qmail-showctl.
-19980115 code: added morercpthosts support to qmail-showctl.
-19980115 code: do_lst now returns file-exists in qmail-showctl.
-19980112 doc: documented morercpthosts in qmail-smtpd.9.
-19980112 code: added qmail-newmrh.
-19980112 code: used commands.c in qmail-popup.
-19980112 code: used commands.c in qmail-pop3d.
-19980112 code: introduced fakehelo in qmail-smtpd.
-19980112 code: moved flagbarf setting out of bmfcheck().
-19980112 code: allowed more address misformatting in qmail-smtpd.
-19980112 code: eliminated qmail@pobox.com help address in qmail-smtpd.
-19980112 code: reorganized qmail-smtpd.
-19980112 code: reformatted qmail-smtpd.
-19980112 code: used commands.c in qmail-smtpd.
-19980112 code: switched from 0 to "" for no arg in commands().
-19980112 code: added commands.c.
-19971230 doc: added -s to FreeBSD commands in INSTALL.ids. tnx TM.
-19971224 doc: added pointer to qmail pictures in README.
-19971223 doc: added note in FAQ about qmail-pop3d using maildir.
-19971219 code: added HOST2, HOST3, HOST4.
-19971219 code: renamed extx as x in qmail-local.c.
-19971219 doc: partitioned qmail-command.0.
-19971219 doc: updated FAQ 4.3 to point to newer majordomo patches.
-19971219 doc: eliminated qlist2 from FAQ.
-19971219 doc: eliminated qlist discussion from SECURITY.
-19971219 code: moved qlist, qlist2 to separate package.
-19971213 doc: added FAQ 4.10 on qmail-users generally.
-19971213 doc: added FAQ 4.9 on dealing with NFS outages.
-19971031 doc: added Linux and FreeBSD commands to INSTALL.ids. tnx TM.
-19971026 doc: added note about smtplf in qmail-smtpd.8. tnx S2S.
-19971014 doc: some tweaks to THOUGHTS.
-19971012 doc: used MAILER-DAEMON in UUCP example in INSTALL.
-19971003 code: eliminated dataline and getln() from qmail-remote.c.
-19971003 code: revamped blast() in qmail-remote.c.
-19971002 doc: added FAQ entries for .forward and /etc/aliases.
-19971002 doc: rewrote INSTALL.mbox and INSTALL.vsm.
-19971002 doc: renamed INSTALL.qsmhook as INSTALL.vsm.
-19971002 doc: emphasized the qmail-popup argv0 in FAQ.
-19971001 doc: added dot-forward note to BLURB3.
-19971001 doc: added more configuration notes to qmail-upgrade.9.
-19971001 doc: added note in INSTALL.qsmhook about dot-forward.
-19970930 code: token822_parse() now supports backslash as a quoting
-         character in atoms.
-19970929 doc: suggested symbolic links in INSTALL.mbox.
-19970925 doc: added note to INTERNALS about bounce stability.
-19970925 doc: added section to THOUGHTS discussing CNAME lookups.
-19970925 code: qmail-remote no longer does CNAME lookup on sender. tnx
-         C2F.
-19970923 portability problem: under SCO OSR5, splogger needs socket
-         libraries. impact: couldn't compile. fix: socket.lib. tnx RB.
-19970906 portability problem: under RISC/OS, Mail invokes sendmail -bm.
-         impact: can't send mail using Mail on RISC/OS. fix: ignore -bm.
-         tnx NW.
-19970813 code: implemented databytes in qmail-qmtpd.
-19970813 code: implemented databytes. tnx M4S for sample code.
-19970813 code: replaced execvp() with execv() for sh in qmail-local.
-19970813 doc: said in qmail-control.9 that recipientmap allows comments.
-19970813 code: used strerr in qmail-local.c.
-19970813 code: changed timeoutread(), timeoutwrite() interface.
-19970813 code: eliminated shutdown() in timeoutread(), timeoutwrite().
-19970813 code: revamped I/O in qmail-smtpd.c.
-19970813 code: used timeoutread(), timeoutwrite() in qmail-smtpd.c.
-19970813 code: simplified getcontrol() logic in qmail-remote.c; some
-         out-of-memory messages are now cannot-read-control messages.
-19970813 code: eliminated scan_nbblong().
-19970813 code: reformatted qmail-remote.c.
-19970813 code: renamed flaganyrecipok as flagbother in qmail-remote.c.
-19970813 code: integrated status report into quit() in qmail-remote.c.
-19970813 code: revamped smtpcode() in qmail-remote.c.
-19970813 code: added flagcritical in qmail-remote.c. eliminates
-         possible-duplicate warning if dot has not yet been sent.
-19970813 code: revamped I/O in qmail-remote.c.
-19970813 code: quit immediately after sending QUIT in qmail-remote.c.
-19970813 code: made many more globals in qmail-remote.c.
-19970813 code: switched qmail-remote.c from subfdin to home-grown.
-19970813 code: switched qmail-remote.c from subfdout to subfdoutsmall.
-19970813 code: added LAST support to qmail-pop3d.
-19970812 code: changed qmail_close() success return from 0 to "".
-19970812 code: revamped I/O in qmail-qmtpd.c.
-19970812 code: added qmail-tcpok.
-19970812 code: used strerr in maildirmake.c.
-19970812 code: reformatted maildirmake.c.
-19970812 code: printed qp in condredirect.c.
-19970812 code: printed qqx in condredirect.c.
-19970812 code: revamped I/O in condredirect.c.
-19970812 code: reformatted condredirect.c.
-19970812 code: used strerr in preline.c.
-19970812 code: revamped I/O in preline.c.
-19970812 code: reformatted preline.c.
-19970812 code: printed qp in forward.c.
-19970812 code: printed qqx in forward.c.
-19970812 code: revamped I/O in forward.c.
-19970812 code: used strerr in forward.c.
-19970812 code: reformatted forward.c.
-19970812 code: used strerr in predate.c.
-19970812 code: forced failure in qmail-qmtpd if no recipients; saves
-         time for qmail-send.
-19970812 code: added smtpd() to sendmail.c.
-19970812 code: added mailq() to sendmail.c.
-19970812 code: added die_usage() to sendmail.c.
-19970812 code: reformatted sendmail.c.
-19970812 code: used byte_zero() in qmail-popup.c.
-19970812 code: reformatted qmail-popup.c.
-19970812 code: eliminated unused header files in qmail-popup.c.
-19970812 code: changed I/O system in qmail-popup.c to match qmail-pop3d. 
-19970812 doc: pointed people to the mailing list in INSTALL and UPGRADE.
-19970810 code: added TXTBSY check to qmail-getpw.c. this gives vendors
-         the opportunity to make getpwnam() reliable.
-19970810 code: moved non-deleted messages from new/ to cur/ in
-         qmail-pop3d. tnx to various people.
-19970810 code: introduced list() in qmail-pop3d.c.
-19970810 code: reformatted qmail-pop3d.c.
-19970810 code: merged dataline and newname into line in qmail-pop3d.c.
-19970810 code: chopped filenames in qmail-pop3d at colons for UIDL. tnx
-         to various people.
-19970810 code: eliminated printint(), printlong() in qmail-pop3d.c.
-19970810 code: revamped I/O in qmail-pop3d.c.
-19970810 code: used timeoutread(), timeoutwrite() in qmail-pop3d.c.
-19970810 code: eliminated die_prot() in qmail-pop3d.c.
-19970810 code: eliminated unused header files in qmail-pop3d.c.
-19970810 code: switched qmail-pop3d to use maildir.c. tnx MD.
-19970809 code: added uid/gid printing to qmail-showctl. tnx PGF.
-19970808 code: switched control.c from scan_nbblong to scan_ulong.
-19970808 code: cleaned up wait_pid to use waitpid() when possible, and
-         to support at least one extra child otherwise.
-19970807 code: in qmail-smtpd, treat long envelope addresses as a syntax
-         error, instead of waiting for qmail-queue to reject them.
-19970803 code: changed condredirect, forward, qlist, qmail-inject,
-         qmail-local, qmail-qmtpd, qmail-send, qmail-smtpd, qreceipt for
-         new qmail_close() interface.
-19970803 code: revised qmail_close() to handle qmail-queue exit codes.
-19970802 doc: documented SMTP-related exit codes in qmail-queue.8.
-19970802 doc: documented qmail-queue exit codes in qmail-queue.8.
-19970802 code: revamped qmail-queue exit codes.
-19970802 doc: noted linking restrictions in qmail-queue.8.
-19970802 doc: rewrote INSTALL.mbox.
-19970802 doc: split INSTALL.maildir off of INSTALL.mbox.
-19970802 code: added /var/qmail/doc/ creation to qmail-hier.
-19970802 doc: added ezmlm note to FAQ.
-19970802 doc: replaced qlist blurbs with ezmlm blurbs in BLURB*.
-19970802 doc: added various notes to qmail-start.9.
-19970728 doc: eliminated RFC*.
-19970714 doc: added daemontools notes to FAQ.
-19970714 code: eliminated ESMTP parameter syntax checking.
-19970701 doc: changed "forwarded" to "resent" in qmail-header.5.
-19970629 code: reformatted constmap.c.
-19970628 code: changed straynewline() message in qmail-smtpd.c to point
-         to http://pobox.com/~djb/smtplf.html. tnx RDM.
-19970609 doc: added preline to vacation example in dot-qmail.9. tnx C2S.
-19970421 code: cleaned up slurpclose to handle interrupts.
-19970421 code: set qmail-popup to mode 711. tnx MD.
-19970421 doc: fixed qmail-local -n example in dot-qmail.9.
-19970415 version: qmail 1.01.
-19970414 doc: tightened up qmail-upgrade.7.
-19970414 code: rewrote rewrite().
-19970414 code: implemented recipientmap. suggested by RDM.
-19970414 doc: auto-configured qmail home directory in qmail-control.5,
-         qmail-newu.8, qmail-pw2u.8, qmail-start.8, qmail-users.5.
-19970414 port: Solaris needs socket libs for gethostname. impact: can't
-         compile under Solaris. fix: use socket.lib for qmail-local.
-19970412 code: introduced stralloc_starts.
-19970412 code: introduced str_equal.
-19970412 code: introduced str_start.
-19970412 code: introduced byte_equal.
-19970412 code: made an optional aliasempty arg for qmail-start.
-19970412 code: made an aliasempty arg for qmail-lspawn.
-19970412 code: changed ALIAS_EMPTY to an arg for qmail-local.
-19970412 port: UnixWare returns >0 for SIOCGIFCONF. impact: ipme fails
-         under UnixWare. fix: check for >=0, not =0. tnx JD.
-19970412 port: DGUX does not have ranlib. impact: can't compile under
-         DGUX. fix: added dgux line to make-makelib. tnx HWM.
-19970412 code: changed maildir library to skip any filename beginning
-         with dot. tnx SP.
-19970412 doc: added FAQ entry about aliases with dots.
-19970412 doc: clarified in qmail-inject.8 that default envelope sender
-         is the same as _default_ From address.
-19970411 code: renamed qmail-makectl as qmail-config.
-19970411 code: renamed qmail-alias as qmail-local.
-19970411 code: switched from signal library to sig library.
-19970411 code: switched from qqtalk library to qmail library.
-19970411 code: switched from getline library to getln library.
-19970411 code: massive library cleanups.
-19970411 code: revamped autoconfiguration system.
-19970411 code: revamped configuration interface.
-19970411 code: eliminated qmail-home.
-19970411 code: eliminated tokenize.
-19970220 qmail 1.00.
-19970219 change: various documentation tweaks.
-19970218 change: updated THOUGHTS.
-19970218 change: talked about SPAWN_NUMD in FAQ. tnx EC.
-19970210 change: noted in maildir.5 that readers should skip any name
-         starting with a dot. tnx SP.
-19970209 change: added note to splogger.8 about reliability. tnx BT.
-19970209 change: added section to FAQ on slow sendmail switch. tnx BT.
-19970206 change: added section to FAQ about dtcm. tnx PJG.
-19970206 change: tweaked maildir.5.
-19970201 change: added MH spost note to FAQ. tnx TU.
-19970131 change: reorganized FAQ.
-19970131 change: added web references to FAQ.
-19970124 change: tweaked qmail-upgrade man page.
-19970120 qmail 0.96, gamma.
-19970120 change: removed various try* in auto-configuration.
-19970120 bug: qmail-inject fails to quote argument addresses. impact:
-         addresses containing special characters could be misinterpreted
-         or rejected. tnx C2F. fix: use quote2().
-19970120 portability problem: ESIX puts syslog() and openlog() into
-         -lgen. impact: can't compile under ESIX. fix: put -lgen into
-         LIBS for unix_sv. tnx RN.
-19961221 qmail 0.95, gamma.
-19961218 change: added various try* to TARGETS. tnx SA.
-19961216 change: clarified in qmail-send.8 that virtualdomains does not
-         apply to domains listed in locals.
-19961216 change: slurpclose() now closes fd on out-of-memory. makes it
-         more widely applicable.
-19961215 change: replaced elm instructions in INSTALL.mbox with an
-         explanation of what source change to make. tnx AB.
-19961212 portability problem: under NEWS-OS, time_t needs sys/types.h.
-         impact: couldn't compile under NEWS-OS. fix: include
-         sys/types.h in predate.c. tnx TU.
-19961211 change: used timeoutread, timeoutwrite in remoteinfo(). tnx
-         REB.
-19961210 portability problem: apparently some SGIs produce a systype of
-         irix64. impact: couldn't compile on those systems. fix: handle
-         irix64 in make-cmds. tnx M3S.
-19961208 change: added note to maildir2mbox.1 about mbox locking.
-19961208 qmail 0.94, gamma.
-19961207 change: added QMAILDEFAULTDOMAIN, QMAILDEFAULTHOST,
-         QMAILIDHOST, QMAILPLUSDOMAIN. tnx BTW.
-19961206 cleanup: readsubdir() protects itself against name overflow,
-         rather than depending on caller.
-19961204 change: changed FAQ 7.3 to prohibit fixup relaying.
-19961203 change: added note to FAQ about possibly having to put a space
-         before "$SENDER" for uux. tnx FW.
-19961202 change: added FAQ entry on QUEUE_EXTRA.
-19961202 change: added FAQ entry on backups. tnx DP.
-19961202 change: added note to INSTALL.mbox about qpopper. tnx VV.
-19961201 change: replaced logger with splogger in FAQ 5.1. tnx FPL.
-19961201 change: used netmask example for tcpcontrol in FAQ. tnx FPL.
-19961201 change: added note to README about the mailing list. tnx FPL.
-19961201 change: documented rcpthosts wildcards. tnx RN.
-19961201 change: added note to FAQ about making mailx use datemail.
-19961201 change: added datemail. function requested by several people;
-         approach suggested by TG.
-19961201 change: added predate.
-19961129 change: added QUEUE_EXTRA, QUEUE_EXTRALEN.
-19961129 change: qmail-remote bounces messages with partial final lines.
-19961129 change: added atomcheck() to quote crappy atoms.
-19961129 change: revised atomok() to let atoms deal with more crap.
-19961127 change: qmail-send adds note to deferral if flagdying. tnx TG.
-19961127 change: split off maildirbounce, maildir2qmtp, and maildir2smtp
-         into a separate serialmail package.
-19961126 change: eliminated beta success reports from README.
-19961124 change: forced res_query() return value to fit inside incoming
-         buffer size. allegedly there are buggy versions of res_query()
-         that don't guarantee this.
-19961122 qmail 0.93, gamma.
-19961122 change: allowed empty arg list in forward.
-19961121 change: qmail-smtpd now uses unknown (like qmail-qmtpd) rather
-         than dying if environment variables are not set.
-19961121 cleanup: reorganized helo handling in qmail-smtpd.c.
-19961121 cleanup: eliminated newfield_rec.
-19961121 cleanup: introduced DATE822FMT. used it in received.c.
-19961121 cleanup: introduced received.c. used it in qmail-qmtpd.c,
-         qmail-smtpd.c.
-19961121 change: qmail-smtpd now generates a new timestamp for each
-         message. tnx PJG.
-19961121 cleanup: used stralloc in newfield.
-19961121 cleanup: eliminated newfield_cc.
-19961121 change: eliminated hfield_mort().
-19961119 change: added 2-minute damper on tcpto.
-19961118 change: wrote defaults for readfile controls in showctl.
-19961117 change: control_readfile() now allows comments and blank lines.
-         tnx LW.
-19961117 change: qmail-start sets logger gid to GID_NOFILES.
-19961117 bug: ipme_init() uses a fixed-length buffer for SIOCGIFCONF.
-         impact: qmail-smtpd and qmail-remote will die if there are too
-         many local IP addresses. tnx MD. fix: ipme_init() now
-         dynamically allocates space, up to 200000 bytes, as long as
-         SIOCGIFCONF keeps failing. note that this is a very widespread
-         bug; it's in amd, exim, mrouted, named, nntpd, rarpd, sendmail,
-         tcpdump, timed, xntpd, and probably dozens more programs.
-19961117 portability problem: on BSD 4.4 and various other systems,
-         SIOCGIFCONF will truncate long lists and return success.
-         impact: on those systems, qmail-smtpd and qmail-remote will
-         miss some local IP addresses if there are too many. fix:
-         ipme_init() now checks whether there is enough space left in
-         the buffer for another ifreq, plus 64 bytes JIC. yuck.
-19961117 change: ipmeprint now flushes only at end.
-19961117 cleanup: introduced subfdinsmall. used it in qmail-clean.c,
-         qmail-qmtpd.c.
-19961117 cleanup: introduced subfdoutsmall. used it in hostname.c,
-         printbreak.c, printnumd.c, printsplit.c, qmail-alias.c,
-         qmail-clean.c, qmail-getpw.c, qmail-qmtpd.c, maildir2smtp.c,
-         maildir2qmtp.c.
-19961117 change: moved subfderr buf up to 256 characters.
-19961117 change: added maildirbounce. tnx MD, TG.
-19961116 change: maildir2smtp and maildir2qmtp now print filenames for
-         permanent bounces. tnx MD.
-19961116 change: in SECURITY, "eleven most recent sendmail security
-         holes, five" -> "twelve most recent sendmail security holes,
-         six."
-19961116 change: rewrote qmail-showctl more professionally.
-19961115 change: added several tests to find-systype.sh. this will
-         affect many systypes.
-19961115 change: qmail-alias now treats most exit codes as soft errors.
-19961115 change: revamped exit codes everywhere for 0, 100, 111.
-19961114 change: added splogger.
-19961114 portability problem: Sun's cc recognizes sqrt() as a builtin,
-         even if math.h is not included and sqrt is defined statically.
-         yuck. impact: when qmail is compiled with Sun's cc, next-retry
-         times are all screwed up. tnx PJG. fix: my sqrt() is now called
-         squareroot().
-19961114 change: dns_ip() now recognizes [1.2.3.4]. tnx DS.
-19961112 change: enabled x option in sendmail. tnx DS.
-19961111 change: added SIGHUP handling to qmail-send. suggested by many
-         people.
-19961111 bug: control routines returned incorrect codes for some
-         out-of-memory conditions. impact: none; conditions cannot
-         happen with sane control files. fix: return -1.
-19961111 change: added SIGALRM handling to qmail-send. suggested by many
-         people.
-19961111 change: eliminated flagnobreak (-b/-B) from qmail-pw2u.
-19961111 change: qmail-getpw now allows hyphens inside usernames.
-19961111 change: added users/append to qmail-pw2u. tnx G2A.
-19961111 change: added badmailfrom to qmail-smtpd. requested by several
-         people.
-19961110 change: replaced elm instructions in INSTALL.mbox with a simple
-         note to set incomingfolders in elm.rc. tnx AB.
-19961110 change: replaced "owner hack" with "variable envelope
-         return paths" throughout the documentation. tnx DS.
-19961110 change: qmail-setup installs man pages as well as cat pages.
-19961110 change: renamed qmail-newuser as qmail-newu. tnx G2A.
-19961110 change: renamed qmail-pw2user as qmail-pw2u. tnx G2A.
-19961105 change: set path in INSTALL.boot. tnx TJH.
-19961105 change: noted in qmail-smtpd.8 that addresses without @ are
-         always allowed through.
-19961105 change: indicated at various spots in FAQ that rcpthosts has to
-         be updated. suggested by various people.
-19961105 change: indicated at various spots in FAQ that qmail has to be
-         restarted. suggested by various people.
-19961029 change: fixed typo in maildir2qmtp.1. tnx BG.
-19961026 qmail 0.92, gamma.
-19961026 bug: qmail-getpw did not 0-terminate usernames. tnx CF. impact:
-         qmail-getpw would crash on some systems, deferring local
-         deliveries. fix: 0-terminate.
-19961025 cleanup: renamed auto-hassgprm.h to hassgprm.h.
-19961025 cleanup: renamed auto-hassgact.h to hassgact.h.
-19961024 change: replaced qmail-alias.0 with dot-qmail.0 in
-         INSTALL.alias. tnx MW.
-19961022 change: switched uids as early as possible in qmail-start.c.
-19961022 change: in SECURITY, "ten most recent sendmail security
-         holes, five" -> "eleven most recent sendmail security holes,
-         five."
-19961022 change: quote_need() now treats non-ASCII characters the same
-         way as control characters.
-19961022 change: added version and home page to qmail.7.
-19961022 cleanup: introduced slurpclose.c. used it in qmail-alias.c,
-         qmail-lspawn.c.
-19961021 portability problem: AT&T NCR boxes need stdio.h before
-         arpa/nameser.h. impact: dns.c would not compile. fix: include
-         stdio.h. tnx HS.
-19961021 change: added AIX section to INSTALL.ids. tnx SSB.
-19961021 change: added qmail-pw2user.
-19961020 change: added qmail-pw2user.8.
-19961020 change: qmail-alias now dies soft on EACCES/EPERM for .qmail.
-19961020 change: eliminated root comments from INSTALL.qsmhook.
-19961020 change: various improvements in FAQ.
-19961017 change: added QLX_ROOT.
-19961017 change: renamed hosts in FAQ. tnx SLB.
-19961017 change: in dot-qmail.5, documented envnoathost effects. tnx RN.
-19961017 change: revamped addresses.5.
-19961017 change: added stripvdomprepend() for better bounces. tnx PT.
-19961012 portability problem: under HP-UX 9, can't setgroups() to 65537.
-         impact: couldn't compile under HP-UX 9. fix: use 0 instead of
-         65537 in chkshsgr.c. tnx HHO.
-19961008 change: added several qlx codes.
-19961008 cleanup: eliminated qlx from qmail-alias.
-19961008 change: qmail-lspawn runs qmail-getpw as UID_PW.
-19961008 change: added qmail-newuser.
-19961008 change: added cdb support to qmail-lspawn.
-19961008 change: integrated cdb.
-19961007 change: added qmail-users.5.
-19961007 change: eliminated usermap.
-19961007 cleanup: switched execvp to execv in sendmail, qmail-lspawn.
-19961007 change: used qmail-getpw in qmail-lspawn.
-19961007 change: renamed LSPAWN_USERLEN as GETPW_USERLEN.
-19961007 change: added qmail-getpw.
-19961007 change: created users subdirectory of CONF_HOME.
-19961007 change: fixed typo in FAQ. tnx J1B.
-19961006 change: replaced subfdout with a small ss in qmail-alias.
-19961006 change: reduced qmail-alias buffer sizes to 1024.
-19961003 change: added note to maildir2smtp.0 about maildirmake. tnx SM.
-19961003 bug: if ipme_init() returned -1, qmail-remote would continue,
-         blindly assuming that all addresses are local. impact: on
-         systems with too many aliases, all remote deliveries fail. tnx
-         MD. fix: qmail-remote now dies with temp_oserr() on any result
-         other than 1.
-19961003 portability problem: all pre-4.9.4 versions of bind barf,
-         badly, on CNAME queries to lame servers. what a crappy system.
-         even if the resolver doesn't barf, the next name server down
-         the line may barf. impact: qmail can't get mail through to
-         domains that are (1) lame and (2) running old versions of bind.
-         fix: never, ever, do a CNAME query. dns_cname() now does an ANY
-         query instead. this, like sendmail's analogous procedure, is
-         unreliable when a CNAME is mixed with other records.
-19961001 cleanup: switched to libfd in qmail-start.c.
-19960929 cleanup: renamed auto-hasmkffo.h to hasmkffo.h.
-19960928 cleanup: reorganized qmail-start.c.
-19960928 cleanup: used libfd in preline.c, qmail-lspawn.c,
-         qmail-popup.c, qmail-rspawn.c, qmail-start.c, qqtalk.c,
-         qsmhook.c.
-19960928 cleanup: added libfd.
-19960927 change: in SECURITY, "nine most recent sendmail security
-         holes, four" -> "ten most recent sendmail security holes,
-         five."
-19960926 change: added tcpcontrol notes to FAQ.
-19960926 change: qmail-smtpd now immediately closes connection, with a
-         warning message dedicated to Solaris, if stray newlines show up
-         in the incoming data.
-19960926 change: added INSTALL.boot.
-19960926 portability problem: on systems that can handle IP interface
-         aliases (i.e., on sa_len systems), SIOCGIFADDR returns the
-         primary address for an alias. impact: ipme_init() did not
-         include alias addresses. fix: ipme_init() avoids SIOCGIFADDR on
-         sa_len systems; on these systems, the address we want is
-         already in ifr. tnx DM.
-19960926 change: qmail-alias kills itself if locking takes longer than
-         30 seconds.
-19960926 change: qmail-pop3d no longer moves messages. tnx RS.
-19960924 change: added note to FAQ about descriptors limit. tnx RD.
-19960922 change: open_trunc() now uses 644.
-19960922 change: qmail-setup now does umask(077).
-19960922 change: maildir2mbox now does umask(077).
-19960922 change: moved subfderr buf up to 64 characters.
-19960920 change: in SECURITY, "eight most recent sendmail security
-         holes, three" -> "nine most recent sendmail security holes,
-         four."
-19960920 portability problem: init run commands are subject to job
-         control signals under more systems than HP-UX. impact: on some
-         systems (e.g., Solaris), qmail daemons would be killed. fix:
-         INSTALL now tells everybody to use csh -cf.
-19960920 change: added queue-run section to FAQ.
-19960920 change: in pine-crashing question in FAQ, added -oem and -oi,
-         so that change will work with the real sendmail too.
-19960919 change: added CNAME section to FAQ. tnx to various people.
-19960919 change: eliminated QQX_EXECHARD and QQT_EXECHARD. this means
-         that all qmail-queue invocation failures are now soft, even
-         things like EPERM.
-19960919 change: replaced "No such address" with "Sorry, no mailbox
-         here by that name." tnx G2A.
-19960919 change: qmail-remote now includes host name in no-such-host
-         messages. tnx G2A.
-19960919 change: replaced "Temporarily unable to canonicalize address"
-         with "CNAME lookup failed temporarily."
-19960918 change: improved an error message in qmail-alias.c. tnx TG.
-19960918 change: added SHELL=/bin/sh to Makefile. tnx JL.
-19960916 change: reorganized INSTALL.ids a bit.
-19960916 change: "from smtpd" is now "from network".
-19960916 change: SMTPD is now DAEMON.
-19960916 change: qmail-start sets logger uid to UID_LOG. tnx JLH.
-19960916 change: added CONF_USERL.
-19960916 change: iaafmt() now puts a dot on in-addr.arpa.
-19960915 change: added UPGRADE. suggested by several people.
-19960915 change: added qsutil error messages to qmail-log.5.
-19960915 change: qsutil error messages are now alerts.
-19960915 portability problem: on some systems, logger appears to use
-         syslog(pri,buf) instead of syslog(pri,"%s",buf). tnx JC.
-         impact: logger could barf or crash if fed messages containing
-         %. an attacker could easily cause a crash, eliminating qmail's
-         logs. fix: % is no longer considered safe for logs.
-19960912 cleanup: split seek.c into seek_*.c.
-19960912 cleanup: replaced seek_to() with seek_set().
-19960912 cleanup: introduced libseek.a.
-19960907 cleanup: split case.c into case_*.c.
-19960907 cleanup: introduced libcase.a.
-19960907 cleanup: split wait.c into wait_*.c.
-19960907 cleanup: introduced libwait.a.
-19960907 cleanup: renamed auto-haswaitp.h to haswaitp.h.
-19960907 cleanup: split open.c into open_*.c.
-19960907 cleanup: introduced libopen.a.
-19960904 change: added generic pointer to qmail-control.5. tnx HW.
-19960904 change: rewrote rcpthosts section in FAQ. tnx HW.
-19960904 change: added organization section to FAQ. tnx HW.
-19960902 qmail 0.91, gamma.
-19960902 change: control_readfile() can now handle partial lines. tnx
-         JDHB.
-19960902 change: eliminated non-fqdn note from FAQ. next version of
-         tcpserver will use DNS directly.
-19960902 change: qlist now uses NEWSENDER, not SENDER.
-19960902 change: qmail-pop3d no longer obtains a lock. tnx RS.
-19960902 change: put }g on all seds in Makefile.
-19960831 change: noted in qmail-control.5 that comments are not allowed
-         in control files. tnx J2B.
-19960829 change: used double union in alloc.c. tnx ME.
-19960829 change: replaced semicolon with colon for smtproutes port.
-19960829 change: in INSTALL, put make man just before make setup.
-19960829 change: changed a few qmail messages into alerts.
-19960829 cleanup: renamed datetime_gmt as datetime_tai.
-19960829 change: added note to UUCP question that some UUCP software
-         doesn't want preline -f. tnx SB.
-19960829 change: added question 2.4 to FAQ on SLIP/PPP.
-19960828 change: replaced owner- with owner-@host-@[] in qmail-inject.
-19690828 change: replaced owner- with owner-@host-@[] in qmail-alias.
-19960828 change: replaced owner- with owner-@host-@[] in injectbounce().
-19960828 change: replaced owner- with owner-@host-@[] in senderadd() for
-         owner hack.
-19960828 change: qmail-inject -n now prints Return-Path.
-19960825 cleanup: revised ending code in token_addrlist(). 
-19960825 change: tokenize now uses linelen 0 for unparse.
-19960825 change: if linelen is 0 in token822_unparse, no length limit.
-19960825 change: added LINELEN macro to qmail-inject for unparse.
-19960825 change: token822_unparse now takes linelen argument. (leaving
-         two spaces on the right before linelen.)
-19960824 cleanup: renamed token as token822.
-19960822 portability problem: under NEWS-OS, /bin/mail and /usr/ucb/mail
-         invoke sendmail with -E and -J options. tnx TU. impact:
-         couldn't send mail with those programs. fix: accept opts,
-         including _optional_ args. ugh.
-19960821 change: sendmail now quits if invoked as newaliases. tnx TU.
-19960821 portability problem: under NEWS-OS, dirent.h needs sys/types.h.
-         tnx TU. this POSIX violation also appears in some versions of
-         FreeBSD. impact: couldn't compile under NEWS-OS. fix: include
-         sys/types.h in direntry.h* and trydrent.c. [sigh]
-19960821 change: added concurrencyremote question to FAQ.
-19960821 change: added chkspawn.
-19960821 change: moved default SPAWN_NUMD up to 120.
-19960818 change: allowed ;port in smtproutes. tnx AL.
-19960818 change: introduced port in qmail-remote.c.
-19960818 change: qmail-queue records qp in Received lines. 2 lines of
-         code. tnx ME.
-19960818 change: in SECURITY, "seven most recent sendmail security
-         holes" -> "eight most recent sendmail security holes."
-19960818 change: qmail-pop3d now appends an extra blank line to every
-         message, for compatibility with popper. some clients can't
-         deal with the right thing, unfortunately. tnx FPL.
-19960818 change: added qmail-tcpto.
-19960818 change: eliminated cc -posix for NeXTs. tnx SA.
-19960818 change: eliminated loadfifo. tnx SA.
-19960818 change: integrated auto-configured fifo.c code from SA.
-19960817 change: put SYSDEPS into a more reasonable order.
-19960813 change: indicated possibility of duplication when qmail-remote
-         gets a dead connection after DATA. tnx ME.
-19960813 change: documented qmail-inject environment variables.
-19960813 change: supported per-recipient owner hack in qmail-inject.
-19960813 change: supported per-message owner hack in qmail-inject.
-19960813 change: introduced hackedruser into qmail-inject.
-19960813 change: introduced QMAILRUSER, QMAILRHOST.
-19960812 change: added QMAILINJECT option to allow address-comment form.
-19960812 change: made name-address form the default in qmail-inject.
-19960812 change: added QMAILINJECT options f and m to delete From and
-         Message-ID on input. tnx LL.
-19960812 change: added QMAILINJECT environment variable.
-19960812 change: added QMAILHOST, QMAILUSER, QMAILNAME to override
-         MAILHOST, MAILUSER, MAILNAME. tnx MG.
-19960812 change: added qmail-showctl.
-19960812 portability problem: under Solaris 2.4 and possibly other
-         systems, the linker does not give generic alignment to an array
-         of 4096 chars. tnx JP. impact: some subset of the programs
-         would (reliably) die with a bus error; in the Solaris case,
-         maildir2mbox. fix: redefine space in alloc.c to be aligned.
-19960812 change: qmail-remote no longer does CNAME lookups if there's an
-         artificial SMTP route. tnx ME.
-19960812 change: added flagcname arg to addrmangle() in qmail-remote.
-19960812 cleanup: moved host/relayhost processing earlier in
-         qmail-remote.
-19960812 change: qmail-remote stops before DATA if no RCPTs were
-         successful. tnx JLH.
-19960812 change: rewrote rcpthosts explanation in FAQ.
-19960811 change: added qmail-log.5.
-19960811 change: introduced ALIAS_PATERNALISM. configurability requested
-         by several people.
-19960811 change: eliminated go-writability test for qmeox(). the alleged
-         value of paternalism is nonexistent if nobody even notices
-         you're doing it.
-19960811 change: in qbiff, changed no-/-allowed to no-/-at-beginning,
-         no-dots-allowed, must-be-nonempty. tnx MD.
-19960811 change: in mbox.5, discouraged mail readers from looking for
-         From_ lines only after blank lines. too much crap in the world.
-19960811 change: added subject line to qreceipt success notices.
-19960811 change: added subject line to qmail-send bounce messages.
-19960811 change: qmail-alias now expects dash arg. this finally gives
-         lspawn complete control over the local -> ~user/.qmail-ext map.
-19960811 change: qmail-lspawn passes dash arg to qmail-alias.
-19960811 change: reorganized qlist acknowledgment format. again.
-19960811 change: documented EXT, EXT2, EXT3, EXT4. tnx BB.
-19960810 change: qmail-makectl now copies locals to rcpthosts. should be
-         a better default. suggested by TK.
-19960805 portability problem: new makefile generator put in tabs again.
-         sigh. impact: couldn't compile under some systems. fix: same as
-         before. tnx TG.
-19960804 change: added tcpserver instructions to FAQ.
-19960804 change: reorganized FAQ server instructions into a new section.
-19960801 qmail 0.90, gamma.
-19960801 change: qmail-qmtpd now supports rcpthosts, RELAYCLIENT.
-19960731 change: default NUMD is now 29. this prepares for weird systems
-         where getpwnam() needs more than one descriptor (but the
-         descriptor limit is still 64! ... you never know), and for
-         possible future getpwnam() replacements.
-19960731 change: popped subfderr buffer up to 32 characters. made sure
-         that everybody flushed subfderr as necessary.
-19960731 change: maildir2qmtp now prints filenames and responses.
-19960731 change: maildir2smtp now prints filenames it's trying and
-         relevant portion of SMTP responses.
-19960731 change: used succwrite() in maildir2smtp, maildir2qmtp.
-         simplifies code quite a bit.
-19960731 change: qmail-remote's blast() checks sooner for write errors.
-19960731 change: added better -e option to sendmail. tnx TG.
-19960731 change: added maildir2qmtp.
-19960730 cleanup: eliminated die_nomem() in maildir2smtp.c.
-19960730 change: dns_cname now pretends that "foo." is a CNAME for "foo"
-         to give the desired behavior for people who misuse DNS and
-         violate RFC 822. tnx RN.
-19960730 change: dns_cname now tests for empty names and ] on every
-         loop.
-19960730 change: used LSPAWN_BREAK in qmail-send.c for usermap.
-19960730 change: updated header example in qmail-header.5.
-19960730 change: added printbreak. auto-configured BREAK in dot-qmail.5,
-         qmail-lspawn.7, qmail-send.8, qmail-upgrade.7, qlist2.
-19960730 change: added printnumd. auto-configured NUMD in qmail-send.8,
-         qmail-limits.8.
-19960730 change: added printsplit. auto-configured split in qmail-upq.
-19960730 change: added dot-qmail.5.
-19960730 change: qmail-smtpd now treats HELO as including RSET.
-19960730 change: added moreinfo to qlist usage message.
-19960729 change: improved an error message in qmail-alias.
-19960729 cleanup: merged qmeox(), qmeodx().
-19960729 bug: failure to stat .qmail-owner was not an error. impact: if
-         stat failed temporarily (e.g., because of NFS), .qmail-owner
-         would be incorrectly ignored, so outgoing message would have
-         wrong envelope sender. fix: qmail-alias does temp_nfsqmail() if
-         stat() returns a temporary error.
-19960729 change: added RFCOWNER.
-19960729 change: added qmtpd setup question to FAQ.
-19960729 change: added qmail-qmtpd.
-19960728 change: revamped maildir2smtp error messages.
-19960728 change: revamped maildirwatch error messages.
-19960728 change: revamped maildir2mbox error messages.
-19960728 change: used strerr in maildir_scan().
-19960728 change: used strerr in maildir_chdir().
-19960728 change: introduced strerr.
-19960728 bug: the new tcp-env tried to read from an ndelay socket.
-         impact: TCPREMOTEINFO would always be empty. fix: unset ndelay
-         in remoteinfo.c.
-19960728 bug: if maildir2smtp saw a permanent failure after MAIL, it
-         failed to do RSET. impact: all further messages would be
-         rejected at the MAIL stage. fix: maildir2smtp now always does
-         RSET. tnx JW.
-19960728 cleanup: qmail-alias now applies lowercase and dot-to-colon
-         conversion directly to dashext, leaving everything else alone.
-         this works since all .qmail access is factored through dashext.
-19960727 portability problem: under NeXTStep, -posix is almost entirely
-         broken. impact: qmail daemons would dump core under NeXTStep.
-         fix: turn off -posix, except for loading qmail-setup, which
-         needs mkfifo(); NeXT, bless them, didn't put mkfifo() into the
-         C library where it belongs. this requires a new make command,
-         namely loadfifo.
-19960727 change: all characters 33-126 are now considered safe for logs.
-         tnx MD.
-19960727 cleanup: eliminated qp variable from mailforward().
-19960727 cleanup: maildirwatch.c includes headerbody.h.
-19960727 cleanup: eliminated match from maildirwatch.c.
-19960727 cleanup: eliminated code variable from maildir2smtp.c:doit().
-19960727 cleanup: maildir2smtp.c includes scan.h.
-19960727 cleanup: maildir.c includes str.h.
-19960727 cleanup: qmail-popup.c now includes exit.h.
-19960727 cleanup: qmail-pop3d.c now includes exit.h.
-19960727 cleanup: eliminated path from qmail-start.c.
-19960727 cleanup: eliminated birthplusnn from nextretry().
-19960727 cleanup: eliminated r from timeoutconn().
-19960727 cleanup: tcpto.c now includes byte.h.
-19960727 cleanup: spawn.c now declares initialize().
-19960727 cleanup: qmail-lspawn.c now includes str.h, byte.h.
-19960727 cleanup: qmail-inject.c now includes quote.h.
-19960727 change: qmail-check now checks separately for group
-         readability and other readability.
-19960727 bug: maildir2smtp didn't check flagehlo in PIPELINING parsing.
-         impact: a server that said PIPELINING at any point, not just
-         EHLO, would receive pipelined data. fix: check flagehlo.
-19960727 bug: readsubdir was calling pause(). impact: if a subdirectory
-         was removed, qmail-send would hang. fix: use rs->pause().
-19960727 change: used error_str in qmail-qread.
-19960727 change: qmail-qread now looks for local/remote open errors.
-19960727 cleanup: added warn() in qmail-qread.c.
-19960727 change: qmail-qread now exits 111 for temporary errors.
-19960727 change: used error_str in qmail-setup.
-19960727 change: introduced error_str.
-19960727 change: replaced qmail-check with make check in INSTALL.
-19960727 change: added check target to Makefile.
-19960727 change: replaced qmail-setup with make setup in INSTALL.
-19960727 change: indirected fake targets through do- targets.
-19960727 change: added setup target to Makefile.
-19960727 change: qmail-makectl now makes sure that defaultdomain has
-         at least one dot. e.g., enteract.com -> enteract.com, not com.
-19960726 bug: quote() failed to quote commas. impact: addresses
-         containing commas would not have been quoted correctly for
-         Return-Path or for SMTP MAIL FROM. fix: quote commas.
-19960726 change: sendmail now mentions qmail-qread, not qmail-mailq.
-19960726 change: qmail-alias now expects ext arg. this eliminates
-         LSPAWN_BREAK from qmail-alias and gives lspawn almost complete
-         control over the local -> ~user/.qmail-ext transformation. the
-         exception is that qmail-alias always uses ~user/.qmail,
-         ignoring ext, if local is the same as user.
-19960726 change: qmail-lspawn passes ext to qmail-alias.
-19960726 change: alloc() now uses up a 4K space before calling malloc().
-19960726 change: ipalloc allocation base is now 10. 100 was silly.
-19960726 change: stralloc allocation base is now 30.
-19960726 change: injectbounce() now supports the owner hack.
-19960726 change: qmail-smtpd no longer requires HELO. tnx K1J.
-19960726 cleanup: replaced makereceived() with dohelo().
-19960726 change: qmail-smtpd is back to 555 for syntax errors.
-19960725 change: qmail-alias now supports the owner hack. tnx to RN for
-         prodding me to look at this problem.
-19960725 change: senderadd() now supports the owner hack.
-19960725 cleanup: split off senderadd().
-19960725 change: added pine-crashing note to FAQ.
-19960725 change: added procmail config.h note to INSTALL.mbox.
-19960725 change: added elm TMPDIR note to INSTALL.mbox.
-19960725 change: added pine.conf note to INSTALL.mbox.
-19960724 change: added fixup note to FAQ.
-19960724 change: qmail-inject now exits 111 for temporary errors.
-19960724 change: qmail-smtpd now appends RELAYCLIENT to incoming
-         recipient domain names.
-19960724 cleanup: moved relayclient out of qmail-smtpd's addrallowed()
-         into caller.
-19960724 change: added rcpthosts wildcards.
-19960724 change: added clean target to Makefile.
-19960723 change: added virtualdomains exceptions.
-19960722 change: added BLURB4.
-19960722 change: added BLURB3.
-19960722 change: eliminated smarthost and localnet.
-19960722 change: incorporated relaymap, contributed by LW. renamed it
-         as smtproutes.
-19960722 change: qmail-popup now supports APOP. suggested by BG, who
-         distributed similar changes.
-19960722 change: qmail-popup now sends APOP timestamp to checkpassword.
-19960722 cleanup: in qmail-popup, split off doanddie().
-19960722 change: qmail-popup now prints APOP timestamp in banner.
-19960722 change: added hostname argument to qmail-popup.
-19960722 cleanup: in qmail-popup, split out() into out(), outflush().
-19960722 cleanup: in qmail-popup, introduced pop3_greet().
-19960721 portability problem: under Unisys SVR4, hostname is not in the
-         usual path. impact: qmail-makectl fails. fix: added hostname
-         command here, used it in qmail-makectl.
-19960721 portability problem: on some sysctl-based systems, apparently
-         gethostname() doesn't write anything if the output buffer is
-         too small. it should write a truncated name. impact: if anyone
-         has a hostname longer than 64 characters, maildirs could get up
-         to 64 characters of garbage, rather than a truncated hostname.
-         fix: qmail-alias now does *host = 0 before calling gethostname.
-19960721 change: updated FAQ examples from qsmhook to preline.
-19960721 change: added preline.
-19960721 change: qsmhook now uses signal_init, signal_uninit.
-19960721 change: qsmhook now checks specifically for empty args.
-19960721 change: documented mbox.
-19960721 change: added EXT, EXT2, EXT3, EXT4.
-19960721 change: added LAST response to qmail-pop3d, always returning
-         OK 0. tnx RN.
-19960721 change: added qmail home page to README.
-19960721 change: added HELP response to qmail-smtpd. tnx RN.
-19960720 change: expanded, vertically, the qmail-inject error message
-         for unparseable header fields.
-19960720 change: logo is now dolphin. tnx CEJ.
-19960719 qmail 0.76, beta.
-19960719 change: used LSPAWN_BREAK in qmail-alias for deciding how to
-         handle extensions. this should produce better behavior in the
-         (unsupported) case that LSPAWN_BREAK is not a hyphen.
-19960719 bug: qmail-smtpd didn't check for null arg on MAIL, RCPT.
-         impact: qmail-smtpd would deref 0 and crash. fix: qmail-smtpd
-         now gives syntax error on null arg.
-19960719 change: documented UFLINE in qmail-command.8. tnx TG.
-19960718 change: added maildir2smtp.
-19960718 cleanup: introduced maildir.c. used it in maildir2mbox.c,
-         maildirwatch.c.
-19960718 change: added maildirwatch.
-19960718 cleanup: maildir2mbox now sets up pq2 as it is deleting from
-         pq, rather than simultaneously with pq.
-19960718 change: added H_DELIVEREDTO.
-19960718 portability problem: Unisys requires -lsocket -lnsl. impact:
-         couldn't compile under Unisys. fix: added unix_sv section to
-         make-cmds.sh. tnx TVP.
-19960718 change: added unix_sv section in find-systype. tnx TVP.
-19960717 change: qmail-alias now appends newline if .qmail does not end
-         with a newline. tnx MC.
-19960717 change: qmail-alias now defers delivery for a blank line only
-         if it is the first line of the file. handles user behavior
-         described by MC of putting many newlines at end of file.
-19960717 bug: qmail-inject looked for dots in user part, not just host
-         part, when deciding whether to use defaultdomain. impact: the
-         address joe.bloggs@here didn't have defaultdomain added. fix:
-         qmail-inject now stops at the @.
-19960717 change: updated INSTALL.alias to mention qmsmac.
-19960717 change: syntax error code for SMTP is now 501.
-19960717 change: added -e option to sendmail. tnx TG.
-19960716 change: changed ~alias files to .qmail-local, not .qmaillocal.
-         suggested by many people.
-19960716 change: redid qmail-alias/qmail-lspawn interface.
-19960716 change: replaced EXTENSION, USEREXT with LOCAL.
-19960716 change: qmail-queue now removes intd, mess upon error, as long
-         as it doesn't time out. suggested by BB et al.
-19960716 change: added flagmademess, flagmadeintd to qmail-queue.c.
-19960716 cleanup: changed todofd to intdfd in qmail-queue.c.
-19960716 cleanup: added cleanup() to qmail-queue.c.
-19960716 change: added timeout to tcp-env.c, default 30 seconds.
-19960716 change: remoteinfo_get() now uses timeoutconn().
-19960715 change: added procmail config.h note to FAQ.
-19960704 change: qmail-upgrade.7 now warns administrators that ~alias
-         generally doesn't apply to addresses starting with a user name.
-19960703 change: added echo \c note to FAQ. tnx PJG.
-19960702 change: qmail-smtpd now accepts HELO without an argument.
-         tnx K1J, J1B.
-19960627 change: qmail-lspawn.8 now mentions that qmail-lspawn doesn't
-         set up supplementary groups. tnx TG.
-19960625 portability problem: under Linux, read(,,0) doesn't do proper
-         error slippage. impact: timeoutconn() would always report
-         success; if a connection failed, qmail-remote would report a
-         greeting failure and skip all further MX records. tnx ME. fix:
-         timeoutconn() now uses getpeername() to check for success.
-19960625 change: qmail-smtpd now mentions disk full for QQT_WRITE.
-19960625 change: qmail-inject now mentions disk full for QQT_WRITE.
-19960622 change: if RELAYCLIENT is set, qmail-smtpd skips rcpthosts.
-19960609 change: updated INSTALL for current SMTP responses.
-19960607 change: clarified INSTALL.qsmhook examples. tnx S1R.
-19960607 change: added subject parsing to qlist.c. tnx RN.
-19960607 cleanup: used case_diffb in qlist.c.
-19960607 change: added extra log information to INSTALL examples.
-19960606 change: added -Pn to uucp line in FAQ. tnx DWS.
-19960605 portability problem: under Solaris, /usr/bin/groups incorrectly
-         reports your groups in /etc/group, rather than the results of
-         getgroups(). tnx MD, PJG. impact: test #19 in INSTALL fails.
-         fix: added special note to test #19 (sigh) about Solaris.
-19960605 change: improved maildir setup commands in INSTALL.mbox.
-19960605 change: on success, qmail-alias logs forwarding qp. 9 lines
-         extra code.
-19960605 change: qmail-send logs qp for bounce. 6 lines extra code.
-19960605 change: qmail-smtpd includes qp in its response when it accepts
-         a message. 7 lines extra code. requested by MD and others.
-19960605 change: added qqtalk_qp.
-19960605 change: qmail-send now logs uid and qp from todo file. 14 lines
-         extra code.
-19960605 change: qmail-queue now records uid and qp in u and p lines
-         in todo file. 7 lines extra code.
-19960605 change: improved qmail-alias x-bit error messages.
-19960605 change: newline in log is now converted to /, not underscore.
-19960604 change: when it accepts a message, qmail-smtpd includes the
-         local time in its 250 response.
-19960604 change: on success, qmail-alias prints delivery counts,
-         file+forward+program.
-19960603 change: qmail-remote now reports IP address on success. tnx MD.
-19960603 change: qmail-send now logs success and failure reports, not
-         just deferral reports.
-19960603 change: added netbsd section in find-systype, same as bsd.os
-         section. this will affect netbsd-* systypes. tnx MBS.
-19960530 qmail 0.75, beta.
-19960528 change: added qmail.7. tnx MD.
-19960525 change: added qmail-pop3d. tnx RN.
-19960525 change: added qmail-popup. tnx RN.
-19960525 change: added elm filter section to FAQ. tnx GB.
-19960502 portability problem: on many systems, select() on an
-         almost-full pipe incorrectly says writable. tnx ME for running
-         into this and helping track it down. impact: if qmail-send
-         writes a pipeful to qmail-lspawn or qmail-rspawn before they
-         can react (because of high concurrency, high load, or long
-         addresses), it will receive an incorrect -1/EAGAIN, and will
-         conclude that spawn died. sysadmin will have to restart qmail,
-         and messages will be duplicated. fix: in qmail-send.c,
-         busy-loop if write() to spawn returns any error other than
-         EPIPE.
-19960501 bug: qmail-alias treated NAMETOOLONG and NOTDIR as temporary
-         errors. impact: qmail-alias never looked for -default; even if
-         mail was destined to bounce, it would have to time out first.
-         fix: qmail-alias now uses error_temp().
-19960430 bug: qmail-smtpd treated qq crash as permanent error. impact:
-         if somebody actively kills qq, mail will be incorrectly
-         bounced. tnx SS. fix: qmail-smtpd now treats only TOOLONG and
-         EXECHARD as permanent errors.
-19960430 cleanup: eliminated QQT_TTY from qqtalk.h.
-19960428 change: added "warning: " before trouble-marking message.
-19960428 change: added percenthack. requested by GB.
-19960428 cleanup: switched to auto-generated Makefile.
-19960428 cleanup: switched to auto-generated .o dependencies.
-19960428 cleanup: eliminated fmt.o, scan.o from Makefile.
-19960428 portability problem: under HP-UX 10, the rc pgrp is sent HUP
-         when rc finishes. tnx BG. impact: the qmail daemons are killed
-         when rc finishes. fix: added special note in INSTALL (sigh) to
-         use csh -cf.
-19960427 cleanup: added PORT_SMTP in qmail-remote.c.
-19960427 cleanup: introduced timeoutwrite.c. used it in qmail-remote.c.
-19960427 cleanup: introduced timeoutread.c. used it in qmail-remote.c.
-19960427 cleanup: introduced timeoutconn.c. used it in qmail-remote.c.
-19960427 change: added timeoutconnect. default: 60 seconds.
-19960427 change: added pop3d instructions to FAQ. tnx RN.
-19960427 change: eliminated env manipulation from qmail-start. tnx BG.
-19960427 change: headerbody now ends header, inserting blank line, if
-         first line of a header field doesn't pass hfield_valid. tnx TG.
-19960427 change: headerbody now prepends MBOX-Line: to any header line
-         starting From_. this lets qmail-inject work with elm's bounce.
-         tnx OR, K1J, et al.
-19960426 change: added moreinfo arg to qlist and qlist2.
-19960426 change: added signal_uncatchchild() to qmail-send.c. tnx BG.
-         now, if sysadmin sets SIGCHLD to SIG_IGN before invoking
-         qmail-send [sigh], qmail-send won't screw up bounce messages.
-19960426 change: dns_cname now checks whether last character is ],
-         rather than whether first character is [, for quick return.
-19960426 cleanup: glue is now global in dns.c.
-19960426 cleanup: qmail-remote no longer does stralloc_0 for host and
-         canonhost.
-19960426 change: dns_mxip no longer rejects [foo].bar.
-19960426 change: dns_mxip no longer requires for bracket that input
-         be 0-terminated.
-19960426 change: qmail-start can now take logger as an argument.
-19960426 change: qmail-start now invokes qmail-send in foreground (as
-         parent of other processes).
-19960426 change: added mailsubj. tnx GAW.
-19960426 portability problem: under some systems, can't lock read-only
-         file. impact: maildir2mbox would always fail on those systems.
-         fix: maildir2mbox now opens a separate lock fd. tnx BG.
-19960426 cleanup: removed unnecessary #!/bin/sh and # AUTO from mctl.sh.
-19960426 change: added qmail-qstat.
-19960426 change: added qmail-qread.8.
-19960426 change: renamed qmail-mailq as qmail-qread.
-19960419 change: qmail-alias now defers delivery rather than skipping
-         blank lines in .qmail.
-19960419 change: in qmail-lspawn.c, lowercased name before getpwnam().
-         really getpwnam() should do this, but oh well.
-19960419 change: added username to qmail-lspawn.c, with LSPAWN_USERLEN
-         in conf-unusual.h. names longer than LSPAWN_USERLEN will skip
-         getpwnam().
-19960419 change: if qlist doesn't see any cmds, it presumes that you
-         meant to subscribe.
-19960419 change: reorganized qlist acknowledgment format.
-19960415 change: reorganized and rewrote FAQ.
-19960415 change: renamed HOWTO as FAQ.
-19960414 change: in qmail-alias, converted extension to lowercase just
-         before qmeopen(), qmeox() calls. thus EXTENSION and USEREXT and
-         RECIPIENT will preserve case passed by qmail-lspawn, while
-         .qmailext lookups will not.
-19960414 change: removed case_lowers(r) from qmail-lspawn.c. tnx JLH.
-19960414 change: moved extension . -> : conversion to just before
-         qmeopen(), qmeox() calls in qmail-alias.c. thus EXTENSION and
-         USEREXT and RECIPIENT will preserve dots.
-19960414 change: qsmhook -x now does case-independent comparison.
-19960413 change: added procmail instructions to HOWTO.
-19960409 bug: qmail-alias does not check for newlines when it generates
-         Return-Path. impact: resulting Return-Path header field will be
-         illegal, if sender address contains newline followed by
-         something other than whitespace. fix: qmail-alias now replaces
-         newline with underscore in rpline.
-19960409 change: added leaf UUCP description to HOWTO. tnx J2K.
-19960409 change: added -B option to sendmail. tnx OR.
-19960409 change: qlist now makes lists unwritable (after renaming from
-         .qtemp to .qmail). tnx MLH.
-19960409 change: added flagdtline to qsmhook.c, based on -l option.
-19960409 change: added PIPELINING declaration to qmail-smtpd. tnx JGM.
-19960409 change: qmail-smtpd now flushes output instantly after DATA,
-         QUIT, HELO, EHLO, NOOP, VRFY, or any 502.
-19960409 change: qmail-smtpd now flushes output upon read() and death.
-19960409 change: qmail-smtpd no longer flushes output in out().
-19960409 change: increased qmail-smtpd outbuf size from 128 to 512.
-19960409 cleanup: in qmail-smtpd, eliminated ssinit() in favor of FDBUF.
-19960409 bug: qmail-alias produced aliasfoo-owner rather than foo-owner
-         as envelope sender for ~alias/.qmailfoo. tnx DS. impact: wrong
-         envelope sender whenever ~alias/.qmailfoo-owner existed. fix:
-         qmail-alias now checks for hyphen at beginning of extension.
-19960409 change: added _ESMTP to end of 220. tnx JLH.
-19960409 change: moved out("\r\n") out of smtp_greet() into callers.
-         this improves the flushing behavior on 221.
-19960328 qmail 0.74, beta.
-19960326 change: changed subdirectory split from 32 to 23.
-19960326 portability problem: some versions of make don't understand
-         that a line with just a tab is blank. impact: couldn't compile
-         under those systems. fix: eliminated extra tab from Makefile.
-         tnx TG.
-19960325 change: added qmail-mailq.
-19960325 change: introduced readsubdir.
-19960325 change: qmail-setup makes split; qmail-check checks split.
-19960325 change: used split in qmail-send, qmail-clean, qmail-queue
-         for mess, info, local, remote.
-19960325 change: fmtqfn now supports split queue subdirectories.
-19960325 cleanup: eliminated cat2s().
-19960325 cleanup: introduced fmtqfn.c. used it in qmail-queue.c,
-         qmail-send.c, qmail-clean.c.
-19960325 change: in protocol between qmail-clean and qmail-send, now
-         using intd/ instead of mess/.
-19960325 change: qmail-queue.c and triggerpull.c now work inside queue
-         subdirectory.
-19960325 change: spawn.c now checks whether message is a regular file.
-19960325 change: spawn.c now allows slashes in messid except at
-         beginning.
-19960325 cleanup: introduced fnmake_split in qmail-send.c.
-19960325 cleanup: eliminated strnum in qmail-send.c in favor of
-         fnmake_{info,todo,mess,chanaddr} and fnmake2_bounce.
-19960325 cleanup: introduced strnum3 in qmail-send.c for the logging
-         uses of strnum.
-19960325 cleanup: in qmail-send.c, getinfo() now takes id argument.
-19960325 cleanup: qmail-send.c now preallocates space for fn, fn2.
-19960325 change: time zone is now -0000 instead of +0000. encouraging
-         DRUMS to use this as an i-don't-know-the-local-time indicator.
-19960324 change: qmail-rspawn.c now calls tcpto_clean().
-19960324 cleanup: spawn.c now calls initialize().
-19960324 change: qmail-setup makes lock/tcpto; qmail-check checks it.
-19960324 change: qmail-remote now quickly skips connect() to a host that
-         seems to be down. tnx BP for pressuring me to get this done.
-19960323 change: in qmail-alias.8, renamed mboxg as mboxrd. tnx RD.
-         idea was popularized by RD in June 1995.
-19960322 cleanup: eliminated subfd_init().
-19960322 change: qbiff now removes the word Subject.
-19960322 change: now /bin/true instead of /dev/null in the generic
-         INSTALL.ids instructions. tnx JPR.
-19960322 change: added hfield_skipname(). tnx RN.
-19960322 bug: qmail-inject did not check whether USER needed quoting.
-         impact: if USER had weird characters, the From address would
-         generally be wrong, unless the user manually set up MAILUSER
-         with proper quoting. fix: qmail-inject sets up a quoted-string
-         if necessary.
-19960322 cleanup: separated out quote_need() in quote.c.
-19960322 cleanup: added stralloc_catb.c. used it in qmail-alias.c,
-         qmail-send.c.
-19960322 change: qmail-send now uses a quadratic retry schedule from
-         birth of each message. this also eliminates clustering.
-19960322 cleanup: separated out nextretry() in qmail-send.c.
-19960322 change: qmail-remote now passes all non-@ addresses through
-         without comment, not just <> and <#>.
-19960322 change: replaced # test with anything@[] test in qmail-inject.
-19960322 change: replaced # with #@[] in qlist.c, qmail-alias.c,
-         qmail-send.c, qreceipt.c.
-19960322 change: qmail-lspawn no longer discards messages to <#>.
-19960322 cleanup: in qlist, used str_diff for <> and <#> tests.
-19960322 change: qmail-alias is now back to testing envelope sender for
-         <> and <#>, rather than things without an @.
-19960321 change: added 8BITMIME support to qmail-smtpd.
-19960321 change: added ESMTP support to qmail-smtpd.
-19960318 change: used NEWSENDER in place of SENDER for |forward.
-19960318 change: added NEWSENDER.
-19960318 change: added HCMSSC support to qmail-alias.c.
-19960318 change: added HCMSSC support to spawn.c.
-19960318 change: added HCMSSC support to qmail-remote.c.
-19960318 change: added HCMSSC support to qmail-smtpd.c.
-19960317 portability problem: SCO requires -lsocket -lnsl. impact:
-         couldn't compile under SCO. fix: added SCO section in
-         make-cmds.sh. tnx JPR. note that this is for OSR 5; 3.2v4.2
-         will need more fixes, and old 3.2 is basically hopeless.
-19960317 bug: newfield_datemake would leave newfield_date alone if it
-         was already initialized, even though qmail-send calls
-         newfield_datemake anew for each bounce. impact: bounce messages
-         would usually have an incorrect Date field. fix: redid
-         newfield_datemake to update newfield_date each time.
-19960317 change: allowed . and @ in 822 phrases; 822 doesn't allow them,
-         but they do show up. tnx to the DRUMS group.
-19960317 change: replaced GMT with +0000 in date822fmt.c. this confuses
-         a few versions of getdate(), but the DRUMS group is going to
-         outlaw GMT, not just recommend against it as in 1123.
-19960317 change: redefined ALIAS_EMPTY to take advantage of . for file
-         deliveries. tnx RN.
-19960317 change: qmail-alias now allows . as well as / to start file
-         deliveries. tnx RN.
-19960317 change: qmail-alias now dies (soft) if .qmail is writable to
-         others, rather than silently ignoring it.
-19960317 change: qmail-alias now dies (soft) if flagforwardonly is
-         violated, rather than silently ignoring the bad instructions.
-19960317 change: qmail-alias now ignores x bit on empty .qmail files.
-19960317 bug: if RCPT gave 4xx and DATA gave 5xx, qmail-rspawn would
-         incorrectly assign a permanent failure to that recipient.
-         impact: in that case, mail would be incorrectly bounced. fix:
-         remove orr > 0 test from qmail-rspawn.c.
-19960310 change: tcp-env now uses signal_uninit(). [sigh]
-19960310 change: tcp-env now specifically unsets HOST and INFO if they
-         are not applicable. just trying to make it more widely usable.
-19960310 cleanup: used byte_* in remoteinfo.c, ipme.c, tcp-env.c.
-19960310 cleanup: added readwrite.h, eliminated sys.h.
-19960310 cleanup: included byte.h in qmail-send.c.
-19960310 cleanup: eliminated i and j from forward.c's main().
-19960310 cleanup: eliminated wstat from qlist.c.
-19960310 cleanup: eliminated die_nomem() parameter in qmail-setup.c.
-19960310 cleanup: eliminated i from qmail-remote's addrmangle().
-19960310 cleanup: added exit.h.
-19960310 cleanup: split ipalloc.c off of ip.c.
-19960310 cleanup: added fmt_strn.c, eliminated fmt_strncpy.c.
-19960310 change: reorganized INSTALL to do some pre-upgrade tests.
-         tnx RN.
-19960310 change: reordered steps in upgrade procedure in INSTALL.
-19960308 change: eliminated ownership test in qmail-alias.c. tnx DS.
-19960304 change: in SECURITY, "six most recent sendmail security
-         holes" -> "seven most recent sendmail security holes."
-19960303 qmail 0.73, beta.
-19960303 change: added SYSDEPS.
-19960303 cleanup: revamped select.h autoconfiguration.
-19960303 cleanup: revamped fork.h autoconfiguration.
-19960303 cleanup: revamped direntry.h autoconfiguration. target is now
-         direntry.h; auto-hasdrent.h is gone.
-19960303 change: tryflock.c now includes <sys/types.h>, for consistency
-         with lock.c. may affect portability.
-19960302 portability problem: under BSDI, can't set sticky on normal
-         files. dorks. impact: the new qlist doesn't work under BSDI;
-         be glad I test things before release. fix: qmail-alias and
-         qlist now use executable instead of sticky.
-19960302 change: gfrom now quotes >From and >>From etc. as well as From;
-         in other words, I'm switching from mbox format to mboxg format.
-19960302 cleanup: added gfrom.c. used it in qmail-alias.c, maildir2mbox.c.
-19960302 change: addbounce() now substitutes \n\n -> \n/ in reports,
-         and \n -> _ in recips. thus bounces can now be reliably parsed.
-19960302 change: if qmail-send had trouble reading the original message
-         or the list of addresses for a bounce, it used to give up and
-         send a bounce with "Oh no! I had trouble reading the rest of
-         your message" or some such. now it aborts the bounce attempt
-         and tries again later.
-19960302 cleanup: added qqtalk_fail(). used it in qmail-alias.c,
-         qmail-smtpd.c.
-19960302 bug: if mailforward() had trouble reading message (e.g.,
-         because of an I/O error), it marked an error but kept reading.
-         impact: could loop forever. fix: upon error, break.
-19960302 change: maildir2mbox now scans (restrictively) for return-path.
-19960302 change: qbiff now prints subject and body, up to 74 chars.
-19960302 change: added H_SUBJECT to hfield.
-19960302 change: qbiff now puts TO before FROM.
-19960301 cleanup: added fmt_str.c. used it in many places.
-19960301 change: qmail-send now says something if you've told it to exit
-         but it's waiting for some deliveries. tnx RN.
-19960301 change: qmail-alias -n now continues (with warning) if home
-         directory is sticky. tnx RN.
-19960301 change: improved usage messages in qmail-alias.c. tnx RN.
-19960301 change: put limit on length of addresses in qlist.
-19960301 change: added exit 99 support to qmail-alias. tnx RN.
-19960301 change: qmail-alias now exits immediately on temporary or
-         permanent error. rewrote section in qmail-alias.8 accordingly.
-19960301 cleanup: eliminated flagsuccesses from qmail-alias.c.
-19960301 change: added usermap.
-19960301 bug: failure to append to mbox was a permanent error. impact:
-         if mbox was temporarily unopenable (e.g., because fds were
-         low), mail would be incorrectly bounced. fix: failure is now
-         temporary. tnx DS.
-19960229 change: qmail-alias now preserves any envelope sender that
-         doesn't contain an @, not just <> and <#>.
-19960229 cleanup: revamped byte_* interface.
-19960229 cleanup: renamed str_cpy as str_copy.
-19960229 cleanup: added str_chr.c. used it in qbiff.c, qmail-smtpd.c.
-19960229 cleanup: added str_rchr.c. used it in qmail-send.c, quote.c,
-         qmail-remote.c.
-19960229 cleanup: added byte_rchr.c. used it in qmail-smtpd.c, spawn.c.
-19960229 cleanup: used USEREXT instead of RECIPIENT in qsmhook.c.
-19960229 cleanup: used USEREXT instead of RECIPIENT in qbiff.c.
-19960229 cleanup: removed j and k from rewrite() in qmail-send.c.
-19960229 portability problem: under HP-UX 10 and Solaris 2.5, can't
-         setgroups()/setgid() to the system's nogroup/nobody gid. dorks.
-         impact: inetd chokes, so all SMTP connections are rejected; and
-         "alias" mail, including postmaster, bounces. fix: in
-         INSTALL.ids, set up a separate powerless gid (tentatively
-         "nofiles") for qmaild and alias. tnx DS and PJG.
-19960229 change: qreceipt now uses qqtalk rather than qmail-inject.
-19960229 change: qlist now uses qqtalk rather than qmail-inject.
-19960229 change: incorporated qmail-setup patch from RN for better
-         error messages.
-19960228 change: added LSPAWN_BREAK in conf-unusual.h; used it in
-         lspawn.c. configurability requested by PJG.
-19960228 portability problem: on several systems, including everything
-         from DEC, select() on a pipe reader returns 1 if there aren't
-         any writers yet. pointed out by DS. impact: qmail-send chewed
-         up lots of CPU time. fix: trigger_set() now opens the pipe for
-         writing after opening it for reading. also added trynpbg1; on
-         working systems, no point in wasting the extra fd.
-19960228 change: qmail-alias uses .qmail sticky bit for forwardonly.
-19960228 change: qlist now sets sticky bit on .qmail file.
-19960228 change: un-documented +list.
-19960228 portability problem: on HP-UX and possibly other systems, the
-         supplementary group list does not include the gid. pointed out
-         by DS. impact: on those systems, tryshsgr could incorrectly set
-         hasshsgr; this would prevent qmail-send from running. fix: if
-         tryshsgr sees that getgroups() returns 0, now it actively sets
-         up a supplementary group list. added chkshsgr to make sure the
-         setgroups() will work.
-19960227 cleanup: eliminated GETSHORT in dns.c in favor of getshort().
-19960227 cleanup: deleted h->len < 3 test from qlist.c:dobody. tnx RN.
-19960227 change: replaced ~ with $HOME in INSTALL.mbox.
-19960227 change: added note about setgid-mail bits to INSTALL.mbox.
-19960227 change: added forward.1.
-19960227 change: modified forward to allow multiple addresses.
-19960227 change: modified forward to take an entire address, not just a
-         hostname.
-19960227 change: renamed qrelay as forward.
-19960227 change: added USEREXT support to qmail-alias.
-19960227 change: added -F to sendmail. the need for this was pointed
-         out by RN.
-19960227 change: added 2 bytes of slop in alloc().
-19960227 bug: received_setup() was not allowing space for the final \0.
-         impact: none; the line length is always between 65 and 75
-         characters, which gives at least 45 characters of slop with
-         existing malloc() implementations. fix: leave space. tnx NH.
-         note that the bug here is really in fmt_strncpy, which was
-         written before i was truly free of the curse of libc.a.
-19960227 change: added ALIAS_EMPTY in conf-unusual.h; used it in
-         qmail-alias.c. tnx PJG.
-19960227 change: added SPAWN_NUMD in conf-unusual.h; used it in spawn.c.
-19960227 change: added conf-unusual.h.
-19960227 cleanup: replaced sizeof(short) with 2 in dns.c.
-19960227 portability problem: on an Alpha, long is 64 bits. pointed out
-         by DS. impact: address lookups produced incorrect results on an
-         Alpha; qmail-makectl and qmail-remote failed. fix: replaced
-         sizeof(long) with 4 in dns.c.
-19960227 portability problem: on an Alpha, bzero() is declared properly
-         via sys/time.h. impact: couldn't compile on an Alpha. fix:
-         removed bzero() declaration from select.h. tnx DS.
-19960227 portability problem: under SCO, sys/file.h is not protected.
-         impact: couldn't compile under SCO. fix: include sys/types.h in
-         lock.c. tnx RN.
-19960219 change: added some .qmail-list hints to qlist.1.
-19960219 change: added +list support to qmail-alias.
-19960215 change: added THANKS.
-19960212 bug: foo was not initialized in qrelay.c. impact: depends on
-         the machine; on some machines, no effect; on other machines,
-         guaranteed core dump. fix: initialized foo. tnx DS.
-19960209 qmail 0.72, beta.
-19960209 change: qmail-alias now replaces dot, not slash, with colon.
-         also, qmeopen() makes sure that .qmail file is S_IFREG; I hope
-         this doesn't cause portability problems.
-19960209 change: added success-reporting procedure to INSTALL.
-19960208 change: added VERSION.
-19960208 change: added qlist2.
-19960208 change: revamped qlist interface. tnx RN.
-19960208 change: improved an error message in qlist.c.
-19960208 change: added qrelay. added relay section to HOWTO. tnx DS.
-19960208 cleanup: included substdio.h in qqtalk.h.
-19960207 bug: prioq_delmin() wasn't guaranteeing heap structure on the
-         last element. impact: scheduled passes could have been delayed,
-         conceivably as long as half an hour. fix: prioq_delmin() now
-         checks when it can safely move the last element.
-19960207 change: added maildirmake.1, maildir2mbox.1.
-19960206 change: revised logo paragraph in THOUGHTS.
-19960206 change: replaced nowhere.org with nowhere.mil in examples.
-         nowhere.org is a real domain... [sigh]
-19960206 change: added qreceipt.1.
-19960206 portability problem: IRIX doesn't have vfork. pointed out by
-         DS. impact: couldn't compile under IRIX. fix: added fork.h,
-         tryvfork.c.
-19960206 portability problem: IRIX doesn't have ranlib. pointed out by
-         DS. impact: couldn't compile under IRIX. fix: added IRIX
-         section in make-cmds.sh.
-19960205 cleanup: removed warning from substdio_copy() documentation; in
-         fact, substdio_copy() can be used safely on a fed substdio.
-19960205 change: added qbiff.1.
-19960204 change: implemented localnet. removed relevant paragraph from
-         THOUGHTS. tnx IS.
-19960204 change: in qmail-remote.8, explained the dangers of smarthost.
-         tnx IS.
-19960204 change: implemented virtualdomains wildcards. tnx JLH.
-19960203 change: qmail-send now handles virtualdomains _after_ locals.
-         updated INSTALL.qsmhook appropriately.
-19960203 change: added note to INSTALL.alias about ~ftp, ~www, ~uucp
-         being owned by root.
-19960130 cleanup: in qlist.c, renamed flagremoved as flagwasthere.
-19960130 bug: qmail-send did not pay attention to flagexitasap in
-         pass_dochan(). impact: qmail-send would happily start new
-         deliveries even if it wanted to exit. fix: qmail-send now
-         returns immediately in pass_selprep() and pass_dochan() if
-         flagexitasap.
-19960130 change: in qlist.c and qlist.1, renamed ext as list.
-19960130 change: in qlist.c and qlist.1, renamed manager as owner.
-19960129 qmail 0.71, beta.
-19960129 change: mentioned djb-qmailbeta in README. tnx MWE.
-19960129 change: added a note to INSTALL.mbox making clear that
-         Mailbox is in mbox format. tnx MWE.
-19960129 change: qlist now warns you if it didn't see any cmds. tnx RN.
-19960129 change: incorporated qlist patch from RN to refuse double subs. 
-19960129 change: added qlist.1, contributed by RN. mangled it a bit.
-19960129 bug: comment was not allowed in "phrase (comment) <route>";
-         pointed out by RN. impact: some correct address lists could be
-         mis-parsed by qmail-inject or qlist. fix: token.c now allows
-         TOKEN_COMMENT in the appropriate scan.
-19960128 change: added a logo paragraph to THOUGHTS.
-19960127 change: implemented rcpthosts.
-19960127 change: split up some uses of putflush in qmail-remote,
-         qmail-smtpd, spawn.c. eliminated NODELAY and corresponding
-         paragraph in THOUGHTS.
-19960127 change: added quote2(). used it in qmail-alias, qmail-send,
-         qreceipt. now addresses are properly quoted in the From, To,
-         and internal Return-Path of bounces; the From and To of
-         receipts; and the Return-Path/RPLINE of delivered messages.
-         removed relevant paragraph from THOUGHTS.
-19960127 change: in RFCLOOPS, documented fact that Delivered-To address
-         is conventionally not quoted.
-19960127 change: knocked default SMTP timeouts down to 20 minutes.
-19960127 change: added INSTALL.ids. tnx RN.
-19960127 change: in INSTALL, noted that nogroup should already exist.
-19960127 bug: pass_selprep checked pqchan[c] even if pass[c].id. impact:
-         qmail-send wasted CPU time whenever more than one message was
-         waiting on a blocked channel. fix: pass_selprep now checks
-         !pass[c].id.
-19960127 bug: programs invoked from qmail-alias were immune to SIGPIPE.
-         impact: a delivery pipeline such as |yes|head -1000 would loop
-         forever, since yes does not check for write errors. fix: added
-         signal_uninit(). used it before execvp in qmail-alias. [sigh]
-19960127 cleanup: added date822fmt.c. used it in newfield.c, qmail-queue.
-19960127 cleanup: added fmt_uint0.c. used it in myctime.c, newfield.c,
-         qmail-queue.
-19960127 cleanup: added dnsdoe.c. used it in dnscname, dnsfq, dnsip,
-         dnsmxip, dnsptr.
-19960127 cleanup: eliminated temp from dnsfq.c.
-19960127 bug: gen_allocdefs was making assumptions incompatible with the
-         alloc_re interface. impact: qmail-send would dump core if you
-         ran out of memory. fix: changed alloc_re interface.
-19960126 portability problem: some versions of Linux don't have
-         net/route.h. pointed out by RN. impact: couldn't compile under
-         those versions. fix: ipme.c no longer includes net/route.h;
-         hopefully this won't cause new portability problems.
-19960126 change: added chmod instructions to INSTALL and INSTALL.alias.
-         tnx RN.
-19960126 change: INSTALL now refers to the traditional sendmail spot
-         (/usr/lib), not the BSD 4.4 spot (/usr/sbin). tnx RN.
-19960126 change: make auto-uids.h now creates auto-uids.h.tmp first.
-         thus, if someone disobeys the installation instructions, and
-         his make fails to remove targets upon error, he'll still be
-         okay. tnx RN.
-19960126 change: added forgeries.7.
-19960125 cleanup: eliminated flagverbose, flagmetoo in sendmail.
-19960125 cleanup: added substdio_copy.c. used it at several spots.
-19960125 cleanup: added constmap.c. qmail-send now uses constmap for
-         locals and virtualdomains. this will speed things up: no
-         problem now to have thousands of virtual domains. removed
-         relevant paragraph from THOUGHTS.
-19960125 change: added linux section in find-systype. this will affect
-         linux-* systypes. tnx RN for relevant info.
-19960124 change: added -od, -oe, -p, -f to sendmail. the need for
-         these was pointed out by TN.
-19960124 bug: qmail-smtpd was reading from descriptor 1. impact: none;
-         in normal use, both 0 and 1 point to the network. fix: changed
-         1 to 0.
-19960124 bug: qmail-alias treated any .qmail open failure as permanent.
-         impact: if a .qmail file was temporarily unopenable (e.g.,
-         because of NFS), it was incorrectly ignored. fix: qmail-alias
-         now dies QLX_SOFT on any open failure other than ENOENT.
-19960124 change: added freebsd section in find-systype, same as bsd.os
-         section. this will affect freebsd-* systypes.
-19960124 cleanup: find-systype now immediately converts sys to lowercase.
-19960124 change: qmail-setup now copies man pages into /var/qmail/man;
-         qmail-check checks /var/qmail/man. using .0 style, which might
-         cause trouble on various machines, but better than not trying.
-19960124 change: in qmail-remote.c, changed perm_control to temp_control
-         (and D to Z, thanks); thus failure to read control files (e.g.,
-         because of permissions) is now a temporary error.
-19960124 bug: in qmail-remote.c, temp_chdir() used D, not Z. impact: if
-         chdir() to CONF_HOME failed (e.g., because of NFS), message
-         would be bounced. fix: changed D to Z.
-19960124 change: reorganized README.
-19960124 portability problem: Linux has the fifo kernel bug that I had
-         hoped I'd never run into. impact: messages under Linux (and any
-         other systems with this bug) were picked up only in sweeps, not
-         instantly. fix: triggerpull.c now writes a byte (non-blocking)
-         to the fifo. updated INTERNALS accordingly.
-19960124 bug: in qmail-remote.c, if quit() saw a remote write error, it
-         would call writeerr() even though a message report had already
-         been produced. impact: the mess report would include an extra
-         "ZConnected but communications failed," which was confusing
-         to humans. fix: quit() now simply skips the wait-for-QUIT
-         smtpcode() upon write error.
-19960124 portability problem: Linux does not have SIGSYS or SIGEMT.
-         impact: couldn't compile under Linux. fix: added appropriate
-         ifdefs in signal.c.
-19960124 qmail 0.70, beta.
+- 20200523 doc: give text files .md extensions.
+- 20200523 cleanup: remove qsmhook, replaced by preline.
+- 20200520 remove wrappers for obsolete mail clients without maildir support
+- 20200520 version: notqmail 1.08.
+- 20200519 bug: fix several other places where variables could overflow.
+- 20200519 security: fix signedness wraparound in substdio_{put,bput}().
+           (CVE-2005-1515)
+- 20200519 security: fix possible signed integer overflow in commands().
+           (CVE-2005-1514)
+- 20200519 security: fix integer overflow in stralloc_readyplus().
+           (CVE-2005-1513)
+- 20200514 bug: qmail-pop3d runs as root if root authenticates.
+           impact: vector for dictionary attack on root password.
+           fix: exit 1, same as a failed checkpassword login.
+- 20200514 code: changed qmail-popup interface (leave kid's fd 2 alone).
+- 20200511 code: remove tryshsgr.c and use uid_t, gid_t types.
+- 20200511 add first unittest, run with "make test"
+- 20191227 fixed possible overflow in alloc() with allocations close to 4GiB
+- 20191226 add missing return types to main()
+- 20190919 fix ipme with multiple addresses on the same interface on platforms
+           without sa_len
+- 20190904 code: use stdint.h to get the definition for uint32
+- 20190903 code: do not parse header recipients for "qmail-inject -a"
+- 20190826 code: if $QMAILREMOTE is set, it's invoked instead of qmail-remote.
+- 20190822 cleanup: remove unused dnsmxip.
+- 20190822 cleanup: remove unused dnscname.
+- 20190819 version: notqmail 1.07.
+- 20190810 code: remove incorrect usage of vfork()
+- 20190710 code: add instchown to set ownership and mode on installed files.
+- 20190709 code: add instpackage to install without root access.
+- 20190714 code: removed idedit, install-big. var-qmail packages are no more.
+- 20190708 code: lookup uid/gid at runtime.
+- 20190711 portability problem: explicitly initialize strerr_sys and
+           define BIND_8_COMPAT to work around Mac OS X.
+- 20190709 doc: rename INSTALL, SENDMAIL to INSTALL.md, SENDMAIL.md to
+           support building on case-insensitive filesystems.
+- 20190715 code: detect and prefer utmpx where available.
+- 20190708 code: use DESTDIR environment variable as root directory in install.
+- 20071130 version: netqmail 1.06
+- 20071130 legal: qmail-1.03 is now in the public domain
+- 20051103 doc: dot-qmail.9 updated for changed (19980613) conf-patrn default, tnx ADM
+- 20040121 version: netqmail 1.05
+- 20040121 code: qmail-smtpd is protected from exceedingly long (eg 2GB)
+           header lines
+- 20040121 code: qmail_lspawn, qmail-newmrh, qmail-newu, and qmail-rspawn
+           are protected from misbehaving on hosts where the size of an
+           integer is not the same as the size of a character pointer
+           (eg 64 bit hosts with 32 bit ints)
+- 20031027 version: netqmail 1.04.
+- 20031027 doc: INSTALL points to http://lifewithqmail.org/lwq.html
+- 20031027 doc: qmail.7 identifies installation as netqmail and points to
+           http://qmail.org/
+- 20031027 doc: qmail-queue.8 adds explanation of $QMAILQUEUE
+- 20031027 doc: qmail-log.5 adds reference to errors from $QMAILQUEUE script
+- 20031027 doc: FAQ also points to http://cr.yp.to/qmail/faq.html and
+           http://qmail.org/
+- 20031027 code: qmail-smtpd identifies itself as netqmail
+- 20031027 code: if $QMAILQUEUE is set, it's invoked instead of qmail-queue
+- 20031024 code: changed errno from int to #include.
+- 20031024 code: fixed .qmail parsing bug (accessing an array out of bounds)
+           that was discovered by Erik Sjölund <erik.sjolund@gmail.com>).
+- 20031024 code: recognize 0.0.0.0 as a local address.
+- 20031024 code: sendmail's -f flag now overrides environment variables.
+- 19980615 version: qmail 1.03.
+- 19980614 doc: eliminated BIN.setup in favor of a web page.
+- 19980614 code: added other auto* to qmail-showctl output.
+- 19980614 doc: added pointer to immhf.html in qmail-header.5.
+- 19980614 doc: added note to TEST.receive about SMTP command format.
+- 19980614 doc: added FAQ 5.6 on qmail-qmqpd.
+- 19980614 code: removed unused variables in idedit.c.
+- 19980613 code: changed conf-patrn to 002.
+- 19980613 doc: moved SENDMAIL lower in INSTALL.
+- 19980612 code: added install-big.
+- 19980612 code: added BIN.Makefile.
+- 19980612 doc: added BIN.README, BIN.setup.
+- 19980612 code: switched to new install.
+- 19980611 code: added idedit.
+- 19980611 doc: added FAQ 1.3 on $QMAILMFTFILE.
+- 19980611 doc: used bouncesaying in FAQ 5.5.
+- 19980611 code: added except.
+- 19980611 code: added bouncesaying.
+- 19980611 code: allowed unbracketed IP addresses in dns_ipplus() and
+           dns_mxip().
+- 19980611 code: allowed spaces after colon in non-bracketed addresses in
+           qmail-smtpd.
+- 19980611 doc: cleaned up UPGRADE.
+- 19980528 bug: qmail-smtpd skips first character in rcpthosts() call.
+           tnx NND. impact: qmail-smtpd crashes on empty address; and it
+           allows relaying to ""@any.host. fix: use addr.s.
+- 19980515 doc: expanded flock discussion in INSTALL.mbox.
+- 19980515 doc: eliminated flock warning from INSTALL.maildir.
+- 19980515 doc: split REMOVE.binmail out of INSTALL.
+- 19980515 doc: split REMOVE.sendmail out of INSTALL.
+- 19980515 doc: split TEST.deliver and TEST.receive out of INSTALL and
+           UPGRADE.
+- 19980515 doc: integrated INSTALL.boot into INSTALL.
+- 19980515 code: cleaned up final output in qmail-qmqpd.c.
+- 19980514 doc: updated procmail notes in INSTALL.mbox. tnx JRM.
+- 19980514 doc: changed FAQ 4.4 to point to INSTALL.mbox for procmail.
+           tnx JRM.
+- 19980514 code: separated HELO and EHLO; single-line response for HELO.
+           tnx to various people.
+- 19980430 version: qmail 1.02.
+- 19980430 doc: updated SECURITY.
+- 19980430 doc: fixed FAQ 4.9. tnx KB.
+- 19980430 code: changed quote2() to avoid quoting <>.
+- 19980429 code: changed quote_need() to quote empty local parts. tnx HHO.
+- 19980428 doc: added status notes to INSTALL and UPGRADE.
+- 19980428 code: skip setting environment in sendmail.c if PROTO is set.
+- 19980428 code: eliminated recipientmap.
+- 19980428 code: added virtual users to qmail-send.c. tnx RN.
+- 19980428 code: eliminated domain from rewrite() in qmail-send.c.
+- 19980428 code: added binm1, binm1+df, binm2, binm2+df, binm3, binm3+df.
+- 19980428 doc: eliminated most Mailbox references from INSTALL, UPGRADE.
+- 19980428 code: added config-fast.
+- 19980428 code: renamed qmail-config as config.
+- 19980428 code: supported QMAILMFTFILE in qmail-inject.c.
+- 19980428 code: recognized Mail-Followup-To in hfield.c.
+- 19980428 code: replaced rwrecip() with rwappend() in qmail-inject.c.
+- 19980428 code: cleaned up doheaderfile() in qmail-inject.c.
+- 19980426 code: eliminated -type test from qmail-qstat to speed it up.
+           tnx FT.
+- 19980421 doc: eliminated remove-rcpthosts comments from FAQ.
+- 19980421 doc: updated FAQ 4.3 to point to Russ Allbery's FAQ. 
+- 19980421 doc: took account of /var/qmail/boot in INSTALL, UPGRADE, and
+           INSTALL.vsm.
+- 19980421 code: added /var/qmail/boot, with home, home+df, proc, proc+df.
+- 19980421 doc: skipped make and make man in INSTALL.
+- 19980420 doc: cleaned up mbox description in SENDMAIL.
+- 19980420 code: changed QMQP port to official port 628.
+- 19980402 doc: updated qmsmac references to fastforward.
+- 19980402 doc: replaced qmail-upgrade man page with doc/SENDMAIL.
+- 19980402 code: added qmqpservers output to qmail-showctl.
+- 19980402 code: added qmail-qmqpd.
+- 19980402 code: added qmail-qmqpc.
+- 19980304 code: eliminated del_saywhynoexit in qmail-send.c.
+- 19980304 code: eliminated concurrencynodel in qmail-send.c.
+- 19980222 code: added status() to qmail-send.c.
+- 19980222 code: added concurrencyused to qmail-send.c.
+- 19980128 doc: added note to qmail-getpw.9 about ETXTBSY.
+- 19980127 code: eliminated err_seenmail() in qmail-smtpd.c. tnx PO.
+- 19980126 doc: used $DEFAULT in FAQ where possible.
+- 19980126 code: added DEFAULT in qmail-local.
+- 19980126 code: added -/ to qmail-pw2u.
+- 19980126 code: revamped qmeopen() as qmesearch() with more sensible
+           semantics, separating dash from ext cleanly.
+- 19980126 code: split qmeexists() out of qmeopen() in qmail-local.c.
+- 19980126 code: introduced safeext in qmail-local.c.
+- 19980126 code: changed ~alias to mode 2755, to put files into group
+           qmail rather than group nofiles under System V.
+- 19980126 doc: switched to /var/qmail/rc in INSTALL*, UPGRADE, FAQ.
+- 19980126 code: added rc.
+- 19980119 doc: added .qmail creation warning to condredirect.1.
+- 19980118 code: made auto_uids.c creation atomic in Makefile. tnx HHO.
+- 19980118 doc: added PIC.*.
+- 19980117 portability problem: Solaris 2.5.1 incorrectly converts
+           O_NDELAY into O_NONBLOCK for sockets, so that ndelay_off()
+           fails to undo ndelay_on(). impact: none, since all the network
+           readers here use select() via timeoutread(). fix: use
+           O_NONBLOCK if it is defined.
+- 19980115 code: reformatted qmail-qmtpd.c.
+- 19980115 doc: changed tcpcontrol references in FAQ.
+- 19980115 doc: documented morercpthosts in qmail-qmtpd.9.
+- 19980115 code: eliminated unused datetime in qmail-qmtpd.c.
+- 19980115 code: eliminated sigalrm() in qmail-qmtpd.c.
+- 19980115 code: used rcpthosts() in qmail-smtpd.c, qmail-qmtpd.c.
+- 19980115 code: introduced rcpthosts.c.
+- 19980115 code: added morercpthosts.cdb support to qmail-showctl.
+- 19980115 code: added morercpthosts support to qmail-showctl.
+- 19980115 code: do_lst now returns file-exists in qmail-showctl.
+- 19980112 doc: documented morercpthosts in qmail-smtpd.9.
+- 19980112 code: added qmail-newmrh.
+- 19980112 code: used commands.c in qmail-popup.
+- 19980112 code: used commands.c in qmail-pop3d.
+- 19980112 code: introduced fakehelo in qmail-smtpd.
+- 19980112 code: moved flagbarf setting out of bmfcheck().
+- 19980112 code: allowed more address misformatting in qmail-smtpd.
+- 19980112 code: eliminated qmail@pobox.com help address in qmail-smtpd.
+- 19980112 code: reorganized qmail-smtpd.
+- 19980112 code: reformatted qmail-smtpd.
+- 19980112 code: used commands.c in qmail-smtpd.
+- 19980112 code: switched from 0 to "" for no arg in commands().
+- 19980112 code: added commands.c.
+- 19971230 doc: added -s to FreeBSD commands in INSTALL.ids. tnx TM.
+- 19971224 doc: added pointer to qmail pictures in README.
+- 19971223 doc: added note in FAQ about qmail-pop3d using maildir.
+- 19971219 code: added HOST2, HOST3, HOST4.
+- 19971219 code: renamed extx as x in qmail-local.c.
+- 19971219 doc: partitioned qmail-command.0.
+- 19971219 doc: updated FAQ 4.3 to point to newer majordomo patches.
+- 19971219 doc: eliminated qlist2 from FAQ.
+- 19971219 doc: eliminated qlist discussion from SECURITY.
+- 19971219 code: moved qlist, qlist2 to separate package.
+- 19971213 doc: added FAQ 4.10 on qmail-users generally.
+- 19971213 doc: added FAQ 4.9 on dealing with NFS outages.
+- 19971031 doc: added Linux and FreeBSD commands to INSTALL.ids. tnx TM.
+- 19971026 doc: added note about smtplf in qmail-smtpd.8. tnx S2S.
+- 19971014 doc: some tweaks to THOUGHTS.
+- 19971012 doc: used MAILER-DAEMON in UUCP example in INSTALL.
+- 19971003 code: eliminated dataline and getln() from qmail-remote.c.
+- 19971003 code: revamped blast() in qmail-remote.c.
+- 19971002 doc: added FAQ entries for .forward and /etc/aliases.
+- 19971002 doc: rewrote INSTALL.mbox and INSTALL.vsm.
+- 19971002 doc: renamed INSTALL.qsmhook as INSTALL.vsm.
+- 19971002 doc: emphasized the qmail-popup argv0 in FAQ.
+- 19971001 doc: added dot-forward note to BLURB3.
+- 19971001 doc: added more configuration notes to qmail-upgrade.9.
+- 19971001 doc: added note in INSTALL.qsmhook about dot-forward.
+- 19970930 code: token822_parse() now supports backslash as a quoting
+           character in atoms.
+- 19970929 doc: suggested symbolic links in INSTALL.mbox.
+- 19970925 doc: added note to INTERNALS about bounce stability.
+- 19970925 doc: added section to THOUGHTS discussing CNAME lookups.
+- 19970925 code: qmail-remote no longer does CNAME lookup on sender. tnx
+           C2F.
+- 19970923 portability problem: under SCO OSR5, splogger needs socket
+           libraries. impact: couldn't compile. fix: socket.lib. tnx RB.
+- 19970906 portability problem: under RISC/OS, Mail invokes sendmail -bm.
+           impact: can't send mail using Mail on RISC/OS. fix: ignore -bm.
+           tnx NW.
+- 19970813 code: implemented databytes in qmail-qmtpd.
+- 19970813 code: implemented databytes. tnx M4S for sample code.
+- 19970813 code: replaced execvp() with execv() for sh in qmail-local.
+- 19970813 doc: said in qmail-control.9 that recipientmap allows comments.
+- 19970813 code: used strerr in qmail-local.c.
+- 19970813 code: changed timeoutread(), timeoutwrite() interface.
+- 19970813 code: eliminated shutdown() in timeoutread(), timeoutwrite().
+- 19970813 code: revamped I/O in qmail-smtpd.c.
+- 19970813 code: used timeoutread(), timeoutwrite() in qmail-smtpd.c.
+- 19970813 code: simplified getcontrol() logic in qmail-remote.c; some
+           out-of-memory messages are now cannot-read-control messages.
+- 19970813 code: eliminated scan_nbblong().
+- 19970813 code: reformatted qmail-remote.c.
+- 19970813 code: renamed flaganyrecipok as flagbother in qmail-remote.c.
+- 19970813 code: integrated status report into quit() in qmail-remote.c.
+- 19970813 code: revamped smtpcode() in qmail-remote.c.
+- 19970813 code: added flagcritical in qmail-remote.c. eliminates
+           possible-duplicate warning if dot has not yet been sent.
+- 19970813 code: revamped I/O in qmail-remote.c.
+- 19970813 code: quit immediately after sending QUIT in qmail-remote.c.
+- 19970813 code: made many more globals in qmail-remote.c.
+- 19970813 code: switched qmail-remote.c from subfdin to home-grown.
+- 19970813 code: switched qmail-remote.c from subfdout to subfdoutsmall.
+- 19970813 code: added LAST support to qmail-pop3d.
+- 19970812 code: changed qmail_close() success return from 0 to "".
+- 19970812 code: revamped I/O in qmail-qmtpd.c.
+- 19970812 code: added qmail-tcpok.
+- 19970812 code: used strerr in maildirmake.c.
+- 19970812 code: reformatted maildirmake.c.
+- 19970812 code: printed qp in condredirect.c.
+- 19970812 code: printed qqx in condredirect.c.
+- 19970812 code: revamped I/O in condredirect.c.
+- 19970812 code: reformatted condredirect.c.
+- 19970812 code: used strerr in preline.c.
+- 19970812 code: revamped I/O in preline.c.
+- 19970812 code: reformatted preline.c.
+- 19970812 code: printed qp in forward.c.
+- 19970812 code: printed qqx in forward.c.
+- 19970812 code: revamped I/O in forward.c.
+- 19970812 code: used strerr in forward.c.
+- 19970812 code: reformatted forward.c.
+- 19970812 code: used strerr in predate.c.
+- 19970812 code: forced failure in qmail-qmtpd if no recipients; saves
+           time for qmail-send.
+- 19970812 code: added smtpd() to sendmail.c.
+- 19970812 code: added mailq() to sendmail.c.
+- 19970812 code: added die_usage() to sendmail.c.
+- 19970812 code: reformatted sendmail.c.
+- 19970812 code: used byte_zero() in qmail-popup.c.
+- 19970812 code: reformatted qmail-popup.c.
+- 19970812 code: eliminated unused header files in qmail-popup.c.
+- 19970812 code: changed I/O system in qmail-popup.c to match qmail-pop3d. 
+- 19970812 doc: pointed people to the mailing list in INSTALL and UPGRADE.
+- 19970810 code: added TXTBSY check to qmail-getpw.c. this gives vendors
+           the opportunity to make getpwnam() reliable.
+- 19970810 code: moved non-deleted messages from new/ to cur/ in
+           qmail-pop3d. tnx to various people.
+- 19970810 code: introduced list() in qmail-pop3d.c.
+- 19970810 code: reformatted qmail-pop3d.c.
+- 19970810 code: merged dataline and newname into line in qmail-pop3d.c.
+- 19970810 code: chopped filenames in qmail-pop3d at colons for UIDL. tnx
+           to various people.
+- 19970810 code: eliminated printint(), printlong() in qmail-pop3d.c.
+- 19970810 code: revamped I/O in qmail-pop3d.c.
+- 19970810 code: used timeoutread(), timeoutwrite() in qmail-pop3d.c.
+- 19970810 code: eliminated die_prot() in qmail-pop3d.c.
+- 19970810 code: eliminated unused header files in qmail-pop3d.c.
+- 19970810 code: switched qmail-pop3d to use maildir.c. tnx MD.
+- 19970809 code: added uid/gid printing to qmail-showctl. tnx PGF.
+- 19970808 code: switched control.c from scan_nbblong to scan_ulong.
+- 19970808 code: cleaned up wait_pid to use waitpid() when possible, and
+           to support at least one extra child otherwise.
+- 19970807 code: in qmail-smtpd, treat long envelope addresses as a syntax
+           error, instead of waiting for qmail-queue to reject them.
+- 19970803 code: changed condredirect, forward, qlist, qmail-inject,
+           qmail-local, qmail-qmtpd, qmail-send, qmail-smtpd, qreceipt for
+           new qmail_close() interface.
+- 19970803 code: revised qmail_close() to handle qmail-queue exit codes.
+- 19970802 doc: documented SMTP-related exit codes in qmail-queue.8.
+- 19970802 doc: documented qmail-queue exit codes in qmail-queue.8.
+- 19970802 code: revamped qmail-queue exit codes.
+- 19970802 doc: noted linking restrictions in qmail-queue.8.
+- 19970802 doc: rewrote INSTALL.mbox.
+- 19970802 doc: split INSTALL.maildir off of INSTALL.mbox.
+- 19970802 code: added /var/qmail/doc/ creation to qmail-hier.
+- 19970802 doc: added ezmlm note to FAQ.
+- 19970802 doc: replaced qlist blurbs with ezmlm blurbs in BLURB*.
+- 19970802 doc: added various notes to qmail-start.9.
+- 19970728 doc: eliminated RFC*.
+- 19970714 doc: added daemontools notes to FAQ.
+- 19970714 code: eliminated ESMTP parameter syntax checking.
+- 19970701 doc: changed "forwarded" to "resent" in qmail-header.5.
+- 19970629 code: reformatted constmap.c.
+- 19970628 code: changed straynewline() message in qmail-smtpd.c to point
+           to http://pobox.com/~djb/smtplf.html. tnx RDM.
+- 19970609 doc: added preline to vacation example in dot-qmail.9. tnx C2S.
+- 19970421 code: cleaned up slurpclose to handle interrupts.
+- 19970421 code: set qmail-popup to mode 711. tnx MD.
+- 19970421 doc: fixed qmail-local -n example in dot-qmail.9.
+- 19970415 version: qmail 1.01.
+- 19970414 doc: tightened up qmail-upgrade.7.
+- 19970414 code: rewrote rewrite().
+- 19970414 code: implemented recipientmap. suggested by RDM.
+- 19970414 doc: auto-configured qmail home directory in qmail-control.5,
+           qmail-newu.8, qmail-pw2u.8, qmail-start.8, qmail-users.5.
+- 19970414 port: Solaris needs socket libs for gethostname. impact: can't
+           compile under Solaris. fix: use socket.lib for qmail-local.
+- 19970412 code: introduced stralloc_starts.
+- 19970412 code: introduced str_equal.
+- 19970412 code: introduced str_start.
+- 19970412 code: introduced byte_equal.
+- 19970412 code: made an optional aliasempty arg for qmail-start.
+- 19970412 code: made an aliasempty arg for qmail-lspawn.
+- 19970412 code: changed ALIAS_EMPTY to an arg for qmail-local.
+- 19970412 port: UnixWare returns >0 for SIOCGIFCONF. impact: ipme fails
+           under UnixWare. fix: check for >=0, not =0. tnx JD.
+- 19970412 port: DGUX does not have ranlib. impact: can't compile under
+           DGUX. fix: added dgux line to make-makelib. tnx HWM.
+- 19970412 code: changed maildir library to skip any filename beginning
+           with dot. tnx SP.
+- 19970412 doc: added FAQ entry about aliases with dots.
+- 19970412 doc: clarified in qmail-inject.8 that default envelope sender
+           is the same as _default_ From address.
+- 19970411 code: renamed qmail-makectl as qmail-config.
+- 19970411 code: renamed qmail-alias as qmail-local.
+- 19970411 code: switched from signal library to sig library.
+- 19970411 code: switched from qqtalk library to qmail library.
+- 19970411 code: switched from getline library to getln library.
+- 19970411 code: massive library cleanups.
+- 19970411 code: revamped autoconfiguration system.
+- 19970411 code: revamped configuration interface.
+- 19970411 code: eliminated qmail-home.
+- 19970411 code: eliminated tokenize.
+- 19970220 qmail 1.00.
+- 19970219 change: various documentation tweaks.
+- 19970218 change: updated THOUGHTS.
+- 19970218 change: talked about SPAWN_NUMD in FAQ. tnx EC.
+- 19970210 change: noted in maildir.5 that readers should skip any name
+           starting with a dot. tnx SP.
+- 19970209 change: added note to splogger.8 about reliability. tnx BT.
+- 19970209 change: added section to FAQ on slow sendmail switch. tnx BT.
+- 19970206 change: added section to FAQ about dtcm. tnx PJG.
+- 19970206 change: tweaked maildir.5.
+- 19970201 change: added MH spost note to FAQ. tnx TU.
+- 19970131 change: reorganized FAQ.
+- 19970131 change: added web references to FAQ.
+- 19970124 change: tweaked qmail-upgrade man page.
+- 19970120 qmail 0.96, gamma.
+- 19970120 change: removed various try* in auto-configuration.
+- 19970120 bug: qmail-inject fails to quote argument addresses. impact:
+           addresses containing special characters could be misinterpreted
+           or rejected. tnx C2F. fix: use quote2().
+- 19970120 portability problem: ESIX puts syslog() and openlog() into
+           -lgen. impact: can't compile under ESIX. fix: put -lgen into
+           LIBS for unix_sv. tnx RN.
+- 19961221 qmail 0.95, gamma.
+- 19961218 change: added various try* to TARGETS. tnx SA.
+- 19961216 change: clarified in qmail-send.8 that virtualdomains does not
+           apply to domains listed in locals.
+- 19961216 change: slurpclose() now closes fd on out-of-memory. makes it
+           more widely applicable.
+- 19961215 change: replaced elm instructions in INSTALL.mbox with an
+           explanation of what source change to make. tnx AB.
+- 19961212 portability problem: under NEWS-OS, time_t needs sys/types.h.
+           impact: couldn't compile under NEWS-OS. fix: include
+           sys/types.h in predate.c. tnx TU.
+- 19961211 change: used timeoutread, timeoutwrite in remoteinfo(). tnx
+           REB.
+- 19961210 portability problem: apparently some SGIs produce a systype of
+           irix64. impact: couldn't compile on those systems. fix: handle
+           irix64 in make-cmds. tnx M3S.
+- 19961208 change: added note to maildir2mbox.1 about mbox locking.
+- 19961208 qmail 0.94, gamma.
+- 19961207 change: added QMAILDEFAULTDOMAIN, QMAILDEFAULTHOST,
+           QMAILIDHOST, QMAILPLUSDOMAIN. tnx BTW.
+- 19961206 cleanup: readsubdir() protects itself against name overflow,
+           rather than depending on caller.
+- 19961204 change: changed FAQ 7.3 to prohibit fixup relaying.
+- 19961203 change: added note to FAQ about possibly having to put a space
+           before "$SENDER" for uux. tnx FW.
+- 19961202 change: added FAQ entry on QUEUE_EXTRA.
+- 19961202 change: added FAQ entry on backups. tnx DP.
+- 19961202 change: added note to INSTALL.mbox about qpopper. tnx VV.
+- 19961201 change: replaced logger with splogger in FAQ 5.1. tnx FPL.
+- 19961201 change: used netmask example for tcpcontrol in FAQ. tnx FPL.
+- 19961201 change: added note to README about the mailing list. tnx FPL.
+- 19961201 change: documented rcpthosts wildcards. tnx RN.
+- 19961201 change: added note to FAQ about making mailx use datemail.
+- 19961201 change: added datemail. function requested by several people;
+           approach suggested by TG.
+- 19961201 change: added predate.
+- 19961129 change: added QUEUE_EXTRA, QUEUE_EXTRALEN.
+- 19961129 change: qmail-remote bounces messages with partial final lines.
+- 19961129 change: added atomcheck() to quote crappy atoms.
+- 19961129 change: revised atomok() to let atoms deal with more crap.
+- 19961127 change: qmail-send adds note to deferral if flagdying. tnx TG.
+- 19961127 change: split off maildirbounce, maildir2qmtp, and maildir2smtp
+           into a separate serialmail package.
+- 19961126 change: eliminated beta success reports from README.
+- 19961124 change: forced res_query() return value to fit inside incoming
+           buffer size. allegedly there are buggy versions of res_query()
+           that don't guarantee this.
+- 19961122 qmail 0.93, gamma.
+- 19961122 change: allowed empty arg list in forward.
+- 19961121 change: qmail-smtpd now uses unknown (like qmail-qmtpd) rather
+           than dying if environment variables are not set.
+- 19961121 cleanup: reorganized helo handling in qmail-smtpd.c.
+- 19961121 cleanup: eliminated newfield_rec.
+- 19961121 cleanup: introduced DATE822FMT. used it in received.c.
+- 19961121 cleanup: introduced received.c. used it in qmail-qmtpd.c,
+           qmail-smtpd.c.
+- 19961121 change: qmail-smtpd now generates a new timestamp for each
+           message. tnx PJG.
+- 19961121 cleanup: used stralloc in newfield.
+- 19961121 cleanup: eliminated newfield_cc.
+- 19961121 change: eliminated hfield_mort().
+- 19961119 change: added 2-minute damper on tcpto.
+- 19961118 change: wrote defaults for readfile controls in showctl.
+- 19961117 change: control_readfile() now allows comments and blank lines.
+           tnx LW.
+- 19961117 change: qmail-start sets logger gid to GID_NOFILES.
+- 19961117 bug: ipme_init() uses a fixed-length buffer for SIOCGIFCONF.
+           impact: qmail-smtpd and qmail-remote will die if there are too
+           many local IP addresses. tnx MD. fix: ipme_init() now
+           dynamically allocates space, up to 200000 bytes, as long as
+           SIOCGIFCONF keeps failing. note that this is a very widespread
+           bug; it's in amd, exim, mrouted, named, nntpd, rarpd, sendmail,
+           tcpdump, timed, xntpd, and probably dozens more programs.
+- 19961117 portability problem: on BSD 4.4 and various other systems,
+           SIOCGIFCONF will truncate long lists and return success.
+           impact: on those systems, qmail-smtpd and qmail-remote will
+           miss some local IP addresses if there are too many. fix:
+           ipme_init() now checks whether there is enough space left in
+           the buffer for another ifreq, plus 64 bytes JIC. yuck.
+- 19961117 change: ipmeprint now flushes only at end.
+- 19961117 cleanup: introduced subfdinsmall. used it in qmail-clean.c,
+           qmail-qmtpd.c.
+- 19961117 cleanup: introduced subfdoutsmall. used it in hostname.c,
+           printbreak.c, printnumd.c, printsplit.c, qmail-alias.c,
+           qmail-clean.c, qmail-getpw.c, qmail-qmtpd.c, maildir2smtp.c,
+           maildir2qmtp.c.
+- 19961117 change: moved subfderr buf up to 256 characters.
+- 19961117 change: added maildirbounce. tnx MD, TG.
+- 19961116 change: maildir2smtp and maildir2qmtp now print filenames for
+           permanent bounces. tnx MD.
+- 19961116 change: in SECURITY, "eleven most recent sendmail security
+           holes, five" -> "twelve most recent sendmail security holes,
+           six."
+- 19961116 change: rewrote qmail-showctl more professionally.
+- 19961115 change: added several tests to find-systype.sh. this will
+           affect many systypes.
+- 19961115 change: qmail-alias now treats most exit codes as soft errors.
+- 19961115 change: revamped exit codes everywhere for 0, 100, 111.
+- 19961114 change: added splogger.
+- 19961114 portability problem: Sun's cc recognizes sqrt() as a builtin,
+           even if math.h is not included and sqrt is defined statically.
+           yuck. impact: when qmail is compiled with Sun's cc, next-retry
+           times are all screwed up. tnx PJG. fix: my sqrt() is now called
+           squareroot().
+- 19961114 change: dns_ip() now recognizes [1.2.3.4]. tnx DS.
+- 19961112 change: enabled x option in sendmail. tnx DS.
+- 19961111 change: added SIGHUP handling to qmail-send. suggested by many
+           people.
+- 19961111 bug: control routines returned incorrect codes for some
+           out-of-memory conditions. impact: none; conditions cannot
+           happen with sane control files. fix: return -1.
+- 19961111 change: added SIGALRM handling to qmail-send. suggested by many
+           people.
+- 19961111 change: eliminated flagnobreak (-b/-B) from qmail-pw2u.
+- 19961111 change: qmail-getpw now allows hyphens inside usernames.
+- 19961111 change: added users/append to qmail-pw2u. tnx G2A.
+- 19961111 change: added badmailfrom to qmail-smtpd. requested by several
+           people.
+- 19961110 change: replaced elm instructions in INSTALL.mbox with a simple
+           note to set incomingfolders in elm.rc. tnx AB.
+- 19961110 change: replaced "owner hack" with "variable envelope
+           return paths" throughout the documentation. tnx DS.
+- 19961110 change: qmail-setup installs man pages as well as cat pages.
+- 19961110 change: renamed qmail-newuser as qmail-newu. tnx G2A.
+- 19961110 change: renamed qmail-pw2user as qmail-pw2u. tnx G2A.
+- 19961105 change: set path in INSTALL.boot. tnx TJH.
+- 19961105 change: noted in qmail-smtpd.8 that addresses without @ are
+           always allowed through.
+- 19961105 change: indicated at various spots in FAQ that rcpthosts has to
+           be updated. suggested by various people.
+- 19961105 change: indicated at various spots in FAQ that qmail has to be
+           restarted. suggested by various people.
+- 19961029 change: fixed typo in maildir2qmtp.1. tnx BG.
+- 19961026 qmail 0.92, gamma.
+- 19961026 bug: qmail-getpw did not 0-terminate usernames. tnx CF. impact:
+           qmail-getpw would crash on some systems, deferring local
+           deliveries. fix: 0-terminate.
+- 19961025 cleanup: renamed auto-hassgprm.h to hassgprm.h.
+- 19961025 cleanup: renamed auto-hassgact.h to hassgact.h.
+- 19961024 change: replaced qmail-alias.0 with dot-qmail.0 in
+           INSTALL.alias. tnx MW.
+- 19961022 change: switched uids as early as possible in qmail-start.c.
+- 19961022 change: in SECURITY, "ten most recent sendmail security
+           holes, five" -> "eleven most recent sendmail security holes,
+           five."
+- 19961022 change: quote_need() now treats non-ASCII characters the same
+           way as control characters.
+- 19961022 change: added version and home page to qmail.7.
+- 19961022 cleanup: introduced slurpclose.c. used it in qmail-alias.c,
+           qmail-lspawn.c.
+- 19961021 portability problem: AT&T NCR boxes need stdio.h before
+           arpa/nameser.h. impact: dns.c would not compile. fix: include
+           stdio.h. tnx HS.
+- 19961021 change: added AIX section to INSTALL.ids. tnx SSB.
+- 19961021 change: added qmail-pw2user.
+- 19961020 change: added qmail-pw2user.8.
+- 19961020 change: qmail-alias now dies soft on EACCES/EPERM for .qmail.
+- 19961020 change: eliminated root comments from INSTALL.qsmhook.
+- 19961020 change: various improvements in FAQ.
+- 19961017 change: added QLX_ROOT.
+- 19961017 change: renamed hosts in FAQ. tnx SLB.
+- 19961017 change: in dot-qmail.5, documented envnoathost effects. tnx RN.
+- 19961017 change: revamped addresses.5.
+- 19961017 change: added stripvdomprepend() for better bounces. tnx PT.
+- 19961012 portability problem: under HP-UX 9, can't setgroups() to 65537.
+           impact: couldn't compile under HP-UX 9. fix: use 0 instead of
+           65537 in chkshsgr.c. tnx HHO.
+- 19961008 change: added several qlx codes.
+- 19961008 cleanup: eliminated qlx from qmail-alias.
+- 19961008 change: qmail-lspawn runs qmail-getpw as UID_PW.
+- 19961008 change: added qmail-newuser.
+- 19961008 change: added cdb support to qmail-lspawn.
+- 19961008 change: integrated cdb.
+- 19961007 change: added qmail-users.5.
+- 19961007 change: eliminated usermap.
+- 19961007 cleanup: switched execvp to execv in sendmail, qmail-lspawn.
+- 19961007 change: used qmail-getpw in qmail-lspawn.
+- 19961007 change: renamed LSPAWN_USERLEN as GETPW_USERLEN.
+- 19961007 change: added qmail-getpw.
+- 19961007 change: created users subdirectory of CONF_HOME.
+- 19961007 change: fixed typo in FAQ. tnx J1B.
+- 19961006 change: replaced subfdout with a small ss in qmail-alias.
+- 19961006 change: reduced qmail-alias buffer sizes to 1024.
+- 19961003 change: added note to maildir2smtp.0 about maildirmake. tnx SM.
+- 19961003 bug: if ipme_init() returned -1, qmail-remote would continue,
+           blindly assuming that all addresses are local. impact: on
+           systems with too many aliases, all remote deliveries fail. tnx
+           MD. fix: qmail-remote now dies with temp_oserr() on any result
+           other than 1.
+- 19961003 portability problem: all pre-4.9.4 versions of bind barf,
+           badly, on CNAME queries to lame servers. what a crappy system.
+           even if the resolver doesn't barf, the next name server down
+           the line may barf. impact: qmail can't get mail through to
+           domains that are (1) lame and (2) running old versions of bind.
+           fix: never, ever, do a CNAME query. dns_cname() now does an ANY
+           query instead. this, like sendmail's analogous procedure, is
+           unreliable when a CNAME is mixed with other records.
+- 19961001 cleanup: switched to libfd in qmail-start.c.
+- 19960929 cleanup: renamed auto-hasmkffo.h to hasmkffo.h.
+- 19960928 cleanup: reorganized qmail-start.c.
+- 19960928 cleanup: used libfd in preline.c, qmail-lspawn.c,
+           qmail-popup.c, qmail-rspawn.c, qmail-start.c, qqtalk.c,
+           qsmhook.c.
+- 19960928 cleanup: added libfd.
+- 19960927 change: in SECURITY, "nine most recent sendmail security
+           holes, four" -> "ten most recent sendmail security holes,
+           five."
+- 19960926 change: added tcpcontrol notes to FAQ.
+- 19960926 change: qmail-smtpd now immediately closes connection, with a
+           warning message dedicated to Solaris, if stray newlines show up
+           in the incoming data.
+- 19960926 change: added INSTALL.boot.
+- 19960926 portability problem: on systems that can handle IP interface
+           aliases (i.e., on sa_len systems), SIOCGIFADDR returns the
+           primary address for an alias. impact: ipme_init() did not
+           include alias addresses. fix: ipme_init() avoids SIOCGIFADDR on
+           sa_len systems; on these systems, the address we want is
+           already in ifr. tnx DM.
+- 19960926 change: qmail-alias kills itself if locking takes longer than
+           30 seconds.
+- 19960926 change: qmail-pop3d no longer moves messages. tnx RS.
+- 19960924 change: added note to FAQ about descriptors limit. tnx RD.
+- 19960922 change: open_trunc() now uses 644.
+- 19960922 change: qmail-setup now does umask(077).
+- 19960922 change: maildir2mbox now does umask(077).
+- 19960922 change: moved subfderr buf up to 64 characters.
+- 19960920 change: in SECURITY, "eight most recent sendmail security
+           holes, three" -> "nine most recent sendmail security holes,
+           four."
+- 19960920 portability problem: init run commands are subject to job
+           control signals under more systems than HP-UX. impact: on some
+           systems (e.g., Solaris), qmail daemons would be killed. fix:
+           INSTALL now tells everybody to use csh -cf.
+- 19960920 change: added queue-run section to FAQ.
+- 19960920 change: in pine-crashing question in FAQ, added -oem and -oi,
+           so that change will work with the real sendmail too.
+- 19960919 change: added CNAME section to FAQ. tnx to various people.
+- 19960919 change: eliminated QQX_EXECHARD and QQT_EXECHARD. this means
+           that all qmail-queue invocation failures are now soft, even
+           things like EPERM.
+- 19960919 change: replaced "No such address" with "Sorry, no mailbox
+           here by that name." tnx G2A.
+- 19960919 change: qmail-remote now includes host name in no-such-host
+           messages. tnx G2A.
+- 19960919 change: replaced "Temporarily unable to canonicalize address"
+           with "CNAME lookup failed temporarily."
+- 19960918 change: improved an error message in qmail-alias.c. tnx TG.
+- 19960918 change: added SHELL=/bin/sh to Makefile. tnx JL.
+- 19960916 change: reorganized INSTALL.ids a bit.
+- 19960916 change: "from smtpd" is now "from network".
+- 19960916 change: SMTPD is now DAEMON.
+- 19960916 change: qmail-start sets logger uid to UID_LOG. tnx JLH.
+- 19960916 change: added CONF_USERL.
+- 19960916 change: iaafmt() now puts a dot on in-addr.arpa.
+- 19960915 change: added UPGRADE. suggested by several people.
+- 19960915 change: added qsutil error messages to qmail-log.5.
+- 19960915 change: qsutil error messages are now alerts.
+- 19960915 portability problem: on some systems, logger appears to use
+           syslog(pri,buf) instead of syslog(pri,"%s",buf). tnx JC.
+           impact: logger could barf or crash if fed messages containing
+           %. an attacker could easily cause a crash, eliminating qmail's
+           logs. fix: % is no longer considered safe for logs.
+- 19960912 cleanup: split seek.c into seek_*.c.
+- 19960912 cleanup: replaced seek_to() with seek_set().
+- 19960912 cleanup: introduced libseek.a.
+- 19960907 cleanup: split case.c into case_*.c.
+- 19960907 cleanup: introduced libcase.a.
+- 19960907 cleanup: split wait.c into wait_*.c.
+- 19960907 cleanup: introduced libwait.a.
+- 19960907 cleanup: renamed auto-haswaitp.h to haswaitp.h.
+- 19960907 cleanup: split open.c into open_*.c.
+- 19960907 cleanup: introduced libopen.a.
+- 19960904 change: added generic pointer to qmail-control.5. tnx HW.
+- 19960904 change: rewrote rcpthosts section in FAQ. tnx HW.
+- 19960904 change: added organization section to FAQ. tnx HW.
+- 19960902 qmail 0.91, gamma.
+- 19960902 change: control_readfile() can now handle partial lines. tnx
+           JDHB.
+- 19960902 change: eliminated non-fqdn note from FAQ. next version of
+           tcpserver will use DNS directly.
+- 19960902 change: qlist now uses NEWSENDER, not SENDER.
+- 19960902 change: qmail-pop3d no longer obtains a lock. tnx RS.
+- 19960902 change: put }g on all seds in Makefile.
+- 19960831 change: noted in qmail-control.5 that comments are not allowed
+           in control files. tnx J2B.
+- 19960829 change: used double union in alloc.c. tnx ME.
+- 19960829 change: replaced semicolon with colon for smtproutes port.
+- 19960829 change: in INSTALL, put make man just before make setup.
+- 19960829 change: changed a few qmail messages into alerts.
+- 19960829 cleanup: renamed datetime_gmt as datetime_tai.
+- 19960829 change: added note to UUCP question that some UUCP software
+           doesn't want preline -f. tnx SB.
+- 19960829 change: added question 2.4 to FAQ on SLIP/PPP.
+- 19960828 change: replaced owner- with owner-@host-@[] in qmail-inject.
+- 19690828 change: replaced owner- with owner-@host-@[] in qmail-alias.
+- 19960828 change: replaced owner- with owner-@host-@[] in injectbounce().
+- 19960828 change: replaced owner- with owner-@host-@[] in senderadd() for
+           owner hack.
+- 19960828 change: qmail-inject -n now prints Return-Path.
+- 19960825 cleanup: revised ending code in token_addrlist(). 
+- 19960825 change: tokenize now uses linelen 0 for unparse.
+- 19960825 change: if linelen is 0 in token822_unparse, no length limit.
+- 19960825 change: added LINELEN macro to qmail-inject for unparse.
+- 19960825 change: token822_unparse now takes linelen argument. (leaving
+           two spaces on the right before linelen.)
+- 19960824 cleanup: renamed token as token822.
+- 19960822 portability problem: under NEWS-OS, /bin/mail and /usr/ucb/mail
+           invoke sendmail with -E and -J options. tnx TU. impact:
+           couldn't send mail with those programs. fix: accept opts,
+           including _optional_ args. ugh.
+- 19960821 change: sendmail now quits if invoked as newaliases. tnx TU.
+- 19960821 portability problem: under NEWS-OS, dirent.h needs sys/types.h.
+           tnx TU. this POSIX violation also appears in some versions of
+           FreeBSD. impact: couldn't compile under NEWS-OS. fix: include
+           sys/types.h in direntry.h* and trydrent.c. [sigh]
+- 19960821 change: added concurrencyremote question to FAQ.
+- 19960821 change: added chkspawn.
+- 19960821 change: moved default SPAWN_NUMD up to 120.
+- 19960818 change: allowed ;port in smtproutes. tnx AL.
+- 19960818 change: introduced port in qmail-remote.c.
+- 19960818 change: qmail-queue records qp in Received lines. 2 lines of
+           code. tnx ME.
+- 19960818 change: in SECURITY, "seven most recent sendmail security
+           holes" -> "eight most recent sendmail security holes."
+- 19960818 change: qmail-pop3d now appends an extra blank line to every
+           message, for compatibility with popper. some clients can't
+           deal with the right thing, unfortunately. tnx FPL.
+- 19960818 change: added qmail-tcpto.
+- 19960818 change: eliminated cc -posix for NeXTs. tnx SA.
+- 19960818 change: eliminated loadfifo. tnx SA.
+- 19960818 change: integrated auto-configured fifo.c code from SA.
+- 19960817 change: put SYSDEPS into a more reasonable order.
+- 19960813 change: indicated possibility of duplication when qmail-remote
+           gets a dead connection after DATA. tnx ME.
+- 19960813 change: documented qmail-inject environment variables.
+- 19960813 change: supported per-recipient owner hack in qmail-inject.
+- 19960813 change: supported per-message owner hack in qmail-inject.
+- 19960813 change: introduced hackedruser into qmail-inject.
+- 19960813 change: introduced QMAILRUSER, QMAILRHOST.
+- 19960812 change: added QMAILINJECT option to allow address-comment form.
+- 19960812 change: made name-address form the default in qmail-inject.
+- 19960812 change: added QMAILINJECT options f and m to delete From and
+           Message-ID on input. tnx LL.
+- 19960812 change: added QMAILINJECT environment variable.
+- 19960812 change: added QMAILHOST, QMAILUSER, QMAILNAME to override
+           MAILHOST, MAILUSER, MAILNAME. tnx MG.
+- 19960812 change: added qmail-showctl.
+- 19960812 portability problem: under Solaris 2.4 and possibly other
+           systems, the linker does not give generic alignment to an array
+           of 4096 chars. tnx JP. impact: some subset of the programs
+           would (reliably) die with a bus error; in the Solaris case,
+           maildir2mbox. fix: redefine space in alloc.c to be aligned.
+- 19960812 change: qmail-remote no longer does CNAME lookups if there's an
+           artificial SMTP route. tnx ME.
+- 19960812 change: added flagcname arg to addrmangle() in qmail-remote.
+- 19960812 cleanup: moved host/relayhost processing earlier in
+           qmail-remote.
+- 19960812 change: qmail-remote stops before DATA if no RCPTs were
+           successful. tnx JLH.
+- 19960812 change: rewrote rcpthosts explanation in FAQ.
+- 19960811 change: added qmail-log.5.
+- 19960811 change: introduced ALIAS_PATERNALISM. configurability requested
+           by several people.
+- 19960811 change: eliminated go-writability test for qmeox(). the alleged
+           value of paternalism is nonexistent if nobody even notices
+           you're doing it.
+- 19960811 change: in qbiff, changed no-/-allowed to no-/-at-beginning,
+           no-dots-allowed, must-be-nonempty. tnx MD.
+- 19960811 change: in mbox.5, discouraged mail readers from looking for
+           From_ lines only after blank lines. too much crap in the world.
+- 19960811 change: added subject line to qreceipt success notices.
+- 19960811 change: added subject line to qmail-send bounce messages.
+- 19960811 change: qmail-alias now expects dash arg. this finally gives
+           lspawn complete control over the local -> ~user/.qmail-ext map.
+- 19960811 change: qmail-lspawn passes dash arg to qmail-alias.
+- 19960811 change: reorganized qlist acknowledgment format. again.
+- 19960811 change: documented EXT, EXT2, EXT3, EXT4. tnx BB.
+- 19960810 change: qmail-makectl now copies locals to rcpthosts. should be
+           a better default. suggested by TK.
+- 19960805 portability problem: new makefile generator put in tabs again.
+           sigh. impact: couldn't compile under some systems. fix: same as
+           before. tnx TG.
+- 19960804 change: added tcpserver instructions to FAQ.
+- 19960804 change: reorganized FAQ server instructions into a new section.
+- 19960801 qmail 0.90, gamma.
+- 19960801 change: qmail-qmtpd now supports rcpthosts, RELAYCLIENT.
+- 19960731 change: default NUMD is now 29. this prepares for weird systems
+           where getpwnam() needs more than one descriptor (but the
+           descriptor limit is still 64! ... you never know), and for
+           possible future getpwnam() replacements.
+- 19960731 change: popped subfderr buffer up to 32 characters. made sure
+           that everybody flushed subfderr as necessary.
+- 19960731 change: maildir2qmtp now prints filenames and responses.
+- 19960731 change: maildir2smtp now prints filenames it's trying and
+           relevant portion of SMTP responses.
+- 19960731 change: used succwrite() in maildir2smtp, maildir2qmtp.
+           simplifies code quite a bit.
+- 19960731 change: qmail-remote's blast() checks sooner for write errors.
+- 19960731 change: added better -e option to sendmail. tnx TG.
+- 19960731 change: added maildir2qmtp.
+- 19960730 cleanup: eliminated die_nomem() in maildir2smtp.c.
+- 19960730 change: dns_cname now pretends that "foo." is a CNAME for "foo"
+           to give the desired behavior for people who misuse DNS and
+           violate RFC 822. tnx RN.
+- 19960730 change: dns_cname now tests for empty names and ] on every
+           loop.
+- 19960730 change: used LSPAWN_BREAK in qmail-send.c for usermap.
+- 19960730 change: updated header example in qmail-header.5.
+- 19960730 change: added printbreak. auto-configured BREAK in dot-qmail.5,
+           qmail-lspawn.7, qmail-send.8, qmail-upgrade.7, qlist2.
+- 19960730 change: added printnumd. auto-configured NUMD in qmail-send.8,
+           qmail-limits.8.
+- 19960730 change: added printsplit. auto-configured split in qmail-upq.
+- 19960730 change: added dot-qmail.5.
+- 19960730 change: qmail-smtpd now treats HELO as including RSET.
+- 19960730 change: added moreinfo to qlist usage message.
+- 19960729 change: improved an error message in qmail-alias.
+- 19960729 cleanup: merged qmeox(), qmeodx().
+- 19960729 bug: failure to stat .qmail-owner was not an error. impact: if
+           stat failed temporarily (e.g., because of NFS), .qmail-owner
+           would be incorrectly ignored, so outgoing message would have
+           wrong envelope sender. fix: qmail-alias does temp_nfsqmail() if
+           stat() returns a temporary error.
+- 19960729 change: added RFCOWNER.
+- 19960729 change: added qmtpd setup question to FAQ.
+- 19960729 change: added qmail-qmtpd.
+- 19960728 change: revamped maildir2smtp error messages.
+- 19960728 change: revamped maildirwatch error messages.
+- 19960728 change: revamped maildir2mbox error messages.
+- 19960728 change: used strerr in maildir_scan().
+- 19960728 change: used strerr in maildir_chdir().
+- 19960728 change: introduced strerr.
+- 19960728 bug: the new tcp-env tried to read from an ndelay socket.
+           impact: TCPREMOTEINFO would always be empty. fix: unset ndelay
+           in remoteinfo.c.
+- 19960728 bug: if maildir2smtp saw a permanent failure after MAIL, it
+           failed to do RSET. impact: all further messages would be
+           rejected at the MAIL stage. fix: maildir2smtp now always does
+           RSET. tnx JW.
+- 19960728 cleanup: qmail-alias now applies lowercase and dot-to-colon
+           conversion directly to dashext, leaving everything else alone.
+           this works since all .qmail access is factored through dashext.
+- 19960727 portability problem: under NeXTStep, -posix is almost entirely
+           broken. impact: qmail daemons would dump core under NeXTStep.
+           fix: turn off -posix, except for loading qmail-setup, which
+           needs mkfifo(); NeXT, bless them, didn't put mkfifo() into the
+           C library where it belongs. this requires a new make command,
+           namely loadfifo.
+- 19960727 change: all characters 33-126 are now considered safe for logs.
+           tnx MD.
+- 19960727 cleanup: eliminated qp variable from mailforward().
+- 19960727 cleanup: maildirwatch.c includes headerbody.h.
+- 19960727 cleanup: eliminated match from maildirwatch.c.
+- 19960727 cleanup: eliminated code variable from maildir2smtp.c:doit().
+- 19960727 cleanup: maildir2smtp.c includes scan.h.
+- 19960727 cleanup: maildir.c includes str.h.
+- 19960727 cleanup: qmail-popup.c now includes exit.h.
+- 19960727 cleanup: qmail-pop3d.c now includes exit.h.
+- 19960727 cleanup: eliminated path from qmail-start.c.
+- 19960727 cleanup: eliminated birthplusnn from nextretry().
+- 19960727 cleanup: eliminated r from timeoutconn().
+- 19960727 cleanup: tcpto.c now includes byte.h.
+- 19960727 cleanup: spawn.c now declares initialize().
+- 19960727 cleanup: qmail-lspawn.c now includes str.h, byte.h.
+- 19960727 cleanup: qmail-inject.c now includes quote.h.
+- 19960727 change: qmail-check now checks separately for group
+           readability and other readability.
+- 19960727 bug: maildir2smtp didn't check flagehlo in PIPELINING parsing.
+           impact: a server that said PIPELINING at any point, not just
+           EHLO, would receive pipelined data. fix: check flagehlo.
+- 19960727 bug: readsubdir was calling pause(). impact: if a subdirectory
+           was removed, qmail-send would hang. fix: use rs->pause().
+- 19960727 change: used error_str in qmail-qread.
+- 19960727 change: qmail-qread now looks for local/remote open errors.
+- 19960727 cleanup: added warn() in qmail-qread.c.
+- 19960727 change: qmail-qread now exits 111 for temporary errors.
+- 19960727 change: used error_str in qmail-setup.
+- 19960727 change: introduced error_str.
+- 19960727 change: replaced qmail-check with make check in INSTALL.
+- 19960727 change: added check target to Makefile.
+- 19960727 change: replaced qmail-setup with make setup in INSTALL.
+- 19960727 change: indirected fake targets through do- targets.
+- 19960727 change: added setup target to Makefile.
+- 19960727 change: qmail-makectl now makes sure that defaultdomain has
+           at least one dot. e.g., enteract.com -> enteract.com, not com.
+- 19960726 bug: quote() failed to quote commas. impact: addresses
+           containing commas would not have been quoted correctly for
+           Return-Path or for SMTP MAIL FROM. fix: quote commas.
+- 19960726 change: sendmail now mentions qmail-qread, not qmail-mailq.
+- 19960726 change: qmail-alias now expects ext arg. this eliminates
+           LSPAWN_BREAK from qmail-alias and gives lspawn almost complete
+           control over the local -> ~user/.qmail-ext transformation. the
+           exception is that qmail-alias always uses ~user/.qmail,
+           ignoring ext, if local is the same as user.
+- 19960726 change: qmail-lspawn passes ext to qmail-alias.
+- 19960726 change: alloc() now uses up a 4K space before calling malloc().
+- 19960726 change: ipalloc allocation base is now 10. 100 was silly.
+- 19960726 change: stralloc allocation base is now 30.
+- 19960726 change: injectbounce() now supports the owner hack.
+- 19960726 change: qmail-smtpd no longer requires HELO. tnx K1J.
+- 19960726 cleanup: replaced makereceived() with dohelo().
+- 19960726 change: qmail-smtpd is back to 555 for syntax errors.
+- 19960725 change: qmail-alias now supports the owner hack. tnx to RN for
+           prodding me to look at this problem.
+- 19960725 change: senderadd() now supports the owner hack.
+- 19960725 cleanup: split off senderadd().
+- 19960725 change: added pine-crashing note to FAQ.
+- 19960725 change: added procmail config.h note to INSTALL.mbox.
+- 19960725 change: added elm TMPDIR note to INSTALL.mbox.
+- 19960725 change: added pine.conf note to INSTALL.mbox.
+- 19960724 change: added fixup note to FAQ.
+- 19960724 change: qmail-inject now exits 111 for temporary errors.
+- 19960724 change: qmail-smtpd now appends RELAYCLIENT to incoming
+           recipient domain names.
+- 19960724 cleanup: moved relayclient out of qmail-smtpd's addrallowed()
+           into caller.
+- 19960724 change: added rcpthosts wildcards.
+- 19960724 change: added clean target to Makefile.
+- 19960723 change: added virtualdomains exceptions.
+- 19960722 change: added BLURB4.
+- 19960722 change: added BLURB3.
+- 19960722 change: eliminated smarthost and localnet.
+- 19960722 change: incorporated relaymap, contributed by LW. renamed it
+           as smtproutes.
+- 19960722 change: qmail-popup now supports APOP. suggested by BG, who
+           distributed similar changes.
+- 19960722 change: qmail-popup now sends APOP timestamp to checkpassword.
+- 19960722 cleanup: in qmail-popup, split off doanddie().
+- 19960722 change: qmail-popup now prints APOP timestamp in banner.
+- 19960722 change: added hostname argument to qmail-popup.
+- 19960722 cleanup: in qmail-popup, split out() into out(), outflush().
+- 19960722 cleanup: in qmail-popup, introduced pop3_greet().
+- 19960721 portability problem: under Unisys SVR4, hostname is not in the
+           usual path. impact: qmail-makectl fails. fix: added hostname
+           command here, used it in qmail-makectl.
+- 19960721 portability problem: on some sysctl-based systems, apparently
+           gethostname() doesn't write anything if the output buffer is
+           too small. it should write a truncated name. impact: if anyone
+           has a hostname longer than 64 characters, maildirs could get up
+           to 64 characters of garbage, rather than a truncated hostname.
+           fix: qmail-alias now does *host = 0 before calling gethostname.
+- 19960721 change: updated FAQ examples from qsmhook to preline.
+- 19960721 change: added preline.
+- 19960721 change: qsmhook now uses signal_init, signal_uninit.
+- 19960721 change: qsmhook now checks specifically for empty args.
+- 19960721 change: documented mbox.
+- 19960721 change: added EXT, EXT2, EXT3, EXT4.
+- 19960721 change: added LAST response to qmail-pop3d, always returning
+           OK 0. tnx RN.
+- 19960721 change: added qmail home page to README.
+- 19960721 change: added HELP response to qmail-smtpd. tnx RN.
+- 19960720 change: expanded, vertically, the qmail-inject error message
+           for unparseable header fields.
+- 19960720 change: logo is now dolphin. tnx CEJ.
+- 19960719 qmail 0.76, beta.
+- 19960719 change: used LSPAWN_BREAK in qmail-alias for deciding how to
+           handle extensions. this should produce better behavior in the
+           (unsupported) case that LSPAWN_BREAK is not a hyphen.
+- 19960719 bug: qmail-smtpd didn't check for null arg on MAIL, RCPT.
+           impact: qmail-smtpd would deref 0 and crash. fix: qmail-smtpd
+           now gives syntax error on null arg.
+- 19960719 change: documented UFLINE in qmail-command.8. tnx TG.
+- 19960718 change: added maildir2smtp.
+- 19960718 cleanup: introduced maildir.c. used it in maildir2mbox.c,
+           maildirwatch.c.
+- 19960718 change: added maildirwatch.
+- 19960718 cleanup: maildir2mbox now sets up pq2 as it is deleting from
+           pq, rather than simultaneously with pq.
+- 19960718 change: added H_DELIVEREDTO.
+- 19960718 portability problem: Unisys requires -lsocket -lnsl. impact:
+           couldn't compile under Unisys. fix: added unix_sv section to
+           make-cmds.sh. tnx TVP.
+- 19960718 change: added unix_sv section in find-systype. tnx TVP.
+- 19960717 change: qmail-alias now appends newline if .qmail does not end
+           with a newline. tnx MC.
+- 19960717 change: qmail-alias now defers delivery for a blank line only
+           if it is the first line of the file. handles user behavior
+           described by MC of putting many newlines at end of file.
+- 19960717 bug: qmail-inject looked for dots in user part, not just host
+           part, when deciding whether to use defaultdomain. impact: the
+           address joe.bloggs@here didn't have defaultdomain added. fix:
+           qmail-inject now stops at the @.
+- 19960717 change: updated INSTALL.alias to mention qmsmac.
+- 19960717 change: syntax error code for SMTP is now 501.
+- 19960717 change: added -e option to sendmail. tnx TG.
+- 19960716 change: changed ~alias files to .qmail-local, not .qmaillocal.
+           suggested by many people.
+- 19960716 change: redid qmail-alias/qmail-lspawn interface.
+- 19960716 change: replaced EXTENSION, USEREXT with LOCAL.
+- 19960716 change: qmail-queue now removes intd, mess upon error, as long
+           as it doesn't time out. suggested by BB et al.
+- 19960716 change: added flagmademess, flagmadeintd to qmail-queue.c.
+- 19960716 cleanup: changed todofd to intdfd in qmail-queue.c.
+- 19960716 cleanup: added cleanup() to qmail-queue.c.
+- 19960716 change: added timeout to tcp-env.c, default 30 seconds.
+- 19960716 change: remoteinfo_get() now uses timeoutconn().
+- 19960715 change: added procmail config.h note to FAQ.
+- 19960704 change: qmail-upgrade.7 now warns administrators that ~alias
+           generally doesn't apply to addresses starting with a user name.
+- 19960703 change: added echo \c note to FAQ. tnx PJG.
+- 19960702 change: qmail-smtpd now accepts HELO without an argument.
+           tnx K1J, J1B.
+- 19960627 change: qmail-lspawn.8 now mentions that qmail-lspawn doesn't
+           set up supplementary groups. tnx TG.
+- 19960625 portability problem: under Linux, read(,,0) doesn't do proper
+           error slippage. impact: timeoutconn() would always report
+           success; if a connection failed, qmail-remote would report a
+           greeting failure and skip all further MX records. tnx ME. fix:
+           timeoutconn() now uses getpeername() to check for success.
+- 19960625 change: qmail-smtpd now mentions disk full for QQT_WRITE.
+- 19960625 change: qmail-inject now mentions disk full for QQT_WRITE.
+- 19960622 change: if RELAYCLIENT is set, qmail-smtpd skips rcpthosts.
+- 19960609 change: updated INSTALL for current SMTP responses.
+- 19960607 change: clarified INSTALL.qsmhook examples. tnx S1R.
+- 19960607 change: added subject parsing to qlist.c. tnx RN.
+- 19960607 cleanup: used case_diffb in qlist.c.
+- 19960607 change: added extra log information to INSTALL examples.
+- 19960606 change: added -Pn to uucp line in FAQ. tnx DWS.
+- 19960605 portability problem: under Solaris, /usr/bin/groups incorrectly
+           reports your groups in /etc/group, rather than the results of
+           getgroups(). tnx MD, PJG. impact: test #19 in INSTALL fails.
+           fix: added special note to test #19 (sigh) about Solaris.
+- 19960605 change: improved maildir setup commands in INSTALL.mbox.
+- 19960605 change: on success, qmail-alias logs forwarding qp. 9 lines
+           extra code.
+- 19960605 change: qmail-send logs qp for bounce. 6 lines extra code.
+- 19960605 change: qmail-smtpd includes qp in its response when it accepts
+           a message. 7 lines extra code. requested by MD and others.
+- 19960605 change: added qqtalk_qp.
+- 19960605 change: qmail-send now logs uid and qp from todo file. 14 lines
+           extra code.
+- 19960605 change: qmail-queue now records uid and qp in u and p lines
+           in todo file. 7 lines extra code.
+- 19960605 change: improved qmail-alias x-bit error messages.
+- 19960605 change: newline in log is now converted to /, not underscore.
+- 19960604 change: when it accepts a message, qmail-smtpd includes the
+           local time in its 250 response.
+- 19960604 change: on success, qmail-alias prints delivery counts,
+           file+forward+program.
+- 19960603 change: qmail-remote now reports IP address on success. tnx MD.
+- 19960603 change: qmail-send now logs success and failure reports, not
+           just deferral reports.
+- 19960603 change: added netbsd section in find-systype, same as bsd.os
+           section. this will affect netbsd-* systypes. tnx MBS.
+- 19960530 qmail 0.75, beta.
+- 19960528 change: added qmail.7. tnx MD.
+- 19960525 change: added qmail-pop3d. tnx RN.
+- 19960525 change: added qmail-popup. tnx RN.
+- 19960525 change: added elm filter section to FAQ. tnx GB.
+- 19960502 portability problem: on many systems, select() on an
+           almost-full pipe incorrectly says writable. tnx ME for running
+           into this and helping track it down. impact: if qmail-send
+           writes a pipeful to qmail-lspawn or qmail-rspawn before they
+           can react (because of high concurrency, high load, or long
+           addresses), it will receive an incorrect -1/EAGAIN, and will
+           conclude that spawn died. sysadmin will have to restart qmail,
+           and messages will be duplicated. fix: in qmail-send.c,
+           busy-loop if write() to spawn returns any error other than
+           EPIPE.
+- 19960501 bug: qmail-alias treated NAMETOOLONG and NOTDIR as temporary
+           errors. impact: qmail-alias never looked for -default; even if
+           mail was destined to bounce, it would have to time out first.
+           fix: qmail-alias now uses error_temp().
+- 19960430 bug: qmail-smtpd treated qq crash as permanent error. impact:
+           if somebody actively kills qq, mail will be incorrectly
+           bounced. tnx SS. fix: qmail-smtpd now treats only TOOLONG and
+           EXECHARD as permanent errors.
+- 19960430 cleanup: eliminated QQT_TTY from qqtalk.h.
+- 19960428 change: added "warning: " before trouble-marking message.
+- 19960428 change: added percenthack. requested by GB.
+- 19960428 cleanup: switched to auto-generated Makefile.
+- 19960428 cleanup: switched to auto-generated .o dependencies.
+- 19960428 cleanup: eliminated fmt.o, scan.o from Makefile.
+- 19960428 portability problem: under HP-UX 10, the rc pgrp is sent HUP
+           when rc finishes. tnx BG. impact: the qmail daemons are killed
+           when rc finishes. fix: added special note in INSTALL (sigh) to
+           use csh -cf.
+- 19960427 cleanup: added PORT_SMTP in qmail-remote.c.
+- 19960427 cleanup: introduced timeoutwrite.c. used it in qmail-remote.c.
+- 19960427 cleanup: introduced timeoutread.c. used it in qmail-remote.c.
+- 19960427 cleanup: introduced timeoutconn.c. used it in qmail-remote.c.
+- 19960427 change: added timeoutconnect. default: 60 seconds.
+- 19960427 change: added pop3d instructions to FAQ. tnx RN.
+- 19960427 change: eliminated env manipulation from qmail-start. tnx BG.
+- 19960427 change: headerbody now ends header, inserting blank line, if
+           first line of a header field doesn't pass hfield_valid. tnx TG.
+- 19960427 change: headerbody now prepends MBOX-Line: to any header line
+           starting From_. this lets qmail-inject work with elm's bounce.
+           tnx OR, K1J, et al.
+- 19960426 change: added moreinfo arg to qlist and qlist2.
+- 19960426 change: added signal_uncatchchild() to qmail-send.c. tnx BG.
+           now, if sysadmin sets SIGCHLD to SIG_IGN before invoking
+           qmail-send [sigh], qmail-send won't screw up bounce messages.
+- 19960426 change: dns_cname now checks whether last character is ],
+           rather than whether first character is [, for quick return.
+- 19960426 cleanup: glue is now global in dns.c.
+- 19960426 cleanup: qmail-remote no longer does stralloc_0 for host and
+           canonhost.
+- 19960426 change: dns_mxip no longer rejects [foo].bar.
+- 19960426 change: dns_mxip no longer requires for bracket that input
+           be 0-terminated.
+- 19960426 change: qmail-start can now take logger as an argument.
+- 19960426 change: qmail-start now invokes qmail-send in foreground (as
+           parent of other processes).
+- 19960426 change: added mailsubj. tnx GAW.
+- 19960426 portability problem: under some systems, can't lock read-only
+           file. impact: maildir2mbox would always fail on those systems.
+           fix: maildir2mbox now opens a separate lock fd. tnx BG.
+- 19960426 cleanup: removed unnecessary #!/bin/sh and # AUTO from mctl.sh.
+- 19960426 change: added qmail-qstat.
+- 19960426 change: added qmail-qread.8.
+- 19960426 change: renamed qmail-mailq as qmail-qread.
+- 19960419 change: qmail-alias now defers delivery rather than skipping
+           blank lines in .qmail.
+- 19960419 change: in qmail-lspawn.c, lowercased name before getpwnam().
+           really getpwnam() should do this, but oh well.
+- 19960419 change: added username to qmail-lspawn.c, with LSPAWN_USERLEN
+           in conf-unusual.h. names longer than LSPAWN_USERLEN will skip
+           getpwnam().
+- 19960419 change: if qlist doesn't see any cmds, it presumes that you
+           meant to subscribe.
+- 19960419 change: reorganized qlist acknowledgment format.
+- 19960415 change: reorganized and rewrote FAQ.
+- 19960415 change: renamed HOWTO as FAQ.
+- 19960414 change: in qmail-alias, converted extension to lowercase just
+           before qmeopen(), qmeox() calls. thus EXTENSION and USEREXT and
+           RECIPIENT will preserve case passed by qmail-lspawn, while
+           .qmailext lookups will not.
+- 19960414 change: removed case_lowers(r) from qmail-lspawn.c. tnx JLH.
+- 19960414 change: moved extension . -> : conversion to just before
+           qmeopen(), qmeox() calls in qmail-alias.c. thus EXTENSION and
+           USEREXT and RECIPIENT will preserve dots.
+- 19960414 change: qsmhook -x now does case-independent comparison.
+- 19960413 change: added procmail instructions to HOWTO.
+- 19960409 bug: qmail-alias does not check for newlines when it generates
+           Return-Path. impact: resulting Return-Path header field will be
+           illegal, if sender address contains newline followed by
+           something other than whitespace. fix: qmail-alias now replaces
+           newline with underscore in rpline.
+- 19960409 change: added leaf UUCP description to HOWTO. tnx J2K.
+- 19960409 change: added -B option to sendmail. tnx OR.
+- 19960409 change: qlist now makes lists unwritable (after renaming from
+           .qtemp to .qmail). tnx MLH.
+- 19960409 change: added flagdtline to qsmhook.c, based on -l option.
+- 19960409 change: added PIPELINING declaration to qmail-smtpd. tnx JGM.
+- 19960409 change: qmail-smtpd now flushes output instantly after DATA,
+           QUIT, HELO, EHLO, NOOP, VRFY, or any 502.
+- 19960409 change: qmail-smtpd now flushes output upon read() and death.
+- 19960409 change: qmail-smtpd no longer flushes output in out().
+- 19960409 change: increased qmail-smtpd outbuf size from 128 to 512.
+- 19960409 cleanup: in qmail-smtpd, eliminated ssinit() in favor of FDBUF.
+- 19960409 bug: qmail-alias produced aliasfoo-owner rather than foo-owner
+           as envelope sender for ~alias/.qmailfoo. tnx DS. impact: wrong
+           envelope sender whenever ~alias/.qmailfoo-owner existed. fix:
+           qmail-alias now checks for hyphen at beginning of extension.
+- 19960409 change: added _ESMTP to end of 220. tnx JLH.
+- 19960409 change: moved out("\r\n") out of smtp_greet() into callers.
+           this improves the flushing behavior on 221.
+- 19960328 qmail 0.74, beta.
+- 19960326 change: changed subdirectory split from 32 to 23.
+- 19960326 portability problem: some versions of make don't understand
+           that a line with just a tab is blank. impact: couldn't compile
+           under those systems. fix: eliminated extra tab from Makefile.
+           tnx TG.
+- 19960325 change: added qmail-mailq.
+- 19960325 change: introduced readsubdir.
+- 19960325 change: qmail-setup makes split; qmail-check checks split.
+- 19960325 change: used split in qmail-send, qmail-clean, qmail-queue
+           for mess, info, local, remote.
+- 19960325 change: fmtqfn now supports split queue subdirectories.
+- 19960325 cleanup: eliminated cat2s().
+- 19960325 cleanup: introduced fmtqfn.c. used it in qmail-queue.c,
+           qmail-send.c, qmail-clean.c.
+- 19960325 change: in protocol between qmail-clean and qmail-send, now
+           using intd/ instead of mess/.
+- 19960325 change: qmail-queue.c and triggerpull.c now work inside queue
+           subdirectory.
+- 19960325 change: spawn.c now checks whether message is a regular file.
+- 19960325 change: spawn.c now allows slashes in messid except at
+           beginning.
+- 19960325 cleanup: introduced fnmake_split in qmail-send.c.
+- 19960325 cleanup: eliminated strnum in qmail-send.c in favor of
+           fnmake_{info,todo,mess,chanaddr} and fnmake2_bounce.
+- 19960325 cleanup: introduced strnum3 in qmail-send.c for the logging
+           uses of strnum.
+- 19960325 cleanup: in qmail-send.c, getinfo() now takes id argument.
+- 19960325 cleanup: qmail-send.c now preallocates space for fn, fn2.
+- 19960325 change: time zone is now -0000 instead of +0000. encouraging
+           DRUMS to use this as an i-don't-know-the-local-time indicator.
+- 19960324 change: qmail-rspawn.c now calls tcpto_clean().
+- 19960324 cleanup: spawn.c now calls initialize().
+- 19960324 change: qmail-setup makes lock/tcpto; qmail-check checks it.
+- 19960324 change: qmail-remote now quickly skips connect() to a host that
+           seems to be down. tnx BP for pressuring me to get this done.
+- 19960323 change: in qmail-alias.8, renamed mboxg as mboxrd. tnx RD.
+           idea was popularized by RD in June 1995.
+- 19960322 cleanup: eliminated subfd_init().
+- 19960322 change: qbiff now removes the word Subject.
+- 19960322 change: now /bin/true instead of /dev/null in the generic
+           INSTALL.ids instructions. tnx JPR.
+- 19960322 change: added hfield_skipname(). tnx RN.
+- 19960322 bug: qmail-inject did not check whether USER needed quoting.
+           impact: if USER had weird characters, the From address would
+           generally be wrong, unless the user manually set up MAILUSER
+           with proper quoting. fix: qmail-inject sets up a quoted-string
+           if necessary.
+- 19960322 cleanup: separated out quote_need() in quote.c.
+- 19960322 cleanup: added stralloc_catb.c. used it in qmail-alias.c,
+           qmail-send.c.
+- 19960322 change: qmail-send now uses a quadratic retry schedule from
+           birth of each message. this also eliminates clustering.
+- 19960322 cleanup: separated out nextretry() in qmail-send.c.
+- 19960322 change: qmail-remote now passes all non-@ addresses through
+           without comment, not just <> and <#>.
+- 19960322 change: replaced # test with anything@[] test in qmail-inject.
+- 19960322 change: replaced # with #@[] in qlist.c, qmail-alias.c,
+           qmail-send.c, qreceipt.c.
+- 19960322 change: qmail-lspawn no longer discards messages to <#>.
+- 19960322 cleanup: in qlist, used str_diff for <> and <#> tests.
+- 19960322 change: qmail-alias is now back to testing envelope sender for
+           <> and <#>, rather than things without an @.
+- 19960321 change: added 8BITMIME support to qmail-smtpd.
+- 19960321 change: added ESMTP support to qmail-smtpd.
+- 19960318 change: used NEWSENDER in place of SENDER for |forward.
+- 19960318 change: added NEWSENDER.
+- 19960318 change: added HCMSSC support to qmail-alias.c.
+- 19960318 change: added HCMSSC support to spawn.c.
+- 19960318 change: added HCMSSC support to qmail-remote.c.
+- 19960318 change: added HCMSSC support to qmail-smtpd.c.
+- 19960317 portability problem: SCO requires -lsocket -lnsl. impact:
+           couldn't compile under SCO. fix: added SCO section in
+           make-cmds.sh. tnx JPR. note that this is for OSR 5; 3.2v4.2
+           will need more fixes, and old 3.2 is basically hopeless.
+- 19960317 bug: newfield_datemake would leave newfield_date alone if it
+           was already initialized, even though qmail-send calls
+           newfield_datemake anew for each bounce. impact: bounce messages
+           would usually have an incorrect Date field. fix: redid
+           newfield_datemake to update newfield_date each time.
+- 19960317 change: allowed . and @ in 822 phrases; 822 doesn't allow them,
+           but they do show up. tnx to the DRUMS group.
+- 19960317 change: replaced GMT with +0000 in date822fmt.c. this confuses
+           a few versions of getdate(), but the DRUMS group is going to
+           outlaw GMT, not just recommend against it as in 1123.
+- 19960317 change: redefined ALIAS_EMPTY to take advantage of . for file
+           deliveries. tnx RN.
+- 19960317 change: qmail-alias now allows . as well as / to start file
+           deliveries. tnx RN.
+- 19960317 change: qmail-alias now dies (soft) if .qmail is writable to
+           others, rather than silently ignoring it.
+- 19960317 change: qmail-alias now dies (soft) if flagforwardonly is
+           violated, rather than silently ignoring the bad instructions.
+- 19960317 change: qmail-alias now ignores x bit on empty .qmail files.
+- 19960317 bug: if RCPT gave 4xx and DATA gave 5xx, qmail-rspawn would
+           incorrectly assign a permanent failure to that recipient.
+           impact: in that case, mail would be incorrectly bounced. fix:
+           remove orr > 0 test from qmail-rspawn.c.
+- 19960310 change: tcp-env now uses signal_uninit(). [sigh]
+- 19960310 change: tcp-env now specifically unsets HOST and INFO if they
+           are not applicable. just trying to make it more widely usable.
+- 19960310 cleanup: used byte_* in remoteinfo.c, ipme.c, tcp-env.c.
+- 19960310 cleanup: added readwrite.h, eliminated sys.h.
+- 19960310 cleanup: included byte.h in qmail-send.c.
+- 19960310 cleanup: eliminated i and j from forward.c's main().
+- 19960310 cleanup: eliminated wstat from qlist.c.
+- 19960310 cleanup: eliminated die_nomem() parameter in qmail-setup.c.
+- 19960310 cleanup: eliminated i from qmail-remote's addrmangle().
+- 19960310 cleanup: added exit.h.
+- 19960310 cleanup: split ipalloc.c off of ip.c.
+- 19960310 cleanup: added fmt_strn.c, eliminated fmt_strncpy.c.
+- 19960310 change: reorganized INSTALL to do some pre-upgrade tests.
+           tnx RN.
+- 19960310 change: reordered steps in upgrade procedure in INSTALL.
+- 19960308 change: eliminated ownership test in qmail-alias.c. tnx DS.
+- 19960304 change: in SECURITY, "six most recent sendmail security
+           holes" -> "seven most recent sendmail security holes."
+- 19960303 qmail 0.73, beta.
+- 19960303 change: added SYSDEPS.
+- 19960303 cleanup: revamped select.h autoconfiguration.
+- 19960303 cleanup: revamped fork.h autoconfiguration.
+- 19960303 cleanup: revamped direntry.h autoconfiguration. target is now
+           direntry.h; auto-hasdrent.h is gone.
+- 19960303 change: tryflock.c now includes <sys/types.h>, for consistency
+           with lock.c. may affect portability.
+- 19960302 portability problem: under BSDI, can't set sticky on normal
+           files. dorks. impact: the new qlist doesn't work under BSDI;
+           be glad I test things before release. fix: qmail-alias and
+           qlist now use executable instead of sticky.
+- 19960302 change: gfrom now quotes >From and >>From etc. as well as From;
+           in other words, I'm switching from mbox format to mboxg format.
+- 19960302 cleanup: added gfrom.c. used it in qmail-alias.c, maildir2mbox.c.
+- 19960302 change: addbounce() now substitutes \n\n -> \n/ in reports,
+           and \n -> _ in recips. thus bounces can now be reliably parsed.
+- 19960302 change: if qmail-send had trouble reading the original message
+           or the list of addresses for a bounce, it used to give up and
+           send a bounce with "Oh no! I had trouble reading the rest of
+           your message" or some such. now it aborts the bounce attempt
+           and tries again later.
+- 19960302 cleanup: added qqtalk_fail(). used it in qmail-alias.c,
+           qmail-smtpd.c.
+- 19960302 bug: if mailforward() had trouble reading message (e.g.,
+           because of an I/O error), it marked an error but kept reading.
+           impact: could loop forever. fix: upon error, break.
+- 19960302 change: maildir2mbox now scans (restrictively) for return-path.
+- 19960302 change: qbiff now prints subject and body, up to 74 chars.
+- 19960302 change: added H_SUBJECT to hfield.
+- 19960302 change: qbiff now puts TO before FROM.
+- 19960301 cleanup: added fmt_str.c. used it in many places.
+- 19960301 change: qmail-send now says something if you've told it to exit
+           but it's waiting for some deliveries. tnx RN.
+- 19960301 change: qmail-alias -n now continues (with warning) if home
+           directory is sticky. tnx RN.
+- 19960301 change: improved usage messages in qmail-alias.c. tnx RN.
+- 19960301 change: put limit on length of addresses in qlist.
+- 19960301 change: added exit 99 support to qmail-alias. tnx RN.
+- 19960301 change: qmail-alias now exits immediately on temporary or
+           permanent error. rewrote section in qmail-alias.8 accordingly.
+- 19960301 cleanup: eliminated flagsuccesses from qmail-alias.c.
+- 19960301 change: added usermap.
+- 19960301 bug: failure to append to mbox was a permanent error. impact:
+           if mbox was temporarily unopenable (e.g., because fds were
+           low), mail would be incorrectly bounced. fix: failure is now
+           temporary. tnx DS.
+- 19960229 change: qmail-alias now preserves any envelope sender that
+           doesn't contain an @, not just <> and <#>.
+- 19960229 cleanup: revamped byte_* interface.
+- 19960229 cleanup: renamed str_cpy as str_copy.
+- 19960229 cleanup: added str_chr.c. used it in qbiff.c, qmail-smtpd.c.
+- 19960229 cleanup: added str_rchr.c. used it in qmail-send.c, quote.c,
+           qmail-remote.c.
+- 19960229 cleanup: added byte_rchr.c. used it in qmail-smtpd.c, spawn.c.
+- 19960229 cleanup: used USEREXT instead of RECIPIENT in qsmhook.c.
+- 19960229 cleanup: used USEREXT instead of RECIPIENT in qbiff.c.
+- 19960229 cleanup: removed j and k from rewrite() in qmail-send.c.
+- 19960229 portability problem: under HP-UX 10 and Solaris 2.5, can't
+           setgroups()/setgid() to the system's nogroup/nobody gid. dorks.
+           impact: inetd chokes, so all SMTP connections are rejected; and
+           "alias" mail, including postmaster, bounces. fix: in
+           INSTALL.ids, set up a separate powerless gid (tentatively
+           "nofiles") for qmaild and alias. tnx DS and PJG.
+- 19960229 change: qreceipt now uses qqtalk rather than qmail-inject.
+- 19960229 change: qlist now uses qqtalk rather than qmail-inject.
+- 19960229 change: incorporated qmail-setup patch from RN for better
+           error messages.
+- 19960228 change: added LSPAWN_BREAK in conf-unusual.h; used it in
+           lspawn.c. configurability requested by PJG.
+- 19960228 portability problem: on several systems, including everything
+           from DEC, select() on a pipe reader returns 1 if there aren't
+           any writers yet. pointed out by DS. impact: qmail-send chewed
+           up lots of CPU time. fix: trigger_set() now opens the pipe for
+           writing after opening it for reading. also added trynpbg1; on
+           working systems, no point in wasting the extra fd.
+- 19960228 change: qmail-alias uses .qmail sticky bit for forwardonly.
+- 19960228 change: qlist now sets sticky bit on .qmail file.
+- 19960228 change: un-documented +list.
+- 19960228 portability problem: on HP-UX and possibly other systems, the
+           supplementary group list does not include the gid. pointed out
+           by DS. impact: on those systems, tryshsgr could incorrectly set
+           hasshsgr; this would prevent qmail-send from running. fix: if
+           tryshsgr sees that getgroups() returns 0, now it actively sets
+           up a supplementary group list. added chkshsgr to make sure the
+           setgroups() will work.
+- 19960227 cleanup: eliminated GETSHORT in dns.c in favor of getshort().
+- 19960227 cleanup: deleted h->len < 3 test from qlist.c:dobody. tnx RN.
+- 19960227 change: replaced ~ with $HOME in INSTALL.mbox.
+- 19960227 change: added note about setgid-mail bits to INSTALL.mbox.
+- 19960227 change: added forward.1.
+- 19960227 change: modified forward to allow multiple addresses.
+- 19960227 change: modified forward to take an entire address, not just a
+           hostname.
+- 19960227 change: renamed qrelay as forward.
+- 19960227 change: added USEREXT support to qmail-alias.
+- 19960227 change: added -F to sendmail. the need for this was pointed
+           out by RN.
+- 19960227 change: added 2 bytes of slop in alloc().
+- 19960227 bug: received_setup() was not allowing space for the final \0.
+           impact: none; the line length is always between 65 and 75
+           characters, which gives at least 45 characters of slop with
+           existing malloc() implementations. fix: leave space. tnx NH.
+           note that the bug here is really in fmt_strncpy, which was
+           written before i was truly free of the curse of libc.a.
+- 19960227 change: added ALIAS_EMPTY in conf-unusual.h; used it in
+           qmail-alias.c. tnx PJG.
+- 19960227 change: added SPAWN_NUMD in conf-unusual.h; used it in spawn.c.
+- 19960227 change: added conf-unusual.h.
+- 19960227 cleanup: replaced sizeof(short) with 2 in dns.c.
+- 19960227 portability problem: on an Alpha, long is 64 bits. pointed out
+           by DS. impact: address lookups produced incorrect results on an
+           Alpha; qmail-makectl and qmail-remote failed. fix: replaced
+           sizeof(long) with 4 in dns.c.
+- 19960227 portability problem: on an Alpha, bzero() is declared properly
+           via sys/time.h. impact: couldn't compile on an Alpha. fix:
+           removed bzero() declaration from select.h. tnx DS.
+- 19960227 portability problem: under SCO, sys/file.h is not protected.
+           impact: couldn't compile under SCO. fix: include sys/types.h in
+           lock.c. tnx RN.
+- 19960219 change: added some .qmail-list hints to qlist.1.
+- 19960219 change: added +list support to qmail-alias.
+- 19960215 change: added THANKS.
+- 19960212 bug: foo was not initialized in qrelay.c. impact: depends on
+           the machine; on some machines, no effect; on other machines,
+           guaranteed core dump. fix: initialized foo. tnx DS.
+- 19960209 qmail 0.72, beta.
+- 19960209 change: qmail-alias now replaces dot, not slash, with colon.
+           also, qmeopen() makes sure that .qmail file is S_IFREG; I hope
+           this doesn't cause portability problems.
+- 19960209 change: added success-reporting procedure to INSTALL.
+- 19960208 change: added VERSION.
+- 19960208 change: added qlist2.
+- 19960208 change: revamped qlist interface. tnx RN.
+- 19960208 change: improved an error message in qlist.c.
+- 19960208 change: added qrelay. added relay section to HOWTO. tnx DS.
+- 19960208 cleanup: included substdio.h in qqtalk.h.
+- 19960207 bug: prioq_delmin() wasn't guaranteeing heap structure on the
+           last element. impact: scheduled passes could have been delayed,
+           conceivably as long as half an hour. fix: prioq_delmin() now
+           checks when it can safely move the last element.
+- 19960207 change: added maildirmake.1, maildir2mbox.1.
+- 19960206 change: revised logo paragraph in THOUGHTS.
+- 19960206 change: replaced nowhere.org with nowhere.mil in examples.
+           nowhere.org is a real domain... [sigh]
+- 19960206 change: added qreceipt.1.
+- 19960206 portability problem: IRIX doesn't have vfork. pointed out by
+           DS. impact: couldn't compile under IRIX. fix: added fork.h,
+           tryvfork.c.
+- 19960206 portability problem: IRIX doesn't have ranlib. pointed out by
+           DS. impact: couldn't compile under IRIX. fix: added IRIX
+           section in make-cmds.sh.
+- 19960205 cleanup: removed warning from substdio_copy() documentation; in
+           fact, substdio_copy() can be used safely on a fed substdio.
+- 19960205 change: added qbiff.1.
+- 19960204 change: implemented localnet. removed relevant paragraph from
+           THOUGHTS. tnx IS.
+- 19960204 change: in qmail-remote.8, explained the dangers of smarthost.
+           tnx IS.
+- 19960204 change: implemented virtualdomains wildcards. tnx JLH.
+- 19960203 change: qmail-send now handles virtualdomains _after_ locals.
+           updated INSTALL.qsmhook appropriately.
+- 19960203 change: added note to INSTALL.alias about ~ftp, ~www, ~uucp
+           being owned by root.
+- 19960130 cleanup: in qlist.c, renamed flagremoved as flagwasthere.
+- 19960130 bug: qmail-send did not pay attention to flagexitasap in
+           pass_dochan(). impact: qmail-send would happily start new
+           deliveries even if it wanted to exit. fix: qmail-send now
+           returns immediately in pass_selprep() and pass_dochan() if
+           flagexitasap.
+- 19960130 change: in qlist.c and qlist.1, renamed ext as list.
+- 19960130 change: in qlist.c and qlist.1, renamed manager as owner.
+- 19960129 qmail 0.71, beta.
+- 19960129 change: mentioned djb-qmailbeta in README. tnx MWE.
+- 19960129 change: added a note to INSTALL.mbox making clear that
+           Mailbox is in mbox format. tnx MWE.
+- 19960129 change: qlist now warns you if it didn't see any cmds. tnx RN.
+- 19960129 change: incorporated qlist patch from RN to refuse double subs. 
+- 19960129 change: added qlist.1, contributed by RN. mangled it a bit.
+- 19960129 bug: comment was not allowed in "phrase (comment) <route>";
+           pointed out by RN. impact: some correct address lists could be
+           mis-parsed by qmail-inject or qlist. fix: token.c now allows
+           TOKEN_COMMENT in the appropriate scan.
+- 19960128 change: added a logo paragraph to THOUGHTS.
+- 19960127 change: implemented rcpthosts.
+- 19960127 change: split up some uses of putflush in qmail-remote,
+           qmail-smtpd, spawn.c. eliminated NODELAY and corresponding
+           paragraph in THOUGHTS.
+- 19960127 change: added quote2(). used it in qmail-alias, qmail-send,
+           qreceipt. now addresses are properly quoted in the From, To,
+           and internal Return-Path of bounces; the From and To of
+           receipts; and the Return-Path/RPLINE of delivered messages.
+           removed relevant paragraph from THOUGHTS.
+- 19960127 change: in RFCLOOPS, documented fact that Delivered-To address
+           is conventionally not quoted.
+- 19960127 change: knocked default SMTP timeouts down to 20 minutes.
+- 19960127 change: added INSTALL.ids. tnx RN.
+- 19960127 change: in INSTALL, noted that nogroup should already exist.
+- 19960127 bug: pass_selprep checked pqchan[c] even if pass[c].id. impact:
+           qmail-send wasted CPU time whenever more than one message was
+           waiting on a blocked channel. fix: pass_selprep now checks
+           !pass[c].id.
+- 19960127 bug: programs invoked from qmail-alias were immune to SIGPIPE.
+           impact: a delivery pipeline such as |yes|head -1000 would loop
+           forever, since yes does not check for write errors. fix: added
+           signal_uninit(). used it before execvp in qmail-alias. [sigh]
+- 19960127 cleanup: added date822fmt.c. used it in newfield.c, qmail-queue.
+- 19960127 cleanup: added fmt_uint0.c. used it in myctime.c, newfield.c,
+           qmail-queue.
+- 19960127 cleanup: added dnsdoe.c. used it in dnscname, dnsfq, dnsip,
+           dnsmxip, dnsptr.
+- 19960127 cleanup: eliminated temp from dnsfq.c.
+- 19960127 bug: gen_allocdefs was making assumptions incompatible with the
+           alloc_re interface. impact: qmail-send would dump core if you
+           ran out of memory. fix: changed alloc_re interface.
+- 19960126 portability problem: some versions of Linux don't have
+           net/route.h. pointed out by RN. impact: couldn't compile under
+           those versions. fix: ipme.c no longer includes net/route.h;
+           hopefully this won't cause new portability problems.
+- 19960126 change: added chmod instructions to INSTALL and INSTALL.alias.
+           tnx RN.
+- 19960126 change: INSTALL now refers to the traditional sendmail spot
+           (/usr/lib), not the BSD 4.4 spot (/usr/sbin). tnx RN.
+- 19960126 change: make auto-uids.h now creates auto-uids.h.tmp first.
+           thus, if someone disobeys the installation instructions, and
+           his make fails to remove targets upon error, he'll still be
+           okay. tnx RN.
+- 19960126 change: added forgeries.7.
+- 19960125 cleanup: eliminated flagverbose, flagmetoo in sendmail.
+- 19960125 cleanup: added substdio_copy.c. used it at several spots.
+- 19960125 cleanup: added constmap.c. qmail-send now uses constmap for
+           locals and virtualdomains. this will speed things up: no
+           problem now to have thousands of virtual domains. removed
+           relevant paragraph from THOUGHTS.
+- 19960125 change: added linux section in find-systype. this will affect
+           linux-* systypes. tnx RN for relevant info.
+- 19960124 change: added -od, -oe, -p, -f to sendmail. the need for
+           these was pointed out by TN.
+- 19960124 bug: qmail-smtpd was reading from descriptor 1. impact: none;
+           in normal use, both 0 and 1 point to the network. fix: changed
+           1 to 0.
+- 19960124 bug: qmail-alias treated any .qmail open failure as permanent.
+           impact: if a .qmail file was temporarily unopenable (e.g.,
+           because of NFS), it was incorrectly ignored. fix: qmail-alias
+           now dies QLX_SOFT on any open failure other than ENOENT.
+- 19960124 change: added freebsd section in find-systype, same as bsd.os
+           section. this will affect freebsd-* systypes.
+- 19960124 cleanup: find-systype now immediately converts sys to lowercase.
+- 19960124 change: qmail-setup now copies man pages into /var/qmail/man;
+           qmail-check checks /var/qmail/man. using .0 style, which might
+           cause trouble on various machines, but better than not trying.
+- 19960124 change: in qmail-remote.c, changed perm_control to temp_control
+           (and D to Z, thanks); thus failure to read control files (e.g.,
+           because of permissions) is now a temporary error.
+- 19960124 bug: in qmail-remote.c, temp_chdir() used D, not Z. impact: if
+           chdir() to CONF_HOME failed (e.g., because of NFS), message
+           would be bounced. fix: changed D to Z.
+- 19960124 change: reorganized README.
+- 19960124 portability problem: Linux has the fifo kernel bug that I had
+           hoped I'd never run into. impact: messages under Linux (and any
+           other systems with this bug) were picked up only in sweeps, not
+           instantly. fix: triggerpull.c now writes a byte (non-blocking)
+           to the fifo. updated INTERNALS accordingly.
+- 19960124 bug: in qmail-remote.c, if quit() saw a remote write error, it
+           would call writeerr() even though a message report had already
+           been produced. impact: the mess report would include an extra
+           "ZConnected but communications failed," which was confusing
+           to humans. fix: quit() now simply skips the wait-for-QUIT
+           smtpcode() upon write error.
+- 19960124 portability problem: Linux does not have SIGSYS or SIGEMT.
+           impact: couldn't compile under Linux. fix: added appropriate
+           ifdefs in signal.c.
+- 19960124 qmail 0.70, beta.

@@ -285,7 +285,7 @@ then
 fi
 sleep 5
 
-%if 0%{?fedora_version} || 0%{?centos_version} || 0%{?rhel_version} || 0%{?suse_version} < 1500 || 0%{?sles_version < 15}
+%if 0%{?fedora_version} || 0%{?centos_version} || 0%{?rhel_version} || 0%{?suse_version} < 1500 || 0%{?sles_version} < 15
 %pre
 /usr/bin/getent group nofiles   > /dev/null || /usr/sbin/groupadd nofiles
 /usr/bin/getent group qmail     > /dev/null || /usr/sbin/groupadd qmail
@@ -303,8 +303,9 @@ done
 %else
 %pre -f notqmail.pre
 %endif
-
+%if 0%{?suse_version} || 0%{?sles_version}
 %service_add_pre %{name}.service
+%endif
 
 ### SCRIPTLET ###############################################################################
 %post
@@ -322,7 +323,9 @@ done
 %endif
 %endif
 #%{qmaildir}/bin/instchown
+%if 0%{?suse_version} || 0%{?sles_version}
 %service_add_post %{name}.service
+%endif
 
 ### SCRIPTLET ###############################################################################
 %preun
@@ -334,7 +337,9 @@ fi
 if [ $argv1 -eq 1 ] ; then
   exit 0
 fi
+%if 0%{?suse_version} || 0%{?sles_version}
 %service_del_preun %{name}.service
+%endif
 
 ### SCRIPTLET ###############################################################################
 %postun
@@ -351,7 +356,9 @@ fi
 if [ $argv1 -eq 1 ] ; then
   exit 0
 fi
+%if 0%{?suse_version} || 0%{?sles_version}
 %service_del_postun %{name}.service
+%endif
 (
 # remove users / groups
 for i in alias qmaild qmaill qmailp qmailq qmailr qmails
@@ -382,5 +389,35 @@ if [ $ID -ne 0 ] ; then
 fi
 
 %changelog
-* Sun Aug 11 2019 17:35:00 +0530 mbhangui@gmail.com 1.07-1.0
-1. First release
+* Sat May 23 2020 08:33:30 +0530 mbhangui@gmail.com 1.08-1.1
+1. CVE-2005-1515: fix signedness wraparound in substdio_{put,bput}().
+2. CVE-2005-1514: fix possible signed integer overflow in commands().
+3. CVE-2005-1513: fix integer overflow in stralloc_readyplus().
+4. Fix several other places where variables could overflow.
+5. qmail-pop3d: instead of running as root if root authenticates (and being a vector for a dictionary attack on the root password), exit 1 to look just like a failed checkpassword login.
+6. qmail-inject: do not parse header recipients if -a is given.
+7. Correctly detect multiple IP addresses on the same interface.
+8. Remove workaround for ancient DNS servers that do not properly support CNAME. Patch by Jonathan de Boyne Pollard that was floating around the net for years.
+9. Fix possible integer overflow in alloc().
+10. Remove dnscname and dnsmxip programs that were being built but not installed.
+11. Remove systype and related platform detection.
+12. Remove unused variable in maildir.c.
+13. Reduce variable scope in tcpto.c.
+14. Avoid local variables shadowing same-named globals.
+15. Avoid needing exit.h in named-pipe bug check.
+16. Add a test target and some unit tests, using Check.
+17. Add missing function declarations in cdbmss.h, scan.h.
+19. Add missing return types to main().
+20. Add hier.h for inclusion in instcheck.c, instchown.c, instpackage.c.
+21. Use system headers and types instead of the HASSHORTSETGROUPS check.
+22. Use system headers instead of redeclaring exit(), read(), write(), malloc(), free(), fork(), uint32_t.
+23. Use C89 function signatures for code we've touched so far.
+24. TravisCI: move setting MAKEFLAGS out of the script and into the matrix.
+25. Add FreeBSD builds with CirrusCi.
+26. Add a GitHub Actions build.
+27. Remove DJB's TODO.
+28. Replace many pobox.com URLs.
+29. Acknowledge Erik Sjölund's qmail-local.c bugfix that we've inherited from netqmail.
+30. Avoid generating catted manpages by building with NROFF=true.
+31. Optionally create a systemd service file.
+32. alternate qmail-remote by setting QMAILREMOTE in qmail-send's environment.

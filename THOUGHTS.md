@@ -56,7 +56,7 @@ and then obtaining root access. Various people thus decided to compound
 Sun's error and build a wall between root and all other users: if all
 system files are owned by root, and if there are no security holes other
 than NFS, someone who breaks in via NFS won't be able to wipe out the
-operating system---he'll merely be able to wipe out all user files. This
+operating system -- he'll merely be able to wipe out all user files. This
 clueless policy means that, for example, all the qmail users have to be
 replaced by root. See what I mean by ``enemy''? ... Basic NFS comments:
 Aside from the cryptographic problem of having hosts communicate
@@ -65,7 +65,7 @@ client uids to server uids. If a host is secure and under your control,
 you shouldn't have to map anything. If a host is under someone else's
 control, you'll want to map his uids to one local account; it's his
 client's job to decide which of his users get to talk NFS in the first
-place. Sun's original map---root to nobody, everyone else left alone---
+place. Sun's original map -- root to nobody, everyone else left alone -- 
 is, as far as I can tell, always wrong.
 
 
@@ -153,7 +153,7 @@ Should qmail-queue not bother queueing a message with no recipients?
 5. Handling queued mail (qmail-send, qmail-clean)
 
 The queue directory must be local. Mounting it over NFS is extremely
-dangerous---not that this stops people from running sendmail that way!
+dangerous -- not that this stops people from running sendmail that way!
 Diskless hosts should use mini-qmail instead.
 
 Queue reliability demands that single-byte writes be atomic. This is
@@ -252,7 +252,7 @@ multiple RCPTs per SMTP aren't an ``efficiency feature''; they're a
 _slowness_ feature. Separate SMTP transactions have much lower latency.
 
 I've heard three complaints about bandwidth use from masochists sending
-messages through a modem through a smarthost to thousands of users---
+messages through a modem through a smarthost to thousands of users -- 
 without sublists! They can get much better performance with QMQP.
 
 In the opposite direction: It's tempting to remove the @host part of the
@@ -347,7 +347,7 @@ Minimum number of disk blocks: Yes, via tunefs -m. (Or quotas; the right
 setup has qmailq with a small quota, qmails with a larger quota, so that
 qmail-send always has room to work.)
 
-Checkpointing: Yes, but not configurable---qmail always checkpoints.
+Checkpointing: Yes, but not configurable -- qmail always checkpoints.
 
 Error message configuration: Nope.
 

@@ -118,8 +118,8 @@ If the computer crashes while qmail-queue is trying to queue a message,
 or while qmail-send is eliminating a message, the message may be left in
 state S2 or S3.
 
-When qmail-send sees a message in state S2 or S3---other than one
-it is currently eliminating!---where mess/457 is more than 36 hours old,
+When qmail-send sees a message in state S2 or S3 -- other than one
+it is currently eliminating! -- where mess/457 is more than 36 hours old,
 it deletes intd/457 if that exists, then deletes mess/457. Note that any
 qmail-queue handling the message must be dead.
 
@@ -134,7 +134,7 @@ acknowledges successful receipt of the message? The client must assume
 the worst and send the message again. Similarly, if the computer crashes
 just before qmail-send marks a message as DONE, the new qmail-send must
 assume the worst and send the message again. The usual solutions in the
-database literature---e.g., keeping log files---amount to saying that
+database literature -- e.g., keeping log files -- amount to saying that
 it's the recipient's computer's job to discard duplicate messages.)
 
 

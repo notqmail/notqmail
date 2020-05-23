@@ -100,7 +100,7 @@ do I stop that?
 
 Answer: Remove af.mil from /var/qmail/control/locals. If qmail-send is
 running, give it a HUP. Make sure the MX is set up properly before you
-do this. Also make sure that pokey can receive mail for af.mil---see
+do this. Also make sure that pokey can receive mail for af.mil -- see
 question 3.1.
 
 
@@ -537,7 +537,7 @@ qmail-remote leaves it alone for an hour.
 
 7.3. How do I rejuvenate a message? Somebody broke into Eric's computer
 again; it's going to be down for at least another two days. I know Eric
-has been expecting an important message---in fact, I see it sitting here
+has been expecting an important message -- in fact, I see it sitting here
 in /var/qmail/queue/mess/15/26902. It's been in the queue for six days;
 how can I make sure it isn't bounced tomorrow?
 
@@ -602,7 +602,7 @@ One difficulty is that you can't get a consistent snapshot of the queue
 while qmail-send is running. Another difficulty is that messages in the
 queue must have filenames that match their inode numbers.
 
-However, the big problem is that backups---even twice-daily backups---
+However, the big problem is that backups -- even twice-daily backups -- 
 are far too unreliable for mail. If your disk dies, there will be very
 little overlap between the messages saved in the last backup and the
 messages that were lost.

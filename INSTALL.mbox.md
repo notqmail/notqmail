@@ -49,5 +49,5 @@ all your mail software to look at ~user/Mailbox directly:
 
 Some vendors, in a misguided attempt to solve the security problems of
 /var/spool/mail, have made all their mail software setgid mail. After
-you move the mailboxes, you can---and, for security, should---remove
+you move the mailboxes, you can -- and, for security, should -- remove
 those setgid-mail bits.

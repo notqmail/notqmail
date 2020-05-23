@@ -4,8 +4,8 @@ mbox format to a new format, maildir.
 
 1. The trouble with mbox
 
-The mbox format---the format of ~user/Mailbox, understood by BSD Mail
-and lots of other MUAs---is inherently unreliable.
+The mbox format -- the format of ~user/Mailbox, understood by BSD Mail
+and lots of other MUAs -- is inherently unreliable.
 
 Think about it: what happens if the system crashes while a program is
 appending a new message to ~user/Mailbox? The message will be truncated.
@@ -18,7 +18,7 @@ Other formats, such as mh folders, are just as unreliable.
 
 qmail supports maildir, a crashproof format for incoming mail messages.
 maildir is fast and easy for MUAs to use. Even better, maildir works
-wonders over NFS---see below.
+wonders over NFS -- see below.
 
 I don't want to cram maildir down people's throats, so it's not the
 default. Nevertheless, I encourage you to start asking for maildir
@@ -29,7 +29,7 @@ you can.
 2. Sun's Network F_ail_u_re System
 
 Anyone who tells you that mail can be safely delivered in mbox format
-over NFS is pulling your leg---as explained above, mbox format is
+over NFS is pulling your leg -- as explained above, mbox format is
 inherently unreliable even on a single machine.
 
 Anyway, NFS is the most unreliable computing environment ever invented,
@@ -39,7 +39,7 @@ You should switch to maildir, which works fine over NFS without any
 locking. You can safely read your mail over NFS if it's in maildir
 format. Any number of machines can deliver mail to you at the same time.
 (On the other hand, for efficiency, it's better to get NFS out of the
-picture---your mail should be delivered on the server that contains your
+picture -- your mail should be delivered on the server that contains your
 home directory.)
 
 Here's how to set up qmail to use maildir for your incoming mail:

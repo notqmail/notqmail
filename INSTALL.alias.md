@@ -28,7 +28,7 @@ files are similar to .forward files, but beware that they are strictly
 line-oriented -- see dot-qmail.0 for details.
 
 * Other non-user accounts. Under qmail, non-user accounts don't get
-mail; ``user'' means a non-root account that owns ~account. Set up
+mail; "user" means a non-root account that owns ~account. Set up
 aliases for any non-user accounts that normally receive mail.
 
 Note that special accounts such as ftp, www, and uucp should always have

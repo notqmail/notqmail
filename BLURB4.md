@@ -2,7 +2,7 @@ qmail's modular, lightweight design and sensible queue management make
 it the fastest available message transfer agent. Here's how it stacks up
 against the competition in five different speed measurements.
 
-* Scheduling: I sent a message to 8192 ``trash'' recipients on my home
+* Scheduling: I sent a message to 8192 "trash" recipients on my home
 machine. All the deliveries were done in a mere 78 seconds -- a rate of
 over 9 million deliveries a day! Compare this to the speed advertised
 for Zmailer's scheduling: 1.1 million deliveries a day on a

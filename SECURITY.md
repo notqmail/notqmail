@@ -20,13 +20,13 @@ an intruder into your machine.
 sendmail treats programs and files as addresses. Obviously random people
 can't be allowed to execute arbitrary programs or write to arbitrary
 files, so sendmail goes through horrendous contortions trying to keep
-track of whether a local user was ``responsible'' for an address. This
+track of whether a local user was "responsible" for an address. This
 has proven to be an unmitigated disaster.
 
 In qmail, programs and files are not addresses. The local delivery
 agent, qmail-local, can run programs or write to files as directed by
 ~user/.qmail, but it's always running as that user. (The notion of
-``user'' is configurable, but root is never a user. To prevent silly
+"user" is configurable, but root is never a user. To prevent silly
 mistakes, qmail-local makes sure that neither ~user nor ~user/.qmail is
 group-writable or world-writable.)
 

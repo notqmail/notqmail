@@ -1,7 +1,7 @@
 You can do several tests of messages entering the qmail system:
 
-1. SMTP server test: Forge some mail locally via SMTP. Replace ``me''
-   with your username and ``domain'' with your host's name.
+1. SMTP server test: Forge some mail locally via SMTP. Replace "me"
+   with your username and "domain" with your host's name.
        % telnet 127.0.0.1 25
        Trying 127.0.0.1...
        Connected to 127.0.0.1.

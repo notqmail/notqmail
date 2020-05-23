@@ -309,7 +309,7 @@
 19970728 doc: eliminated RFC*.
 19970714 doc: added daemontools notes to FAQ.
 19970714 code: eliminated ESMTP parameter syntax checking.
-19970701 doc: changed ``forwarded'' to ``resent'' in qmail-header.5.
+19970701 doc: changed "forwarded" to "resent" in qmail-header.5.
 19970629 code: reformatted constmap.c.
 19970628 code: changed straynewline() message in qmail-smtpd.c to point
          to http://pobox.com/~djb/smtplf.html. tnx RDM.
@@ -463,9 +463,9 @@
 19961117 change: added maildirbounce. tnx MD, TG.
 19961116 change: maildir2smtp and maildir2qmtp now print filenames for
          permanent bounces. tnx MD.
-19961116 change: in SECURITY, ``eleven most recent sendmail security
-         holes, five'' -> ``twelve most recent sendmail security holes,
-	 six.''
+19961116 change: in SECURITY, "eleven most recent sendmail security
+         holes, five" -> "twelve most recent sendmail security holes,
+	 six."
 19961116 change: rewrote qmail-showctl more professionally.
 19961115 change: added several tests to find-systype.sh. this will
          affect many systypes.
@@ -493,8 +493,8 @@
          people.
 19961110 change: replaced elm instructions in INSTALL.mbox with a simple
          note to set incomingfolders in elm.rc. tnx AB.
-19961110 change: replaced ``owner hack'' with ``variable envelope
-         return paths'' throughout the documentation. tnx DS.
+19961110 change: replaced "owner hack" with "variable envelope
+         return paths" throughout the documentation. tnx DS.
 19961110 change: qmail-setup installs man pages as well as cat pages.
 19961110 change: renamed qmail-newuser as qmail-newu. tnx G2A.
 19961110 change: renamed qmail-pw2user as qmail-pw2u. tnx G2A.
@@ -515,9 +515,9 @@
 19961024 change: replaced qmail-alias.0 with dot-qmail.0 in
          INSTALL.alias. tnx MW.
 19961022 change: switched uids as early as possible in qmail-start.c.
-19961022 change: in SECURITY, ``ten most recent sendmail security
-         holes, five'' -> ``eleven most recent sendmail security holes,
-	 five.''
+19961022 change: in SECURITY, "ten most recent sendmail security
+         holes, five" -> "eleven most recent sendmail security holes,
+	 five."
 19961022 change: quote_need() now treats non-ASCII characters the same
          way as control characters.
 19961022 change: added version and home page to qmail.7.
@@ -577,9 +577,9 @@
          qmail-popup.c, qmail-rspawn.c, qmail-start.c, qqtalk.c,
 	 qsmhook.c.
 19960928 cleanup: added libfd.
-19960927 change: in SECURITY, ``nine most recent sendmail security
-         holes, four'' -> ``ten most recent sendmail security holes,
-	 five.''
+19960927 change: in SECURITY, "nine most recent sendmail security
+         holes, four" -> "ten most recent sendmail security holes,
+	 five."
 19960926 change: added tcpcontrol notes to FAQ.
 19960926 change: qmail-smtpd now immediately closes connection, with a
          warning message dedicated to Solaris, if stray newlines show up
@@ -599,9 +599,9 @@
 19960922 change: qmail-setup now does umask(077).
 19960922 change: maildir2mbox now does umask(077).
 19960922 change: moved subfderr buf up to 64 characters.
-19960920 change: in SECURITY, ``eight most recent sendmail security
-         holes, three'' -> ``nine most recent sendmail security holes,
-	 four.''
+19960920 change: in SECURITY, "eight most recent sendmail security
+         holes, three" -> "nine most recent sendmail security holes,
+	 four."
 19960920 portability problem: init run commands are subject to job
          control signals under more systems than HP-UX. impact: on some
 	 systems (e.g., Solaris), qmail daemons would be killed. fix:
@@ -613,16 +613,16 @@
 19960919 change: eliminated QQX_EXECHARD and QQT_EXECHARD. this means
          that all qmail-queue invocation failures are now soft, even
 	 things like EPERM.
-19960919 change: replaced ``No such address'' with ``Sorry, no mailbox
-         here by that name.'' tnx G2A.
+19960919 change: replaced "No such address" with "Sorry, no mailbox
+         here by that name." tnx G2A.
 19960919 change: qmail-remote now includes host name in no-such-host
          messages. tnx G2A.
-19960919 change: replaced ``Temporarily unable to canonicalize address''
-         with ``CNAME lookup failed temporarily.''
+19960919 change: replaced "Temporarily unable to canonicalize address"
+         with "CNAME lookup failed temporarily."
 19960918 change: improved an error message in qmail-alias.c. tnx TG.
 19960918 change: added SHELL=/bin/sh to Makefile. tnx JL.
 19960916 change: reorganized INSTALL.ids a bit.
-19960916 change: ``from smtpd'' is now ``from network''.
+19960916 change: "from smtpd" is now "from network".
 19960916 change: SMTPD is now DAEMON.
 19960916 change: qmail-start sets logger uid to UID_LOG. tnx JLH.
 19960916 change: added CONF_USERL.
@@ -695,8 +695,8 @@
 19960818 change: introduced port in qmail-remote.c.
 19960818 change: qmail-queue records qp in Received lines. 2 lines of
          code. tnx ME.
-19960818 change: in SECURITY, ``seven most recent sendmail security
-         holes'' -> ``eight most recent sendmail security holes.''
+19960818 change: in SECURITY, "seven most recent sendmail security
+         holes" -> "eight most recent sendmail security holes."
 19960818 change: qmail-pop3d now appends an extra blank line to every
          message, for compatibility with popper. some clients can't
 	 deal with the right thing, unfortunately. tnx FPL.
@@ -1041,7 +1041,7 @@
 	 bounced. tnx SS. fix: qmail-smtpd now treats only TOOLONG and
 	 EXECHARD as permanent errors.
 19960430 cleanup: eliminated QQT_TTY from qqtalk.h.
-19960428 change: added ``warning: '' before trouble-marking message.
+19960428 change: added "warning: " before trouble-marking message.
 19960428 change: added percenthack. requested by GB.
 19960428 cleanup: switched to auto-generated Makefile.
 19960428 cleanup: switched to auto-generated .o dependencies.
@@ -1246,8 +1246,8 @@
          tnx RN.
 19960310 change: reordered steps in upgrade procedure in INSTALL.
 19960308 change: eliminated ownership test in qmail-alias.c. tnx DS.
-19960304 change: in SECURITY, ``six most recent sendmail security
-         holes'' -> ``seven most recent sendmail security holes.''
+19960304 change: in SECURITY, "six most recent sendmail security
+         holes" -> "seven most recent sendmail security holes."
 19960303 qmail 0.73, beta.
 19960303 change: added SYSDEPS.
 19960303 cleanup: revamped select.h autoconfiguration.
@@ -1309,9 +1309,9 @@
 19960229 portability problem: under HP-UX 10 and Solaris 2.5, can't
          setgroups()/setgid() to the system's nogroup/nobody gid. dorks.
 	 impact: inetd chokes, so all SMTP connections are rejected; and
-	 ``alias'' mail, including postmaster, bounces. fix: in
+	 "alias" mail, including postmaster, bounces. fix: in
 	 INSTALL.ids, set up a separate powerless gid (tentatively
-	 ``nofiles'') for qmaild and alias. tnx DS and PJG.
+	 "nofiles") for qmaild and alias. tnx DS and PJG.
 19960229 change: qreceipt now uses qqtalk rather than qmail-inject.
 19960229 change: qlist now uses qqtalk rather than qmail-inject.
 19960229 change: incorporated qmail-setup patch from RN for better
@@ -1427,7 +1427,7 @@
 19960129 change: qlist now warns you if it didn't see any cmds. tnx RN.
 19960129 change: incorporated qlist patch from RN to refuse double subs. 
 19960129 change: added qlist.1, contributed by RN. mangled it a bit.
-19960129 bug: comment was not allowed in ``phrase (comment) <route>'';
+19960129 bug: comment was not allowed in "phrase (comment) <route>";
          pointed out by RN. impact: some correct address lists could be
 	 mis-parsed by qmail-inject or qlist. fix: token.c now allows
 	 TOKEN_COMMENT in the appropriate scan.
@@ -1514,7 +1514,7 @@
 19960124 bug: in qmail-remote.c, if quit() saw a remote write error, it
          would call writeerr() even though a message report had already
 	 been produced. impact: the mess report would include an extra
-	 ``ZConnected but communications failed,'' which was confusing
+	 "ZConnected but communications failed," which was confusing
 	 to humans. fix: quit() now simply skips the wait-for-QUIT
 	 smtpcode() upon write error.
 19960124 portability problem: Linux does not have SIGSYS or SIGEMT.

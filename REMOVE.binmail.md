@@ -8,7 +8,7 @@ configured qmail to use binmail for local delivery.
 2. Remove permissions from the binmail binary:
       # chmod 0 /usr/libexec/mail.local
 
-3. If the binmail binary was /bin/mail, make sure that ``mail'' still
+3. If the binmail binary was /bin/mail, make sure that "mail" still
    invokes a usable mailer. Under SVR4 you may want to link mail to
    mailx.
 

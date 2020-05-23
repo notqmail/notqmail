@@ -86,7 +86,11 @@ fi
 dpkg-statoverride --list ${qmaildir}/bin/qmail-queue >/dev/null ||
 	dpkg-statoverride --update --add qmailq qmail 4711 ${qmaildir}/bin/qmail-queue
 
-if [ -x /bin/systemctl ] ; then
+if [ -x /bin/systemctl -a -d /lib/systemd/system ] ; then
+  ${cp} ${qmaildir}/boot/notqmail.service /lib/systemd/system/notqmail.service
+  /bin/systemctl daemon-reload
+  /bin/systemctl enable notqmail.service
+elif [ -x /bin/systemctl -a -d /usr/lib/systemd/system ] ; then
   ${cp} ${qmaildir}/boot/notqmail.service /usr/lib/systemd/system/notqmail.service
   /bin/systemctl daemon-reload
   /bin/systemctl enable notqmail.service

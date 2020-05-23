@@ -90,6 +90,11 @@ if [ " $1" = " purge" ] ; then
 	else
 		log_dir=${logdir}
 	fi
+	if [ -x /bin/systemctl -a -d /lib/systemd/system ] ; then
+		$rm -f /lib/systemd/system/notqmail.service
+	elif [ -x /bin/systemctl -a -d /usr/lib/systemd/system ] ; then
+		$rm -f /usr/lib/systemd/system/notqmail.service
+	fi
 	[ "$log_dir" != "/" ] && ${rm} -fr $log_dir
 	dpkg-statoverride --remove ${qmaildir}/bin/qmail-queue
 	) >> /tmp/notqmail-setup.log 2>&1

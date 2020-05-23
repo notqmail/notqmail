@@ -22,20 +22,21 @@
 %endif
 
 Name: notqmail
-Version: 1.07
-Release: 1.0%{?dist}
+Version: 1.08
+Release: 1.1%{?dist}
 Summary: A community driven fork of qmail
 License: CC-PDDC
 URL: https://notqmail.org
-Source0: notqmail-1.07.tar.xz
+Source0: https://github.com/notqmail/notqmail/releases/download/notqmail-1.08/notqmail-1.08.tar.xz
 %if %noperms == 0
 %if 0%{?suse_version} >= 1120
-Source1:%{name}-permissions.easy
-Source2:%{name}-permissions.secure
-Source3:%{name}-permissions.paranoid
+Source1: %{name}-permissions.easy
+Source2: %{name}-permissions.secure
+Source3: %{name}-permissions.paranoid
 %endif
 %endif
-Source5:system-users-qmail.conf
+Source4: qmail-send.service
+Source5: system-users-qmail.conf
 %if %{undefined suse_version} && %{undefined sles_version}
 Group: System Environment/Base
 %else
@@ -61,14 +62,14 @@ BuildRequires: sysuser-tools
 %endif
 
 
-%if %build_on_obs == 1
 ##################################### OBS ####################################
+%if %build_on_obs == 1
 %if 0%{?suse_version}
 BuildRequires: -post-build-checks  
 #!BuildIgnore: post-build-checks  
 %endif
-##############################################################################
 %endif
+##############################################################################
 
 Requires: /usr/sbin/useradd /usr/sbin/userdel /usr/sbin/groupadd /usr/sbin/groupdel
 Requires: /sbin/chkconfig procps /usr/bin/awk /usr/bin/which
@@ -158,8 +159,10 @@ install -m 644 %{S:2} %{buildroot}%{_sysconfdir}/permissions.d/%{name}-permissio
 %endif
 %endif
 %if "%{?_unitdir}" != ""
-  install -D -m 644 qmail-send.service %{buildroot}%{_unitdir}/%{name}.service
+  mkdir -p %{buildroot}%{_unitdir}
+  install -m 644 %{S:4} %{buildroot}%{_unitdir}/%{name}.service
 %endif
+rm -f %{buildroot}%{qmaildir}/bin/{qail,elq,pinq,maildirwatch,qsmhook}
 
 %files
 %defattr(-, root, root,-)

@@ -8,7 +8,7 @@ even mailing-list managers, such as Majordomo, seem nearly as bad.
 Note added in 1998: I wrote the above paragraph in December 1995, when
 the latest version of sendmail was 8.6.12 (with 41000 lines of code).
 Fourteen security holes were discovered from sendmail 8.6.12 through
-8.8.5. See http://pobox.com/~djb/docs/maildisasters/sendmail.html.
+8.8.5. See <https://cr.yp.to/maildisasters/sendmail.html>.
 
 I started working on qmail because I was sick of this cycle of doom.
 Here are some of the things I did to make sure that qmail will never let

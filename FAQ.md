@@ -1,5 +1,5 @@
-See https://cr.yp.to/qmail/faq.html for newer FAQs not included in this
-document, and http://qmail.org/ for qmail community contributions.
+See <https://cr.yp.to/qmail/faq.html> for newer FAQs not included in this
+document, and <http://qmail.org/> for qmail community contributions.
 
 1. Controlling the appearance of outgoing messages
 1.1. How do I set up host masquerading?
@@ -131,7 +131,7 @@ running, give it a HUP.
 
 2.4. How do I set up a separate queue for a SLIP/PPP link?
 
-Answer: Use serialmail (https://cr.yp.to/serialmail.html).
+Answer: Use serialmail (<https://cr.yp.to/serialmail.html>).
 
 
 2.5. How do I deal with "CNAME lookup failed temporarily"? The log
@@ -215,7 +215,7 @@ incoming mail for me-sos will be forwarded to each of those addresses.
 You should also touch ~me/.qmail-sos-owner so that bounces come back to
 you rather than the original sender.
 
-Alternative: ezmlm (https://cr.yp.to/ezmlm.html) is a modern
+Alternative: ezmlm (<https://cr.yp.to/ezmlm.html>) is a modern
 mailing list manager, supporting automatic subscriptions, confirmations,
 archives, fully automatic bounce handling (including warnings to
 subscribers saying which messages they've missed), and more.
@@ -223,8 +223,8 @@ subscribers saying which messages they've missed), and more.
 
 4.3. How do I use majordomo with qmail?
 
-Answer: See ftp://ftp.eyrie.org/pub/software/majordomo/mjqmail and
-http://www.qmail.org for various methods. majordomo 2.0 is expected to
+Answer: See <ftp://ftp.eyrie.org/pub/software/majordomo/mjqmail> and
+<http://www.qmail.org> for various methods. majordomo 2.0 is expected to
 support qmail directly.
 
 Beware that majordomo's lists are not crashproof.
@@ -263,13 +263,13 @@ uppercase is converted to lowercase.
 4.7. How do I use sendmail's .forward files with qmail?
 
 Answer: Install the dot-forward package
-(https://cr.yp.to/dot-forward.html).
+(<https://cr.yp.to/dot-forward.html>).
 
 
 4.8. How do I use sendmail's /etc/aliases with qmail?
 
 Answer: Install the fastforward package
-(https://cr.yp.to/fastforward.html).
+(<https://cr.yp.to/fastforward.html>).
 
 
 To make majordomo 1.94.* work with qmail under fastforward, insert
@@ -277,8 +277,8 @@ To make majordomo 1.94.* work with qmail under fastforward, insert
    # system("newinclude","$listdir/$clean_list");
 
 before the lclose(LIST) line in do_subscribe and do_unsubscribe in
-majordomo. See ftp://ftp.eyrie.org/pub/software/majordomo/mjqmail
-and http://www.qmail.org for other methods of using majordomo with
+majordomo. See <ftp://ftp.eyrie.org/pub/software/majordomo/mjqmail>
+and <http://www.qmail.org> for other methods of using majordomo with
 qmail. majordomo 2.0 is expected to support qmail directly.
 
 4.9. How do I make qmail defer messages during NFS or NIS outages? If
@@ -319,7 +319,7 @@ For more precise control over address assignments, see qmail-users.0.
 loads, cutting off service for ten-minute stretches. I'd also like
 better connection logging.
 
-Answer: Install ucspi-tcp (https://cr.yp.to/ucspi-tcp.html). Remove the
+Answer: Install ucspi-tcp (<https://cr.yp.to/ucspi-tcp.html>). Remove the
 smtp line from /etc/inetd.conf, and put the two lines
 
    tcpserver -v -u 7770 -g 2108 0 smtp /var/qmail/bin/qmail-smtpd \
@@ -357,8 +357,8 @@ question 5.1 for more details on tcpserver.
 5.3. How do I set up qmail-pop3d? My old POP server works with mbox
 delivery; I'd like to switch to maildir delivery.
 
-Answer: Install ucspi-tcp (https://cr.yp.to/ucspi-tcp.html) and
-checkpassword (https://cr.yp.to/checkpwd.html). Put
+Answer: Install ucspi-tcp (<https://cr.yp.to/ucspi-tcp.html>) and
+checkpassword (<https://cr.yp.to/checkpwd.html>). Put
 
      tcpserver 0 110 /var/qmail/bin/qmail-popup YOURHOST \
      /bin/checkpassword /var/qmail/bin/qmail-pop3d Maildir &
@@ -372,7 +372,7 @@ Security note: You should do this only within a secure network; otherwise
 an eavesdropper can steal passwords.
 
 There are several programs that can be substituted for checkpassword.
-See https://cr.yp.to/qmail/toaster.html for more information.
+See <https://cr.yp.to/qmail/toaster.html> for more information.
 
 
 5.4. How do I allow selected clients to use this host as a relay? I see
@@ -616,7 +616,7 @@ any data.
 
 7.6. How do I run a supervised copy of qmail? svc sounds useful.
 
-Answer: Install daemontools (https://cr.yp.to/daemontools.html).
+Answer: Install daemontools (<https://cr.yp.to/daemontools.html>).
 Create a /var/run/qmail directory. Change
 
    /var/qmail/rc
@@ -633,7 +633,7 @@ whether qmail is running.
 7.7. How do I avoid syslog? It chews up a lot of CPU time and isn't
 reliable.
 
-Answer: Install daemontools (https://cr.yp.to/daemontools.html).
+Answer: Install daemontools (<https://cr.yp.to/daemontools.html>).
 Make a /var/log/qmail directory, owned by qmaill, mode 2700. Do
 
    qmail-start ./Mailbox /usr/local/bin/accustamp \

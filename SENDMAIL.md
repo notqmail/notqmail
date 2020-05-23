@@ -4,11 +4,11 @@ switches from sendmail to qmail.
 This is a global document, part of the qmail package, not reflecting the
 decisions made by your system administrator. For details on
 
-   * which local delivery agent qmail is configured to use,
-   * whether qmail is configured to use dot-forward,
-   * whether ezmlm is installed,
-   * whether fastforward is installed, and
-   * all other local configuration features,
+* which local delivery agent qmail is configured to use,
+* whether qmail is configured to use dot-forward,
+* whether ezmlm is installed,
+* whether fastforward is installed, and
+* all other local configuration features,
 
 see your local sendmail-qmail upgrade announcement (which your system
 administrator may have placed into /var/qmail/doc/ANNOUNCE).

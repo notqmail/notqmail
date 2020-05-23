@@ -22,7 +22,6 @@ extern int substdio_bputs();
 extern int substdio_putsflush();
 
 extern int substdio_get();
-extern int substdio_bget();
 extern int substdio_feed();
 
 extern char *substdio_peek();

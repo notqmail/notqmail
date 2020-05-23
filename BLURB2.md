@@ -9,7 +9,7 @@ touches ~user/.qmail-whatever-owner, all bounces will come back to him.
 * qmail supports VERPs, which permit completely reliable automated
 bounce handling for mailing lists of any size.
 
-* SPEED---qmail blasts through mailing lists an order of magnitude
+* SPEED -- qmail blasts through mailing lists an order of magnitude
 faster than sendmail. For example, one message was successfully
 delivered to 150 hosts around the world in just 70 seconds, with qmail's
 out-of-the-box configuration.

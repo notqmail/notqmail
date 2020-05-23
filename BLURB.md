@@ -16,7 +16,7 @@ his mail over NFS, but any number of NFS clients can deliver mail to him
 at the same time.
 
 Efficient: On a Pentium under BSD/OS, qmail can easily sustain 200000
-local messages per day---that's separate messages injected and delivered
+local messages per day -- that's separate messages injected and delivered
 to mailboxes in a real test! Although remote deliveries are inherently
 limited by the slowness of DNS and SMTP, qmail overlaps 20 simultaneous
 deliveries by default, so it zooms quickly through mailing lists. (This

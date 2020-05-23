@@ -1,5 +1,5 @@
 Background: Every few months CERT announces Yet Another Security Hole In
-Sendmail---something that lets local or even remote users take complete
+Sendmail -- something that lets local or even remote users take complete
 control of the machine. I'm sure there are many more holes waiting to be
 discovered; sendmail's design means that any minor bug in 46000 lines of
 code is a major security risk. Other popular mailers, such as Smail, and
@@ -60,8 +60,8 @@ run as root.
 
 4. Move separate functions into mutually untrusting programs.
 
-Five of the qmail programs---qmail-smtpd, qmail-send, qmail-rspawn,
-qmail-remote, and tcp-env---are not security-critical. Even if all of
+Five of the qmail programs -- qmail-smtpd, qmail-send, qmail-rspawn,
+qmail-remote, and tcp-env -- are not security-critical. Even if all of
 these programs are completely compromised, so that an intruder has
 control over the qmaild, qmails, and qmailr accounts and the mail queue,
 he still can't take over your system. None of the other programs trust
@@ -82,7 +82,7 @@ files or start any other programs as root.)
 I have discovered that there are two types of command interfaces in the
 world of computing: good interfaces and user interfaces.
 
-The essence of user interfaces is _parsing_---converting an unstructured
+The essence of user interfaces is _parsing_ -- converting an unstructured
 sequence of commands, in a format usually determined more by psychology
 than by solid engineering, into structured data.
 

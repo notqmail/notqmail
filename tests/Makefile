@@ -9,7 +9,7 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_qmail-remote unittest_prioq unittest_qmail-send unittest_str unittest_stralloc
+TESTBINS = unittest_case unittest_qmail-remote unittest_prioq unittest_qmail-send unittest_str unittest_stralloc
 
 clean:
 	rm -f $(TESTBINS) *.o *-without-main.c
@@ -20,6 +20,16 @@ test: it
 	@for tbin in $(TESTBINS); do \
 		./$$tbin || exit 1 ; \
 	done
+
+unittest_case: \
+../load unittest_case.o ../case.a
+	../load unittest_case ../case.a \
+	`pkg-config --libs check`
+
+unittest_case.o: \
+../compile unittest_case.c ../case.h
+	../compile unittest_case.c -I.. \
+	`pkg-config --cflags check`
 
 unittest_str: \
 ../load unittest_str.o ../str.a

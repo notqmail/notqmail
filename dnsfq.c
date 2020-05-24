@@ -10,11 +10,9 @@
 stralloc sa = {0};
 ipalloc ia = {0};
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
- if (!argv[1]) _exit(100);
+ if (argc == 1) _exit(100);
 
  if (!stralloc_copys(&sa,argv[1]))
   { substdio_putsflush(subfderr,"out of memory\n"); _exit(111); }

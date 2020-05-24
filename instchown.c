@@ -69,7 +69,7 @@ void z(char *home, char *file, int len, uid_t uid, gid_t gid, int mode)
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",file,": ");
 }
 
-void main()
+int main(void)
 {
   umask(077);
   init_uidgid();

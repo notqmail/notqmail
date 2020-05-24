@@ -205,7 +205,7 @@ uid_t auto_uids = -1;
 
 gid_t auto_gidq = -1;
 
-void main()
+int main(void)
 {
   fdsourcedir = open_read(".");
   if (fdsourcedir == -1)

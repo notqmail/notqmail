@@ -5,7 +5,7 @@
 
 char host[256];
 
-void main()
+int main(void)
 {
  host[0] = 0; /* sigh */
  gethostname(host,sizeof(host));

@@ -23,15 +23,14 @@ static int is_legible(unsigned char ch)
   return 0;
 }
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   char *name;
   char *value;
   unsigned char ch;
   char octal[4];
 
+  if (argc != 3) _exit(100);
   name = argv[1];
   if (!name) _exit(100);
   value = argv[2];

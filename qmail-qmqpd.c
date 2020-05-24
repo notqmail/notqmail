@@ -107,7 +107,7 @@ int getbuf()
 
 int flagok = 1;
 
-void
+int
 main()
 {
   char *result;

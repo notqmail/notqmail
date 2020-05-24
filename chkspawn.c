@@ -8,7 +8,7 @@
 char num[FMT_ULONG];
 fd_set fds;
 
-void main()
+int main(void)
 {
   unsigned long hiddenlimit;
   unsigned long maxnumd;

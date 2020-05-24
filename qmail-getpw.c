@@ -55,12 +55,10 @@ int userext()
 
 char num[FMT_ULONG];
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
+  if (argc == 1) _exit(100);
   local = argv[1];
-  if (!local) _exit(100);
 
   if (!userext()) {
     extension = local;

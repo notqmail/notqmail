@@ -442,9 +442,7 @@ void sayit(char *type, char *cmd, unsigned int len)
  substdio_putsflush(subfdoutsmall,"\n");
 }
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
  int opt;
  unsigned int i;

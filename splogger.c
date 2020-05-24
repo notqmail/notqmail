@@ -45,14 +45,12 @@ void flush()
   bufpos = 0;
 }
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   char ch;
 
-  if (argv[1])
-    if (argv[2]) {
+  if (argc > 1)
+    if (argc > 2) {
       unsigned long facility;
       scan_ulong(argv[2],&facility);
       openlog(argv[1],0,facility << 3);

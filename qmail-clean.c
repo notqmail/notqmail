@@ -49,7 +49,7 @@ char fnbuf[FMTQFN];
 
 void respond(s) char *s; { if (substdio_putflush(subfdoutsmall,s,1) == -1) _exit(100); }
 
-void main()
+int main(void)
 {
  int i;
  int match;

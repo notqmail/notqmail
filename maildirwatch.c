@@ -57,7 +57,7 @@ prioq pq = {0};
 char inbuf[SUBSTDIO_INSIZE];
 substdio ssin;
 
-void main()
+int main(void)
 {
  struct prioq_elt pe;
  int fd;

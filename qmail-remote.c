@@ -325,9 +325,7 @@ void getcontrols()
   }
 }
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   static ipalloc ip = {0};
   int i;

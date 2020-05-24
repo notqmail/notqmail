@@ -72,7 +72,7 @@ int match;
 
 stralloc wildchars = {0};
 
-void main()
+int main(void)
 {
   int i;
   int numcolons;

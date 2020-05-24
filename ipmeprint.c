@@ -6,7 +6,7 @@
 
 char temp[IPFMT];
 
-void main()
+int main(void)
 {
  int j;
  switch(ipme_init())

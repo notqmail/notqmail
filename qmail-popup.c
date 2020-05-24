@@ -164,9 +164,7 @@ struct commands pop3commands[] = {
 , { 0, err_authoriz, 0 }
 } ;
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   sig_alarmcatch(die);
   sig_pipeignore();

@@ -11,7 +11,7 @@
 char buf[1024]; /* XXX: must match size in tcpto_clean.c, tcpto.c */
 substdio ss;
 
-void main()
+int main(void)
 {
   int fd;
   int i;

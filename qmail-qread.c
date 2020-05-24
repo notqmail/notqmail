@@ -105,7 +105,7 @@ void putstats()
 
 stralloc line = {0};
 
-void main()
+int main(void)
 {
  int channel;
  int match;

@@ -33,7 +33,7 @@ struct cdbmss cdbmss;
 stralloc line = {0};
 int match;
 
-void main()
+int main(void)
 {
   umask(033);
   if (chdir(auto_qmail) == -1)

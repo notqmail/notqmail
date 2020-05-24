@@ -7,14 +7,12 @@
 
 #define FATAL "bouncesaying: fatal: "
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   int pid;
   int wstat;
 
-  if (!argv[1])
+  if (argc == 1)
     strerr_die1x(100,"bouncesaying: usage: bouncesaying error [ program [ arg ... ] ]");
 
   if (argv[2]) {

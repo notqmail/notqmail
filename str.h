@@ -15,7 +15,10 @@ static inline unsigned int str_chr(const char *s, int c)
   return r - s;
 }
 extern unsigned int str_rchr();
-extern int str_start();
+static inline int str_start(const char *s, const char *t)
+{
+  return strncmp(s, t, strlen(t)) == 0;
+}
 
 #define str_equal(s,t) (strcmp((s),(t)) == 0)
 

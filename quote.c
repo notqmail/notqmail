@@ -1,3 +1,4 @@
+#include <string.h>
 #include "error.h"
 #include "oflops.h"
 #include "stralloc.h"
@@ -81,12 +82,12 @@ int quote2(sa,s)
 stralloc *sa;
 char *s;
 {
- int j;
+ char *at;
  if (!*s) return stralloc_copys(sa,s);
- j = str_rchr(s,'@');
+ at = strrchr(s,'@');
  if (!stralloc_copys(&foo,s)) return 0;
- if (!s[j]) return quote(sa,&foo);
- foo.len = j;
+ if (!at) return quote(sa,&foo);
+ foo.len = at - s;
  if (!quote(sa,&foo)) return 0;
- return stralloc_cats(sa,s + j);
+ return stralloc_cats(sa,at);
 }

@@ -1,6 +1,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <string.h>
 #include "readwrite.h"
 #include "sig.h"
 #include "direntry.h"
@@ -174,14 +175,14 @@ char *recip;
    if (str_equal(sender + i - 4,"-@[]"))
     {
      unsigned int j = byte_rchr(sender,i - 4,'@');
-     unsigned int k = str_rchr(recip,'@');
-     if (recip[k] && (j + 5 <= i))
+     char *at = strrchr(recip,'@');
+     if (at && (j + 5 <= i))
       {
        /* owner-@host-@[] -> owner-recipbox=reciphost@host */
        while (!stralloc_catb(sa,sender,j)) nomem();
-       while (!stralloc_catb(sa,recip,k)) nomem();
+       while (!stralloc_catb(sa,recip,at - recip)) nomem();
        while (!stralloc_cats(sa,"=")) nomem();
-       while (!stralloc_cats(sa,recip + k + 1)) nomem();
+       while (!stralloc_cats(sa,at + 1)) nomem();
        while (!stralloc_cats(sa,"@")) nomem();
        while (!stralloc_catb(sa,sender + j + 1,i - 5 - j)) nomem();
        return;
@@ -574,12 +575,13 @@ char *recip;
 {
  unsigned int i;
  char *domain;
+ char *at;
  unsigned int domainlen;
  char *prepend;
 
- i = str_rchr(recip,'@');
- if (!recip[i]) return recip;
- domain = recip + i + 1;
+ at = strrchr(recip, '@');
+ if (!at) return recip;
+ domain = at + 1;
  domainlen = str_len(domain);
 
  for (i = 0;i <= domainlen;++i)

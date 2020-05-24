@@ -9,7 +9,10 @@
 #define str_len(s) strlen((s))
 extern unsigned int str_chr();
 extern unsigned int str_rchr();
-extern int str_start();
+static inline int str_start(const char *s, const char *t)
+{
+  return strncmp(s, t, strlen(t)) == 0;
+}
 
 #define str_equal(s,t) (strcmp((s),(t)) == 0)
 

@@ -12,7 +12,6 @@ slurpclose.o
 make-makelib
 makelib
 case_diffb.o
-case_diffs.o
 case_lowerb.o
 case_lowers.o
 case_starts.o

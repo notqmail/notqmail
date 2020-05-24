@@ -260,18 +260,14 @@ compile byte_zero.c byte.h
 	./compile byte_zero.c
 
 case.a: \
-makelib case_diffb.o case_diffs.o case_lowerb.o case_lowers.o \
+makelib case_diffb.o case_lowerb.o case_lowers.o \
 case_starts.o
-	./makelib case.a case_diffb.o case_diffs.o case_lowerb.o \
+	./makelib case.a case_diffb.o case_lowerb.o \
 	case_lowers.o case_starts.o
 
 case_diffb.o: \
 compile case_diffb.c case.h
 	./compile case_diffb.c
-
-case_diffs.o: \
-compile case_diffs.c case.h
-	./compile case_diffs.c
 
 case_lowerb.o: \
 compile case_lowerb.c case.h

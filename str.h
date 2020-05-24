@@ -14,7 +14,15 @@ static inline unsigned int str_chr(const char *s, int c)
     return strlen(s);
   return r - s;
 }
-extern unsigned int str_rchr();
+
+static inline unsigned int str_rchr(const char *s, int c)
+{
+  const char *t = strrchr(s, c);
+  if (!t)
+    return strlen(s);
+  return t - s;
+}
+
 static inline int str_start(const char *s, const char *t)
 {
   return strncmp(s, t, strlen(t)) == 0;

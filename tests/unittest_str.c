@@ -5,11 +5,26 @@
 START_TEST(test_str_chr)
 {
   ck_assert_uint_eq(str_chr("abc", 'a'), 0);
+  ck_assert_uint_eq(str_chr("aba", 'a'), 0);
   ck_assert_uint_eq(str_chr("abc", 'b'), 1);
   ck_assert_uint_eq(str_chr("abc", 'c'), 2);
   ck_assert_uint_eq(str_chr("abc", 'd'), 3);
+  ck_assert_uint_eq(str_chr("abc", 0), 3);
 
   ck_assert_uint_eq(str_chr("", 'd'), 0);
+}
+END_TEST
+
+START_TEST(test_str_rchr)
+{
+  ck_assert_uint_eq(str_rchr("abc", 'a'), 0);
+  ck_assert_uint_eq(str_rchr("aba", 'a'), 2);
+  ck_assert_uint_eq(str_rchr("abc", 'b'), 1);
+  ck_assert_uint_eq(str_rchr("abc", 'c'), 2);
+  ck_assert_uint_eq(str_rchr("abc", 'd'), 3);
+  ck_assert_uint_eq(str_rchr("abc", 0), 3);
+
+  ck_assert_uint_eq(str_rchr("", 'd'), 0);
 }
 END_TEST
 
@@ -30,6 +45,7 @@ TCase
   TCase *tc = tcase_create("basic operations");
 
   tcase_add_test(tc, test_str_chr);
+  tcase_add_test(tc, test_str_rchr);
   tcase_add_test(tc, test_str_start);
 
   return tc;

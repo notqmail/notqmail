@@ -1,7 +1,6 @@
 #include "case.h"
 
-void case_lowers(s)
-char *s;
+void case_lowers(char *s)
 {
   unsigned char x;
   while ((x = *s)) {

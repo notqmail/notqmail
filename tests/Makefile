@@ -9,7 +9,7 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_blast unittest_prioq unittest_str unittest_stralloc
+TESTBINS = unittest_blast unittest_case unittest_prioq unittest_str unittest_stralloc
 
 CHECK_INCLUDES := `pkg-config --cflags check`
 CHECK_LIBS := `pkg-config --libs check`
@@ -23,6 +23,16 @@ test: it
 	@for tbin in $(TESTBINS); do \
 		./$$tbin || exit 1 ; \
 	done
+
+unittest_case: \
+../load unittest_case.o ../case.a
+	../load unittest_case ../case.a \
+	$(CHECK_LIBS)
+
+unittest_case.o: \
+../compile unittest_case.c ../case.h
+	../compile unittest_case.c -I.. \
+	$(CHECK_INCLUDES)
 
 unittest_str: \
 ../load unittest_str.o ../str.a

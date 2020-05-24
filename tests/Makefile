@@ -9,7 +9,7 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_stralloc unittest_blast unittest_prioq
+TESTBINS = unittest_blast unittest_prioq unittest_str unittest_stralloc
 
 clean:
 	rm -f $(TESTBINS) *.o blast.c
@@ -20,6 +20,16 @@ test: it
 	@for tbin in $(TESTBINS); do \
 		./$$tbin || exit 1 ; \
 	done
+
+unittest_str: \
+../load unittest_str.o ../str.a
+	../load unittest_str ../str.a \
+	`pkg-config --libs check`
+
+unittest_str.o: \
+../compile unittest_str.c ../str.h
+	../compile unittest_str.c -I.. \
+	`pkg-config --cflags check`
 
 unittest_stralloc: \
 ../load unittest_stralloc.o ../stralloc.a ../str.a ../error.a

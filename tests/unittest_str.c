@@ -13,12 +13,24 @@ START_TEST(test_str_chr)
 }
 END_TEST
 
+START_TEST(test_str_start)
+{
+  ck_assert_uint_eq(str_start("abc", "a"), 1);
+  ck_assert_uint_eq(str_start("abc", "b"), 0);
+  ck_assert_uint_eq(str_start("abc", "ab"), 1);
+  ck_assert_uint_eq(str_start("abc", "abc"), 1);
+  ck_assert_uint_eq(str_start("abc", "abcd"), 0);
+  ck_assert_uint_eq(str_start("abc", ""), 1);
+}
+END_TEST
+
 TCase
 *str_something(void)
 {
   TCase *tc = tcase_create("basic operations");
 
   tcase_add_test(tc, test_str_chr);
+  tcase_add_test(tc, test_str_start);
 
   return tc;
 }

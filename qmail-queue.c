@@ -260,5 +260,5 @@ int main(void)
  if (link(intdfn,todofn) == -1) die(66);
 
  triggerpull();
- die(0);
+ return 0;
 }

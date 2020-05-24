@@ -5,7 +5,6 @@
 #include "dnsdoe.h"
 #include "ip.h"
 #include "ipalloc.h"
-#include "exit.h"
 
 char temp[IPFMT];
 
@@ -16,10 +15,10 @@ int main(int argc, char **argv)
 {
  int j;
 
- if (argc == 1) _exit(100);
+ if (argc == 1) return 100;
 
  if (!stralloc_copys(&sa,argv[1]))
-  { substdio_putsflush(subfderr,"out of memory\n"); _exit(111); }
+  { substdio_putsflush(subfderr,"out of memory\n"); return 111; }
 
  dns_init(0);
  dnsdoe(dns_ip(&ia,&sa));
@@ -28,5 +27,5 @@ int main(int argc, char **argv)
    substdio_put(subfdout,temp,ip_fmt(temp,&ia.ix[j].ip));
    substdio_putsflush(subfdout,"\n");
   }
- _exit(0);
+ return 0;
 }

@@ -70,5 +70,5 @@ int main(void)
   if (rename("control/morercpthosts.tmp","control/morercpthosts.cdb") == -1)
     strerr_die2sys(111,FATAL,"unable to move control/morercpthosts.tmp to control/morercpthosts.cdb");
 
-  _exit(0);
+  return 0;
 }

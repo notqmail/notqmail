@@ -56,12 +56,12 @@ int main(void)
  int cleanuploop;
  unsigned long id;
 
- if (chdir(auto_qmail) == -1) _exit(111);
- if (chdir("queue") == -1) _exit(111);
+ if (chdir(auto_qmail) == -1) return 111;
+ if (chdir("queue") == -1) return 111;
 
  sig_pipeignore();
 
- if (!stralloc_ready(&line,200)) _exit(111);
+ if (!stralloc_ready(&line,200)) return 111;
 
  cleanuploop = 0;
 
@@ -94,5 +94,5 @@ if (unlink(fnbuf) == -1) if (errno != error_noent) { respond("!"); continue; }
    else
      respond("x");
   }
- _exit(0);
+ return 0;
 }

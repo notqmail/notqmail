@@ -156,5 +156,5 @@ main()
       i = j + 1;
     }
 
-  _exit(lasterror);
+  return lasterror;
 }

@@ -247,7 +247,7 @@ int main(int argc, char **argv)
       case 'C': *auto_break = 0; break;
       case '?':
       default:
-	_exit(100);
+	return 100;
     }
 
   if (chdir(auto_qmail) == -1) die_chdir();
@@ -308,5 +308,5 @@ int main(int argc, char **argv)
 
   if (substdio_puts(subfdout,".\n") == -1) die_write();
   if (substdio_flush(subfdout) == -1) die_write();
-  _exit(0);
+  return 0;
 }

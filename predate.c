@@ -10,7 +10,6 @@
 #include "substdio.h"
 #include "subfd.h"
 #include "readwrite.h"
-#include "exit.h"
 
 #define FATAL "predate: fatal: "
 
@@ -111,5 +110,5 @@ int main(int argc, char **argv)
     strerr_die2sys(111,FATAL,"wait failed: ");
   if (wait_crashed(wstat))
     strerr_die2x(111,FATAL,"child crashed");
-  _exit(wait_exitcode(wstat));
+  return wait_exitcode(wstat);
 }

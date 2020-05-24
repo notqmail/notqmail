@@ -2,7 +2,6 @@
 #include "subfd.h"
 #include "fmt.h"
 #include "select.h"
-#include "exit.h"
 #include "auto_spawn.h"
 
 char num[FMT_ULONG];
@@ -19,13 +18,13 @@ int main(void)
   if (auto_spawn < 1) {
     substdio_puts(subfderr,"Oops. You have set conf-spawn lower than 1.\n");
     substdio_flush(subfderr);
-    _exit(1);
+    return 1;
   }
 
   if (auto_spawn > 255) {
     substdio_puts(subfderr,"Oops. You have set conf-spawn higher than 255.\n");
     substdio_flush(subfderr);
-    _exit(1);
+    return 1;
   }
 
   if (auto_spawn > maxnumd) {
@@ -42,7 +41,7 @@ limit in conf-spawn be at most ");
     substdio_put(subfderr,num,fmt_ulong(num,(unsigned long) auto_spawn));
     substdio_puts(subfderr,".\n");
     substdio_flush(subfderr);
-    _exit(1);
+    return 1;
   }
-  _exit(0);
+  return 0;
 }

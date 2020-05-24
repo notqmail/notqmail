@@ -11,7 +11,6 @@
 #include "lock.h"
 #include "gfrom.h"
 #include "str.h"
-#include "exit.h"
 #include "myctime.h"
 #include "maildir.h"
 
@@ -60,7 +59,7 @@ int main(void)
  if (maildir_scan(&pq,&filenames,1,1) == -1)
    strerr_die1(111,FATAL,&maildir_scan_err);
 
- if (!prioq_min(&pq,&pe)) _exit(0); /* nothing new */
+ if (!prioq_min(&pq,&pe)) return 0; /* nothing new */
 
  fdlock = open_append(mbox);
  if (fdlock == -1)
@@ -161,5 +160,5 @@ int main(void)
      strerr_warn4(WARNING,"$MAILDIR/",filenames.s + pe.id," will be delivered twice; unable to unlink: ",&strerr_sys);
   }
 
- _exit(0);
+ return 0;
 }

@@ -4,7 +4,6 @@
 #include "strerr.h"
 #include "error.h"
 #include "readwrite.h"
-#include "exit.h"
 #include "hier.h"
 
 extern void init_uidgid();
@@ -81,5 +80,5 @@ int main(void)
 {
   init_uidgid();
   hier();
-  _exit(0);
+  return 0;
 }

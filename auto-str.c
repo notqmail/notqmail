@@ -30,11 +30,11 @@ int main(int argc, char **argv)
   unsigned char ch;
   char octal[4];
 
-  if (argc != 3) _exit(100);
+  if (argc != 3) return 100;
   name = argv[1];
-  if (!name) _exit(100);
+  if (!name) return 100;
   value = argv[2];
-  if (!value) _exit(100);
+  if (!value) return 100;
 
   puts("char ");
   puts(name);
@@ -55,6 +55,6 @@ int main(int argc, char **argv)
   }
 
   puts("\\\n\";\n");
-  if (substdio_flush(&ss1) == -1) _exit(111);
-  _exit(0);
+  if (substdio_flush(&ss1) == -1) return 111;
+  return 0;
 }

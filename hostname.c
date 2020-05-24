@@ -1,7 +1,6 @@
 #include "substdio.h"
 #include "subfd.h"
 #include "readwrite.h"
-#include "exit.h"
 
 char host[256];
 
@@ -13,5 +12,5 @@ int main(void)
  substdio_puts(subfdoutsmall,host);
  substdio_puts(subfdoutsmall,"\n");
  substdio_flush(subfdoutsmall);
- _exit(0);
+ return 0;
 }

@@ -48,35 +48,35 @@ int main(void)
  struct stat st;
  int i;
 
- if (chdir("/dev") == -1) _exit(0);
+ if (chdir("/dev") == -1) return 0;
 
- if (!(user = env_get("USER"))) _exit(0);
- if (!(sender = env_get("SENDER"))) _exit(0);
- if (!(userext = env_get("LOCAL"))) _exit(0);
- if (str_len(user) > sizeof(ut->UTMP_USER)) _exit(0);
+ if (!(user = env_get("USER"))) return 0;
+ if (!(sender = env_get("SENDER"))) return 0;
+ if (!(userext = env_get("LOCAL"))) return 0;
+ if (str_len(user) > sizeof(ut->UTMP_USER)) return 0;
 
- if (!stralloc_copys(&tofrom,"*** TO <")) _exit(0);
- if (!stralloc_cats(&tofrom,userext)) _exit(0);
- if (!stralloc_cats(&tofrom,"> FROM <")) _exit(0);
- if (!stralloc_cats(&tofrom,sender)) _exit(0);
- if (!stralloc_cats(&tofrom,">")) _exit(0);
+ if (!stralloc_copys(&tofrom,"*** TO <")) return 0;
+ if (!stralloc_cats(&tofrom,userext)) return 0;
+ if (!stralloc_cats(&tofrom,"> FROM <")) return 0;
+ if (!stralloc_cats(&tofrom,sender)) return 0;
+ if (!stralloc_cats(&tofrom,">")) return 0;
 
  for (i = 0;i < tofrom.len;++i)
    if ((tofrom.s[i] < 32) || (tofrom.s[i] > 126))
      tofrom.s[i] = '_';
 
- if (!stralloc_copys(&text,"    ")) _exit(0);
- if (headerbody(subfdin,doheader,finishheader,dobody) == -1) _exit(0);
+ if (!stralloc_copys(&text,"    ")) return 0;
+ if (headerbody(subfdin,doheader,finishheader,dobody) == -1) return 0;
 
  for (i = 0;i < text.len;++i)
    if ((text.s[i] < 32) || (text.s[i] > 126))
      text.s[i] = '/';
 
- if (!stralloc_copys(&woof,"\015\n\007")) _exit(0);
- if (!stralloc_cat(&woof,&tofrom)) _exit(0);
- if (!stralloc_cats(&woof,"\015\n")) _exit(0);
- if (!stralloc_cat(&woof,&text)) _exit(0);
- if (!stralloc_cats(&woof,"\015\n")) _exit(0);
+ if (!stralloc_copys(&woof,"\015\n\007")) return 0;
+ if (!stralloc_cat(&woof,&tofrom)) return 0;
+ if (!stralloc_cats(&woof,"\015\n")) return 0;
+ if (!stralloc_cat(&woof,&text)) return 0;
+ if (!stralloc_cats(&woof,"\015\n")) return 0;
 
  UTMP_OPEN;
 
@@ -97,5 +97,5 @@ int main(void)
      substdio_putflush(&sstty,woof.s,woof.len);
      close(fdtty);
     }
- _exit(0);
+ return 0;
 }

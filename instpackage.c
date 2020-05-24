@@ -213,5 +213,5 @@ int main(void)
 
   umask(077);
   hier();
-  _exit(0);
+  return 0;
 }

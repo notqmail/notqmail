@@ -74,5 +74,5 @@ int main(void)
   umask(077);
   init_uidgid();
   hier();
-  _exit(0);
+  return 0;
 }

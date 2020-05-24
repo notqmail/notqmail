@@ -137,5 +137,5 @@ int main(void)
   if (close(fdtemp) == -1) die_writet(); /* NFS stupidity */
   if (rename("users/cdb.tmp","users/cdb") == -1) die_rename();
 
-  _exit(0);
+  return 0;
 }

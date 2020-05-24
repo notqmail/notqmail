@@ -333,7 +333,7 @@ load chkspawn.o substdio.a error.a str.a fs.a auto_spawn.o
 
 chkspawn.o: \
 compile chkspawn.c substdio.h subfd.h substdio.h fmt.h select.h \
-exit.h auto_spawn.h
+auto_spawn.h
 	./compile chkspawn.c
 
 clean: \
@@ -454,7 +454,7 @@ substdio.a error.a str.a fs.a dns.lib socket.lib
 
 dnsfq.o: \
 compile dnsfq.c substdio.h subfd.h substdio.h stralloc.h gen_alloc.h \
-dns.h dnsdoe.h ip.h ipalloc.h ip.h gen_alloc.h exit.h
+dns.h dnsdoe.h ip.h ipalloc.h ip.h gen_alloc.h
 	./compile dnsfq.c
 
 dnsip: \
@@ -465,7 +465,7 @@ substdio.a error.a str.a fs.a dns.lib socket.lib
 
 dnsip.o: \
 compile dnsip.c substdio.h subfd.h substdio.h stralloc.h gen_alloc.h \
-dns.h dnsdoe.h ip.h ipalloc.h ip.h gen_alloc.h exit.h
+dns.h dnsdoe.h ip.h ipalloc.h ip.h gen_alloc.h
 	./compile dnsip.c
 
 dnsptr: \
@@ -476,7 +476,7 @@ substdio.a error.a str.a fs.a dns.lib socket.lib
 
 dnsptr.o: \
 compile dnsptr.c substdio.h subfd.h substdio.h stralloc.h gen_alloc.h \
-str.h scan.h dns.h dnsdoe.h ip.h exit.h
+str.h scan.h dns.h dnsdoe.h ip.h
 	./compile dnsptr.c
 
 dot-qmail.0: \
@@ -702,7 +702,7 @@ load hostname.o substdio.a error.a str.a dns.lib socket.lib
 	`cat socket.lib`
 
 hostname.o: \
-compile hostname.c substdio.h subfd.h substdio.h readwrite.h exit.h
+compile hostname.c substdio.h subfd.h substdio.h readwrite.h
 	./compile hostname.c
 
 install:
@@ -719,7 +719,7 @@ auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
 	str.a fs.a
 
 instcheck.o: \
-compile instcheck.c strerr.h error.h readwrite.h exit.h hier.h
+compile instcheck.c strerr.h error.h readwrite.h hier.h
 	./compile instcheck.c
 
 instchown: \
@@ -771,7 +771,7 @@ error.a str.a fs.a socket.lib
 
 ipmeprint.o: \
 compile ipmeprint.c subfd.h substdio.h substdio.h ip.h ipme.h ip.h \
-ipalloc.h ip.h gen_alloc.h exit.h
+ipalloc.h ip.h gen_alloc.h
 	./compile ipmeprint.c
 
 it: \
@@ -831,7 +831,7 @@ maildir2mbox.1
 maildir2mbox.o: \
 compile maildir2mbox.c readwrite.h prioq.h datetime.h gen_alloc.h \
 env.h stralloc.h gen_alloc.h subfd.h substdio.h substdio.h getln.h \
-error.h open.h lock.h gfrom.h str.h exit.h myctime.h maildir.h \
+error.h open.h lock.h gfrom.h str.h myctime.h maildir.h \
 strerr.h
 	./compile maildir2mbox.c
 
@@ -843,7 +843,7 @@ maildirmake.0: \
 maildirmake.1
 
 maildirmake.o: \
-compile maildirmake.c strerr.h exit.h
+compile maildirmake.c strerr.h
 	./compile maildirmake.c
 
 maildirwatch: \
@@ -982,7 +982,7 @@ error.a str.a fs.a
 
 predate.o: \
 compile predate.c datetime.h fork.h wait.h fd.h fmt.h strerr.h \
-substdio.h subfd.h substdio.h readwrite.h exit.h sig.h
+substdio.h subfd.h substdio.h readwrite.h sig.h
 	./compile predate.c
 
 preline: \
@@ -996,7 +996,7 @@ preline.1
 
 preline.o: \
 compile preline.c fd.h sgetopt.h subgetopt.h readwrite.h strerr.h \
-substdio.h exit.h fork.h wait.h env.h sig.h error.h
+substdio.h fork.h wait.h env.h sig.h error.h
 	./compile preline.c
 
 prioq.o: \
@@ -1537,7 +1537,7 @@ qmail-tcpok.8
 
 qmail-tcpok.o: \
 compile qmail-tcpok.c strerr.h substdio.h lock.h open.h readwrite.h \
-auto_qmail.h exit.h
+auto_qmail.h
 	./compile qmail-tcpok.c
 
 qmail-tcpto: \

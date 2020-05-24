@@ -1,3 +1,5 @@
+- 20210124 code: replace str_* and case_* functions with stubs calling the libc
+           equivalent
 - 20221115 honor all groups of qmailr user when spawning qmail-rspawn
 - 20221019 code: netstring parsing in qmail-qmtpd & qmail-qmqpd now
            checks that the netstring length is actually a number.

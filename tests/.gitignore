@@ -1,4 +1,2 @@
 *.o
-unittest_byte
-unittest_str
 unittest_stralloc

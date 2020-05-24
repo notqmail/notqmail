@@ -11,6 +11,9 @@ default: it
 
 TESTBINS = unittest_stralloc unittest_blast unittest_prioq
 
+CHECK_INCLUDES := `pkg-config --cflags check`
+CHECK_LIBS := `pkg-config --libs check`
+
 clean:
 	rm -f $(TESTBINS) *.o blast.c
 
@@ -24,12 +27,12 @@ test: it
 unittest_stralloc: \
 ../load unittest_stralloc.o ../stralloc.a ../str.a ../error.a
 	../load unittest_stralloc ../stralloc.a ../str.a ../error.a \
-	`pkg-config --libs check`
+	$(CHECK_LIBS)
 
 unittest_stralloc.o: \
 ../compile unittest_stralloc.c ../alloc.h ../stralloc.h
 	../compile unittest_stralloc.c -I.. \
-	`pkg-config --cflags check`
+	$(CHECK_INCLUDES)
 
 blast.c: ../qmail-remote.c
 	`head -n $$(grep -n '^int main(' ../qmail-remote.c | sed 's/:.*//') ../qmail-remote.c | sed '/^int main(/d' > blast.c`
@@ -46,19 +49,19 @@ unittest_blast: \
 	../timeoutread.o ../timeoutwrite.o ../quote.o \
 	../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a \
 	../getln.a ../str.a ../case.a \
-	`pkg-config --libs check`
+	$(CHECK_LIBS)
 
 unittest_blast.o: \
 ../compile unittest_blast.c ../alloc.h ../stralloc.h
 	../compile unittest_blast.c -I.. \
-	`pkg-config --cflags check`
+	$(CHECK_INCLUDES)
 
 unittest_prioq: \
 ../load unittest_prioq.o ../prioq.o ../error.a
 	../load unittest_prioq ../prioq.o ../error.a \
-	`pkg-config --libs check`
+	$(CHECK_LIBS)
 
 unittest_prioq.o: \
 ../compile unittest_prioq.c
 	../compile unittest_prioq.c -I.. \
-	`pkg-config --cflags check`
+	$(CHECK_INCLUDES)

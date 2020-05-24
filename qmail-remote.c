@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <string.h>
 #include <unistd.h>
 #include "sig.h"
 #include "stralloc.h"
@@ -277,20 +278,20 @@ stralloc canonbox = {0};
 
 void addrmangle(stralloc *saout, char *s)
 {
-  int j;
+  char *at;
  
-  j = str_rchr(s,'@');
-  if (!s[j]) {
+  at = strrchr(s,'@');
+  if (!at) {
     if (!stralloc_copys(saout,s)) temp_nomem();
     return;
   }
   if (!stralloc_copys(&canonbox,s)) temp_nomem();
-  canonbox.len = j;
+  canonbox.len = at - s;
   /* box has to be quoted */
   if (!quote(saout,&canonbox)) temp_nomem();
   if (!stralloc_cats(saout,"@")) temp_nomem();
  
-  if (!stralloc_copys(&canonhost,s + j + 1)) temp_nomem();
+  if (!stralloc_copys(&canonhost,at + 1)) temp_nomem();
 
   if (!stralloc_cat(saout,&canonhost)) temp_nomem();
 }

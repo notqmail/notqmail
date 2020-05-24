@@ -1,3 +1,4 @@
+#include <string.h>
 #include <unistd.h>
 #include "sgetopt.h"
 #include "substdio.h"
@@ -50,8 +51,8 @@ void _noreturn_ mailq()
 void do_sender(s)
 const char *s;
 {
+  char *at;
   char *x;
-  unsigned int n;
   unsigned int a;
   unsigned int i;
   
@@ -61,15 +62,15 @@ const char *s;
   env_unset("QMAILHOST");
   env_unset("MAILHOST");
 
-  n = str_len(s);
-  a = str_rchr(s, '@');
-  if (a == n)
+  at = strrchr(s, '@');
+  if (!at)
   {
     env_put2("QMAILUSER", s);
     return;
   }
-  env_put2("QMAILHOST", s + a + 1);
+  env_put2("QMAILHOST", at + 1);
 
+  a = at - s;
   x = (char *) alloc((a + 1) * sizeof(char));
   if (!x) nomem();
   for (i = 0; i < a; i++)

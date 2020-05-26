@@ -27,9 +27,9 @@ RUN mkdir -p /root /usr/libexec/notqmail \
 		mkdir -p /var/qmail/alias/Maildir/new; \
 		mkdir -p /var/qmail/alias/Maildir/cur; \
 		chown -R alias:qmail /var/qmail/alias/Maildir) \
-	&& (alternatives --install /usr/sbin/sendmail mta /var/qmail/bin/sendmail 120 \
+	&& alternatives --install /usr/sbin/sendmail mta /var/qmail/bin/sendmail 120 \
         --slave /usr/bin/mailq mta-mailq /var/qmail/bin/qmail-qread \
-        --slave /usr/lib/sendmail mta-sendmail /var/qmail/bin/sendmail) \
+        --slave /usr/lib/sendmail mta-sendmail /var/qmail/bin/sendmail \
 	&& ln -s /usr/libexec/notqmail/docker-entrypoint /usr/sbin/docker-entrypoint
 COPY docker-entrypoint config-fast /usr/libexec/notqmail
 ENTRYPOINT ["docker-entrypoint"]

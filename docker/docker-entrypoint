@@ -5,6 +5,8 @@ set -e
 
 case "$1" in
 notqmail)
+	# create /etc/mtab as link ro /proc/self/mounts or /proc/mounts
+	# to enable getmntent() call to work
 	if [ ! -f /etc/mtab ] ; then
 		if [ -f /proc/self/mounts ] ; then
 			echo "Warning  linking /etc/mtab to /proc/self/mounts" 1>&2

@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include "readwrite.h"
 #include "prioq.h"
 #include "env.h"
@@ -13,6 +14,8 @@
 #include "exit.h"
 #include "myctime.h"
 #include "maildir.h"
+
+extern int rename(const char *, const char *);
 
 char *mbox;
 char *mboxtmp;

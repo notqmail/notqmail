@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "ndelay.h"
 #include "open.h"
 #include "triggerpull.h"

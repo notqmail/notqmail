@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include "stralloc.h"
 #include "subfd.h"
 #include "getln.h"
@@ -10,6 +11,8 @@
 #include "error.h"
 #include "case.h"
 #include "auto_qmail.h"
+
+extern int rename(const char *, const char *);
 
 void die_temp() { _exit(111); }
 

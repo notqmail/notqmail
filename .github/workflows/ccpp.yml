@@ -17,7 +17,7 @@ jobs:
     - name: test_deps
       run: sudo apt-get install check
     - name: configure
-      run: echo "cc -O2 -Wall -Wshadow" > conf-cc
+      run: echo "cc -O2 -Wall -Wshadow -Werror=implicit-function-declaration" > conf-cc
     - name: make
       run: make it man
     - name: make check

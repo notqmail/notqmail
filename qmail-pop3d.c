@@ -22,6 +22,8 @@
 
 void die() { _exit(0); }
 
+extern int rename(const char *, const char *);
+
 int saferead(fd,buf,len) int fd; char *buf; int len;
 {
   int r;

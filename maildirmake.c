@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include "strerr.h"
 #include "exit.h"
 

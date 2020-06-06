@@ -6,10 +6,7 @@
 
 typedef off_t seek_pos;
 
-static inline seek_pos seek_cur(int fd)
-{
-  return lseek(fd, 0, SEEK_CUR);
-}
+#define seek_cur(fd) (lseek((fd), 0, SEEK_CUR))
 
 static inline int seek_set(int fd, seek_pos pos)
 {
@@ -26,11 +23,7 @@ static inline int seek_end(int fd)
   return 0;
 }
 
-static inline int seek_trunc(int fd, seek_pos pos)
-{
-  return ftruncate(fd, pos);
-}
-
+#define seek_trunc(fd, pos) (ftruncate((fd),(pos)))
 #define seek_begin(fd) (seek_set((fd),(seek_pos) 0))
 
 #endif

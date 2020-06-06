@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <utime.h>
 #include "readwrite.h"
 #include "sig.h"
 #include "direntry.h"

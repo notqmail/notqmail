@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include "case.h"
 #include "strerr.h"
 #include "stralloc.h"
@@ -10,6 +11,8 @@
 #include "cdbmss.h"
 
 #define FATAL "qmail-newmrh: fatal: "
+
+extern int rename(const char *, const char *);
 
 void die_read()
 {

@@ -123,9 +123,9 @@ int spp(plugins, addrenv) stralloc *plugins; char *addrenv;
     if (pipe(pipes) == -1)
       { err_spp(plugins->s + i, "can't pipe()"); return 0; }
 
-    switch (pid = vfork()) {
+    switch (pid = fork()) {
       case -1:
-        err_spp(plugins->s + i, "vfork() failed");
+        err_spp(plugins->s + i, "fork() failed");
         return 0;
       case 0:
         close(0); close(pipes[0]); fd_move(1, pipes[1]);

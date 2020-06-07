@@ -50,15 +50,14 @@ extern void die_nomem();
 extern stralloc addr;
 /* *** */
 
-stralloc sppheaders = {0};
-static int spprun = 0;
-static int sppfok = 0;
-static int sppret;
-static stralloc sppf = {0};
-static stralloc plugins_dummy = {0}, plugins_connect = {0}, plugins_helo = {0}, plugins_mail = {0},
-                plugins_rcpt = {0}, plugins_data = {0}; /* ... */
-static stralloc error_mail = {0}, error_rcpt = {0}, error_data = {0}; /* ... */
-static stralloc sppmsg = {0};
+stralloc sppheaders;
+static int spprun;
+static int sppfok;
+static stralloc sppf;
+static stralloc plugins_dummy, plugins_connect, plugins_helo, plugins_mail,
+                plugins_rcpt, plugins_data; /* ... */
+static stralloc error_mail, error_rcpt, error_data; /* ... */
+static stralloc sppmsg;
 static char rcptcountstr[FMT_ULONG];
 static unsigned long rcptcount;
 static unsigned long rcptcountall;
@@ -106,7 +105,7 @@ int spp(plugins, addrenv) stralloc *plugins; char *addrenv;
 {
   static int pipes[2];
   static int i, pid, wstat, match, last;
-  static stralloc data = {0};
+  static stralloc data;
   static char *(args[4]);
   static stralloc *errors_to;
 
@@ -236,8 +235,7 @@ int spp_rcpt(allowed) int allowed;
   rcptcountstr[fmt_ulong(rcptcountstr, ++rcptcountall)] = 0;
   if (!env_put2("SMTPRCPTCOUNTALL", rcptcountstr)) die_nomem();
   if (!env_put2("SMTPRCPTHOSTSOK", allowed ? "1" : "0")) die_nomem();
-  sppret = spp(&plugins_rcpt, "SMTPRCPTTO");
-  return sppret;
+  return spp(&plugins_rcpt, "SMTPRCPTTO");
 }
 
 void spp_rcpt_accepted() { rcptcount++; }

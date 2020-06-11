@@ -1,3 +1,4 @@
 .cirrus.yml export-ignore
 .git* export-ignore
 .travis.yml export-ignore
+autobuilds export-ignore

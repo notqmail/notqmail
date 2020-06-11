@@ -109,81 +109,47 @@ auto_usera.c: \
 auto-str conf-users
 	./auto-str auto_usera `head -n 1 conf-users` > auto_usera.c
 
-auto_usera.o: \
-compile auto_usera.c
-	./compile auto_usera.c
-
 auto_userd.c: \
 auto-str conf-users
 	./auto-str auto_userd `head -n 2 conf-users | tail -n -1` > auto_userd.c
-
-auto_userd.o: \
-compile auto_userd.c
-	./compile auto_userd.c
 
 auto_userl.c: \
 auto-str conf-users
 	./auto-str auto_userl `head -n 3 conf-users | tail -n -1` > auto_userl.c
 
-auto_userl.o: \
-compile auto_userl.c
-	./compile auto_userl.c
-
 auto_usero.c: \
 auto-str conf-users
 	./auto-str auto_usero `head -n 4 conf-users | tail -n -1` > auto_usero.c
-
-auto_usero.o: \
-compile auto_usero.c
-	./compile auto_usero.c
 
 auto_userp.c: \
 auto-str conf-users
 	./auto-str auto_userp `head -n 5 conf-users | tail -n -1` > auto_userp.c
 
-auto_userp.o: \
-compile auto_userp.c
-	./compile auto_userp.c
-
 auto_userq.c: \
 auto-str conf-users
 	./auto-str auto_userq `head -n 6 conf-users | tail -n -1` > auto_userq.c
-
-auto_userq.o: \
-compile auto_userq.c
-	./compile auto_userq.c
 
 auto_userr.c: \
 auto-str conf-users
 	./auto-str auto_userr `head -n 7 conf-users | tail -n -1` > auto_userr.c
 
-auto_userr.o: \
-compile auto_userr.c
-	./compile auto_userr.c
-
 auto_users.c: \
 auto-str conf-users
 	./auto-str auto_users `head -n 8 conf-users | tail -n -1` > auto_users.c
 
-auto_users.o: \
-compile auto_users.c
-	./compile auto_users.c
+auto_user%.o: auto_user%.c compile
+	./compile $<
 
 auto_groupn.c: \
 auto-str conf-groups
 	./auto-str auto_groupn `head -n 2 conf-groups | tail -n -1` > auto_groupn.c
 
-auto_groupn.o: \
-compile auto_groupn.c
-	./compile auto_groupn.c
-
 auto_groupq.c: \
 auto-str conf-groups
 	./auto-str auto_groupq `head -n 1 conf-groups` > auto_groupq.c
 
-auto_groupq.o: \
-compile auto_groupq.c
-	./compile auto_groupq.c
+auto_group%.o: auto_group%.c compile
+	./compile $<
 
 binm1: \
 binm1.sh conf-qmail

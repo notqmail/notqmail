@@ -205,25 +205,8 @@ bouncesaying.o: \
 compile bouncesaying.c fork.h strerr.h error.h wait.h sig.h exit.h
 	./compile bouncesaying.c
 
-byte_chr.o: \
-compile byte_chr.c byte.h
-	./compile byte_chr.c
-
-byte_copy.o: \
-compile byte_copy.c byte.h
-	./compile byte_copy.c
-
-byte_cr.o: \
-compile byte_cr.c byte.h
-	./compile byte_cr.c
-
-byte_rchr.o: \
-compile byte_rchr.c byte.h
-	./compile byte_rchr.c
-
-byte_zero.o: \
-compile byte_zero.c byte.h
-	./compile byte_zero.c
+byte_%.o: byte_%.c compile byte.h
+	./compile $<
 
 case.a: \
 makelib case_diffb.o case_diffs.o case_lowerb.o case_lowers.o \
@@ -231,58 +214,25 @@ case_starts.o
 	./makelib case.a case_diffb.o case_diffs.o case_lowerb.o \
 	case_lowers.o case_starts.o
 
-case_diffb.o: \
-compile case_diffb.c case.h
-	./compile case_diffb.c
-
-case_diffs.o: \
-compile case_diffs.c case.h
-	./compile case_diffs.c
-
-case_lowerb.o: \
-compile case_lowerb.c case.h
-	./compile case_lowerb.c
-
-case_lowers.o: \
-compile case_lowers.c case.h
-	./compile case_lowers.c
-
-case_starts.o: \
-compile case_starts.c case.h
-	./compile case_starts.c
+case_%.o: case_%.c compile case.h
+	./compile $<
 
 cdb.a: \
 makelib cdb_hash.o cdb_unpack.o cdb_seek.o
 	./makelib cdb.a cdb_hash.o cdb_unpack.o cdb_seek.o
 
-cdb_hash.o: \
-compile cdb_hash.c cdb.h uint32.h
-	./compile cdb_hash.c
-
-cdb_seek.o: \
-compile cdb_seek.c cdb.h uint32.h
-	./compile cdb_seek.c
-
-cdb_unpack.o: \
-compile cdb_unpack.c cdb.h uint32.h
-	./compile cdb_unpack.c
+cdb_%.o: cdb_%.c compile cdb.h uint32.h
+	./compile $<
 
 cdbmake.a: \
 makelib cdbmake_pack.o cdbmake_hash.o cdbmake_add.o
 	./makelib cdbmake.a cdbmake_pack.o cdbmake_hash.o \
 	cdbmake_add.o
 
-cdbmake_add.o: \
-compile cdbmake_add.c cdbmake.h alloc.h uint32.h
-	./compile cdbmake_add.c
+cdbmake_add.o: alloc.h
 
-cdbmake_hash.o: \
-compile cdbmake_hash.c cdbmake.h uint32.h
-	./compile cdbmake_hash.c
-
-cdbmake_pack.o: \
-compile cdbmake_pack.c cdbmake.h uint32.h
-	./compile cdbmake_pack.c
+cdbmake_%.o: cdbmake_%.c compile cdbmake.h uint32.h
+	./compile $<
 
 cdbmss.o: \
 compile cdbmss.c readwrite.h seek.h alloc.h cdbmss.h cdbmake.h \
@@ -475,13 +425,8 @@ error.a: \
 makelib error_str.o error_temp.o
 	./makelib error.a error_str.o error_temp.o
 
-error_str.o: \
-compile error_str.c error.h
-	./compile error_str.c
-
-error_temp.o: \
-compile error_temp.c error.h
-	./compile error_temp.c
+error_%.o: error_%.c compile error.h
+	./compile $<
 
 except: \
 load except.o strerr.a error.a substdio.a str.a wait.a
@@ -498,37 +443,15 @@ fd.a: \
 makelib fd_copy.o fd_move.o
 	./makelib fd.a fd_copy.o fd_move.o
 
-fd_copy.o: \
-compile fd_copy.c fd.h
-	./compile fd_copy.c
-
-fd_move.o: \
-compile fd_move.c fd.h
-	./compile fd_move.c
+fd_%.o: fd_%.c compile fd.h
+	./compile $<
 
 fifo.o: \
 compile fifo.c hasmkffo.h fifo.h
 	./compile fifo.c
 
-fmt_str.o: \
-compile fmt_str.c fmt.h
-	./compile fmt_str.c
-
-fmt_strn.o: \
-compile fmt_strn.c fmt.h
-	./compile fmt_strn.c
-
-fmt_uint.o: \
-compile fmt_uint.c fmt.h
-	./compile fmt_uint.c
-
-fmt_uint0.o: \
-compile fmt_uint0.c fmt.h
-	./compile fmt_uint0.c
-
-fmt_ulong.o: \
-compile fmt_ulong.c fmt.h
-	./compile fmt_ulong.c
+fmt_%.o: fmt_%.c compile fmt.h
+	./compile $<
 
 fmtqfn.o: \
 compile fmtqfn.c fmtqfn.h fmt.h auto_split.h
@@ -891,25 +814,8 @@ open_write.o
 	./makelib open.a open_append.o open_excl.o open_read.o \
 	open_trunc.o open_write.o
 
-open_append.o: \
-compile open_append.c open.h
-	./compile open_append.c
-
-open_excl.o: \
-compile open_excl.c open.h
-	./compile open_excl.c
-
-open_read.o: \
-compile open_read.c open.h
-	./compile open_read.c
-
-open_trunc.o: \
-compile open_trunc.c open.h
-	./compile open_trunc.c
-
-open_write.o: \
-compile open_write.c open.h
-	./compile open_write.c
+open_%.o: open_%.c compile open.h
+	./compile $<
 
 package: \
 it man
@@ -1618,45 +1524,14 @@ sig_child.o sig_hup.o sig_term.o sig_bug.o sig_misc.o
 	sig_pause.o sig_pipe.o sig_child.o sig_hup.o sig_term.o \
 	sig_bug.o sig_misc.o
 
-sig_alarm.o: \
-compile sig_alarm.c sig.h
-	./compile sig_alarm.c
+sig_%.o: sig_%.c compile sig.h
+	./compile $<
 
-sig_block.o: \
-compile sig_block.c sig.h hassgprm.h
-	./compile sig_block.c
+sig_block.o: hassgprm.h
 
-sig_bug.o: \
-compile sig_bug.c sig.h
-	./compile sig_bug.c
+sig_catch.o: hassgact.h
 
-sig_catch.o: \
-compile sig_catch.c sig.h hassgact.h
-	./compile sig_catch.c
-
-sig_child.o: \
-compile sig_child.c sig.h
-	./compile sig_child.c
-
-sig_hup.o: \
-compile sig_hup.c sig.h
-	./compile sig_hup.c
-
-sig_misc.o: \
-compile sig_misc.c sig.h
-	./compile sig_misc.c
-
-sig_pause.o: \
-compile sig_pause.c sig.h hassgprm.h
-	./compile sig_pause.c
-
-sig_pipe.o: \
-compile sig_pipe.c sig.h
-	./compile sig_pipe.c
-
-sig_term.o: \
-compile sig_term.c sig.h
-	./compile sig_term.c
+sig_pause.o: hassgprm.h
 
 slurpclose.o: \
 compile slurpclose.c stralloc.h gen_alloc.h readwrite.h slurpclose.h \
@@ -1698,17 +1573,8 @@ byte_cr.o byte_zero.o
 	str_chr.o str_rchr.o str_start.o byte_chr.o byte_rchr.o \
 	byte_copy.o byte_cr.o byte_zero.o
 
-str_chr.o: \
-compile str_chr.c str.h
-	./compile str_chr.c
-
-str_rchr.o: \
-compile str_rchr.c str.h
-	./compile str_rchr.c
-
-str_start.o: \
-compile str_start.c str.h
-	./compile str_start.c
+str_%.o: str_%.c compile str.h
+	./compile $<
 
 stralloc.a: \
 makelib stralloc_eady.o stralloc_pend.o stralloc_copy.o \
@@ -1719,43 +1585,26 @@ stralloc_catb.o stralloc_arts.o
 	stralloc_cat.o stralloc_cats.o stralloc_catb.o \
 	stralloc_arts.o
 
-stralloc_arts.o: \
-compile stralloc_arts.c byte.h str.h stralloc.h gen_alloc.h
-	./compile stralloc_arts.c
+stralloc_%.o: stralloc_%.c compile stralloc.h gen_alloc.h
+	./compile $<
 
-stralloc_cat.o: \
-compile stralloc_cat.c byte.h stralloc.h gen_alloc.h
-	./compile stralloc_cat.c
+stralloc_arts.o: byte.h str.h
 
-stralloc_catb.o: \
-compile stralloc_catb.c stralloc.h gen_alloc.h byte.h error.h oflops.h
-	./compile stralloc_catb.c
+stralloc_cat.o: byte.h
 
-stralloc_cats.o: \
-compile stralloc_cats.c byte.h str.h stralloc.h gen_alloc.h
-	./compile stralloc_cats.c
+stralloc_catb.o: byte.h error.h oflops.h
 
-stralloc_copy.o: \
-compile stralloc_copy.c byte.h stralloc.h gen_alloc.h
-	./compile stralloc_copy.c
+stralloc_cats.o: byte.h str.h
 
-stralloc_eady.o: \
-compile stralloc_eady.c alloc.h stralloc.h gen_alloc.h \
-gen_allocdefs.h oflops.h error.h
-	./compile stralloc_eady.c
+stralloc_copy.o: byte.h
 
-stralloc_opyb.o: \
-compile stralloc_opyb.c stralloc.h gen_alloc.h byte.h error.h oflops.h
-	./compile stralloc_opyb.c
+stralloc_eady.o: alloc.h gen_allocdefs.h oflops.h error.h
 
-stralloc_opys.o: \
-compile stralloc_opys.c byte.h str.h stralloc.h gen_alloc.h
-	./compile stralloc_opys.c
+stralloc_opyb.o: byte.h error.h oflops.h
 
-stralloc_pend.o: \
-compile stralloc_pend.c alloc.h stralloc.h gen_alloc.h \
-gen_allocdefs.h oflops.h error.h
-	./compile stralloc_pend.c
+stralloc_opys.o: byte.h str.h
+
+stralloc_pend.o: alloc.h gen_allocdefs.h oflops.h error.h
 
 strerr.a: \
 makelib strerr_sys.o strerr_die.o

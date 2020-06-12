@@ -55,7 +55,7 @@ int main(int argc, char **argv)
   close(pi[0]);
   substdio_fdbuf(&ss,write,pi[1],outbuf,sizeof(outbuf));
 
-  time(&now);
+  now = time(NULL);
 
   tm = gmtime(&now);
   dt.year = tm->tm_year;

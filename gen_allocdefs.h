@@ -20,7 +20,7 @@ static int ta_rplus ## _internal (ta *x, unsigned int n, unsigned int pluslen) \
       return 0; \
     if (__builtin_mul_overflow(nnum, sizeof(type), &nlen)) \
       return 0; \
-    if (!alloc_re(&x->field,x->a * sizeof(type),nlen)) \
+    if (!alloc_re((void**)&x->field,x->a * sizeof(type),nlen)) \
       return 0; \
     x->a = nnum; \
     return 1; } \

@@ -12,6 +12,7 @@ static int ta_rplus ## _internal (ta *x, unsigned int n, unsigned int pluslen) \
   errno = error_nomem; \
   if (x->field) { \
     unsigned int nnum; \
+    type *nfield; \
     if (__builtin_add_overflow(n, pluslen, &n)) \
       return 0; \
     if (n <= x->a) \
@@ -20,8 +21,10 @@ static int ta_rplus ## _internal (ta *x, unsigned int n, unsigned int pluslen) \
       return 0; \
     if (__builtin_mul_overflow(nnum, sizeof(type), &nlen)) \
       return 0; \
-    if (!alloc_re((void**)&x->field,x->a * sizeof(type),nlen)) \
+    nfield = realloc(x->field, nlen); \
+    if (nfield == NULL) \
       return 0; \
+    x->field = nfield; \
     x->a = nnum; \
     return 1; } \
   x->len = 0; \

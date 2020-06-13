@@ -54,9 +54,12 @@ static int env_add(s) char *s;
  if (t) env_unsetlen(s,t - s);
  if (en == ea)
   {
+   char **nenv;
    ea += 30;
-   if (!alloc_re((void**)&environ,(en + 1) * sizeof(char *),(ea + 1) * sizeof(char *)))
+   nenv = realloc(environ, (ea + 1) * sizeof(char *));
+   if (nenv == NULL)
     { ea = en; return 0; }
+   environ = nenv;
   }
  environ[en++] = s;
  environ[en] = 0;

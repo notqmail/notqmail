@@ -5,6 +5,7 @@
 #include "sig.h"
 #include "env.h"
 #include "byte.h"
+#include "datetime.h"
 #include "exit.h"
 #include "fork.h"
 #include "open.h"

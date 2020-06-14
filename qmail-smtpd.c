@@ -5,6 +5,7 @@
 #include "alloc.h"
 #include "auto_qmail.h"
 #include "control.h"
+#include "datetime.h"
 #include "received.h"
 #include "constmap.h"
 #include "error.h"

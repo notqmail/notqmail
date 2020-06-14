@@ -10,6 +10,7 @@
 #include "substdio.h"
 #include "subfd.h"
 #include "byte.h"
+#include "datetime.h"
 #include "scan.h"
 #include "fmt.h"
 #include "error.h"

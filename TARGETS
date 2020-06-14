@@ -6,7 +6,6 @@ compile
 qmail-local.o
 qmail.o
 quote.o
-now.o
 gfrom.o
 myctime.o
 slurpclose.o

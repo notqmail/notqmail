@@ -9,6 +9,7 @@
 #include "hfield.h"
 #include "token822.h"
 #include "control.h"
+#include "datetime.h"
 #include "env.h"
 #include "gen_alloc.h"
 #include "gen_allocdefs.h"

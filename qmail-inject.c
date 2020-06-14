@@ -75,6 +75,14 @@ void doordie(sa,r) stralloc *sa; int r; {
  if (r == 1) return; if (r == -1) die_nomem();
  substdio_putsflush(subfderr,"qmail-inject: fatal: unable to parse this line:\n");
  substdio_putflush(subfderr,sa->s,sa->len); perm(); }
+/* call doordie, but if q is permit r == 0 */
+static int doordie_rh(stralloc *sa, int r, int q)
+{
+  if (q && r == 0)
+    return 0;
+  doordie(sa, r);
+  return 1;
+}
 
 GEN_ALLOC_typedef(saa,stralloc,sa,len,a)
 GEN_ALLOC_readyplus(saa,stralloc,sa,len,a,10,saa_readyplus)
@@ -344,6 +352,7 @@ stralloc *h;
 {
   int htype;
   int (*rw)() = 0;
+  int rwmayfail = 0;
  
   htype = hfield_known(h->s,h->len);
   if (flagdeletefrom) if (htype == H_FROM) return;
@@ -358,13 +367,16 @@ stralloc *h;
  
   switch(htype) {
     case H_TO: case H_CC:
-      if (flagrh) rw = rwtocc;
+      rw = rwtocc;
+      rwmayfail = 1;
       break;
     case H_BCC: case H_APPARENTLYTO:
-      if (flagrh) rw = rwhr;
+      rw = rwhr;
+      rwmayfail = 1;
       break;
     case H_R_TO: case H_R_CC: case H_R_BCC:
-      if (flagrh) rw = rwhrr;
+      rw = rwhrr;
+      rwmayfail = 1;
       break;
     case H_RETURNPATH:
       rw = rwreturn; break;
@@ -375,10 +387,11 @@ stralloc *h;
   }
 
   if (rw) {
-    doordie(h,token822_parse(&hfin,h,&hfbuf));
-    doordie(h,token822_addrlist(&hfrewrite,&hfaddr,&hfin,rw));
-    if (token822_unparse(h,&hfrewrite,LINELEN) != 1)
-      die_nomem();
+    if (doordie_rh(h,token822_parse(&hfin,h,&hfbuf),rwmayfail) &&
+        doordie_rh(h,token822_addrlist(&hfrewrite,&hfaddr,&hfin,rw),rwmayfail)) {
+      if (token822_unparse(h,&hfrewrite,LINELEN) != 1)
+        die_nomem();
+    }
   }
  
   if (htype == H_BCC) return;

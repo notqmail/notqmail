@@ -1588,7 +1588,7 @@ int main(void)
    else tv.tv_sec = wakeup - recent + SLEEP_FUZZ;
    tv.tv_usec = 0;
 
-   if (select(nfds,&rfds,&wfds,(fd_set *) 0,&tv) == -1)
+   if (select(nfds,&rfds,&wfds,NULL,&tv) == -1)
      if (errno == error_intr)
        ;
      else

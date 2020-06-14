@@ -1,4 +1,5 @@
 #include <signal.h>
+#include <stddef.h>
 
 int main(void)
 {
@@ -6,6 +7,6 @@ int main(void)
   sa.sa_handler = 0;
   sa.sa_flags = 0;
   sigemptyset(&sa.sa_mask);
-  sigaction(0,&sa,(struct sigaction *) 0);
+  sigaction(0,&sa,NULL);
   return 0;
 }

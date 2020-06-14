@@ -301,7 +301,7 @@ void getcontrols()
   if (control_readint(&timeout,"control/timeoutremote") == -1) temp_control();
   if (control_readint(&timeoutconnect,"control/timeoutconnect") == -1)
     temp_control();
-  if (control_rldef(&helohost,"control/helohost",1,(char *) 0) != 1)
+  if (control_rldef(&helohost,"control/helohost",1,NULL) != 1)
     temp_control();
   switch(control_readfile(&routes,"control/smtproutes",0)) {
     case -1:

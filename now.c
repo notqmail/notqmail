@@ -4,5 +4,5 @@
 
 datetime_sec now()
 {
-  return time((long *) 0);
+  return time(NULL);
 }

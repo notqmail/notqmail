@@ -219,7 +219,7 @@ int main(int argc, char **argv)
    for (i = 0;i < auto_spawn;++i) if (d[i].used)
     { FD_SET(d[i].fdin,&rfds); if (d[i].fdin >= nfds) nfds = d[i].fdin + 1; }
 
-   r = select(nfds,&rfds,(fd_set *) 0,(fd_set *) 0,(struct timeval *) 0);
+   r = select(nfds,&rfds,NULL,NULL,NULL);
    sig_childblock();
 
    if (r != -1)

@@ -209,7 +209,7 @@ int dns_ptr(stralloc *sa, struct ip_address *ipa)
 {
  int r;
 
- if (!stralloc_ready(sa,iaafmt((char *) 0,ipa))) return DNS_MEM;
+ if (!stralloc_ready(sa,iaafmt(NULL,ipa))) return DNS_MEM;
  sa->len = iaafmt(sa->s,ipa);
  switch(resolve(sa,T_PTR))
   {

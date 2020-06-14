@@ -1,4 +1,5 @@
 #include <signal.h>
+#include <stddef.h>
 
 int main(void)
 {
@@ -6,6 +7,6 @@ int main(void)
  
   sigemptyset(&ss);
   sigaddset(&ss,SIGCHLD);
-  sigprocmask(SIG_SETMASK,&ss,(sigset_t *) 0);
+  sigprocmask(SIG_SETMASK,&ss,NULL);
   return 0;
 }

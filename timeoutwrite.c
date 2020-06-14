@@ -14,7 +14,7 @@ int timeoutwrite(t,fd,buf,len) int t; int fd; char *buf; int len;
   FD_ZERO(&wfds);
   FD_SET(fd,&wfds);
 
-  if (select(fd + 1,(fd_set *) 0,&wfds,(fd_set *) 0,&tv) == -1) return -1;
+  if (select(fd + 1,NULL,&wfds,NULL,&tv) == -1) return -1;
   if (FD_ISSET(fd,&wfds)) return write(fd,buf,len);
 
   errno = error_timeout;

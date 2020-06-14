@@ -42,7 +42,7 @@ int timeout;
   FD_SET(s,&wfds);
   tv.tv_sec = timeout; tv.tv_usec = 0;
  
-  if (select(s + 1,(fd_set *) 0,&wfds,(fd_set *) 0,&tv) == -1) return -1;
+  if (select(s + 1,NULL,&wfds,NULL,&tv) == -1) return -1;
   if (FD_ISSET(s,&wfds)) {
     int dummy;
     dummy = sizeof(sin);

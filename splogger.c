@@ -19,7 +19,7 @@ void stamp_make()
 {
   struct timeval tv;
   char *s;
-  gettimeofday(&tv,(struct timezone *) 0);
+  gettimeofday(&tv,NULL);
   s = stamp;
   s += fmt_ulong(s,(unsigned long) tv.tv_sec);
   *s++ = '.';

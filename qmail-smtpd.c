@@ -103,9 +103,9 @@ void setup()
   unsigned long u;
  
   if (control_init() == -1) die_control();
-  if (control_rldef(&greeting,"control/smtpgreeting",1,(char *) 0) != 1)
+  if (control_rldef(&greeting,"control/smtpgreeting",1,NULL) != 1)
     die_control();
-  liphostok = control_rldef(&liphost,"control/localiphost",1,(char *) 0);
+  liphostok = control_rldef(&liphost,"control/localiphost",1,NULL);
   if (liphostok == -1) die_control();
   if (control_readint(&timeout,"control/timeoutsmtpd") == -1) die_control();
   if (timeout <= 0) timeout = 1;

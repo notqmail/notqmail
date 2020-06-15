@@ -706,25 +706,20 @@ install:
 	chmod 755 install
 
 instcheck: \
-load instcheck.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o uid.o \
-gid.o auto_usera.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
-auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
+load instcheck.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o \
+ids.a strerr.a substdio.a error.a str.a fs.a
 	./load instcheck instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o \
-	uid.o gid.o auto_usera.o auto_usero.o auto_userp.o auto_userq.o \
-	auto_userr.o auto_users.o auto_groupq.o strerr.a substdio.a error.a \
-	str.a fs.a
+	ids.a strerr.a substdio.a error.a str.a fs.a
 
 instcheck.o: \
 compile instcheck.c strerr.h error.h readwrite.h hier.h
 	./compile instcheck.c
 
 instchown: \
-load instchown.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o uid.o \
-gid.o auto_usera.o auto_usero.o auto_userq.o auto_userr.o auto_users.o \
-auto_groupq.o strerr.a substdio.a error.a str.a fs.a
+load instchown.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o \
+ids.a strerr.a substdio.a error.a str.a fs.a
 	./load instchown instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o \
-	uid.o gid.o auto_usera.o auto_usero.o auto_userq.o auto_userr.o \
-	auto_users.o auto_groupq.o strerr.a substdio.a error.a str.a fs.a
+	ids.a strerr.a substdio.a error.a str.a fs.a
 
 instchown.o: \
 compile instchown.c strerr.h error.h exit.h hier.h
@@ -1043,9 +1038,9 @@ qmail-control.9 conf-qmail conf-break conf-spawn
 
 qmail-getpw: \
 load qmail-getpw.o case.a substdio.a error.a str.a fs.a auto_break.o \
-auto_usera.o
+ids.a
 	./load qmail-getpw case.a substdio.a error.a str.a fs.a \
-	auto_break.o auto_usera.o 
+	auto_break.o ids.a
 
 qmail-getpw.0: \
 qmail-getpw.8
@@ -1127,13 +1122,11 @@ qmail-log.5
 
 qmail-lspawn: \
 load qmail-lspawn.o spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
-case.a cdb.a fd.a open.a stralloc.a substdio.a error.a str.a \
-fs.a auto_qmail.o uid.o gid.o auto_userp.o auto_userq.o auto_groupn.o \
-auto_spawn.o
+case.a cdb.a fd.a open.a stralloc.a ids.a substdio.a error.a str.a \
+fs.a auto_qmail.o auto_spawn.o
 	./load qmail-lspawn spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
-	case.a cdb.a fd.a open.a stralloc.a auto_qmail.o uid.o gid.o \
-	auto_userp.o auto_userq.o auto_groupn.o auto_spawn.o substdio.a \
-	error.a str.a fs.a
+	case.a cdb.a fd.a open.a stralloc.a auto_qmail.o \
+	auto_spawn.o ids.a substdio.a error.a str.a fs.a
 
 qmail-lspawn.0: \
 qmail-lspawn.8
@@ -1231,11 +1224,11 @@ readwrite.h timeoutread.h timeoutwrite.h
 
 qmail-pw2u: \
 load qmail-pw2u.o constmap.o control.o open.a getln.a case.a getopt.a \
-stralloc.a substdio.a error.a str.a fs.a auto_usera.o \
+stralloc.a substdio.a error.a str.a fs.a ids.a \
 auto_break.o auto_qmail.o
 	./load qmail-pw2u constmap.o control.o open.a getln.a \
 	case.a getopt.a stralloc.a substdio.a error.a str.a \
-	fs.a auto_usera.o auto_break.o auto_qmail.o 
+	fs.a ids.a auto_break.o auto_qmail.o
 
 qmail-pw2u.0: \
 qmail-pw2u.8
@@ -1340,12 +1333,11 @@ qmail-qstat.8
 qmail-queue: \
 load qmail-queue.o triggerpull.o fmtqfn.o date822fmt.o \
 datetime.a ndelay.a open.a sig.a substdio.a error.a \
-str.a fs.a auto_qmail.o auto_split.o uid.o auto_usera.o auto_userd.o \
-auto_users.o
+str.a fs.a auto_qmail.o auto_split.o ids.a
 	./load qmail-queue triggerpull.o fmtqfn.o \
 	date822fmt.o datetime.a ndelay.a open.a sig.a \
-	auto_qmail.o auto_split.o uid.o auto_usera.o \
-	auto_userd.o auto_users.o substdio.a error.a str.a fs.a
+	auto_qmail.o auto_split.o ids.a \
+	substdio.a error.a str.a fs.a
 
 qmail-queue.0: \
 qmail-queue.8
@@ -1382,10 +1374,10 @@ error.h
 qmail-rspawn: \
 load qmail-rspawn.o spawn.o tcpto_clean.o coe.o sig.a open.a \
 lock.a wait.a fd.a stralloc.a substdio.a error.a env.a str.a \
-auto_qmail.o uid.o auto_userq.o auto_spawn.o
+auto_qmail.o auto_spawn.o ids.a
 	./load qmail-rspawn spawn.o tcpto_clean.o coe.o \
 	sig.a open.a lock.a wait.a fd.a stralloc.a \
-	auto_qmail.o uid.o auto_userq.o substdio.a error.a env.a str.a \
+	auto_qmail.o ids.a substdio.a error.a env.a str.a \
 	auto_spawn.o
 
 qmail-rspawn.0: \
@@ -1435,13 +1427,10 @@ qmail-send.service.in conf-qmail
 	> qmail-send.service
 
 qmail-showctl: \
-load qmail-showctl.o uid.o gid.o auto_usera.o auto_userd.o auto_userl.o \
-auto_usero.o auto_userp.o auto_userq.o auto_userr.o auto_users.o auto_groupn.o \
-auto_groupq.o control.o open.a getln.a stralloc.a substdio.a error.a \
-str.a fs.a auto_qmail.o auto_break.o auto_patrn.o auto_spawn.o auto_split.o
-	./load qmail-showctl uid.o gid.o auto_usera.o auto_userd.o \
-	auto_userl.o auto_usero.o auto_userp.o auto_userq.o auto_userr.o \
-	auto_users.o auto_groupn.o auto_groupq.o control.o open.a getln.a \
+load qmail-showctl.o control.o open.a getln.a stralloc.a \
+substdio.a error.a ids.a str.a fs.a auto_qmail.o auto_break.o auto_patrn.o \
+auto_spawn.o auto_split.o
+	./load qmail-showctl control.o open.a getln.a ids.a \
 	stralloc.a substdio.a error.a str.a fs.a auto_qmail.o \
 	auto_break.o auto_patrn.o auto_spawn.o auto_split.o
 
@@ -1480,11 +1469,8 @@ exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h
 	./compile qmail-smtpd.c
 
 qmail-start: \
-load qmail-start.o prot.o fd.a uid.o gid.o auto_userl.o auto_userq.o \
-auto_userr.o auto_users.o auto_groupn.o auto_groupq.o substdio.a error.a str.a
-	./load qmail-start prot.o fd.a uid.o gid.o auto_userl.o auto_userq.o \
-	auto_userr.o auto_users.o auto_groupn.o auto_groupq.o substdio.a \
-	error.a str.a
+load qmail-start.o prot.o fd.a ids.a substdio.a error.a str.a
+	./load qmail-start prot.o fd.a ids.a substdio.a error.a str.a
 
 qmail-start.0: \
 qmail-start.8
@@ -1918,6 +1904,13 @@ compile triggerpull.c ndelay.h open.h triggerpull.h
 uid.o: \
 compile uid.c uidgid.h subfd.h substdio.h exit.h
 	./compile uid.c
+
+ids.a: \
+makelib auto_usera.o auto_userd.o auto_userl.o auto_usero.o auto_userp.o \
+auto_userq.o auto_userr.o auto_users.o auto_groupn.o auto_groupq.o gid.o uid.o
+	./makelib ids.a auto_usera.o auto_userd.o auto_userl.o auto_usero.o \
+	auto_userp.o auto_userq.o auto_userr.o auto_users.o auto_groupn.o \
+	auto_groupq.o gid.o uid.o
 
 wait.a: \
 makelib wait_pid.o wait_nohang.o

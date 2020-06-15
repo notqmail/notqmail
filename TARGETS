@@ -57,6 +57,7 @@ fd_copy.o
 fd_move.o
 fd.a
 haswaitp.h
+ids.a
 wait_pid.o
 wait_nohang.o
 wait.a

@@ -138,16 +138,6 @@ cdb_seek.o
 cdb.a
 uid.o
 gid.o
-auto_uida.o
-auto_uidd.o
-auto_uidl.o
-auto_uido.o
-auto_uidp.o
-auto_uidq.o
-auto_uidr.o
-auto_uids.o
-auto_gidn.o
-auto_gidq.o
 qmail-lspawn
 qmail-getpw.o
 auto_break.c

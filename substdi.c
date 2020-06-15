@@ -2,7 +2,7 @@
 #include "byte.h"
 #include "error.h"
 
-static int oneread(ssize_t (*op)(), int fd, char *buf, size_t len)
+static ssize_t oneread(ssize_t (*op)(), int fd, char *buf, size_t len)
 {
   for (;;) {
     ssize_t r = op(fd,buf,len);
@@ -27,10 +27,9 @@ register int len;
   return r;
 }
 
-int substdio_feed(s)
-register substdio *s;
+ssize_t substdio_feed(substdio *s)
 {
-  register int r;
+  ssize_t r;
   register int q;
 
   if (s->p) return s->p;
@@ -44,12 +43,9 @@ register substdio *s;
   return r;
 }
 
-int substdio_get(s,buf,len)
-register substdio *s;
-register char *buf;
-register int len;
+ssize_t substdio_get(substdio *s, char *buf, size_t len)
 {
-  register int r;
+  ssize_t r;
  
   if (s->p > 0) return getthis(s,buf,len);
   if (s->n <= len) return oneread(s->op,s->fd,buf,len);

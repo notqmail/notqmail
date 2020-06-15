@@ -23,8 +23,8 @@ extern int substdio_puts();
 extern int substdio_bputs();
 extern int substdio_putsflush();
 
-extern int substdio_get();
-extern int substdio_feed();
+extern ssize_t substdio_get(substdio *s, char *buf, size_t len);
+extern ssize_t substdio_feed(substdio *s);
 
 extern char *substdio_peek();
 extern void substdio_seek();

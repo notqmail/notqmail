@@ -12,12 +12,12 @@ int sep;
 {
   register char *x;
   register unsigned int i;
-  int n;
  
   if (!stralloc_ready(sa,0)) return -1;
   sa->len = 0;
  
   for (;;) {
+    ssize_t n;
     n = substdio_feed(ss);
     if (n < 0) return -1;
     if (n == 0) { *clen = 0; return 0; }

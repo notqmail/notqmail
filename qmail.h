@@ -3,6 +3,8 @@
 
 #include "substdio.h"
 
+#include <string.h>
+
 struct qmail {
   int flagerr;
   unsigned long pid;
@@ -14,7 +16,7 @@ struct qmail {
 
 extern int qmail_open();
 extern void qmail_put();
-extern void qmail_puts();
+#define qmail_puts(qq,s) qmail_put(qq,s,strlen(s))
 extern void qmail_from();
 extern void qmail_to();
 extern void qmail_fail();

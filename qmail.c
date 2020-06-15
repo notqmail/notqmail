@@ -66,11 +66,6 @@ void qmail_put(struct qmail *qq, char *s, size_t len)
   if (!qq->flagerr) if (substdio_put(&qq->ss,s,len) == -1) qq->flagerr = 1;
 }
 
-void qmail_puts(qq,s) struct qmail *qq; char *s;
-{
-  if (!qq->flagerr) if (substdio_puts(&qq->ss,s) == -1) qq->flagerr = 1;
-}
-
 void qmail_from(qq,s) struct qmail *qq; char *s;
 {
   if (substdio_flush(&qq->ss) == -1) qq->flagerr = 1;

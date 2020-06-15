@@ -298,7 +298,7 @@ fd_set *wfds;
          int len;
          len = comm_buf[c].len;
          w = write(chanfdout[c],comm_buf[c].s + comm_pos[c],len - comm_pos[c]);
-         if (w <= 0)
+         if (w == 0 || w == -1)
 	  {
 	   if ((w == -1) && (errno == error_pipe))
 	     spawndied(c);
@@ -632,7 +632,7 @@ char *report;
  while (pos < bouncetext.len)
   {
    w = write(fd,bouncetext.s + pos,bouncetext.len - pos);
-   if (w <= 0)
+   if (w == 0 || w == -1)
     {
      log1("alert: unable to append to bounce message; HELP! sleeping...\n");
      sleep(10);

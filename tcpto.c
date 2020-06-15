@@ -25,7 +25,7 @@ static int getbuf()
  if (lock_ex(fdlock) == -1) { close(fdlock); close(fd); return 0; }
  r = read(fd,tcpto_buf,sizeof(tcpto_buf));
  close(fd);
- if (r < 0) { close(fdlock); return 0; }
+ if (r == -1) { close(fdlock); return 0; }
  r >>= 4;
  if (!r) close(fdlock);
  return r;

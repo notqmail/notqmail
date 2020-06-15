@@ -33,7 +33,7 @@ ssize_t safewrite(int fd, const void *buf, size_t len)
 {
   ssize_t r;
   r = timeoutwrite(timeout,fd,buf,len);
-  if (r <= 0) _exit(1);
+  if (r == 0 || r == -1) _exit(1);
   return r;
 }
 
@@ -272,7 +272,7 @@ ssize_t saferead(int fd, void *buf, size_t len)
   flush();
   r = timeoutread(timeout,fd,buf,len);
   if (r == -1) if (errno == error_timeout) die_alarm();
-  if (r <= 0) die_read();
+  if (r == 0 || r == -1) die_read();
   return r;
 }
 

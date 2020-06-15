@@ -21,7 +21,7 @@ ssize_t safewrite(int fd, const void *buf, size_t len)
 {
   ssize_t r;
   r = write(fd,buf,len);
-  if (r <= 0) _exit(0);
+  if (r == 0 || r == -1) _exit(0);
   return r;
 }
 
@@ -33,7 +33,7 @@ ssize_t saferead(int fd, void *buf, size_t len)
   ssize_t r;
   substdio_flush(&ssout);
   r = read(fd,buf,len);
-  if (r <= 0) _exit(0);
+  if (r == 0 || r == -1) _exit(0);
   return r;
 }
 

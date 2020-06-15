@@ -110,7 +110,7 @@ ssize_t saferead(int fd, void *buf, size_t len)
 {
   ssize_t r;
   r = timeoutread(timeout,smtpfd,buf,len);
-  if (r <= 0) dropped();
+  if (r == 0 || r == -1) dropped();
   return r;
 }
 
@@ -118,7 +118,7 @@ ssize_t safewrite(int fd, const void *buf, size_t len)
 {
   ssize_t r;
   r = timeoutwrite(timeout,smtpfd,buf,len);
-  if (r <= 0) dropped();
+  if (r == 0 || r == -1) dropped();
   return r;
 }
 

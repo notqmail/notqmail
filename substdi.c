@@ -35,7 +35,7 @@ ssize_t substdio_feed(substdio *s)
   if (s->p) return s->p;
   q = s->n;
   r = oneread(s->op,s->fd,s->x,q);
-  if (r <= 0) return r;
+  if (r == 0 || r == -1) return r;
   s->p = r;
   q -= r;
   s->n = q;
@@ -49,7 +49,8 @@ ssize_t substdio_get(substdio *s, char *buf, size_t len)
  
   if (s->p > 0) return getthis(s,buf,len);
   if (s->n <= len) return oneread(s->op,s->fd,buf,len);
-  r = substdio_feed(s); if (r <= 0) return r;
+  r = substdio_feed(s);
+  if (r == 0 || r == -1) return r;
   return getthis(s,buf,len);
 }
 

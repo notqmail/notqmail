@@ -20,7 +20,7 @@ ssize_t saferead(int fd, void *buf, size_t len)
 {
   ssize_t r;
   r = timeoutread(1200,fd,buf,len);
-  if (r <= 0) die();
+  if (r == 0 || r == -1) die();
   return r;
 }
 
@@ -28,7 +28,7 @@ ssize_t safewrite(int fd, const void *buf, size_t len)
 {
   ssize_t r;
   r = timeoutwrite(1200,fd,buf,len);
-  if (r <= 0) die();
+  if (r == 0 || r == -1) die();
   return r;
 }
 

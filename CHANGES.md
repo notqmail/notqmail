@@ -1,3 +1,4 @@
+- 20201116 honor all groups of qmailr user when spawning qmail-rspawn
 - 20200803 avoid sending CRCRLF in qmail-remote if input contains CRLF
 - 20200614 remove maildirwatch
 - 20200614 stop rewriting RCPT TO: domains when they are a CNAME (RFC 5321 5.1)

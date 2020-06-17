@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "spawn.h"
 #include "sig.h"
 #include "wait.h"
 #include "substdio.h"
@@ -15,11 +16,6 @@
 #include "auto_qmail.h"
 #include "auto_uids.h"
 #include "auto_spawn.h"
-
-extern int truncreport;
-extern int spawn();
-extern void report();
-extern void initialize();
 
 struct delivery
  {

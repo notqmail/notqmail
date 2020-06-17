@@ -1,4 +1,5 @@
 #include "fd.h"
+#include "spawn.h"
 #include "wait.h"
 #include "substdio.h"
 #include "exit.h"

@@ -11,8 +11,6 @@
 #include "auto_users.h"
 #include "env.h"
 
-uid_t auto_uidq;
-
 void initialize(argc,argv)
 int argc;
 char **argv;

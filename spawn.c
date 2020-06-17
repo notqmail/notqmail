@@ -17,6 +17,8 @@
 #include "auto_uids.h"
 #include "auto_spawn.h"
 
+uid_t auto_uidq;
+
 struct delivery
  {
   int used;

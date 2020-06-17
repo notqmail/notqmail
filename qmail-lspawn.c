@@ -22,7 +22,6 @@
 char *aliasempty;
 
 uid_t auto_uidp;
-uid_t auto_uidq;
 
 gid_t auto_gidn;
 

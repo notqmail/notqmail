@@ -7,7 +7,6 @@
 #include "hier.h"
 
 extern void init_uidgid();
-extern void hier();
 
 #define FATAL "instchown: fatal: "
 

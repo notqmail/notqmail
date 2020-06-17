@@ -13,7 +13,6 @@
 #include "str.h"
 #include "stralloc.h"
 
-extern void hier();
 
 #define FATAL "instpackage: fatal: "
 

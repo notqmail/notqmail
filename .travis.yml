@@ -4,7 +4,7 @@ env:
   matrix:
     - BUILD_NAME="default"
     - BUILD_NAME="utmp" FORCE_UTMP="1" MAKEFLAGS="-o qtmp.h"
-    - BUILD_NAME="no_catman" AVOID_NROFF="1"
+    - BUILD_NAME="no_catman" AVOID_NROFF="1" EXTRA_CFLAGS="-DDONT_PROVIDE_OBSOLETE"
 compiler:
  - gcc
  - clang
@@ -14,7 +14,7 @@ addons:
     - pkg-config
     - check
 script:
- - echo "${CC} -O2 -Wall -Wshadow -Werror=implicit-function-declaration" > conf-cc
+ - echo "${CC} -O2 -Wall -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations ${EXTRA_CFLAGS}" > conf-cc
  - if [ -n "${FORCE_UTMP}" ]; then cp qtmp.h1 qtmp.h; fi
  - if [ -n "${AVOID_NROFF}" ]; then NROFF=true; export NROFF; fi
  - make ${MAKEFLAGS} it man

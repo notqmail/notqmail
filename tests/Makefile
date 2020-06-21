@@ -11,6 +11,9 @@ default: it
 
 TESTBINS = unittest_stralloc unittest_qmail-remote unittest_prioq unittest_qmail-send
 
+CHECK_INCLUDES=`pkg-config --cflags check`
+CHECK_LIBS=`pkg-config --libs check`
+
 clean:
 	rm -f $(TESTBINS) *.o *-without-main.c
 
@@ -24,12 +27,12 @@ test: it
 unittest_stralloc: \
 ../load unittest_stralloc.o ../stralloc.a ../str.a ../error.a
 	../load unittest_stralloc ../stralloc.a ../str.a ../error.a \
-	`pkg-config --libs check`
+	$(CHECK_LIBS)
 
 unittest_stralloc.o: \
 ../compile unittest_stralloc.c ../alloc.h ../stralloc.h
 	../compile unittest_stralloc.c -I.. \
-	`pkg-config --cflags check`
+	$(CHECK_INCLUDES)
 
 qmail-remote-without-main.c: \
 ../qmail-remote.c
@@ -48,22 +51,22 @@ unittest_qmail-remote: \
 	../timeoutread.o ../timeoutwrite.o ../quote.o \
 	../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a \
 	../getln.a ../str.a ../case.a \
-	`pkg-config --libs check`
+	$(CHECK_LIBS)
 
 unittest_qmail-remote.o: \
 ../compile unittest_qmail-remote.c ../alloc.h ../stralloc.h
 	../compile unittest_qmail-remote.c -I.. \
-	`pkg-config --cflags check`
+	$(CHECK_INCLUDES)
 
 unittest_prioq: \
 ../load unittest_prioq.o ../prioq.o ../error.a
 	../load unittest_prioq ../prioq.o ../error.a \
-	`pkg-config --libs check`
+	$(CHECK_LIBS)
 
 unittest_prioq.o: \
 ../compile unittest_prioq.c ../prioq.h
 	../compile unittest_prioq.c -I.. \
-	`pkg-config --cflags check`
+	$(CHECK_INCLUDES)
 
 qmail-send-without-main.c: \
 ../qmail-send.c
@@ -81,9 +84,9 @@ unittest_qmail-send: \
 	../qmail.o ../date822fmt.o ../datetime.a ../case.a ../ndelay.a ../getln.a \
 	../wait.a ../fd.a ../sig.a ../open.a ../lock.a ../stralloc.a \
 	../substdio.a ../error.a ../str.a ../fs.a ../auto_qmail.o ../auto_split.o ../env.a \
-	`pkg-config --libs check`
+	$(CHECK_LIBS)
 
 unittest_qmail-send.o: \
 ../compile unittest_qmail-send.c qmail-send-without-main.c
 	../compile unittest_qmail-send.c -I.. \
-	`pkg-config --cflags check`
+	$(CHECK_INCLUDES)

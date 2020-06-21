@@ -16,10 +16,10 @@ struct qmail {
 } ;
 
 extern int qmail_open();
-extern void qmail_put();
+extern void qmail_put(struct qmail *qq, const char *s, size_t len);
 #define qmail_puts(qq,s) qmail_put(qq,s,strlen(s))
-extern void qmail_from();
-extern void qmail_to();
+extern void qmail_from(struct qmail *qq, const char *s);
+extern void qmail_to(struct qmail *qq, const char *s);
 extern void qmail_fail();
 extern char *qmail_close();
 extern unsigned long qmail_qp();

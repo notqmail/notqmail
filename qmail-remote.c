@@ -47,7 +47,7 @@ saa reciplist = {0};
 
 struct ip_address partner;
 
-void out(s) char *s; { if (substdio_puts(subfdoutsmall,s) == -1) _exit(0); }
+void out(const char *s) { if (substdio_puts(subfdoutsmall,s) == -1) _exit(0); }
 void zero() { if (substdio_put(subfdoutsmall,"\0",1) == -1) _exit(0); }
 void zerodie() { zero(); substdio_flush(subfdoutsmall); _exit(0); }
 void outsafe(sa) stralloc *sa; { int i; char ch;
@@ -162,9 +162,7 @@ void outsmtptext()
   }
 }
 
-void quit(prepend,append)
-char *prepend;
-char *append;
+void quit(const char *prepend, const char *append)
 {
   substdio_putsflush(&smtpto,"QUIT\r\n");
   /* waiting for remote side is just too ridiculous */
@@ -273,7 +271,7 @@ void smtp()
 stralloc canonhost = {0};
 stralloc canonbox = {0};
 
-void addrmangle(stralloc *saout, char *s)
+void addrmangle(stralloc *saout, const char *s)
 {
   int j;
  

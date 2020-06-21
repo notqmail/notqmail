@@ -113,11 +113,10 @@ stralloc rwline = {0};
 
 /* 1 if by land, 2 if by sea, 0 if out of memory. not allowed to barf. */
 /* may trash recip. must set up rwline, between a T and a \0. */
-int rewrite(recip)
-char *recip;
+int rewrite(const char *recip)
 {
   unsigned int i;
-  char *x;
+  const char *x;
   static stralloc addr = {0};
   unsigned int at;
 
@@ -162,10 +161,7 @@ char *recip;
   return 2;
 }
 
-void senderadd(sa,sender,recip)
-stralloc *sa;
-char *sender;
-char *recip;
+void senderadd(stralloc *sa, const char *sender, const char *recip)
 {
  unsigned int i;
 
@@ -248,12 +244,8 @@ int c;
  return 1;
 }
 
-void comm_write(c,delnum,id,sender,recip)
-int c;
-int delnum;
-unsigned long id;
-char *sender;
-char *recip;
+void comm_write(int c, int delnum, unsigned long id, const char *sender,
+                const char *recip)
 {
  char ch;
  if (comm_buf[c].s && comm_buf[c].len) return;
@@ -569,13 +561,12 @@ int j;
 
 /* this file is too long ------------------------------------------- BOUNCES */
 
-char *stripvdomprepend(recip)
-char *recip;
+const char *stripvdomprepend(const char *recip)
 {
  unsigned int i;
- char *domain;
+ const char *domain;
  unsigned int domainlen;
- char *prepend;
+ const char *prepend;
 
  i = str_rchr(recip,'@');
  if (!recip[i]) return recip;
@@ -597,10 +588,7 @@ char *recip;
 
 stralloc bouncetext = {0};
 
-void addbounce(id,recip,report)
-unsigned long id;
-char *recip;
-char *report;
+void addbounce(unsigned long id, const char *recip, const char *report)
 {
  int fd;
  unsigned int pos;
@@ -831,10 +819,7 @@ int c;
   return flagspawnalive[c] && comm_canwrite(c) && (concurrencyused[c] < concurrency[c]);
 }
 
-void del_start(j,mpos,recip)
-int j;
-seek_pos mpos;
-char *recip;
+void del_start(int j, seek_pos mpos, const char *recip)
 {
  unsigned int i;
  int c;

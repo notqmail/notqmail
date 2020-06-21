@@ -7,10 +7,7 @@
 #define SEEK_SET 0
 #endif
 
-int cdb_bread(fd,buf,len)
-int fd;
-char *buf;
-int len;
+int cdb_bread(int fd, char *buf, int len)
 {
   int r;
   while (len > 0) {
@@ -25,10 +22,7 @@ int len;
   return 0;
 }
 
-static int match(fd,key,len)
-int fd;
-char *key;
-unsigned int len;
+static int match(int fd, const char *key, unsigned int len)
 {
   char buf[32];
   int n;
@@ -45,11 +39,7 @@ unsigned int len;
   return 1;
 }
 
-int cdb_seek(fd,key,len,dlen)
-int fd;
-char *key;
-unsigned int len;
-uint32 *dlen;
+int cdb_seek(int fd, const char *key, unsigned int len, uint32 *dlen)
 {
   char packbuf[8];
   uint32 pos;

@@ -41,7 +41,7 @@ void _noreturn_ temp_fork() { strerr_die3x(111,"Unable to fork: ",error_str(errn
 void _noreturn_ temp_read() { strerr_die3x(111,"Unable to read message: ",error_str(errno),". (#4.3.0)"); }
 void _noreturn_ temp_slowlock()
 { strerr_die1x(111,"File has been locked for 30 seconds straight. (#4.3.0)"); }
-void _noreturn_ temp_qmail(char *fn)
+void _noreturn_ temp_qmail(const char *fn)
 { strerr_die5x(111,"Unable to open ",fn,": ",error_str(errno),". (#4.3.0)"); }
 
 int flagdoit;

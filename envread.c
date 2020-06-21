@@ -14,11 +14,6 @@
   return NULL;
 }
 
-extern char *env_pick()
-{
-  return environ[0];
-}
-
 const char *env_findeq(const char *s)
 {
   for (;*s;++s)

@@ -9,7 +9,7 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_stralloc unittest_blast unittest_prioq
+TESTBINS = unittest_cdb unittest_stralloc unittest_blast unittest_prioq
 
 CHECK_INCLUDES := `pkg-config --cflags check`
 CHECK_LIBS := `pkg-config --libs check`
@@ -64,5 +64,14 @@ unittest_prioq: \
 unittest_prioq.o: \
 ../compile unittest_prioq.c
 	../compile unittest_prioq.c -I.. \
-	`pkg-config --cflags check`
+	$(CHECK_INCLUDES)
+
+unittest_cdb: \
+../load unittest_cdb.o ../cdb.a
+	../load unittest_cdb ../cdb.a \
+	$(CHECK_LIBS)
+
+unittest_cdb.o: \
+../compile ../cdb.h ../uint32.h
+	../compile unittest_cdb.c -I.. \
 	$(CHECK_INCLUDES)

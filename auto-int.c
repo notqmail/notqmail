@@ -7,8 +7,7 @@
 char buf1[256];
 substdio ss1 = SUBSTDIO_FDBUF(write,1,buf1,sizeof(buf1));
 
-void puts(s)
-char *s;
+void put_str(const char *s)
 {
   if (substdio_puts(&ss1,s) == -1) _exit(111);
 }
@@ -29,11 +28,11 @@ int main(int argc, char **argv)
   scan_ulong(value,&num);
   strnum[fmt_ulong(strnum,num)] = 0;
 
-  puts("int ");
-  puts(name);
-  puts(" = ");
-  puts(strnum);
-  puts(";\n");
+  put_str("int ");
+  put_str(name);
+  put_str(" = ");
+  put_str(strnum);
+  put_str(";\n");
   if (substdio_flush(&ss1) == -1) return 111;
   return 0;
 }

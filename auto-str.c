@@ -6,8 +6,7 @@
 char buf1[256];
 substdio ss1 = SUBSTDIO_FDBUF(write,1,buf1,sizeof(buf1));
 
-void puts(s)
-char *s;
+void put_str(const char *s)
 {
   if (substdio_puts(&ss1,s) == -1) _exit(111);
 }
@@ -36,25 +35,25 @@ int main(int argc, char **argv)
   value = argv[2];
   if (!value) return 100;
 
-  puts("char ");
-  puts(name);
-  puts("[] = \"\\\n");
+  put_str("char ");
+  put_str(name);
+  put_str("[] = \"\\\n");
 
   while ((ch = *value++)) {
     if (is_legible(ch)) {
       if (substdio_put(&ss1, (char *)&ch, 1) == -1)
         _exit(111);
     } else {
-      puts("\\");
+      put_str("\\");
       octal[3] = 0;
       octal[2] = '0' + (ch & 7); ch >>= 3;
       octal[1] = '0' + (ch & 7); ch >>= 3;
       octal[0] = '0' + (ch & 7);
-      puts(octal);
+      put_str(octal);
     }
   }
 
-  puts("\\\n\";\n");
+  put_str("\\\n\";\n");
   if (substdio_flush(&ss1) == -1) return 111;
   return 0;
 }

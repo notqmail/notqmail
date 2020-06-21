@@ -17,7 +17,7 @@
 #define error_perm EPERM
 #define error_acces EACCES
 
-extern char *error_str();
+extern const char *error_str(int i);
 extern int error_temp();
 
 #endif

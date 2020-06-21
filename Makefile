@@ -662,6 +662,12 @@ trysgprm.c compile load
 	&& echo \#define HASSIGPROCMASK 1 || exit 0 ) > hassgprm.h
 	rm -f trysgprm.o trysgprm
 
+hasutbuf.h: \
+tryutbuf.c compile
+	( ./compile tryutbuf.c >/dev/null 2>&1 \
+	&& echo \#define HASUTBUF 1 || exit 0 ) > hasutbuf.h
+	rm -f tryutbuf.o
+
 haswaitp.h: \
 trywaitp.c compile load
 	( ( ./compile trywaitp.c && ./load trywaitp ) >/dev/null \
@@ -1429,7 +1435,7 @@ open.h seek.h exit.h lock.h ndelay.h now.h datetime.h getln.h \
 substdio.h alloc.h error.h stralloc.h gen_alloc.h str.h byte.h fmt.h \
 scan.h case.h auto_qmail.h trigger.h newfield.h stralloc.h quote.h \
 qmail.h substdio.h qsutil.h prioq.h datetime.h gen_alloc.h constmap.h \
-fmtqfn.h readsubdir.h direntry.h
+fmtqfn.h readsubdir.h direntry.h hasutbuf.h
 	./compile qmail-send.c
 
 qmail-send.service: \

@@ -26,6 +26,7 @@ getopt.a
 sig_alarm.o
 oflops.h
 hassgprm.h
+hasutbuf.h
 sig_block.o
 hassgact.h
 sig_catch.o

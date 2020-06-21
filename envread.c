@@ -1,8 +1,7 @@
 #include "env.h"
 #include "str.h"
 
-extern /*@null@*/char *env_get(s)
-char *s;
+/*@null@*/char *env_get(const char *s)
 {
   int i;
   unsigned int slen;
@@ -12,7 +11,7 @@ char *s;
   for (i = 0;(envi = environ[i]);++i)
     if ((!str_diffn(s,envi,slen)) && (envi[slen] == '='))
       return envi + slen + 1;
-  return 0;
+  return NULL;
 }
 
 extern char *env_pick()
@@ -20,11 +19,10 @@ extern char *env_pick()
   return environ[0];
 }
 
-extern char *env_findeq(s)
-char *s;
+const char *env_findeq(const char *s)
 {
   for (;*s;++s)
     if (*s == '=')
       return s;
-  return 0;
+  return NULL;
 }

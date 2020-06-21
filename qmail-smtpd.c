@@ -36,7 +36,7 @@ char ssoutbuf[512];
 substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof(ssoutbuf));
 
 void flush() { substdio_flush(&ssout); }
-void out(s) char *s; { substdio_puts(&ssout,s); }
+void out(const char *s) { substdio_puts(&ssout,s); }
 
 void die_read() { _exit(1); }
 void die_alarm() { out("451 timeout (#4.4.2)\r\n"); flush(); _exit(1); }
@@ -47,27 +47,27 @@ void straynewline() { out("451 See https://cr.yp.to/docs/smtplf.html.\r\n"); flu
 
 void err_bmf() { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
 void err_nogateway() { out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n"); }
-void err_unimpl(arg) char *arg; { out("502 unimplemented (#5.5.1)\r\n"); }
+void err_unimpl(const char *arg) { out("502 unimplemented (#5.5.1)\r\n"); }
 void err_syntax() { out("555 syntax error (#5.5.4)\r\n"); }
 void err_wantmail() { out("503 MAIL first (#5.5.1)\r\n"); }
 void err_wantrcpt() { out("503 RCPT first (#5.5.1)\r\n"); }
-void err_noop(arg) char *arg; { out("250 ok\r\n"); }
-void err_vrfy(arg) char *arg; { out("252 send some mail, i'll try my best\r\n"); }
+void err_noop(const char *arg) { out("250 ok\r\n"); }
+void err_vrfy(const char *arg) { out("252 send some mail, i'll try my best\r\n"); }
 void err_qqt() { out("451 qqt failure (#4.3.0)\r\n"); }
 
 
 stralloc greeting = {0};
 
-void smtp_greet(code) char *code;
+void smtp_greet(const char *code)
 {
   substdio_puts(&ssout,code);
   substdio_put(&ssout,greeting.s,greeting.len);
 }
-void smtp_help(arg) char *arg;
+void smtp_help(const char *arg)
 {
   out("214 notqmail home page: https://notqmail.org\r\n");
 }
-void smtp_quit(arg) char *arg;
+void smtp_quit(const char *arg)
 {
   smtp_greet("221 "); out("\r\n"); flush(); _exit(0);
 }
@@ -81,7 +81,8 @@ char *relayclient;
 stralloc helohost = {0};
 char *fakehelo; /* pointer into helohost, or 0 */
 
-void dohelo(arg) char *arg; {
+void dohelo(const char *arg)
+{
   if (!stralloc_copys(&helohost,arg)) die_nomem(); 
   if (!stralloc_0(&helohost)) die_nomem(); 
   fakehelo = case_diffs(remotehost,helohost.s) ? helohost.s : 0;
@@ -133,8 +134,7 @@ void setup()
 
 stralloc addr = {0}; /* will be 0-terminated, if addrparse returns 1 */
 
-int addrparse(arg)
-char *arg;
+int addrparse(const char *arg)
 {
   int i;
   char ch;
@@ -218,22 +218,22 @@ int flagbarf; /* defined if seenmail */
 stralloc mailfrom = {0};
 stralloc rcptto = {0};
 
-void smtp_helo(arg) char *arg;
+void smtp_helo(const char *arg)
 {
   smtp_greet("250 "); out("\r\n");
   seenmail = 0; dohelo(arg);
 }
-void smtp_ehlo(arg) char *arg;
+void smtp_ehlo(const char *arg)
 {
   smtp_greet("250-"); out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
   seenmail = 0; dohelo(arg);
 }
-void smtp_rset(arg) char *arg;
+void smtp_rset(const char *arg)
 {
   seenmail = 0;
   out("250 flushed\r\n");
 }
-void smtp_mail(arg) char *arg;
+void smtp_mail(const char *arg)
 {
   if (!addrparse(arg)) { err_syntax(); return; }
   flagbarf = bmfcheck();
@@ -243,7 +243,9 @@ void smtp_mail(arg) char *arg;
   if (!stralloc_0(&mailfrom)) die_nomem();
   out("250 ok\r\n");
 }
-void smtp_rcpt(arg) char *arg; {
+
+void smtp_rcpt(const char *arg)
+{
   if (!seenmail) { err_wantmail(); return; }
   if (!addrparse(arg)) { err_syntax(); return; }
   if (flagbarf) { err_bmf(); return; }
@@ -276,8 +278,7 @@ substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof(ssinbuf));
 struct qmail qqt;
 unsigned int bytestooverflow = 0;
 
-void put(ch)
-char *ch;
+void put(const char *ch)
 {
   if (bytestooverflow)
     if (!--bytestooverflow)
@@ -360,7 +361,8 @@ void acceptmessage(qp) unsigned long qp;
   out("\r\n");
 }
 
-void smtp_data(arg) char *arg; {
+void smtp_data(const char *arg)
+{
   int hops;
   unsigned long qp;
   char *qqx;

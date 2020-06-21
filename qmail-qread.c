@@ -22,7 +22,7 @@ void die(n) int n; { substdio_flush(subfdout); _exit(n); }
 
 void warn(s1,s2) char *s1; char *s2;
 {
- char *x;
+ const char *x;
  x = error_str(errno);
  substdio_puts(subfdout,s1);
  substdio_puts(subfdout,s2);

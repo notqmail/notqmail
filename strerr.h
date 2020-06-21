@@ -4,9 +4,9 @@
 struct strerr
  {
   struct strerr *who;
-  char *x;
-  char *y;
-  char *z;
+  const char *x;
+  const char *y;
+  const char *z;
  }
 ;
 

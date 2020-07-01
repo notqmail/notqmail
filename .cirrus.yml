@@ -13,12 +13,10 @@ task:
 
   pkginstall_script:
     - pkg install -y groff pkgconf check
-  configure_script:
-    - echo "clang -O2 -Wall -Wshadow -Werror=implicit-function-declaration" > conf-cc
   compile_script:
-    - make ${MAKE_FLAGS} it man
+    - make ${MAKE_FLAGS} CC=clang CFLAGS="-O2 -Wall -Wshadow -Werror=implicit-function-declaration" it man
   test_script:
-    - make ${MAKE_FLAGS} test
+    - make ${MAKE_FLAGS} CC=clang CFLAGS="-O2 -Wall -Wshadow -Werror=implicit-function-declaration" test
   install_script:
     - env DESTDIR=/tmp/qmail make package
     - make package

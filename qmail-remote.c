@@ -130,9 +130,9 @@ substdio smtpfrom = SUBSTDIO_FDBUF(saferead,-1,smtpfrombuf,sizeof smtpfrombuf);
 
 stralloc smtptext = {0};
 
-void get(ch)
-char *ch;
+static void get(unsigned char *uc)
 {
+  char *ch = (char *)uc;
   substdio_get(&smtpfrom,ch,1);
   if (*ch != '\r')
     if (smtptext.len < HUGESMTPTEXT)

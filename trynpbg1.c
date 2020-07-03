@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <unistd.h>
 #include "select.h"
 #include "open.h"
 #include "fifo.h"

@@ -1,6 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <utime.h>
+#include <sys/time.h>
 #include "readwrite.h"
 #include "sig.h"
 #include "direntry.h"
@@ -450,15 +450,15 @@ void pqfinish()
 {
  int c;
  struct prioq_elt pe;
- time_t ut[2]; /* XXX: more portable than utimbuf, but still worrisome */
+ struct timeval ut[2] = { 0 };
 
  for (c = 0;c < CHANNELS;++c)
    while (prioq_min(&pqchan[c],&pe))
     {
      prioq_delmin(&pqchan[c]);
      fnmake_chanaddr(pe.id,c);
-     ut[0] = ut[1] = pe.dt;
-     if (utime(fn.s,ut) == -1)
+     ut[0].tv_sec = ut[1].tv_sec = pe.dt;
+     if (utimes(fn.s,ut) == -1)
        log3("warning: unable to utime ",fn.s,"; message will be retried too soon\n");
     }
 }

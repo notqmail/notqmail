@@ -10,7 +10,7 @@ These patches are under the BSD license.
 RELEASE: 5. Jan. 2003
 
 EXTTODO:
-======================
+========
 
 TOC:
  WHAT DOES IT DO
@@ -23,9 +23,8 @@ NEWS:
 
  This is the first release of the EXTTODO patch.
 
-================================================================================
-
 WHAT DOES IT DO
+===============
 
  The exttodo patch addresses a problem known as the silly qmail (queue)
  problem. This problem is found only on system with high injection rates.
@@ -52,25 +51,23 @@ WHAT DOES IT DO
  add this message into the priority queue which schedules the message for
  delivery.
 
-================================================================================
-
 CONFIG FILES
+============
 
  No additional control files are used or needed.
 
-================================================================================
-
 SETUP
+=====
 
  qmail-todo will be started by qmail-start and therefor no additional setup
  is needed.
 
  To verify that exttodo is running just check if qmail-todo is running.
 
-================================================================================
-
 BIG PICTURE
+===========
 
+```
                +-------+   +-------+
                | clean |   | clean |
                +--0-1--+   +--0-1--+       +-----------+
@@ -86,6 +83,7 @@ BIG PICTURE
                            +---0---+       +-----------+
                            | logger|
                            +-------+
+```
 
 Communication between qmail-send and qmail-todo
 
@@ -102,5 +100,3 @@ send -> todo:
 
 qmail-todo sends "\0" terminated messages whereas qmail-send just send one
 character to qmail-todo.
-
-

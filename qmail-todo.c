@@ -5,6 +5,7 @@
 #include "byte.h"
 #include "constmap.h"
 #include "control.h"
+#include "datetime.h"
 #include "direntry.h"
 #include "error.h"
 #include "exit.h"
@@ -18,6 +19,7 @@
 #include "readwrite.h"
 #include "scan.h"
 #include "select.h"
+#include "sig.h"
 #include "str.h"
 #include "stralloc.h"
 #include "substdio.h"
@@ -96,11 +98,10 @@ stralloc rwline = {0};
 /* may trash recip. must set up rwline, between a T and a \0. */
 int rewrite(char *recip)
 {
-  int i;
-  int j;
+  unsigned int i;
   char *x;
   static stralloc addr = {0};
-  int at;
+  unsigned int at;
 
   if (!stralloc_copys(&rwline,"T")) return 0;
   if (!stralloc_copys(&addr,recip)) return 0;
@@ -112,7 +113,7 @@ int rewrite(char *recip)
   }
 
   while (constmap(&mappercenthack,addr.s + i + 1,addr.len - i - 1)) {
-    j = byte_rchr(addr.s,i,'%');
+    unsigned int j = byte_rchr(addr.s,i,'%');
     if (j == i) break;
     addr.len = i;
     i = j;
@@ -240,8 +241,8 @@ static int issafe(char ch)
 
 void comm_info(unsigned long id, unsigned long size, char* from, unsigned long pid, unsigned long uid)
 {
-  int pos;
-  int i;
+  unsigned int pos;
+  unsigned int i;
 
   pos = comm_buf.len;
   if (!stralloc_cats(&comm_buf,"Linfo msg ")) goto fail;
@@ -276,8 +277,6 @@ fail:
 
 void comm_exit(void)
 {
-  int w;
-
   /* if it fails exit, we have already stoped */
   if (!stralloc_cats(&comm_buf,"X")) _exit(1);
   if (!stralloc_0(&comm_buf)) _exit(1);
@@ -381,7 +380,7 @@ void todo_do(fd_set *rfds)
  int match;
  unsigned long id;
  unsigned int len;
- direntry *d;
+ direntry *dent;
  int c;
  unsigned long uid;
  unsigned long pid;
@@ -407,17 +406,17 @@ void todo_do(fd_set *rfds)
    nexttodorun = recent + SLEEP_TODO;
   }
 
- d = readdir(tododir);
- if (!d)
+ dent = readdir(tododir);
+ if (!dent)
   {
    closedir(tododir);
    tododir = 0;
    return;
   }
- if (str_equal(d->d_name,".")) return;
- if (str_equal(d->d_name,"..")) return;
- len = scan_ulong(d->d_name,&id);
- if (!len || d->d_name[len]) return;
+ if (str_equal(dent->d_name,".")) return;
+ if (str_equal(dent->d_name,"..")) return;
+ len = scan_ulong(dent->d_name,&id);
+ if (!len || dent->d_name[len]) return;
 
  fnmake_todo(id);
 
@@ -616,7 +615,7 @@ void reread(void)
   }
 }
 
-void main()
+int main()
 {
  datetime_sec wakeup;
  fd_set rfds;

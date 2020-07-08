@@ -31,7 +31,6 @@
 #define SLEEP_TODO 1500 /* check todo/ every 25 minutes in any case */
 #define SLEEP_FUZZ 1 /* slop a bit on sleeps to avoid zeno effect */
 #define SLEEP_FOREVER 86400 /* absolute maximum time spent in select() */
-#define SLEEP_SYSFAIL 123
 
 stralloc percenthack = {0};
 struct constmap mappercenthack;
@@ -684,4 +683,3 @@ int main()
   }
   /* NOTREACHED */
 }
-

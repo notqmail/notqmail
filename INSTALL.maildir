@@ -55,5 +55,4 @@ by creating a maildir in the new-user template directory and replacing
 
 Until your MUA supports maildir, you'll probably want to convert maildir
 format to (gaaack) mbox format. I've supplied a maildir2mbox utility
-that does the trick, along with some tiny qail and elq and pinq wrappers
-that call maildir2mbox before calling Mail or elm or pine.
+that does the trick.

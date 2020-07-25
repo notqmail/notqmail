@@ -140,9 +140,7 @@ void hier()
   c(auto_qmail,"bin","maildirmake",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","maildir2mbox",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","maildirwatch",auto_uido,auto_gidq,0755);
-  c(auto_qmail,"bin","qail",auto_uido,auto_gidq,0755);
-  c(auto_qmail,"bin","elq",auto_uido,auto_gidq,0755);
-  c(auto_qmail,"bin","pinq",auto_uido,auto_gidq,0755);
+  c(auto_qmail,"bin","update_tmprsadh",auto_uido,auto_gidq,0755);
 
   c(auto_qmail,"man/man5","addresses.5",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat5","addresses.0",auto_uido,auto_gidq,0644);

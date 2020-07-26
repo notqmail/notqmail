@@ -13,4 +13,6 @@ void ssl_exit(int status);
 const char *ssl_error();
 const char *ssl_error_str();
 
+void ssl_ehlo(void);
+
 #endif

@@ -1532,10 +1532,10 @@ load qmail-smtpd.o rcpthosts.o commands.o timeoutread.o \
 timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
 date822fmt.o now.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
 open.a sig.a case.a env.a stralloc.a alloc.a substdio.a error.a str.a \
-fs.a auto_qmail.o socket.lib
+fs.a auto_qmail.o ssl-smtpd.o socket.lib
 	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
-	tls.o ssl_timeoutio.o ndelay.a -lssl -lcrypto \
+	tls.o ssl_timeoutio.o ssl-smtpd.o ndelay.a -lssl -lcrypto \
 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
 	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
 	alloc.a substdio.a error.a str.a fs.a auto_qmail.o  `cat \
@@ -2029,13 +2029,18 @@ qmail-remote: tls.o ssl_timeoutio.o
 qmail-smtpd.o: tls.h ssl_timeoutio.h
 qmail-remote.o: tls.h ssl_timeoutio.h
 
-tls.o: \
-compile tls.c exit.h error.h
-	./compile tls.c
+ssl-smtpd.o: \
+compile ssl-smtpd.c ssl-smtpd.h alloc.h constmap.h control.h ssl_timeoutio.h \
+stralloc.h substdio.h tls.h
+	./compile ssl-smtpd.c
 
 ssl_timeoutio.o: \
 compile ssl_timeoutio.c ssl_timeoutio.h select.h error.h ndelay.h
 	./compile ssl_timeoutio.c
+
+tls.o: \
+compile tls.c exit.h error.h
+	./compile tls.c
 
 token822.o: \
 compile token822.c stralloc.h gen_alloc.h alloc.h str.h token822.h \

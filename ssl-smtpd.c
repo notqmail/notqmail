@@ -8,6 +8,8 @@
 #include "substdio.h"
 #include "tls.h"
 
+#include <sys/stat.h>
+
 /* implemented in qmail-smtpd.c */
 extern void dohelo(char *arg);
 extern void err_unimpl(char *arg);
@@ -280,4 +282,11 @@ void tls_init()
 
   /* have to discard the pre-STARTTLS HELO/EHLO argument, if any */
   dohelo(remotehost);
+}
+
+void ssl_ehlo(void)
+{
+  struct stat st;
+  if (!ssl && (stat("control/servercert.pem",&st) == 0))
+    out("\r\n250-STARTTLS");
 }

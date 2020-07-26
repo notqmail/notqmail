@@ -8,4 +8,6 @@ void tls_nogateway();
 extern int ssl_rfd;
 extern int ssl_wfd; /* SSL_get_Xfd() are broken */
 
+void ssl_ehlo(void);
+
 #endif

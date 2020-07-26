@@ -30,7 +30,6 @@ int timeout = 1200;
 
 const char *protocol = "SMTP";
 
-#include <sys/stat.h>
 #include "tls.h"
 #include "ssl_timeoutio.h"
 #include "ssl-smtpd.h"
@@ -249,10 +248,8 @@ void smtp_helo(arg) char *arg;
 /* ESMTP extensions are published here */
 void smtp_ehlo(arg) char *arg;
 {
-  struct stat st;
   smtp_greet("250-");
-  if (!ssl && (stat("control/servercert.pem",&st) == 0))
-    out("\r\n250-STARTTLS");
+  ssl_ehlo();
   out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
   seenmail = 0; dohelo(arg);
 }

@@ -60,6 +60,9 @@ void err_noop(arg) char *arg; { out("250 ok\r\n"); }
 void err_vrfy(arg) char *arg; { out("252 send some mail, i'll try my best\r\n"); }
 void err_qqt() { out("451 qqt failure (#4.3.0)\r\n"); }
 
+static void (*ehlo_gen[])() = {
+	NULL
+};
 
 stralloc greeting = {0};
 
@@ -67,6 +70,7 @@ void smtp_greet(code) char *code;
 {
   substdio_puts(&ssout,code);
   substdio_put(&ssout,greeting.s,greeting.len);
+  out("\r\n");
 }
 void smtp_help(arg) char *arg;
 {
@@ -225,12 +229,17 @@ stralloc rcptto = {0};
 
 void smtp_helo(arg) char *arg;
 {
-  smtp_greet("250 "); out("\r\n");
+  smtp_greet("250 ");
   seenmail = 0; dohelo(arg);
 }
 void smtp_ehlo(arg) char *arg;
 {
-  smtp_greet("250-"); out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
+  unsigned int i;
+  smtp_greet("250-");
+  for (i = 0; ehlo_gen[i]; i++) {
+    ehlo_gen[i]();
+  }
+  out("250-PIPELINING\r\n250 8BITMIME\r\n");
   seenmail = 0; dohelo(arg);
 }
 void smtp_rset(arg) char *arg;

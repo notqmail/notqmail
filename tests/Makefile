@@ -9,7 +9,7 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_stralloc unittest_blast unittest_prioq
+TESTBINS = unittest_ehlo_parse unittest_stralloc unittest_blast unittest_prioq
 
 CHECK_INCLUDES := `pkg-config --cflags check`
 CHECK_LIBS := `pkg-config --libs check`
@@ -23,6 +23,18 @@ test: it
 	@for tbin in $(TESTBINS); do \
 		./$$tbin || exit 1 ; \
 	done
+
+unittest_ehlo_parse: \
+../load unittest_ehlo_parse.o ../ehlo_parse.o \
+../stralloc.a ../case.a ../str.a
+	../load unittest_ehlo_parse ../ehlo_parse.o \
+	../stralloc.a ../case.a ../str.a \
+	$(CHECK_LIBS)
+
+unittest_ehlo_parse.o: \
+unittest_ehlo_parse.c ../compile ../ehlo_parse.h ../stralloc.h
+	../compile $< -I.. \
+	$(CHECK_INCLUDES)
 
 unittest_stralloc: \
 ../load unittest_stralloc.o ../stralloc.a ../str.a ../error.a
@@ -42,11 +54,11 @@ blast.o: ../compile blast.c
 
 unittest_blast: \
 ../load unittest_blast.o blast.o ../control.o ../ip.o ../constmap.o \
-../timeoutread.o ../timeoutwrite.o ../quote.o \
+../ehlo_parse.o ../timeoutread.o ../timeoutwrite.o ../quote.o \
 ../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a ../str.a \
 ../getln.a ../case.a
 	../load unittest_blast blast.o ../control.o ../ip.o ../constmap.o \
-	../timeoutread.o ../timeoutwrite.o ../quote.o \
+	../ehlo_parse.o ../timeoutread.o ../timeoutwrite.o ../quote.o \
 	../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a \
 	../getln.a ../str.a ../case.a \
 	$(CHECK_LIBS)

@@ -16,6 +16,7 @@
 #include "ip.h"
 #include "ipalloc.h"
 #include "ipme.h"
+#include "ehlo_parse.h"
 #include "gen_alloc.h"
 #include "gen_allocdefs.h"
 #include "str.h"
@@ -223,6 +224,50 @@ void blast()
   substdio_flush(&smtpto);
 }
 
+void
+do_helo(const char *cmd)
+{
+  substdio_puts(&smtpto,cmd);
+  substdio_put(&smtpto,helohost.s,helohost.len);
+  substdio_put(&smtpto,"\r\n",2);
+  substdio_flush(&smtpto);
+}
+
+/* array of EHLO callbacks
+ * When you add callbacks: make your live easy and add entries like this
+ *   #define EXTENSION_FOO (1 << 0)
+ *   { "FOO", ehlo_foo },
+ * Whe the "0" shall be the index in that array. If you later want to check
+ * if that extension was found simply compare the return value of esmtp_ehlo()
+ * with it:
+ *   if (ehlo_flags & EXTENSION_FOO)
+ * In case of multiple colliding patches one can easily renumber the entries
+ * without breaking any code.
+ */
+static const struct smtpext ehlo_callbacks[] = {
+};
+
+/**
+ * @brief find out which ESMTP extensions the remote server supports
+ */
+unsigned int
+esmtp_ehlo(void)
+{
+  /* Ok, remote host will talk to us. Let's look if we can use ESMTP */
+  do_helo("EHLO ");
+
+  if (smtpcode() == 250)
+    return ehlo_parse(&smtptext, ehlo_callbacks, sizeof(ehlo_callbacks) / sizeof(ehlo_callbacks[0]));
+
+  /* remote host does not like our EHLO. Maybe HELO is better? */
+  do_helo("HELO ");
+
+  if (smtpcode() != 250)
+    quit("ZConnected to "," but my name was rejected");
+
+  return 0;
+}
+
 stralloc recip = {0};
 
 void smtp()
@@ -230,14 +275,11 @@ void smtp()
   unsigned long code;
   int flagbother;
   int i;
+  unsigned int extensions;
  
   if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
  
-  substdio_puts(&smtpto,"HELO ");
-  substdio_put(&smtpto,helohost.s,helohost.len);
-  substdio_puts(&smtpto,"\r\n");
-  substdio_flush(&smtpto);
-  if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
+  extensions = esmtp_ehlo();
  
   substdio_puts(&smtpto,"MAIL FROM:<");
   substdio_put(&smtpto,sender.s,sender.len);

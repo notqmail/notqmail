@@ -9,7 +9,7 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_stralloc unittest_blast
+TESTBINS = unittest_stralloc unittest_blast unittest_prioq
 
 clean:
 	rm -f $(TESTBINS) *.o blast.c
@@ -51,4 +51,14 @@ unittest_blast: \
 unittest_blast.o: \
 ../compile unittest_blast.c ../alloc.h ../stralloc.h
 	../compile unittest_blast.c -I.. \
+	`pkg-config --cflags check`
+
+unittest_prioq: \
+../load unittest_prioq.o ../prioq.o ../error.a
+	../load unittest_prioq ../prioq.o ../error.a \
+	`pkg-config --libs check`
+
+unittest_prioq.o: \
+../compile unittest_prioq.c
+	../compile unittest_prioq.c -I.. \
 	`pkg-config --cflags check`

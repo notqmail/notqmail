@@ -9,13 +9,28 @@ on:
 
 jobs:
   build:
-    name: build​
+    name: ${{ matrix.host }}-${{ matrix.config.name }}
     runs-on: ${{ matrix.host }}
     strategy:
       fail-fast: false
       matrix:
-        cc: [gcc, clang]
         host: [ubuntu-latest, macos-latest]
+        config:
+         - {
+           name: gcc-default,
+           cc: gcc,
+           nroff: nroff
+         }
+         - {
+           name: clang-default,
+           cc: clang,
+           nroff: nroff
+         }
+         - {
+           name: clang-no_catman,
+           cc: clang,
+           nroff: true
+         }
 
     steps:
     - name: checkout
@@ -29,10 +44,12 @@ jobs:
     - name: configure
       run: echo "${CC} -O2 -fPIC -Wall -Wshadow -Werror=implicit-function-declaration" > conf-cc
       env:
-        CC: ${{ matrix.cc }}
+        CC: ${{ matrix.config.cc }}
 
     - name: make
-      run: make it man
+      run: make it man NROFF=${NROFF}
+      env:
+        NROFF: ${{ matrix.config.nroff }}
 
     - name: unittests
       run: make test

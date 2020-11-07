@@ -2,23 +2,37 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - '*'
   pull_request:
     branches: [ master ]
 
 jobs:
   build:
     name: build​
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.host }}
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+        host: [ubuntu-latest, macos-latest]
 
     steps:
     - name: checkout
       uses: actions/checkout@v2
+
     - name: test_deps
-      run: sudo apt-get install check
+      run: if [ "${OS}" = "macos-latest" ]; then brew install check; else sudo apt-get install check; fi
+      env:
+        OS: ${{ matrix.host }}
+
     - name: configure
-      run: echo "cc -O2 -Wall -Wshadow -Werror=implicit-function-declaration" > conf-cc
+      run: echo "${CC} -O2 -fPIC -Wall -Wshadow -Werror=implicit-function-declaration" > conf-cc
+      env:
+        CC: ${{ matrix.cc }}
+
     - name: make
       run: make it man
-    - name: make check
+
+    - name: unittests
       run: make test

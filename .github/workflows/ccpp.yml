@@ -19,17 +19,26 @@ jobs:
          - {
            name: gcc-default,
            cc: gcc,
-           nroff: nroff
+           nroff: nroff,
+           cflags: ""
+         }
+         - {
+           name: gcc-no_obsolete,
+           cc: gcc,
+           nroff: nroff,
+           cflags: "-DDONT_PROVIDE_OBSOLETE"
          }
          - {
            name: clang-default,
            cc: clang,
-           nroff: nroff
+           nroff: nroff,
+           cflags: ""
          }
          - {
-           name: clang-no_catman,
+           name: clang-no_obsolete,
            cc: clang,
-           nroff: true
+           nroff: true,
+           cflags: "-DDONT_PROVIDE_OBSOLETE"
          }
 
     steps:
@@ -42,9 +51,10 @@ jobs:
         OS: ${{ matrix.host }}
 
     - name: configure
-      run: echo "${CC} -O2 -fPIC -Wall -Wshadow -Werror=implicit-function-declaration" > conf-cc
+      run: echo "${CC} -O2 -fPIC -Wall -Wshadow -Werror=implicit-function-declaration ${CFLAGS}" > conf-cc
       env:
         CC: ${{ matrix.config.cc }}
+        CFLAGS: ${{ matrix.config.cflags }}
 
     - name: make
       run: make it man NROFF=${NROFF}

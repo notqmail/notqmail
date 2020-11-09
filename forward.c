@@ -16,8 +16,8 @@ GEN_QMAILPUT_WRITE(&qqt)
 
 char inbuf[SUBSTDIO_INSIZE];
 char outbuf[1];
-substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof inbuf);
-substdio ssout = SUBSTDIO_FDBUF(qmail_put_write,-1,outbuf,sizeof outbuf);
+substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof(inbuf));
+substdio ssout = SUBSTDIO_FDBUF(qmail_put_write,-1,outbuf,sizeof(outbuf));
 
 char num[FMT_ULONG];
 

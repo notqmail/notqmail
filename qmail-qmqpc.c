@@ -38,9 +38,9 @@ GEN_SAFE_TIMEOUTREAD(saferead,60,qmqpfd,die_conn())
 GEN_SAFE_TIMEOUTWRITE(safewrite,60,qmqpfd,die_conn())
 
 char buf[1024];
-substdio to = SUBSTDIO_FDBUF(safewrite,-1,buf,sizeof buf);
-substdio from = SUBSTDIO_FDBUF(saferead,-1,buf,sizeof buf);
-substdio envelope = SUBSTDIO_FDBUF(read,1,buf,sizeof buf);
+substdio to = SUBSTDIO_FDBUF(safewrite,-1,buf,sizeof(buf));
+substdio from = SUBSTDIO_FDBUF(saferead,-1,buf,sizeof(buf));
+substdio envelope = SUBSTDIO_FDBUF(read,1,buf,sizeof(buf));
 /* WARNING: can use only one of these at a time! */
 
 stralloc beforemessage = {0};

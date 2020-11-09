@@ -110,11 +110,11 @@ GEN_SAFE_TIMEOUTREAD(saferead,timeout,smtpfd,dropped())
 GEN_SAFE_TIMEOUTWRITE(safewrite,timeout,smtpfd,dropped())
 
 char inbuf[1024];
-substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof inbuf);
+substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof(inbuf));
 char smtptobuf[1024];
-substdio smtpto = SUBSTDIO_FDBUF(safewrite,-1,smtptobuf,sizeof smtptobuf);
+substdio smtpto = SUBSTDIO_FDBUF(safewrite,-1,smtptobuf,sizeof(smtptobuf));
 char smtpfrombuf[128];
-substdio smtpfrom = SUBSTDIO_FDBUF(saferead,-1,smtpfrombuf,sizeof smtpfrombuf);
+substdio smtpfrom = SUBSTDIO_FDBUF(saferead,-1,smtpfrombuf,sizeof(smtpfrombuf));
 
 stralloc smtptext = {0};
 

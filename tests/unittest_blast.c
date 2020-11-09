@@ -55,8 +55,8 @@ int writestub(int fd, const char *buf, int len)
 
 static void ssin_setup(const char *indata, const char *outdata)
 {
-  substdio tmpin = SUBSTDIO_FDBUF(readstub,-1,inbuf,sizeof inbuf);
-  substdio tmpto = SUBSTDIO_FDBUF(writestub,-1,smtptobuf,sizeof smtptobuf);
+  substdio tmpin = SUBSTDIO_FDBUF(readstub,-1,inbuf,sizeof(inbuf));
+  substdio tmpto = SUBSTDIO_FDBUF(writestub,-1,smtptobuf,sizeof(smtptobuf));
   ssin = tmpin;
   smtpto = tmpto;
 

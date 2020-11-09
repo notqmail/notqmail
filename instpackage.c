@@ -132,7 +132,7 @@ void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
   ddhome(&dh, home);
   home=dh.s;
 
-  substdio_fdbuf(&ssin,read,fdin,inbuf,sizeof inbuf);
+  substdio_fdbuf(&ssin,read,fdin,inbuf,sizeof(inbuf));
 
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
@@ -142,7 +142,7 @@ void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
   fdout = open_trunc(file);
   if (fdout == -1)
     strerr_die6sys(111,FATAL,"unable to write .../",subdir,"/",file,": ");
-  substdio_fdbuf(&ssout,write,fdout,outbuf,sizeof outbuf);
+  substdio_fdbuf(&ssout,write,fdout,outbuf,sizeof(outbuf));
 
   switch(substdio_copy(&ssout,&ssin)) {
     case -2:
@@ -177,7 +177,7 @@ void z(char *home, char *file, int len, uid_t uid, gid_t gid, int mode)
   fdout = open_trunc(file);
   if (fdout == -1)
     strerr_die6sys(111,FATAL,"unable to write ",home,"/",file,": ");
-  substdio_fdbuf(&ssout,write,fdout,outbuf,sizeof outbuf);
+  substdio_fdbuf(&ssout,write,fdout,outbuf,sizeof(outbuf));
 
   while (len-- > 0)
     if (substdio_put(&ssout,"",1) == -1)

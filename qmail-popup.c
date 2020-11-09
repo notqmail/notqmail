@@ -20,10 +20,10 @@ GEN_SAFE_TIMEOUTREAD(saferead,1200,fd,die())
 GEN_SAFE_TIMEOUTWRITE(safewrite,1200,fd,die())
 
 char ssoutbuf[128];
-substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof ssoutbuf);
+substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof(ssoutbuf));
 
 char ssinbuf[128];
-substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof ssinbuf);
+substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof(ssinbuf));
 
 void puts(s) char *s;
 {
@@ -88,7 +88,7 @@ char *pass;
       _exit(1);
   }
   close(pi[0]);
-  substdio_fdbuf(&ssup,write,pi[1],upbuf,sizeof upbuf);
+  substdio_fdbuf(&ssup,write,pi[1],upbuf,sizeof(upbuf));
   if (substdio_put(&ssup,user,userlen) == -1) die_write();
   if (substdio_put(&ssup,pass,str_len(pass) + 1) == -1) die_write();
   if (substdio_puts(&ssup,"<") == -1) die_write();
@@ -98,7 +98,7 @@ char *pass;
   if (substdio_flush(&ssup) == -1) die_write();
   close(pi[1]);
   byte_zero(pass,str_len(pass));
-  byte_zero(upbuf,sizeof upbuf);
+  byte_zero(upbuf,sizeof(upbuf));
   if (wait_pid(&wstat,child) == -1) die();
   if (wait_crashed(wstat)) die_childcrashed();
   if (wait_exitcode(wstat)) die_badauth();

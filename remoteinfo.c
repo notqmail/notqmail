@@ -59,10 +59,10 @@ int timeout;
   len += fmt_ulong(line + len,lp);
   len += fmt_str(line + len,"\r\n");
  
-  substdio_fdbuf(&ss,mywrite,s,buf,sizeof buf);
+  substdio_fdbuf(&ss,mywrite,s,buf,sizeof(buf));
   if (substdio_putflush(&ss,line,len) == -1) { close(s); return 0; }
  
-  substdio_fdbuf(&ss,myread,s,buf,sizeof buf);
+  substdio_fdbuf(&ss,myread,s,buf,sizeof(buf));
   x = line;
   numcolons = 0;
   for (;;) {

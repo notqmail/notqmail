@@ -28,13 +28,13 @@ GEN_SAFE_TIMEOUTREAD(saferead,1200,fd,die())
 GEN_SAFE_TIMEOUTWRITE(safewrite,1200,fd,die())
 
 char sserrbuf[128];
-substdio sserr = SUBSTDIO_FDBUF(safewrite,2,sserrbuf,sizeof sserrbuf);
+substdio sserr = SUBSTDIO_FDBUF(safewrite,2,sserrbuf,sizeof(sserrbuf));
 
 char ssoutbuf[1024];
-substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof ssoutbuf);
+substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof(ssoutbuf));
 
 char ssinbuf[128];
-substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof ssinbuf);
+substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof(ssinbuf));
 
 void put(buf,len) char *buf; int len;
 {

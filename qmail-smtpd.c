@@ -32,7 +32,7 @@ int timeout = 1200;
 GEN_SAFE_TIMEOUTWRITE(safewrite,timeout,fd,_exit(1))
 
 char ssoutbuf[512];
-substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof ssoutbuf);
+substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof(ssoutbuf));
 
 void flush() { substdio_flush(&ssout); }
 void out(s) char *s; { substdio_puts(&ssout,s); }
@@ -270,7 +270,7 @@ ssize_t saferead(int fd, void *buf, size_t len)
 }
 
 char ssinbuf[1024];
-substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof ssinbuf);
+substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof(ssinbuf));
 
 struct qmail qqt;
 unsigned int bytestooverflow = 0;

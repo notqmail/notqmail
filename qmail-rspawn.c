@@ -21,11 +21,7 @@ char **argv;
 
 int truncreport = 0;
 
-void report(ss,wstat,s,len)
-substdio *ss;
-int wstat;
-char *s;
-int len;
+void report(substdio *ss, int wstat, const char *s, int len)
 {
  int j;
  int k;
@@ -93,9 +89,7 @@ static char *setup_qrargs()
  return qr;
 }
 
-int spawn(fdmess,fdout,s,r,at)
-int fdmess; int fdout;
-char *s; char *r; int at;
+int spawn(int fdmess, int fdout, char *s, char *r, int at)
 {
  int f;
  char *(args[5]);

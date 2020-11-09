@@ -1,6 +1,6 @@
 #include "fmt.h"
 
-unsigned int fmt_strn(char *s, char *t, unsigned int n)
+unsigned int fmt_strn(char *s, const char *t, unsigned int n)
 {
   unsigned int len;
   char ch;

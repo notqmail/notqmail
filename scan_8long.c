@@ -1,6 +1,6 @@
 #include "scan.h"
 
-unsigned int scan_8long(char *s, unsigned long *u)
+unsigned int scan_8long(const char *s, unsigned long *u)
 {
   unsigned int pos; unsigned long result;
   unsigned long c;

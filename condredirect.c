@@ -15,16 +15,12 @@
 
 struct qmail qqt;
 
-ssize_t mywrite(int fd, const void *buf, size_t len)
-{
-  qmail_put(&qqt,buf,len);
-  return len;
-}
+GEN_QMAILPUT_WRITE(&qqt)
 
 char inbuf[SUBSTDIO_INSIZE];
 char outbuf[1];
 substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof inbuf);
-substdio ssout = SUBSTDIO_FDBUF(mywrite,-1,outbuf,sizeof outbuf);
+substdio ssout = SUBSTDIO_FDBUF(qmail_put_write,-1,outbuf,sizeof outbuf);
 
 char num[FMT_ULONG];
 

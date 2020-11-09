@@ -23,4 +23,11 @@ extern void qmail_fail();
 extern char *qmail_close();
 extern unsigned long qmail_qp();
 
+#define GEN_QMAILPUT_WRITE(qq) \
+ssize_t qmail_put_write(int fd, const void *buf, size_t len) \
+{ \
+  qmail_put(qq,buf,len); \
+  return len; \
+}
+
 #endif

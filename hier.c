@@ -9,7 +9,7 @@
 
 char buf[100 + FMT_ULONG];
 
-void dsplit(char *base, /* must be under 100 bytes */
+void dsplit(const char *base, /* must be under 100 bytes */
             uid_t uid, int mode)
 {
   char *x;

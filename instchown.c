@@ -10,7 +10,7 @@ extern void init_uidgid();
 
 #define FATAL "instchown: fatal: "
 
-void h(char *home, uid_t uid, gid_t gid, int mode)
+void h(const char *home, uid_t uid, gid_t gid, int mode)
 {
   if (chown(home,uid,gid) == -1)
     strerr_die4sys(111,FATAL,"unable to chown ",home,": ");
@@ -18,7 +18,7 @@ void h(char *home, uid_t uid, gid_t gid, int mode)
     strerr_die4sys(111,FATAL,"unable to chmod ",home,": ");
 }
 
-void d(char *home, char *subdir, uid_t uid, gid_t gid, int mode)
+void d(const char *home, const char *subdir, uid_t uid, gid_t gid, int mode)
 {
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
@@ -28,7 +28,7 @@ void d(char *home, char *subdir, uid_t uid, gid_t gid, int mode)
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",subdir,": ");
 }
 
-void p(char *home, char *fifo, uid_t uid, gid_t gid, int mode)
+void p(const char *home, const char *fifo, uid_t uid, gid_t gid, int mode)
 {
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
@@ -38,7 +38,7 @@ void p(char *home, char *fifo, uid_t uid, gid_t gid, int mode)
     strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",fifo,": ");
 }
 
-void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
+void c(const char *home, const char *subdir, const char *file, uid_t uid, gid_t gid, int mode)
 {
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
@@ -58,7 +58,7 @@ void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
     strerr_die6sys(111,FATAL,"unable to chmod .../",subdir,"/",file,": ");
 }
 
-void z(char *home, char *file, int len, uid_t uid, gid_t gid, int mode)
+void z(const char *home, const char *file, int len, uid_t uid, gid_t gid, int mode)
 {
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");

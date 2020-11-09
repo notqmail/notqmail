@@ -21,7 +21,7 @@ static void die_nomem()
   strerr_die2sys(111,FATAL,"out of memory");
 }
 
-static void ddhome(stralloc *dd, char *home)
+static void ddhome(stralloc *dd, const char *home)
 {
   const char *denv = env_get("DESTDIR");
   if (denv)
@@ -31,7 +31,7 @@ static void ddhome(stralloc *dd, char *home)
   if (!stralloc_0(dd)) die_nomem();
 }
 
-static int mkdir_p(char *home, int mode)
+static int mkdir_p(const char *home, int mode)
 {
   stralloc parent = { 0 };
   unsigned int sl;
@@ -51,7 +51,7 @@ static int mkdir_p(char *home, int mode)
   return mkdir(home,mode);
 }
 
-void h(char *home, uid_t uid, gid_t gid, int mode)
+void h(const char *home, uid_t uid, gid_t gid, int mode)
 {
   stralloc dh = { 0 };
   ddhome(&dh, home);
@@ -64,7 +64,7 @@ void h(char *home, uid_t uid, gid_t gid, int mode)
   free(dh.s);
 }
 
-void d(char *home, char *subdir, uid_t uid, gid_t gid, int mode)
+void d(const char *home, const char *subdir, uid_t uid, gid_t gid, int mode)
 {
   stralloc dh = { 0 };
   ddhome(&dh, home);
@@ -79,7 +79,7 @@ void d(char *home, char *subdir, uid_t uid, gid_t gid, int mode)
   free(dh.s);
 }
 
-void p(char *home, char *fifo, uid_t uid, gid_t gid, int mode)
+void p(const char *home, const char *fifo, uid_t uid, gid_t gid, int mode)
 {
   stralloc dh = { 0 };
   ddhome(&dh, home);
@@ -99,7 +99,7 @@ char outbuf[SUBSTDIO_OUTSIZE];
 substdio ssin;
 substdio ssout;
 
-void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
+void c(const char *home, const char *subdir, const char *file, uid_t uid, gid_t gid, int mode)
 {
   int fdin;
   int fdout;
@@ -162,7 +162,7 @@ void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
   free(dh.s);
 }
 
-void z(char *home, char *file, int len, uid_t uid, gid_t gid, int mode)
+void z(const char *home, const char *file, int len, uid_t uid, gid_t gid, int mode)
 {
   int fdout;
   stralloc dh = { 0 };

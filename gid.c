@@ -6,7 +6,7 @@
 #include "substdio.h"
 
 gid_t
-initgid(char *group)
+initgid(const char *group)
 {
   struct group *gr;
   gr = getgrnam(group);

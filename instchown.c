@@ -29,7 +29,7 @@ static void ddhome(stralloc *dd, const char *home)
   if (!stralloc_0(dd)) die_nomem();
 }
 
-void h(char *home, uid_t uid, gid_t gid, int mode)
+void h(const char *home, uid_t uid, gid_t gid, int mode)
 {
   int fd;
   stralloc dh = { 0 };
@@ -47,7 +47,7 @@ void h(char *home, uid_t uid, gid_t gid, int mode)
   free(dh.s);
 }
 
-void d(char *home, char *subdir, uid_t uid, gid_t gid, int mode)
+void d(const char *home, const char *subdir, uid_t uid, gid_t gid, int mode)
 {
   int fd;
   stralloc dh = { 0 };
@@ -67,7 +67,7 @@ void d(char *home, char *subdir, uid_t uid, gid_t gid, int mode)
   free(dh.s);
 }
 
-void p(char *home, char *fifo, uid_t uid, gid_t gid, int mode)
+void p(const char *home, const char *fifo, uid_t uid, gid_t gid, int mode)
 {
   int fd;
   stralloc dh = { 0 };
@@ -87,7 +87,7 @@ void p(char *home, char *fifo, uid_t uid, gid_t gid, int mode)
   free(dh.s);
 }
 
-void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
+void c(const char *home, const char *subdir, const char *file, uid_t uid, gid_t gid, int mode)
 {
   int fd;
   int iscatdir = (0 == strncmp(subdir, "man/cat", 7));
@@ -120,7 +120,7 @@ void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
   free(dh.s);
 }
 
-void z(char *home, char *file, int len, uid_t uid, gid_t gid, int mode)
+void z(const char *home, const char *file, int len, uid_t uid, gid_t gid, int mode)
 {
   int fd;
   stralloc dh = { 0 };

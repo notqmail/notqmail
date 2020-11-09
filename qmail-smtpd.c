@@ -29,13 +29,7 @@
 unsigned int databytes = 0;
 int timeout = 1200;
 
-ssize_t safewrite(int fd, const void *buf, size_t len)
-{
-  ssize_t r;
-  r = timeoutwrite(timeout,fd,buf,len);
-  if (r == 0 || r == -1) _exit(1);
-  return r;
-}
+GEN_SAFE_TIMEOUTWRITE(safewrite,timeout,fd,_exit(1))
 
 char ssoutbuf[512];
 substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof ssoutbuf);
@@ -264,7 +258,6 @@ void smtp_rcpt(arg) char *arg; {
   if (!stralloc_0(&rcptto)) die_nomem();
   out("250 ok\r\n");
 }
-
 
 ssize_t saferead(int fd, void *buf, size_t len)
 {

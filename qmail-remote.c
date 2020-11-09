@@ -106,21 +106,8 @@ int timeoutconnect = 60;
 int smtpfd;
 int timeout = 1200;
 
-ssize_t saferead(int fd, void *buf, size_t len)
-{
-  ssize_t r;
-  r = timeoutread(timeout,smtpfd,buf,len);
-  if (r == 0 || r == -1) dropped();
-  return r;
-}
-
-ssize_t safewrite(int fd, const void *buf, size_t len)
-{
-  ssize_t r;
-  r = timeoutwrite(timeout,smtpfd,buf,len);
-  if (r == 0 || r == -1) dropped();
-  return r;
-}
+GEN_SAFE_TIMEOUTREAD(saferead,timeout,smtpfd,dropped())
+GEN_SAFE_TIMEOUTWRITE(safewrite,timeout,smtpfd,dropped())
 
 char inbuf[1024];
 substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof inbuf);

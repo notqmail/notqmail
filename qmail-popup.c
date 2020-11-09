@@ -16,21 +16,8 @@
 
 void die() { _exit(1); }
 
-ssize_t saferead(int fd, void *buf, size_t len)
-{
-  ssize_t r;
-  r = timeoutread(1200,fd,buf,len);
-  if (r == 0 || r == -1) die();
-  return r;
-}
-
-ssize_t safewrite(int fd, const void *buf, size_t len)
-{
-  ssize_t r;
-  r = timeoutwrite(1200,fd,buf,len);
-  if (r == 0 || r == -1) die();
-  return r;
-}
+GEN_SAFE_TIMEOUTREAD(saferead,1200,fd,die())
+GEN_SAFE_TIMEOUTWRITE(safewrite,1200,fd,die())
 
 char ssoutbuf[128];
 substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof ssoutbuf);

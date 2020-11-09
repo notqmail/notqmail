@@ -6,7 +6,7 @@
 #include "substdio.h"
 
 uid_t
-inituid(char *user)
+inituid(const char *user)
 {
   struct passwd *pw;
   pw = getpwnam(user);

@@ -5,7 +5,7 @@ Priority: extra
 Binary: notqmail
 Architecture: any
 Version: 1.08-1.1
-Maintainer: notqmail <package@notqmail.org>
+Maintainer: notqmail <packages@notqmail.org>
 Homepage: https://github.com/notqmail/notqmail
 Debtransform-Release: 1
 Debtransform-Tar: notqmail-1.08.tar.xz

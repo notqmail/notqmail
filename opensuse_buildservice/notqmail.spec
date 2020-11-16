@@ -368,7 +368,7 @@ done
 argv1=$1
 
 %changelog
-* Sat May 23 2020 08:33:30 +0530 mbhangui@gmail.com 1.08-1.1
+* Sat May 23 2020 08:33:30 +0530 package@notqmail.org 1.08-1.1
 1. CVE-2005-1515: fix signedness wraparound in substdio_{put,bput}().
 2. CVE-2005-1514: fix possible signed integer overflow in commands().
 3. CVE-2005-1513: fix integer overflow in stralloc_readyplus().

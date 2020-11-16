@@ -7,7 +7,7 @@ Homepage: https://github.com/notqmail/notqmail
 
 Package: notqmail
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, net-tools, coreutils, binutils
+Depends: ${shlibs:Depends}, ${misc:Depends}, net-tools, coreutils
 Description: notqmail is a community-driven fork of qmail, beginning where netqmail
  left off: providing stable, compatible, small releases to which existing
  qmail users can safely update.

@@ -44,7 +44,7 @@ build-stamp:
 clean:
 	rm -f build-stamp configure-stamp
 	rm -rf $(DESTDIR)
-	$(MAKE) -s clean||true
+	$(MAKE) -s clean
 	dh_testdir
 	dh_testroot
 	dh_clean
@@ -55,7 +55,6 @@ install: build
 	dh_prep || dh_clean -k
 	dh_installdirs
 	env DESTDIR=$(DESTDIR) ./instpackage
-	cp COPYRIGHT $(DESTDIR)$(qmaildir)/doc
 	cp instchown $(DESTDIR)$(qmaildir)/bin
 	$(MAKE) -s qmail-send.service
 	# do this for dh_installdocs

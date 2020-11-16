@@ -27,9 +27,9 @@
 # you do not need or by restricting access to them using packet filters
 # or tcp wrappers (see hosts_access(5)) to gain a higher level of security
 # in your system.
-/var/qmail/bin/qmail-queue      qmailq:qmail   6511
+/var/qmail/bin/qmail-queue      qmailq:qmail   4711
 
 #
 # Directories
 #
-/var/qmail/alias                 alias:qmail    2555
+/var/qmail/alias/                alias:qmail    2755

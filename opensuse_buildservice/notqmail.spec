@@ -1,8 +1,7 @@
 %undefine _missing_build_ids_terminate_build
 %global _unpackaged_files_terminate_build 1
-%global debug_package %{nil}
 
-%define nq_docdir          %{_docdir}/%{name}-doc
+%define nq_docdir          %{_docdir}/%{name}
 %if %{defined _project}
 # define build_on_obs if building on openSUSE build service
 %global build_on_obs       1
@@ -15,11 +14,6 @@
 #log directory if we use multilog in supervise scripts
 %global logdir             /var/log/svc
 %global see_base           For a description of notqmail visit https://notqmail.org/
-%if 0%{?suse_version}
-%global noperms            1
-%else
-%global noperms            0
-%endif
 
 Name: notqmail
 Version: 1.08
@@ -28,23 +22,19 @@ Summary: A community driven fork of qmail
 License: CC-PDDC
 URL: https://notqmail.org
 Source0: https://github.com/notqmail/notqmail/releases/download/notqmail-1.08/notqmail-1.08.tar.xz
-%if %noperms == 0
 %if 0%{?suse_version} >= 1120
 Source1: %{name}-permissions.easy
 Source2: %{name}-permissions.secure
 Source3: %{name}-permissions.paranoid
 %endif
-%endif
-Source4: qmail-send.service
-Source5: system-users-qmail.conf
+Source4: system-users-qmail.conf
 %if %{undefined suse_version} && %{undefined sles_version}
 Group: System Environment/Base
 %else
 Group: Productivity/Networking/Email/Servers
 %endif
-BuildRequires: rpm gcc make binutils coreutils grep
-BuildRequires: glibc glibc-devel procps
-BuildRequires: diffutils
+BuildRequires: rpm gcc make coreutils
+BuildRequires: glibc glibc-devel
 
 %if 0%{?fedora_version} || 0%{?centos_version} || 0%{?rhel_version}
 Requires(pre): shadow-utils
@@ -61,7 +51,6 @@ BuildRequires: sysuser-tools
 BuildRequires: sysuser-tools
 %endif
 
-
 ##################################### OBS ####################################
 %if %build_on_obs == 1
 %if 0%{?suse_version}
@@ -72,16 +61,13 @@ BuildRequires: -post-build-checks
 ##############################################################################
 
 Requires: /usr/sbin/useradd /usr/sbin/userdel /usr/sbin/groupadd /usr/sbin/groupdel
-Requires: /sbin/chkconfig procps /usr/bin/awk /usr/bin/which
-Requires: coreutils grep /bin/sh glibc
-Requires: binutils sed findutils
+Requires: /sbin/chkconfig procps
+Requires: coreutils /bin/sh glibc
 %if "%{?_unitdir}" == ""
 Requires: initscripts
 %endif
-%if %noperms == 0
 %if 0%{?suse_version} >= 1120
 PreReq: permissions
-%endif
 %endif
 
 Provides: user(alias)       > 999
@@ -102,7 +88,7 @@ Provides: smtp_daemon
 %endif
 
 %if %build_on_obs == 1
-BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXXX)
+BuildRoot: %{_tmppath}/%{name}-%{version}-build
 %endif
 
 %description
@@ -112,14 +98,15 @@ qmail users can safely update.
 notqmail also aims higher: developing an extensible, easily packaged, and
 increasingly useful modern mail server.
 
-%package      doc
-Summary:        Documentations for the %{name} package
+%package doc
+Summary: Documentations for the %{name} package
 %if %{undefined suse_version} && %{undefined sles_version}
 Group: System Environment/Base
 %else
 Group: Productivity/Networking/Email/Servers
 %endif
-BuildArch:      noarch
+Requires: notqmail
+BuildArch: noarch
 
 %description doc
 notqmail is a community-driven fork of qmail, beginning where netqmail
@@ -136,31 +123,35 @@ This package contains the documentation for %{name}
 
 %build
 %if %{undefined fedora_version} && %{undefined centos_version} && %{undefined rhel_version} && %{undefined sles_version} && %{undefined suse_version}
-%sysusers_generate_pre %{S:5} notqmail
+  %sysusers_generate_pre %{S:4} notqmail
 %endif
 %if 0%{?suse_version} >= 1500 || 0%{?sles_version} >= 15
-%sysusers_generate_pre %{S:5} notqmail
+  %sysusers_generate_pre %{S:4} notqmail
 %endif
+conf_cc=`head -1 conf-cc`
+echo "$conf_cc -g -fPIC" > conf-cc
+echo "cc -fPIE -pie"     > conf-ld
 make -s it man NROFF=true
 
 %install
 env DESTDIR=%{buildroot} ./instpackage
 %{__rm} -rf %{buildroot}%{qmaildir}/man/man3 %{buildroot}%{qmaildir}/man/cat*
-mkdir -p %{buildroot}%{_mandir}
+%{__mkdir_p} %{buildroot}%{_mandir}
+%{__mkdir_p} %{buildroot}%{nq_docdir}
 mv %{buildroot}%{qmaildir}/man/man? %{buildroot}%{_mandir}
-mkdir -p %{buildroot}%{nq_docdir}
 mv %{buildroot}%{qmaildir}/doc/* %{buildroot}%{nq_docdir}
 %{__cp} COPYRIGHT %{buildroot}%{nq_docdir}
-%if %noperms == 0
+rmdir --ignore-fail-on-non-empty %{buildroot}%{qmaildir}/doc
+rmdir --ignore-fail-on-non-empty %{buildroot}%{qmaildir}/man
 %if 0%{?suse_version} >= 1120
-mkdir -p %{buildroot}%{_sysconfdir}/permissions.d/
-install -m 644 %{S:1} %{buildroot}%{_sysconfdir}/permissions.d/%{name}-permissions
-install -m 644 %{S:2} %{buildroot}%{_sysconfdir}/permissions.d/%{name}-permissions.secure
-%endif
+  %{__mkdir_p} %{buildroot}%{_sysconfdir}/permissions.d/
+  install -m 644 %{S:1} %{buildroot}%{_sysconfdir}/permissions.d/%{name}-permissions
+  install -m 644 %{S:2} %{buildroot}%{_sysconfdir}/permissions.d/%{name}-permissions.secure
 %endif
 %if "%{?_unitdir}" != ""
-  mkdir -p %{buildroot}%{_unitdir}
-  install -m 644 %{S:4} %{buildroot}%{_unitdir}/%{name}.service
+  make -s qmail-send.service
+  %{__mkdir_p} %{buildroot}%{_unitdir}
+  install -m 644 qmail-send.service %{buildroot}%{_unitdir}/%{name}.service
 %endif
 rm -f %{buildroot}%{qmaildir}/bin/{qail,elq,pinq,maildirwatch,qsmhook}
 
@@ -209,7 +200,6 @@ rm -f %{buildroot}%{qmaildir}/bin/{qail,elq,pinq,maildirwatch,qsmhook}
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-tcpto
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-qmtpd
 %attr(0700,root,qmail)            %{qmaildir}/bin/qmail-start
-%attr(4711,qmailq,qmail)          %{qmaildir}/bin/qmail-queue
 %attr(0755,root,qmail)            %{qmaildir}/bin/maildirmake
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-qmqpd
 %attr(0711,root,qmail)            %{qmaildir}/bin/qmail-pw2u
@@ -239,64 +229,49 @@ rm -f %{buildroot}%{qmaildir}/bin/{qail,elq,pinq,maildirwatch,qsmhook}
                                   %{_unitdir}/%{name}.service
 %endif
 
-%if %noperms == 0
 %if 0%{?suse_version} >= 1120
-%attr(644,root,root)                               %{_sysconfdir}/permissions.d/%{name}-permissions
-%attr(644,root,root)                               %{_sysconfdir}/permissions.d/%{name}-permissions.secure
-%endif
-%endif
-%if %noperms == 0
-%if 0%{?suse_version} >= 1120
-%verify (not user group mode) %attr(6551, qmailq, qmail)   %{qmaildir}/bin/qmail-queue
-%verify (not user group mode) %attr(2555, alias, qmail)    %{qmaildir}/alias
-%endif
+%attr(644,root,root) %config(noreplace) %{_sysconfdir}/permissions.d/%{name}-permissions
+%attr(644,root,root) %config(noreplace) %{_sysconfdir}/permissions.d/%{name}-permissions.secure
+%verify (not user group mode caps) %attr(4711, qmailq, qmail)   %{qmaildir}/bin/qmail-queue
+%else
+%attr(4711,qmailq,qmail)           %{qmaildir}/bin/qmail-queue
 %endif
 
 %files doc
-%{_mandir}/man?/*%{?ext_man}
-%{nq_docdir}
+%defattr(-, root, root,-)
+%dir %attr(0755,root,root) %{nq_docdir}
+     %attr(0644,root,root) %{nq_docdir}/*
+%attr(0644,root,root) %{_mandir}/man?/*%{?ext_man}
 
 ### SCRIPTLETS ###############################################################################
 %verifyscript
-ID=$(id -u)
-if [ $ID -ne 0 ] ; then
-  echo "You are not root" 1>&2
-  exit 1
-fi
-
-%if %noperms == 0
 %if 0%{?suse_version} >= 1120
-%verify_permissions -e %{qmaildir}/sbin/qmail-queue
-%verify_permissions -e %{qmaildir}/alias
-%endif
+  %verify_permissions -e %{qmaildir}/bin/qmail-queue
+  %verify_permissions -e %{qmaildir}/alias/
+  %verify_permissions -e %{qmaildir}/queue/lock/trigger
 %endif
 
 %pretrans
 argv1=$1
-ID=$(id -u)
-if [ $ID -ne 0 ] ; then
-  echo "You are not root" 1>&2
-  exit 1
-fi
-if test -f %{_sysconfdir}/systemd/system/multi-user.target.wants/notqmail.service
+if test -f %{_sysconfdir}/systemd/system/multi-user.target.wants/%{name}.service
 then
   echo "Giving %{name} exactly 5 seconds to exit nicely"
-  /bin/systemctl stop notqmail > /dev/null 2>&1
+  /bin/systemctl stop %{name} > /dev/null 2>&1
 fi
 sleep 5
 
 %if 0%{?fedora_version} || 0%{?centos_version} || 0%{?rhel_version} || 0%{?suse_version} < 1500 || 0%{?sles_version} < 15
 %pre
-/usr/bin/getent group nofiles   > /dev/null || /usr/sbin/groupadd nofiles
-/usr/bin/getent group qmail     > /dev/null || /usr/sbin/groupadd qmail
-/usr/bin/getent passwd alias    > /dev/null || /usr/sbin/useradd -M -g nofiles  -d %{qmaildir}/alias  -s /sbin/nologin alias
-/usr/bin/getent passwd qmaild   > /dev/null || /usr/sbin/useradd -M -g nofiles  -d %{qmaildir}        -s /sbin/nologin qmaild
-/usr/bin/getent passwd qmaill   > /dev/null || /usr/sbin/useradd -M -g nofiles  -d %{logdir}          -s /sbin/nologin qmaill
-/usr/bin/getent passwd qmailp   > /dev/null || /usr/sbin/useradd -M -g nofiles  -d %{qmaildir}        -s /sbin/nologin qmailp
-/usr/bin/getent passwd qmailq   > /dev/null || /usr/sbin/useradd -M -g qmail    -d %{qmaildir}        -s /sbin/nologin qmailq
-/usr/bin/getent passwd qmailr   > /dev/null || /usr/sbin/useradd -M -g qmail    -d %{qmaildir}        -s /sbin/nologin qmailr
-/usr/bin/getent passwd qmails   > /dev/null || /usr/sbin/useradd -M -g qmail    -d %{qmaildir}        -s /sbin/nologin qmails
-for i in alias qmaild qmaill qmailp qmailq qmailr qmails qscand
+  /usr/bin/getent group nofiles   > /dev/null || /usr/sbin/groupadd nofiles
+  /usr/bin/getent group qmail     > /dev/null || /usr/sbin/groupadd qmail
+  /usr/bin/getent passwd alias    > /dev/null || /usr/sbin/useradd -M -g nofiles  -d %{qmaildir}/alias  -s /sbin/nologin alias
+  /usr/bin/getent passwd qmaild   > /dev/null || /usr/sbin/useradd -M -g nofiles  -d %{qmaildir}        -s /sbin/nologin qmaild
+  /usr/bin/getent passwd qmaill   > /dev/null || /usr/sbin/useradd -M -g nofiles  -d %{logdir}          -s /sbin/nologin qmaill
+  /usr/bin/getent passwd qmailp   > /dev/null || /usr/sbin/useradd -M -g nofiles  -d %{qmaildir}        -s /sbin/nologin qmailp
+  /usr/bin/getent passwd qmailq   > /dev/null || /usr/sbin/useradd -M -g qmail    -d %{qmaildir}        -s /sbin/nologin qmailq
+  /usr/bin/getent passwd qmailr   > /dev/null || /usr/sbin/useradd -M -g qmail    -d %{qmaildir}        -s /sbin/nologin qmailr
+  /usr/bin/getent passwd qmails   > /dev/null || /usr/sbin/useradd -M -g qmail    -d %{qmaildir}        -s /sbin/nologin qmails
+for i in alias qmaild qmaill qmailp qmailq qmailr qmails
 do
   %{__rm} -f /var/spool/mail/$i
 done
@@ -304,28 +279,42 @@ done
 %pre -f notqmail.pre
 %endif
 %if 0%{?suse_version} || 0%{?sles_version}
-%service_add_pre %{name}.service
+  %service_add_pre %{name}.service
 %endif
 
 ### SCRIPTLET ###############################################################################
 %post
-%if %noperms == 0
 %if 0%{?suse_version} >= 1120
 %if 0%{?set_permissions:1} > 0
-  if [ ! -f /tmp/no_permissions ] ; then
-    %set_permissions %{name}
-  fi
+  %set_permissions %{qmaildir}/bin/qmail-queue
+  %set_permissions %{qmaildir}/alias/
 %else
-  if [ ! -f /tmp/no_permissions ] ; then
-    %run_permissions
-  fi
+  %run_permissions
 %endif
 %endif
-%endif
-#%{qmaildir}/bin/instchown
 %if 0%{?suse_version} || 0%{?sles_version}
-%service_add_post %{name}.service
+  %service_add_post %{name}.service
 %endif
+
+if [ ! -f %{qmaildir}/control/me ] ; then
+	uname -n > %{qmaildir}/control/me
+fi
+
+# setup notqmail as alternative mta
+alternatives --install /usr/sbin/sendmail mta %{qmaildir}/bin/sendmail 120 \
+  --slave /usr/lib/sendmail mta-sendmail %{qmaildir}/bin/sendmail
+
+# Create aliases if they do not exist
+%{__mkdir_p}  %{qmaildir}/alias/Maildir/new
+%{__mkdir_p}  %{qmaildir}/alias/Maildir/cur
+%{__mkdir_p}  %{qmaildir}/alias/Maildir/tmp
+chown -R alias:qmail %{qmaildir}/alias/Maildir
+for i in postmaster mailer-daemon root
+do
+  if [ ! -f %{qmaildir}/alias/.qmail-"$i" ] ; then
+    echo "%{qmaildir}/alias/Maildir/" > %{qmaildir}/alias/.qmail-"$i"
+  fi
+done
 
 ### SCRIPTLET ###############################################################################
 %preun
@@ -338,17 +327,12 @@ if [ $argv1 -eq 1 ] ; then
   exit 0
 fi
 %if 0%{?suse_version} || 0%{?sles_version}
-%service_del_preun %{name}.service
+  %service_del_preun %{name}.service
 %endif
 
 ### SCRIPTLET ###############################################################################
 %postun
 argv1=$1
-ID=$(id -u)
-if [ $ID -ne 0 ] ; then
-  echo "You are not root" 1>&2
-  exit 1
-fi
 if [ -z "$argv1" ] ; then
   argv1=0
 fi
@@ -357,9 +341,10 @@ if [ $argv1 -eq 1 ] ; then
   exit 0
 fi
 %if 0%{?suse_version} || 0%{?sles_version}
-%service_del_postun %{name}.service
+  %service_del_postun %{name}.service
 %endif
-(
+alternatives --remove mta %{qmaildir}/bin/sendmail
+alternatives --auto mta
 # remove users / groups
 for i in alias qmaild qmaill qmailp qmailq qmailr qmails
 do
@@ -377,16 +362,10 @@ do
   %{__rm} -f %{qmaildir}/alias/.qmail-"$i"
 done
 %{__rm} -rf %{qmaildir}/alias/Maildir
-) >> /tmp/%{name}-setup.log 2>&1
 
 ### SCRIPTLET ###############################################################################
 %posttrans
 argv1=$1
-ID=$(id -u)
-if [ $ID -ne 0 ] ; then
-  echo "You are not root" 1>&2
-  exit 1
-fi
 
 %changelog
 * Sat May 23 2020 08:33:30 +0530 mbhangui@gmail.com 1.08-1.1

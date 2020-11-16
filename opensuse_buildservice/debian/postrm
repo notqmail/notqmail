@@ -21,15 +21,7 @@ set -e
 
 qmaildir=/var/qmail
 logdir=/var/log/svc
-rm=/bin/rm
-rmdir=/bin/rmdir
 ####################################
-
-ID=`id -u`
-if [ $ID -ne 0 ] ; then
-	echo "You are not root" >&2
-	exit 1
-fi
 
 case "$1" in
     purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
@@ -65,6 +57,8 @@ esac
 #
 if [ " $1" = " purge" ] ; then
 	(
+	update-alternatives --remove mta ${qmaildir}/bin/sendmail || true
+	update-alternatives --auto mta || true
 	for i in alias qmaild qmaill qmailp qmailq qmailr qmails
 	do
 		echo "removing user $i"
@@ -79,24 +73,19 @@ if [ " $1" = " purge" ] ; then
 	echo "removing aliases postmaster, mailer-daemon, root"
 	for i in postmaster mailer-daemon root
 	do
-		${rm} -f ${qmaildir}/alias/.qmail-"$i"
+		rm -f ${qmaildir}/alias/.qmail-"$i"
 	done
-	${rm} -rf ${qmaildir}/Maildir ${qmaildir}/alias/Maildir
+	rm -rf ${qmaildir}/Maildir ${qmaildir}/alias/Maildir
 	if [ -d ${qmaildir}/alias ] ; then
-		${rmdir} --ignore-fail-on-non-empty ${qmaildir}/alias 2>/dev/null || true
+		rmdir --ignore-fail-on-non-empty ${qmaildir}/alias 2>/dev/null || true
 	fi
 	if [ -h ${logdir} ] ; then
-		log_dir=`/bin/ls -ld ${logdir} | /usr/bin/awk '{print $10}'`
+		log_dir=`readlink $logdir`
 	else
 		log_dir=${logdir}
 	fi
-	if [ -x /bin/systemctl -a -d /lib/systemd/system ] ; then
-		$rm -f /lib/systemd/system/notqmail.service
-	elif [ -x /bin/systemctl -a -d /usr/lib/systemd/system ] ; then
-		$rm -f /usr/lib/systemd/system/notqmail.service
-	fi
-	[ "$log_dir" != "/" ] && ${rm} -fr $log_dir
-	dpkg-statoverride --remove ${qmaildir}/bin/qmail-queue
+	[ "$log_dir" != "/" ] && rm -fr $log_dir
+	dpkg-statoverride --remove ${qmaildir}/bin/qmail-queue || true
 	) >> /tmp/notqmail-setup.log 2>&1
 fi
 exit 0

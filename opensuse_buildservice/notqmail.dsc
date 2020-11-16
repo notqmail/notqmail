@@ -7,7 +7,8 @@ Architecture: any
 Version: 1.08-1.1
 Maintainer: Manvendra Bhangui <manvendra@indimail.org>
 Homepage: https://github.com/notqmail/notqmail
-Debtransform-Files-Tar: debian.tar.gz
+Debtransform-Release: 1
 Debtransform-Tar: notqmail-1.08.tar.xz
+Debtransform-Files-Tar: debian.tar.gz
 Standards-Version: 3.9.1
-Build-Depends: cdbs, debhelper (>= 7.0.50~), gcc, g++, automake, bison (>= 1.2), mime-support, m4, gawk
+Build-Depends: cdbs, debhelper (>= 7.0.50~), gcc, mime-support

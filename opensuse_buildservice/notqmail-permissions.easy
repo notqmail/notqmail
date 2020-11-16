@@ -13,9 +13,9 @@
 # file.
 # 
 #
-/var/qmail/bin/qmail-queue      qmailq:qmail   6511
+/var/qmail/bin/qmail-queue      qmailq:qmail   4711
 
 #
 # Directories
 #
-/var/qmail/alias                 alias:qmail    2555
+/var/qmail/alias/                alias:qmail    2755

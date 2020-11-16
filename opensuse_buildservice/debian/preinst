@@ -6,7 +6,6 @@
 set -e
 qmaildir=/var/qmail
 logdir=/var/log/svc
-rm=/bin/rm
 
 # summary of how this script can be called:
 #        * <new-preinst> `install'
@@ -16,15 +15,9 @@ rm=/bin/rm
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-ID=`id -u`
-if [ $ID -ne 0 ] ; then
-	echo "You are not root" >&2
-	exit 1
-fi
-
 case "$1" in
     install|upgrade)
-	${rm} -f /tmp/notqmail.install /tmp/notqmail.upgrade
+	rm -f /tmp/notqmail.install /tmp/notqmail.upgrade
 	touch /tmp/notqmail.$1
 	if [ " $1" = " upgrade" ] ; then
 		exit 0
@@ -35,21 +28,24 @@ case "$1" in
 	#
 	(
 	echo "Adding notqmail users/groups"
-	/usr/bin/getent group nofiles   > /dev/null || /usr/sbin/groupadd nofiles  || true
-	/usr/bin/getent group qmail     > /dev/null || /usr/sbin/groupadd qmail    || true
+	addgroup -q --system nofiles
+	addgroup -q --system qmail
 	
 	for i in alias qmaild qmaill qmailp qmailq qmailr qmails
 	do
-		${rm} -f /var/spool/mail/$i
+		rm -f /var/spool/mail/$i
 	done
-	
-	/usr/bin/getent passwd alias    > /dev/null || /usr/sbin/useradd -M -g nofiles  -d ${qmaildir}/alias  -s /sbin/nologin  alias || true
-	/usr/bin/getent passwd qmaild   > /dev/null || /usr/sbin/useradd -M -g nofiles  -d ${qmaildir}        -s /sbin/nologin qmaild || true
-	/usr/bin/getent passwd qmaill   > /dev/null || /usr/sbin/useradd -M -g nofiles  -d ${logdir}          -s /sbin/nologin qmaill || true
-	/usr/bin/getent passwd qmailp   > /dev/null || /usr/sbin/useradd -M -g nofiles  -d ${qmaildir}        -s /sbin/nologin qmailp || true
-	/usr/bin/getent passwd qmailq   > /dev/null || /usr/sbin/useradd -M -g qmail    -d ${qmaildir}        -s /sbin/nologin qmailq || true
-	/usr/bin/getent passwd qmailr   > /dev/null || /usr/sbin/useradd -M -g qmail    -d ${qmaildir}        -s /sbin/nologin qmailr || true
-	/usr/bin/getent passwd qmails   > /dev/null || /usr/sbin/useradd -M -g qmail    -d ${qmaildir}        -s /sbin/nologin qmails || true
+
+	mkdir -p ${qmaildir}/alias
+	mkdir -p ${logdir}
+	adduser -q --system --disabled-login --home ${qmaildir}/alias --no-create-home --ingroup nofiles alias
+	adduser -q --system --disabled-login --home ${qmaildir}       --no-create-home --ingroup nofiles qmaild
+	adduser -q --system --disabled-login --home ${logdir}         --no-create-home --ingroup nofiles qmaill
+	adduser -q --system --disabled-login --home ${qmaildir}       --no-create-home --ingroup nofiles qmailp
+	adduser -q --system --disabled-login --home ${qmaildir}       --no-create-home --ingroup qmail   qmailq
+	adduser -q --system --disabled-login --home ${qmaildir}       --no-create-home --ingroup qmail   qmailr
+	adduser -q --system --disabled-login --home ${qmaildir}       --no-create-home --ingroup qmail   qmails
+	chown qmaill:nofiles ${logdir}
 	) > /tmp/notqmail-setup.log 2>&1
 	;;
 

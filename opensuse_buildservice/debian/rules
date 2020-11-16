@@ -20,11 +20,7 @@ else
 endif
 
 qmaildir=/var/qmail
-
 mandir=$(qmaildir)/man
-
-cp=/bin/cp
-rm=/bin/rm
 
 DESTDIR=$(CURDIR)/debian/notqmail.tmp
 
@@ -40,12 +36,14 @@ build-stamp:
 	#
 	# run make
 	#
+	echo "cc -g -O2 -fPIC" > conf-cc
+	echo "cc -fPIE -pie"   > conf-ld
 	$(MAKE) -s it man
 	touch build-stamp
 
 clean:
 	rm -f build-stamp configure-stamp
-	${rm} -rf $(DESTDIR)
+	rm -rf $(DESTDIR)
 	$(MAKE) -s clean||true
 	dh_testdir
 	dh_testroot
@@ -57,34 +55,33 @@ install: build
 	dh_prep || dh_clean -k
 	dh_installdirs
 	env DESTDIR=$(DESTDIR) ./instpackage
-	${cp} COPYRIGHT $(DESTDIR)$(qmaildir)/doc
-	${cp} instchown $(DESTDIR)$(qmaildir)/bin
-	( \
-	echo "[Unit]"; \
-	echo "Description=Qmail mail delivery daemons"; \
-	echo "After=local-fs.target network.target"; \
-	echo ""; \
-	echo "[Service]"; \
-	echo "ExecStart=/var/qmail/bin/qmail-start ./Maildir/ splogger qmail"; \
-	echo "Environment=PATH=$(qmaildir)/bin:\$\{PATH\}"; \
-	echo "Restart=always"; \
-	echo ""; \
-	echo "[Install]"; \
-	echo "Alias=qmail.service"; \
-	echo "WantedBy=multi-user.target"; \
-	) > $(DESTDIR)$(qmaildir)/boot/notqmail.service
-	${rm} -rf $(DESTDIR)$(mandir)/man3
+	cp COPYRIGHT $(DESTDIR)$(qmaildir)/doc
+	cp instchown $(DESTDIR)$(qmaildir)/bin
+	$(MAKE) -s qmail-send.service
+	# do this for dh_installdocs
+	mv $(DESTDIR)$(qmaildir)/doc doc
+	ln -s /usr/share/doc/notqmail $(DESTDIR)$(qmaildir)/doc
+	cp qmail-send.service debian/notqmail.service
+	if [ -x /usr/bin/dh_installsystemd ] ; then \
+		dh_installsystemd --no-enable --no-start; \
+	elif [ -x /usr/bin/dh_installinit ] ; then \
+		dh_installinit --no-enable --no-start ||  \
+		dh_installinit --no-start; \
+	else \
+		mv debian/notqmail.service $(DESTDIR)$(qmaildir)/boot ; \
+	fi
+	rm -rf $(DESTDIR)$(mandir)/man3
 
 binary-indep: build install
 	dh_testdir
 	dh_testroot
+	#find $(DESTDIR)$(mandir) -name '*'.? -type f -exec gzip -q {} \;
 	dh_install --sourcedir=$(DESTDIR) -pnotqmail
 	dh_installchangelogs
 	dh_installcron
 	dh_installdocs
 	dh_link
 	dh_strip
-	dh_compress
 	dh_fixperms
 	dh_installdeb
 	dh_makeshlibs -V

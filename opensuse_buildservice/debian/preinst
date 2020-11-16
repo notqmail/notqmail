@@ -17,8 +17,6 @@ logdir=/var/log/svc
 
 case "$1" in
     install|upgrade)
-	rm -f /tmp/notqmail.install /tmp/notqmail.upgrade
-	touch /tmp/notqmail.$1
 	if [ " $1" = " upgrade" ] ; then
 		exit 0
 	fi
@@ -26,7 +24,6 @@ case "$1" in
 	# Create a users and groups. Do not report any problems if they already
 	# exists.
 	#
-	(
 	echo "Adding notqmail users/groups"
 	addgroup -q --system nofiles
 	addgroup -q --system qmail
@@ -46,7 +43,6 @@ case "$1" in
 	adduser -q --system --disabled-login --home ${qmaildir}       --no-create-home --ingroup qmail   qmailr
 	adduser -q --system --disabled-login --home ${qmaildir}       --no-create-home --ingroup qmail   qmails
 	chown qmaill:nofiles ${logdir}
-	) > /tmp/notqmail-setup.log 2>&1
 	;;
 
     abort-upgrade)

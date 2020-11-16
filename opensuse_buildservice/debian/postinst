@@ -25,8 +25,10 @@ case "$1" in
     configure)
 		if [ " $2" = " " ] ; then
 			echo "installing notqmail"
+			upgrade=0
 		else
 			echo "upgrading notqmail $2"
+			upgrade=1
 		fi
     ;;
 
@@ -47,20 +49,17 @@ esac
 
 # notqmail.upgrade/notqmail.install are created
 # by the preinst script
-if [ -f /tmp/notqmail.upgrade ] ; then # upgrade
+if [ $upgrade -eq 1 ] ; then # upgrade
 	if [ -f ${qmaildir}/bin/instchown ] ; then
 		# required because on debian you lose the setuid bit of qmail-queue
 		# and the proper permissions of files in /var/qmail/queue
 		echo "Checking Installed Permissions"
 		${qmaildir}/bin/instchown > /dev/null 2>&1 || true
 	fi
-  rm -f /tmp/notqmail.upgrade
   exit 0
 fi
-rm -f /tmp/notqmail.install
 
 echo "Post Installation..."
-(
 echo "Creating ${logdir}"
 /bin/mkdir -p ${logdir}
 /bin/chown -R qmaill:nofiles ${logdir}
@@ -91,8 +90,5 @@ do
     echo "${qmaildir}/alias/Maildir/" > ${qmaildir}/alias/.qmail-"$i"
   fi
 done
-) >> /tmp/notqmail-setup.log 2>&1
-
-echo "Check /tmp/notqmail-setup.log for the detailed installation log!!!"
 
 exit 0

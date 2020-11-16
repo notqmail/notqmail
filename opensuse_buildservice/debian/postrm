@@ -56,7 +56,6 @@ esac
 # Debian silliness
 #
 if [ " $1" = " purge" ] ; then
-	(
 	update-alternatives --remove mta ${qmaildir}/bin/sendmail || true
 	update-alternatives --auto mta || true
 	for i in alias qmaild qmaill qmailp qmailq qmailr qmails
@@ -86,6 +85,5 @@ if [ " $1" = " purge" ] ; then
 	fi
 	[ "$log_dir" != "/" ] && rm -fr $log_dir
 	dpkg-statoverride --remove ${qmaildir}/bin/qmail-queue || true
-	) >> /tmp/notqmail-setup.log 2>&1
 fi
 exit 0

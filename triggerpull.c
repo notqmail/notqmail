@@ -1,7 +1,8 @@
+#include "triggerpull.h"
+
 #include <unistd.h>
 #include "ndelay.h"
 #include "open.h"
-#include "triggerpull.h"
 
 void triggerpull()
 {

@@ -1,3 +1,5 @@
+#include "rcpthosts.h"
+
 #include "case.h"
 #include "cdb.h"
 #include "byte.h"
@@ -6,7 +8,6 @@
 #include "control.h"
 #include "constmap.h"
 #include "stralloc.h"
-#include "rcpthosts.h"
 
 static int flagrh = 0;
 static stralloc rh = {0};

@@ -1,7 +1,8 @@
+#include "qsutil.h"
+
 #include "stralloc.h"
 #include "readwrite.h"
 #include "substdio.h"
-#include "qsutil.h"
 
 static stralloc foo = {0};
 

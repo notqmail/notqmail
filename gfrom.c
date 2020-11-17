@@ -1,5 +1,6 @@
-#include "str.h"
 #include "gfrom.h"
+
+#include "str.h"
 
 int gfrom(s,len)
 char *s;

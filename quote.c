@@ -1,8 +1,9 @@
+#include "quote.h"
+
 #include "error.h"
 #include "oflops.h"
 #include "stralloc.h"
 #include "str.h"
-#include "quote.h"
 
 /*
 quote() encodes a box as per rfc 821 and rfc 822,

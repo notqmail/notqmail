@@ -1,6 +1,7 @@
+#include "slurpclose.h"
+
 #include "stralloc.h"
 #include "readwrite.h"
-#include "slurpclose.h"
 #include "error.h"
 
 int slurpclose(fd,sa,bufsize)

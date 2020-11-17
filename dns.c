@@ -1,3 +1,5 @@
+#include "dns.h"
+
 #include <stdio.h>
 #include <netdb.h>
 #include <sys/types.h>
@@ -16,7 +18,6 @@ extern int res_search();
 #include "alloc.h"
 #include "str.h"
 #include "stralloc.h"
-#include "dns.h"
 #include "case.h"
 
 static unsigned short getshort(c) unsigned char *c;

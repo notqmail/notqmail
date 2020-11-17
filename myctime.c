@@ -1,6 +1,7 @@
+#include "myctime.h"
+
 #include "datetime.h"
 #include "fmt.h"
-#include "myctime.h"
 
 static char *daytab[7] = {
 "Sun","Mon","Tue","Wed","Thu","Fri","Sat"

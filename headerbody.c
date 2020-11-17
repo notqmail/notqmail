@@ -1,8 +1,9 @@
+#include "headerbody.h"
+
 #include "stralloc.h"
 #include "substdio.h"
 #include "getln.h"
 #include "hfield.h"
-#include "headerbody.h"
 
 static int getsa(ss,sa,match)
 substdio *ss;

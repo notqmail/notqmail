@@ -1,3 +1,5 @@
+#include "timeoutconn.h"
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -8,7 +10,6 @@
 #include "readwrite.h"
 #include "ip.h"
 #include "byte.h"
-#include "timeoutconn.h"
 
 int timeoutconn(s,ip,port,timeout)
 int s;

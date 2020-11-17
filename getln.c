@@ -1,7 +1,8 @@
+#include "getln.h"
+
 #include "substdio.h"
 #include "byte.h"
 #include "stralloc.h"
-#include "getln.h"
 
 int getln(ss,sa,match,sep)
 register substdio *ss;

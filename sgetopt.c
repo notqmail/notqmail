@@ -9,10 +9,11 @@ No known patent problems.
 Documentation in sgetopt.3.
 */
 
-#include "substdio.h"
-#include "subfd.h"
 #define SGETOPTNOSHORT
 #include "sgetopt.h"
+
+#include "substdio.h"
+#include "subfd.h"
 #define SUBGETOPTNOSHORT
 #include "subgetopt.h"
 

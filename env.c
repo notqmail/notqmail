@@ -6,9 +6,10 @@ Requires environ.
 No known patent problems.
 */
 
+#include "env.h"
+
 #include "str.h"
 #include "alloc.h"
-#include "env.h"
 
 #include <string.h>
 

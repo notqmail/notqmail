@@ -1,7 +1,8 @@
+#include "cdbmss.h"
+
 #include "readwrite.h"
 #include "seek.h"
 #include "alloc.h"
-#include "cdbmss.h"
 
 int cdbmss_start(c,fd)
 struct cdbmss *c;

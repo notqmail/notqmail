@@ -91,9 +91,10 @@ following address: ");
  qmail_to(&qqt,returnpath);
  qqx = qmail_close(&qqt);
 
- if (*qqx)
+ if (*qqx) {
    if (*qqx == 'D') die_qqperm();
    else die_qqtemp();
+ }
 }
 
 stralloc hfbuf = {0};

@@ -320,11 +320,12 @@ void checkhome()
    strerr_die3x(111,"Unable to stat home directory: ",error_str(errno),". (#4.3.0)");
  if (st.st_mode & auto_patrn)
    strerr_die1x(111,"Uh-oh: home directory is writable. (#4.7.0)");
- if (st.st_mode & 01000)
+ if (st.st_mode & 01000) {
    if (flagdoit)
      strerr_die1x(111,"Home directory is sticky: user is editing his .qmail file. (#4.2.1)");
    else
      strerr_warn1("Warning: home directory is sticky.",0);
+ }
 }
 
 int qmeox(dashowner)

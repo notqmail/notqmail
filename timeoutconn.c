@@ -44,7 +44,7 @@ int timeout;
  
   if (select(s + 1,NULL,&wfds,NULL,&tv) == -1) return -1;
   if (FD_ISSET(s,&wfds)) {
-    int dummy;
+    unsigned int dummy;
     dummy = sizeof(sin);
     if (getpeername(s,(struct sockaddr *) &sin,&dummy) == -1) {
       read(s,&ch,1);

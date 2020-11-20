@@ -32,7 +32,7 @@ char temp[IPFMT + FMT_ULONG];
 
 int main(int argc, char **argv)
 {
- int dummy;
+ unsigned int dummy;
  char *proto;
  int opt;
  int flagremoteinfo;

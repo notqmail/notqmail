@@ -106,7 +106,7 @@ void exitnicely()
      if (!stralloc_0(&reciplist.sa[i])) die_nomem();
      qmail_to(&qqt,reciplist.sa[i].s);
     }
-   if (flagrh)
+   if (flagrh) {
      if (flagresent)
        for (i = 0;i < hrrlist.len;++i)
 	{
@@ -119,9 +119,10 @@ void exitnicely()
          if (!stralloc_0(&hrlist.sa[i])) die_nomem();
 	 qmail_to(&qqt,hrlist.sa[i].s);
 	}
+   }
 
    qqx = qmail_close(&qqt);
-   if (*qqx)
+   if (*qqx) {
      if (*qqx == 'D') {
        substdio_puts(subfderr,"qmail-inject: fatal: ");
        substdio_puts(subfderr,qqx + 1);
@@ -136,6 +137,7 @@ void exitnicely()
        substdio_flush(subfderr);
        temp();
      }
+   }
   }
 
  _exit(0);

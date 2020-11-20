@@ -41,7 +41,7 @@ char *t;
  int i;
  char ch;
 
- for (i = 0;ch = t[i];++i)
+ for (i = 0;(ch = t[i]);++i)
   {
    if (i >= len) return 0;
    if (ch != s[i])
@@ -67,7 +67,7 @@ int len;
  int i;
  char *t;
 
- for (i = 1;t = hname[i];++i)
+ for (i = 1;(t = hname[i]);++i)
    if (hmatch(s,len,t))
      return i;
  return 0;

@@ -28,7 +28,7 @@ struct qmail *qqt;
 char *s;
 {
   char ch;
-  while (ch = *s++) {
+  while ((ch = *s++)) {
     if (!issafe(ch)) ch = '?';
     qmail_put(qqt,&ch,1);
   }

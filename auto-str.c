@@ -40,7 +40,7 @@ int main(int argc, char **argv)
   puts(name);
   puts("[] = \"\\\n");
 
-  while (ch = *value++) {
+  while ((ch = *value++)) {
     if (is_legible(ch)) {
       if (substdio_put(&ss1, &ch, 1) == -1)
         _exit(111);

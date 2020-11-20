@@ -17,7 +17,7 @@ register unsigned int len;
       if (errno == error_intr) continue;
       return -1; /* note that some data may have been written */
     }
-    if (w == 0) ; /* luser's fault */
+    /* if (w == 0), luser's fault */
     buf += w;
     len -= w;
   }

@@ -12,7 +12,7 @@ void logsa(sa) stralloc *sa; {
  substdio_putflush(&sserr,sa->s,sa->len); }
 void log1(s1) char *s1; {
  substdio_putsflush(&sserr,s1); }
-void log2(s1,s2) char *s1; char *s2; {
+void qslog2(char *s1, char *s2) {
  substdio_putsflush(&sserr,s1);
  substdio_putsflush(&sserr,s2); }
 void log3(s1,s2,s3) char *s1; char *s2; char *s3; {

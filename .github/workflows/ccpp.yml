@@ -26,7 +26,7 @@ jobs:
            name: gcc-no_obsolete,
            cc: gcc,
            nroff: nroff,
-           cflags: "-DDONT_PROVIDE_OBSOLETE"
+           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED"
          }
          - {
            name: clang-default,
@@ -38,7 +38,7 @@ jobs:
            name: clang-no_obsolete,
            cc: clang,
            nroff: true,
-           cflags: "-DDONT_PROVIDE_OBSOLETE"
+           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED"
          }
 
     steps:

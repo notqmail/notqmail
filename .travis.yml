@@ -4,7 +4,7 @@ env:
   matrix:
     - BUILD_NAME="default"
     - BUILD_NAME="utmp" FORCE_UTMP="1" MAKEFLAGS="-o qtmp.h"
-    - BUILD_NAME="no_catman" AVOID_NROFF="1" EXTRA_CFLAGS="-DDONT_PROVIDE_OBSOLETE"
+    - BUILD_NAME="no_catman" AVOID_NROFF="1" EXTRA_CFLAGS="-DDEPRECATED_FUNCTIONS_REMOVED"
 compiler:
  - gcc
  - clang

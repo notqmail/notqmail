@@ -1353,11 +1353,11 @@ uidgid.h auto_qmail.h auto_uids.h auto_users.h date822fmt.h fmtqfn.h
 
 qmail-remote: \
 load qmail-remote.o control.o constmap.o timeoutread.o timeoutwrite.o \
-timeoutconn.o tcpto.o dns.o ip.o ipalloc.o ipme.o quote.o \
+timeoutconn.o tcpto.o dns.o ip.o ipalloc.o ipme.o quote.o smtpcode.o \
 ndelay.a case.a sig.a open.a lock.a getln.a stralloc.a \
 substdio.a error.a str.a fs.a auto_qmail.o dns.lib socket.lib
 	./load qmail-remote control.o constmap.o timeoutread.o \
-	timeoutwrite.o timeoutconn.o tcpto.o dns.o ip.o \
+	timeoutwrite.o timeoutconn.o tcpto.o dns.o ip.o smtpcode.o \
 	ipalloc.o ipme.o quote.o ndelay.a case.a sig.a open.a \
 	lock.a getln.a stralloc.a substdio.a error.a \
 	str.a fs.a auto_qmail.o  `cat dns.lib` `cat socket.lib`
@@ -1371,7 +1371,7 @@ subfd.h substdio.h scan.h case.h error.h auto_qmail.h control.h dns.h \
 alloc.h quote.h ip.h ipalloc.h ip.h gen_alloc.h ipme.h ip.h ipalloc.h \
 gen_alloc.h gen_allocdefs.h str.h now.h datetime.h exit.h constmap.h \
 tcpto.h readwrite.h timeoutconn.h timeoutread.h timeoutwrite.h oflops.h \
-error.h
+error.h smtpcode.h
 	./compile qmail-remote.c
 
 qmail-rspawn: \
@@ -1685,6 +1685,10 @@ slurpclose.o: \
 compile slurpclose.c stralloc.h gen_alloc.h readwrite.h slurpclose.h \
 error.h
 	./compile slurpclose.c
+
+smtpcode.o: \
+compile smtpcode.c stralloc.h smtpcode.h
+	./compile smtpcode.c
 
 socket.lib: \
 trylsock.c compile load

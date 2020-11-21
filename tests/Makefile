@@ -41,11 +41,11 @@ qmail-remote-without-main.o: \
 
 unittest_qmail-remote: \
 ../load unittest_qmail-remote.o qmail-remote-without-main.o ../control.o ../ip.o ../constmap.o \
-../timeoutread.o ../timeoutwrite.o ../quote.o \
+../timeoutread.o ../timeoutwrite.o ../quote.o ../smtpcode.o \
 ../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a ../str.a \
 ../getln.a ../case.a
 	../load unittest_qmail-remote qmail-remote-without-main.o ../control.o ../ip.o ../constmap.o \
-	../timeoutread.o ../timeoutwrite.o ../quote.o \
+	../timeoutread.o ../timeoutwrite.o ../quote.o ../smtpcode.o \
 	../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a \
 	../getln.a ../str.a ../case.a \
 	`pkg-config --libs check`

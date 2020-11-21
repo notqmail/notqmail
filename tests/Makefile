@@ -9,7 +9,11 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_stralloc unittest_qmail-remote unittest_prioq unittest_qmail-send
+TESTBINS = unittest_qmail-remote \
+	unittest_qmail-send \
+	unittest_prioq \
+	unittest_smtpcode \
+	unittest_stralloc
 
 clean:
 	rm -f $(TESTBINS) *.o *-without-main.c
@@ -86,4 +90,14 @@ unittest_qmail-send: \
 unittest_qmail-send.o: \
 ../compile unittest_qmail-send.c qmail-send-without-main.c
 	../compile unittest_qmail-send.c -I.. \
+	`pkg-config --cflags check`
+
+unittest_smtpcode: \
+../load unittest_smtpcode.o ../smtpcode.o ../stralloc.a ../substdio.a ../str.a
+	../load unittest_smtpcode ../smtpcode.o ../stralloc.a ../substdio.a ../str.a \
+	`pkg-config --libs check`
+
+unittest_smtpcode.o: \
+../compile unittest_smtpcode.c ../smtpcode.h ../stralloc.h ../substdio.h
+	../compile unittest_smtpcode.c -I.. \
 	`pkg-config --cflags check`

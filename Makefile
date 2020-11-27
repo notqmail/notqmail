@@ -700,8 +700,9 @@ hostname.o: \
 compile hostname.c substdio.h subfd.h substdio.h readwrite.h
 	./compile hostname.c
 
-install:
-	echo './instpackage && ./instchown' > install
+install: \
+instpackage instchown warn-auto.sh
+	( cat warn-auto.sh; echo './instpackage && ./instchown' ) > install
 	chmod 755 install
 
 instcheck: \

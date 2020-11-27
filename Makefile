@@ -352,8 +352,7 @@ case.h
 
 compile: \
 make-compile warn-auto.sh
-	( cat warn-auto.sh; ./make-compile ) > \
-	compile
+	( cat warn-auto.sh; ./make-compile ) > compile
 	chmod 755 compile
 
 condredirect: \

@@ -10,6 +10,7 @@
 #include "substdio.h"
 #include "subfd.h"
 #include "byte.h"
+#include "datetime.h"
 #include "scan.h"
 #include "fmt.h"
 #include "error.h"
@@ -31,7 +32,7 @@ void cleanuppid()
  time = now();
  dir = opendir("pid");
  if (!dir) return;
- while (d = readdir(dir))
+ while ((d = readdir(dir)))
   {
    if (str_equal(d->d_name,".")) continue;
    if (str_equal(d->d_name,"..")) continue;
@@ -49,19 +50,19 @@ char fnbuf[FMTQFN];
 
 void respond(s) char *s; { if (substdio_putflush(subfdoutsmall,s,1) == -1) _exit(100); }
 
-void main()
+int main(void)
 {
  int i;
  int match;
  int cleanuploop;
  unsigned long id;
 
- if (chdir(auto_qmail) == -1) _exit(111);
- if (chdir("queue") == -1) _exit(111);
+ if (chdir(auto_qmail) == -1) return 111;
+ if (chdir("queue") == -1) return 111;
 
  sig_pipeignore();
 
- if (!stralloc_ready(&line,200)) _exit(111);
+ if (!stralloc_ready(&line,200)) return 111;
 
  cleanuploop = 0;
 
@@ -94,5 +95,5 @@ if (unlink(fnbuf) == -1) if (errno != error_noent) { respond("!"); continue; }
    else
      respond("x");
   }
- _exit(0);
+ return 0;
 }

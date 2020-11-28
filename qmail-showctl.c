@@ -150,7 +150,7 @@ char *post;
   }
 }
 
-void main()
+int main(void)
 {
   DIR *dir;
   direntry *d;
@@ -288,7 +288,7 @@ void main()
   do_int("timeoutsmtpd","1200","SMTP server data timeout is "," seconds");
   do_lst("virtualdomains","No virtual domains.","Virtual domain: ","");
 
-  while (d = readdir(dir)) {
+  while ((d = readdir(dir))) {
     if (str_equal(d->d_name,".")) continue;
     if (str_equal(d->d_name,"..")) continue;
     if (str_equal(d->d_name,"bouncefrom")) continue;

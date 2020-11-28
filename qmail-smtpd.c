@@ -5,6 +5,7 @@
 #include "alloc.h"
 #include "auto_qmail.h"
 #include "control.h"
+#include "datetime.h"
 #include "received.h"
 #include "constmap.h"
 #include "error.h"
@@ -103,9 +104,9 @@ void setup()
   unsigned long u;
  
   if (control_init() == -1) die_control();
-  if (control_rldef(&greeting,"control/smtpgreeting",1,(char *) 0) != 1)
+  if (control_rldef(&greeting,"control/smtpgreeting",1,NULL) != 1)
     die_control();
-  liphostok = control_rldef(&liphost,"control/localiphost",1,(char *) 0);
+  liphostok = control_rldef(&liphost,"control/localiphost",1,NULL);
   if (liphostok == -1) die_control();
   if (control_readint(&timeout,"control/timeoutsmtpd") == -1) die_control();
   if (timeout <= 0) timeout = 1;
@@ -164,7 +165,7 @@ char *arg;
   if (!stralloc_copys(&addr,"")) die_nomem();
   flagesc = 0;
   flagquoted = 0;
-  for (i = 0;ch = arg[i];++i) { /* copy arg to addr, stripping quotes */
+  for (i = 0;(ch = arg[i]);++i) { /* copy arg to addr, stripping quotes */
     if (flagesc) {
       if (!stralloc_append(&addr,&ch)) die_nomem();
       flagesc = 0;
@@ -408,7 +409,7 @@ struct commands smtpcommands[] = {
 , { 0, err_unimpl, flush }
 } ;
 
-void main()
+int main(void)
 {
   sig_pipeignore();
   if (chdir(auto_qmail) == -1) die_control();

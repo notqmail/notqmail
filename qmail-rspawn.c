@@ -1,4 +1,5 @@
 #include "fd.h"
+#include "spawn.h"
 #include "wait.h"
 #include "substdio.h"
 #include "exit.h"
@@ -9,8 +10,6 @@
 #include "auto_uids.h"
 #include "auto_users.h"
 #include "env.h"
-
-uid_t auto_uidq;
 
 void initialize(argc,argv)
 int argc;

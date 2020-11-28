@@ -4,14 +4,13 @@
 #include "open.h"
 #include "readwrite.h"
 #include "auto_qmail.h"
-#include "exit.h"
 
 #define FATAL "qmail-tcpok: fatal: "
 
 char buf[1024]; /* XXX: must match size in tcpto_clean.c, tcpto.c */
 substdio ss;
 
-void main()
+int main(void)
 {
   int fd;
   int i;
@@ -31,5 +30,5 @@ void main()
   for (i = 0;i < sizeof buf;++i) substdio_put(&ss,"",1);
   if (substdio_flush(&ss) == -1)
     strerr_die4sys(111,FATAL,"unable to clear ",auto_qmail,"/queue/lock/tcpto: ");
-  _exit(0);
+  return 0;
 }

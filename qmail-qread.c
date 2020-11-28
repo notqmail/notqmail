@@ -105,7 +105,7 @@ void putstats()
 
 stralloc line = {0};
 
-void main()
+int main(void)
 {
  int channel;
  int match;
@@ -118,7 +118,7 @@ void main()
  if (chdir("queue") == -1) die_chdir();
  readsubdir_init(&rs,"info",die_opendir);
 
- while (x = readsubdir_next(&rs,&id))
+ while ((x = readsubdir_next(&rs,&id)))
    if (x > 0)
     {
      fmtqfn(fnmess,"mess/",id,1);

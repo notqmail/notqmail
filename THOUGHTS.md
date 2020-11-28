@@ -1,9 +1,9 @@
-Please note that this file is not called ``Internet Mail For Dummies.''
+Please note that this file is not called "Internet Mail For Dummies."
 It _records_ my thoughts on various issues. It does not _explain_ them.
 Paragraphs are not organized except by section. The required background
 varies wildly from one paragraph to the next.
 
-In this file, ``sendmail'' means Allman's creation; ``sendmail-clone''
+In this file, "sendmail" means Allman's creation; "sendmail-clone"
 means the program in this package.
 
 
@@ -22,7 +22,7 @@ securely that a particular message came from a particular local user;
 how do you know the recipient is telling you the truth about the
 contents of the message? With QUEUE_EXTRA it'd be possible to record a
 one-way hash of each outgoing message, but a user who wants to send
-``bad'' mail can avoid qmail entirely.
+"bad" mail can avoid qmail entirely.
 
 I originally decided on security grounds not to put qmail advertisements
 into SMTP responses: advertisements often act as version identifiers.
@@ -56,16 +56,16 @@ and then obtaining root access. Various people thus decided to compound
 Sun's error and build a wall between root and all other users: if all
 system files are owned by root, and if there are no security holes other
 than NFS, someone who breaks in via NFS won't be able to wipe out the
-operating system---he'll merely be able to wipe out all user files. This
+operating system -- he'll merely be able to wipe out all user files. This
 clueless policy means that, for example, all the qmail users have to be
-replaced by root. See what I mean by ``enemy''? ... Basic NFS comments:
+replaced by root. See what I mean by "enemy"? ... Basic NFS comments:
 Aside from the cryptographic problem of having hosts communicate
 securely, it's obvious that there's an administrative problem of mapping
 client uids to server uids. If a host is secure and under your control,
 you shouldn't have to map anything. If a host is under someone else's
 control, you'll want to map his uids to one local account; it's his
 client's job to decide which of his users get to talk NFS in the first
-place. Sun's original map---root to nobody, everyone else left alone---
+place. Sun's original map -- root to nobody, everyone else left alone -- 
 is, as far as I can tell, always wrong.
 
 
@@ -74,9 +74,9 @@ is, as far as I can tell, always wrong.
 RFC 822 section 3.4.9 prohibits certain visual effects in headers, and
 the 822bis draft prohibits even more. qmail-inject could enforce these
 absurd restrictions, but why waste the time? If you will suffer from
-someone sending you ``flash mail,'' go find a better mail reader.
+someone sending you "flash mail," go find a better mail reader.
 
-qmail-inject's ``Cc: recipient list not shown: ;'' successfully stops
+qmail-inject's "Cc: recipient list not shown: ;" successfully stops
 sendmail from adding Apparently-To. Unfortunately, old versions of
 sendmail will append a host name. This wasn't fixed until sendmail 8.7.
 How many years has it been since RFC 822 came out?
@@ -104,14 +104,14 @@ same pid in the same second. I'm not sure how to fix this without
 system-supplied sequence numbers. (Of course, the user could just type
 in his own non-unique Message-IDs.)
 
-The bat book says: ``Rules that hide hosts in a domain should be applied
-only to sender addresses.'' Recipient masquerading works fine with
+The bat book says: "Rules that hide hosts in a domain should be applied
+only to sender addresses." Recipient masquerading works fine with
 qmail. None of sendmail's pitfalls apply, basically because qmail has a
 straight paper path.
 
 I predicted that I would receive some pressure to make up for the
 failings of MUA writers who don't understand the concept of reliability.
-(``Like, duh, you mean I'm supposed to check the sendmail exit code?'')
+("Like, duh, you mean I'm supposed to check the sendmail exit code?")
 I was right.
 
 
@@ -153,7 +153,7 @@ Should qmail-queue not bother queueing a message with no recipients?
 5. Handling queued mail (qmail-send, qmail-clean)
 
 The queue directory must be local. Mounting it over NFS is extremely
-dangerous---not that this stops people from running sendmail that way!
+dangerous -- not that this stops people from running sendmail that way!
 Diskless hosts should use mini-qmail instead.
 
 Queue reliability demands that single-byte writes be atomic. This is
@@ -248,11 +248,11 @@ three days straight. Hmmm.
 
 Are there any hosts, anywhere, whose mailers are bogged down by huge
 messages to multiple recipients at a single host? For typical hosts,
-multiple RCPTs per SMTP aren't an ``efficiency feature''; they're a
+multiple RCPTs per SMTP aren't an "efficiency feature"; they're a
 _slowness_ feature. Separate SMTP transactions have much lower latency.
 
 I've heard three complaints about bandwidth use from masochists sending
-messages through a modem through a smarthost to thousands of users---
+messages through a modem through a smarthost to thousands of users -- 
 without sublists! They can get much better performance with QMQP.
 
 In the opposite direction: It's tempting to remove the @host part of the
@@ -263,7 +263,7 @@ role in qmail-remote's activities. It should call separate programs to
 do (1) MX lookups, (2) SMTP connections, (3) QMTP connections. (But this
 wouldn't be so important if the DNS library didn't burn so much memory.)
 
-I bounce ambiguous MXs. (An ``ambiguous MX'' is a best-preference MX
+I bounce ambiguous MXs. (An "ambiguous MX" is a best-preference MX
 record sending me mail for a host that I don't recognize as local.)
 Automatically treating ambiguous MXs as local is incompatible with my
 design decision to keep local delivery working when the network goes
@@ -283,7 +283,7 @@ should try to take account of the MTU.
 Perhaps qmail-remote should allocate a fixed amount of DNS/connect()
 time across any number of MXs; this idea is due to Mark Delany.
 
-RFC 821 doesn't say what it means by ``text.'' qmail-remote assumes that
+RFC 821 doesn't say what it means by "text." qmail-remote assumes that
 the server's reply text doesn't contain bare LFs.
 
 RFC 821 and RFC 1123 prohibit host names in MAIL FROM and RCPT TO from
@@ -347,7 +347,7 @@ Minimum number of disk blocks: Yes, via tunefs -m. (Or quotas; the right
 setup has qmailq with a small quota, qmails with a larger quota, so that
 qmail-send always has room to work.)
 
-Checkpointing: Yes, but not configurable---qmail always checkpoints.
+Checkpointing: Yes, but not configurable -- qmail always checkpoints.
 
 Error message configuration: Nope.
 
@@ -410,7 +410,7 @@ fit into unsigned long; that gid_t fits into int; that the character set
 is ASCII; and that all pointers are interchangeable. Do I care?
 
 The bat book justifies sendmail's insane line-splitting mechanism by
-pointing out that it might be useful for ``a 40-character braille
-print-driving program.'' C'mon, guys, is that your best excuse?
+pointing out that it might be useful for "a 40-character braille
+print-driving program." C'mon, guys, is that your best excuse?
 
 qmail's mascot is a dolphin.

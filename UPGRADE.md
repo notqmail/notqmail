@@ -9,7 +9,7 @@ the queue before you have had a chance to test it.
 
 
 WARNING for upgrades from 1.00 or 1.01: qlist has been split into a
-separate package. You can obtain it from https://cr.yp.to/qlist.html
+separate package. You can obtain it from <https://cr.yp.to/qlist.html>
 if you have any users who need it.
 
 WARNING for upgrades from 1.01: recipientmap is gone. The virtualdomains
@@ -23,12 +23,13 @@ changes. You can copy conf* from 1.02 or 1.03.
 How to install:
 
  1. Compile the programs and create the formatted man pages:
-       # make it man
+
+    `# make it man`
 
  2. Inform your users that mail will not be accepted for a few minutes.
 
  3. Disable deliveries by killing your old qmail-send. Wait for it to
-    print ``exiting'' in the log.
+    print "exiting" in the log.
 
  4. Disable SMTP service by commenting out the smtp line in inetd.conf;
     kill -HUP your inetd. (If you are using tcpserver, simply kill -STOP
@@ -36,7 +37,8 @@ How to install:
     Wait for current qmail-smtpd processes to die.
 
  5. Install the new binaries and man pages:
-       # make setup check
+
+    `# make setup check`
 
  6. If your boot scripts are using qmail-start instead of /var/qmail/rc:
     Copy /var/qmail/boot/home to /var/qmail/rc. (Use home+df instead if
@@ -44,21 +46,23 @@ How to install:
     procmail by default for local deliveries.) Compare /var/qmail/rc to
     your qmail-start boot line, and edit /var/qmail/rc if necessary.
     Replace your qmail-start boot line with
-            csh -cf '/var/qmail/rc &'
+
+    `csh -cf '/var/qmail/rc &'`
 
  7. Reenable deliveries:
-       # csh -cf '/var/qmail/rc &'
 
- 8. Read TEST.deliver.
+    `# csh -cf '/var/qmail/rc &'`
+
+ 8. Read TEST.deliver.md.
 
  9. Reenable SMTP service by restoring the smtp line in inetd.conf; kill
     -HUP your inetd. (If you are using tcpserver, simply kill -CONT your
     tcpserver. If you are running a QMTP server, reenable that too.)
 
-10. Read TEST.receive.
+10. Read TEST.receive.md.
 
 
 That's it!
 
 If you have questions about qmail, join the qmail mailing list; see
-https://cr.yp.to/qmail.html.
+<https://cr.yp.to/qmail.html>.

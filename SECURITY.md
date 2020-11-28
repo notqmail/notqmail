@@ -1,5 +1,5 @@
 Background: Every few months CERT announces Yet Another Security Hole In
-Sendmail---something that lets local or even remote users take complete
+Sendmail -- something that lets local or even remote users take complete
 control of the machine. I'm sure there are many more holes waiting to be
 discovered; sendmail's design means that any minor bug in 46000 lines of
 code is a major security risk. Other popular mailers, such as Smail, and
@@ -8,7 +8,7 @@ even mailing-list managers, such as Majordomo, seem nearly as bad.
 Note added in 1998: I wrote the above paragraph in December 1995, when
 the latest version of sendmail was 8.6.12 (with 41000 lines of code).
 Fourteen security holes were discovered from sendmail 8.6.12 through
-8.8.5. See http://pobox.com/~djb/docs/maildisasters/sendmail.html.
+8.8.5. See <https://cr.yp.to/maildisasters/sendmail.html>.
 
 I started working on qmail because I was sick of this cycle of doom.
 Here are some of the things I did to make sure that qmail will never let
@@ -20,13 +20,13 @@ an intruder into your machine.
 sendmail treats programs and files as addresses. Obviously random people
 can't be allowed to execute arbitrary programs or write to arbitrary
 files, so sendmail goes through horrendous contortions trying to keep
-track of whether a local user was ``responsible'' for an address. This
+track of whether a local user was "responsible" for an address. This
 has proven to be an unmitigated disaster.
 
 In qmail, programs and files are not addresses. The local delivery
 agent, qmail-local, can run programs or write to files as directed by
 ~user/.qmail, but it's always running as that user. (The notion of
-``user'' is configurable, but root is never a user. To prevent silly
+"user" is configurable, but root is never a user. To prevent silly
 mistakes, qmail-local makes sure that neither ~user nor ~user/.qmail is
 group-writable or world-writable.)
 
@@ -60,8 +60,8 @@ run as root.
 
 4. Move separate functions into mutually untrusting programs.
 
-Five of the qmail programs---qmail-smtpd, qmail-send, qmail-rspawn,
-qmail-remote, and tcp-env---are not security-critical. Even if all of
+Five of the qmail programs -- qmail-smtpd, qmail-send, qmail-rspawn,
+qmail-remote, and tcp-env -- are not security-critical. Even if all of
 these programs are completely compromised, so that an intruder has
 control over the qmaild, qmails, and qmailr accounts and the mail queue,
 he still can't take over your system. None of the other programs trust
@@ -82,7 +82,7 @@ files or start any other programs as root.)
 I have discovered that there are two types of command interfaces in the
 world of computing: good interfaces and user interfaces.
 
-The essence of user interfaces is _parsing_---converting an unstructured
+The essence of user interfaces is _parsing_ -- converting an unstructured
 sequence of commands, in a format usually determined more by psychology
 than by solid engineering, into structured data.
 
@@ -115,7 +115,7 @@ and is essentially part of the UA.
 
 6. Keep it simple, stupid.
 
-See BLURB for some of the reasons that qmail is so much smaller than
+See BLURB.md for some of the reasons that qmail is so much smaller than
 sendmail. There's nothing inherently complicated about writing a mailer.
 (Except RFC 822 support; but that's only in qmail-inject.) Security
 holes can't show up in features that don't exist. 

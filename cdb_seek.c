@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <errno.h>
+#include <unistd.h>
 #include "cdb.h"
 
 #ifndef SEEK_SET

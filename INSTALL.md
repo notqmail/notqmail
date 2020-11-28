@@ -1,1 +1,1 @@
-See http://lifewithqmail.org/lwq.html
+See <http://lifewithqmail.org/lwq.html>

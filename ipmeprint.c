@@ -2,17 +2,16 @@
 #include "substdio.h"
 #include "ip.h"
 #include "ipme.h"
-#include "exit.h"
 
 char temp[IPFMT];
 
-void main()
+int main(void)
 {
  int j;
  switch(ipme_init())
   {
-   case 0: substdio_putsflush(subfderr,"out of memory\n"); _exit(111);
-   case -1: substdio_putsflush(subfderr,"hard error\n"); _exit(100);
+   case 0: substdio_putsflush(subfderr,"out of memory\n"); return 111;
+   case -1: substdio_putsflush(subfderr,"hard error\n"); return 100;
   }
  for (j = 0;j < ipme.len;++j)
   {
@@ -20,5 +19,5 @@ void main()
    substdio_puts(subfdout,"\n");
   }
  substdio_flush(subfdout);
- _exit(0);
+ return 0;
 }

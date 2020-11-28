@@ -22,6 +22,8 @@
 
 void die() { _exit(0); }
 
+extern int rename(const char *, const char *);
+
 int saferead(fd,buf,len) int fd; char *buf; int len;
 {
   int r;
@@ -297,9 +299,7 @@ struct commands pop3commands[] = {
 , { 0, err_unimpl, 0 }
 } ;
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   sig_alarmcatch(die);
   sig_pipeignore();

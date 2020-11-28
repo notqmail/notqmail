@@ -1,8 +1,9 @@
 #ifndef NOW_H
 #define NOW_H
 
-#include "datetime.h"
+#include <stddef.h>
+#include <time.h>
 
-extern datetime_sec now();
+static inline time_t now() { return time(NULL); }
 
 #endif

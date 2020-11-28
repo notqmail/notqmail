@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include "byte.h"
 #include "substdio.h"
 #include "ip.h"

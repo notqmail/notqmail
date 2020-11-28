@@ -91,9 +91,10 @@ following address: ");
  qmail_to(&qqt,returnpath);
  qqx = qmail_close(&qqt);
 
- if (*qqx)
+ if (*qqx) {
    if (*qqx == 'D') die_qqperm();
    else die_qqtemp();
+ }
 }
 
 stralloc hfbuf = {0};
@@ -118,12 +119,11 @@ stralloc *h;
 
 void dobody(h) stralloc *h; { ; }
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
  sig_pipeignore();
- if (!(target = argv[1])) die_usage();
+ if (argc == 1) die_usage();
+ target = argv[1];
  if (!(returnpath = env_get("SENDER"))) die_usage();
  if (headerbody(subfdin,doheaderfield,finishheader,dobody) == -1) die_read();
  die_noreceipt();

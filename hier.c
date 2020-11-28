@@ -75,29 +75,29 @@ void hier()
   c(auto_qmail,"boot","binm3",auto_uido,auto_gidq,0755);
   c(auto_qmail,"boot","binm3+df",auto_uido,auto_gidq,0755);
 
-  c(auto_qmail,"doc","FAQ",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","UPGRADE",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","FAQ.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","UPGRADE.md",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","SENDMAIL.md",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","INSTALL.md",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","INSTALL.alias",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","INSTALL.ctl",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","INSTALL.ids",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","INSTALL.maildir",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","INSTALL.mbox",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","INSTALL.vsm",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","TEST.deliver",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","TEST.receive",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","REMOVE.sendmail",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","REMOVE.binmail",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","PIC.local2alias",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","PIC.local2ext",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","PIC.local2local",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","PIC.local2rem",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","PIC.local2virt",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","PIC.nullclient",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","PIC.relaybad",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","PIC.relaygood",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","PIC.rem2local",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","INSTALL.alias.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","INSTALL.ctl.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","INSTALL.ids.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","INSTALL.maildir.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","INSTALL.mbox.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","INSTALL.vsm.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","TEST.deliver.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","TEST.receive.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","REMOVE.sendmail.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","REMOVE.binmail.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","PIC.local2alias.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","PIC.local2ext.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","PIC.local2local.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","PIC.local2rem.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","PIC.local2virt.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","PIC.nullclient.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","PIC.relaybad.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","PIC.relaygood.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","PIC.rem2local.md",auto_uido,auto_gidq,0644);
 
   c(auto_qmail,"bin","qmail-queue",auto_uidq,auto_gidq,04711);
   c(auto_qmail,"bin","qmail-lspawn",auto_uido,auto_gidq,0700);
@@ -138,7 +138,6 @@ void hier()
   c(auto_qmail,"bin","except",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","maildirmake",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","maildir2mbox",auto_uido,auto_gidq,0755);
-  c(auto_qmail,"bin","maildirwatch",auto_uido,auto_gidq,0755);
 
   c(auto_qmail,"man/man5","addresses.5",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat5","addresses.0",auto_uido,auto_gidq,0644);
@@ -180,8 +179,6 @@ void hier()
   c(auto_qmail,"man/cat1","maildirmake.0",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/man1","maildir2mbox.1",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat1","maildir2mbox.0",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"man/man1","maildirwatch.1",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"man/cat1","maildirwatch.0",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/man1","mailsubj.1",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat1","mailsubj.0",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/man1","qreceipt.1",auto_uido,auto_gidq,0644);

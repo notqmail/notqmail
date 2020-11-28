@@ -19,7 +19,7 @@ void stamp_make()
 {
   struct timeval tv;
   char *s;
-  gettimeofday(&tv,(struct timezone *) 0);
+  gettimeofday(&tv,NULL);
   s = stamp;
   s += fmt_ulong(s,(unsigned long) tv.tv_sec);
   *s++ = '.';
@@ -45,14 +45,12 @@ void flush()
   bufpos = 0;
 }
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   char ch;
 
-  if (argv[1])
-    if (argv[2]) {
+  if (argc > 1)
+    if (argc > 2) {
       unsigned long facility;
       scan_ulong(argv[2],&facility);
       openlog(argv[1],0,facility << 3);

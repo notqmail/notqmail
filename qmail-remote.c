@@ -130,9 +130,9 @@ substdio smtpfrom = SUBSTDIO_FDBUF(saferead,-1,smtpfrombuf,sizeof smtpfrombuf);
 
 stralloc smtptext = {0};
 
-void get(ch)
-char *ch;
+static void get(unsigned char *uc)
 {
+  char *ch = (char *)uc;
   substdio_get(&smtpfrom,ch,1);
   if (*ch != '\r')
     if (smtptext.len < HUGESMTPTEXT)
@@ -200,6 +200,16 @@ void blast()
     if (ch == '.')
       substdio_put(&smtpto,".",1);
     while (ch != '\n') {
+      if (ch == '\r') {
+        r = substdio_get(&ssin, &ch, 1);
+        if (r == 0)
+          break;
+        if (r == -1) temp_read();
+        if (ch != '\n') {
+          substdio_put(&smtpto, "\r\n", 2);
+        } else
+          break;
+      }
       substdio_put(&smtpto,&ch,1);
       r = substdio_get(&ssin,&ch,1);
       if (r == 0) perm_partialline();
@@ -275,15 +285,9 @@ void smtp()
 stralloc canonhost = {0};
 stralloc canonbox = {0};
 
-void addrmangle(saout,s,flagalias,flagcname)
-stralloc *saout; /* host has to be canonical, box has to be quoted */
-char *s;
-int *flagalias;
-int flagcname;
+void addrmangle(stralloc *saout, char *s)
 {
   int j;
- 
-  *flagalias = flagcname;
  
   j = str_rchr(s,'@');
   if (!s[j]) {
@@ -292,17 +296,11 @@ int flagcname;
   }
   if (!stralloc_copys(&canonbox,s)) temp_nomem();
   canonbox.len = j;
+  /* box has to be quoted */
   if (!quote(saout,&canonbox)) temp_nomem();
   if (!stralloc_cats(saout,"@")) temp_nomem();
  
   if (!stralloc_copys(&canonhost,s + j + 1)) temp_nomem();
-  if (flagcname)
-    switch(dns_cname(&canonhost)) {
-      case 0: *flagalias = 0; break;
-      case DNS_MEM: temp_nomem();
-      case DNS_SOFT: temp_dnscanon();
-      case DNS_HARD: ; /* alias loop, not our problem */
-    }
 
   if (!stralloc_cat(saout,&canonhost)) temp_nomem();
 }
@@ -313,7 +311,7 @@ void getcontrols()
   if (control_readint(&timeout,"control/timeoutremote") == -1) temp_control();
   if (control_readint(&timeoutconnect,"control/timeoutconnect") == -1)
     temp_control();
-  if (control_rldef(&helohost,"control/helohost",1,(char *) 0) != 1)
+  if (control_rldef(&helohost,"control/helohost",1,NULL) != 1)
     temp_control();
   switch(control_readfile(&routes,"control/smtproutes",0)) {
     case -1:
@@ -325,17 +323,13 @@ void getcontrols()
   }
 }
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   static ipalloc ip = {0};
   int i;
   unsigned long random;
   char **recips;
   unsigned long prefme;
-  int flagallaliases;
-  int flagalias;
   char *relayhost;
  
   sig_pipeignore();
@@ -349,7 +343,7 @@ char **argv;
   relayhost = 0;
   for (i = 0;i <= host.len;++i)
     if ((i == 0) || (i == host.len) || (host.s[i] == '.'))
-      if (relayhost = constmap(&maproutes,host.s + i,host.len - i))
+      if ((relayhost = constmap(&maproutes,host.s + i,host.len - i)))
         break;
   if (relayhost && !*relayhost) relayhost = 0;
  
@@ -363,18 +357,16 @@ char **argv;
   }
 
 
-  addrmangle(&sender,argv[2],&flagalias,0);
+  addrmangle(&sender,argv[2]);
  
   if (!saa_readyplus(&reciplist,0)) temp_nomem();
   if (ipme_init() != 1) temp_oserr();
  
-  flagallaliases = 1;
   recips = argv + 3;
   while (*recips) {
     if (!saa_readyplus(&reciplist,1)) temp_nomem();
     reciplist.sa[reciplist.len] = sauninit;
-    addrmangle(reciplist.sa + reciplist.len,*recips,&flagalias,!relayhost);
-    if (!flagalias) flagallaliases = 0;
+    addrmangle(reciplist.sa + reciplist.len,*recips);
     ++reciplist.len;
     ++recips;
   }
@@ -398,7 +390,6 @@ char **argv;
         prefme = ip.ix[i].pref;
  
   if (relayhost) prefme = 300000;
-  if (flagallaliases) prefme = 500000;
  
   for (i = 0;i < ip.len;++i)
     if (ip.ix[i].pref < prefme)

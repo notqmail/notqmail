@@ -11,6 +11,6 @@ make test
 
 Verified to work with recent BSD and GNU make.
 
-To add more ```stralloc``` tests, copy the ```test_stralloc_thingy``` example in
-```tests/unittest_stralloc.c```. To add other tests, copy the
-```unittest_stralloc``` example in ```tests/Makefile```.
+To add more `stralloc` tests, copy the `test_stralloc_thingy` example in
+`tests/unittest_stralloc.c`. To add other tests, copy the
+`unittest_stralloc` example in `tests/Makefile`.

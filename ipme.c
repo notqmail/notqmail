@@ -8,6 +8,7 @@
 #ifndef SIOCGIFCONF /* whatever works */
 #include <sys/sockio.h>
 #endif
+#include <unistd.h>
 #include "hassalen.h"
 #include "byte.h"
 #include "ip.h"

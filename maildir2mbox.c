@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include "readwrite.h"
 #include "prioq.h"
 #include "env.h"
@@ -10,9 +11,10 @@
 #include "lock.h"
 #include "gfrom.h"
 #include "str.h"
-#include "exit.h"
 #include "myctime.h"
 #include "maildir.h"
+
+extern int rename(const char *, const char *);
 
 char *mbox;
 char *mboxtmp;
@@ -33,7 +35,7 @@ char outbuf[SUBSTDIO_OUTSIZE];
 
 void die_nomem() { strerr_die2x(111,FATAL,"out of memory"); }
 
-void main()
+int main(void)
 {
  substdio ssin;
  substdio ssout;
@@ -57,7 +59,7 @@ void main()
  if (maildir_scan(&pq,&filenames,1,1) == -1)
    strerr_die1(111,FATAL,&maildir_scan_err);
 
- if (!prioq_min(&pq,&pe)) _exit(0); /* nothing new */
+ if (!prioq_min(&pq,&pe)) return 0; /* nothing new */
 
  fdlock = open_append(mbox);
  if (fdlock == -1)
@@ -158,5 +160,5 @@ void main()
      strerr_warn4(WARNING,"$MAILDIR/",filenames.s + pe.id," will be delivered twice; unable to unlink: ",&strerr_sys);
   }
 
- _exit(0);
+ return 0;
 }

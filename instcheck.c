@@ -4,11 +4,9 @@
 #include "strerr.h"
 #include "error.h"
 #include "readwrite.h"
-#include "exit.h"
 #include "hier.h"
 
 extern void init_uidgid();
-extern void hier();
 
 #define FATAL "instcheck: fatal: "
 #define WARNING "instcheck: warning: "
@@ -77,9 +75,9 @@ void z(char *home, char *file, int len, uid_t uid, gid_t gid, int mode)
   perm("",home,"/",file,S_IFREG,uid,gid,mode);
 }
 
-void main()
+int main(void)
 {
   init_uidgid();
   hier();
-  _exit(0);
+  return 0;
 }

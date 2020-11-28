@@ -18,6 +18,8 @@ static int issafe(ch) char ch;
   if ((ch >= 'a') && (ch <= 'z')) return 1;
   if ((ch >= 'A') && (ch <= 'Z')) return 1;
   if ((ch >= '0') && (ch <= '9')) return 1;
+  if (ch == '[') return 1;
+  if (ch == ']') return 1;
   return 0;
 }
 
@@ -26,7 +28,7 @@ struct qmail *qqt;
 char *s;
 {
   char ch;
-  while (ch = *s++) {
+  while ((ch = *s++)) {
     if (!issafe(ch)) ch = '?';
     qmail_put(qqt,&ch,1);
   }

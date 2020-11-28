@@ -37,7 +37,7 @@ int userext()
 	pw = getpwnam(username);
 	if (errno == error_txtbsy) _exit(QLX_SYS);
 	if (pw)
-	  if (pw->pw_uid)
+	  if (pw->pw_uid) {
 	    if (stat(pw->pw_dir,&st) == 0) {
 	      if (st.st_uid == pw->pw_uid) {
 		dash = "";
@@ -47,6 +47,7 @@ int userext()
 	    }
 	    else
 	      if (error_temp(errno)) _exit(QLX_NFS);
+	  }
       }
     if (extension == local) return 0;
     --extension;
@@ -55,12 +56,10 @@ int userext()
 
 char num[FMT_ULONG];
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
+  if (argc == 1) return 100;
   local = argv[1];
-  if (!local) _exit(100);
 
   if (!userext()) {
     extension = local;
@@ -68,7 +67,7 @@ char **argv;
     pw = getpwnam(auto_usera);
   }
 
-  if (!pw) _exit(QLX_NOALIAS);
+  if (!pw) return QLX_NOALIAS;
 
   substdio_puts(subfdoutsmall,pw->pw_name);
   substdio_put(subfdoutsmall,"",1);
@@ -84,5 +83,5 @@ char **argv;
   substdio_put(subfdoutsmall,"",1);
   substdio_flush(subfdoutsmall);
 
-  _exit(0);
+  return 0;
 }

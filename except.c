@@ -6,14 +6,12 @@
 
 #define FATAL "except: fatal: "
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   int pid;
   int wstat;
 
-  if (!argv[1])
+  if (argc == 1)
     strerr_die1x(100,"except: usage: except program [ arg ... ]");
 
   pid = fork();

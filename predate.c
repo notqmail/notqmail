@@ -10,7 +10,6 @@
 #include "substdio.h"
 #include "subfd.h"
 #include "readwrite.h"
-#include "exit.h"
 
 #define FATAL "predate: fatal: "
 
@@ -21,9 +20,7 @@ static char *montab[12] = {
 char num[FMT_ULONG];
 char outbuf[1024];
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   time_t now;
   struct tm *tm;
@@ -58,7 +55,7 @@ char **argv;
   close(pi[0]);
   substdio_fdbuf(&ss,write,pi[1],outbuf,sizeof(outbuf));
 
-  time(&now);
+  now = time(NULL);
 
   tm = gmtime(&now);
   dt.year = tm->tm_year;
@@ -113,5 +110,5 @@ char **argv;
     strerr_die2sys(111,FATAL,"wait failed: ");
   if (wait_crashed(wstat))
     strerr_die2x(111,FATAL,"child crashed");
-  _exit(wait_exitcode(wstat));
+  return wait_exitcode(wstat);
 }

@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "fmt.h"
 #include "datetime.h"
 #include "stralloc.h"

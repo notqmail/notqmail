@@ -80,9 +80,7 @@ const char *s;
 int flagh;
 char *sender;
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   int opt;
   char **qiargv;
@@ -91,7 +89,7 @@ char **argv;
  
   if (chdir(auto_qmail) == -1) {
     substdio_putsflush(subfderr,"sendmail: fatal: unable to switch to qmail home directory\n");
-    _exit(111);
+    return 111;
   }
 
   flagh = 0;
@@ -138,7 +136,7 @@ char **argv;
 
   if (str_equal(optprogname,"newaliases")) {
     substdio_putsflush(subfderr,"sendmail: fatal: please use fastforward/newaliases instead\n");
-    _exit(100);
+    return 100;
   }
 
   qiargv = (char **) alloc((argc + 10) * sizeof(char *));
@@ -158,5 +156,5 @@ char **argv;
  
   execv(*qiargv,qiargv);
   substdio_putsflush(subfderr,"sendmail: fatal: unable to run qmail-inject\n");
-  _exit(111);
+  return 111;
 }

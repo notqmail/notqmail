@@ -4,7 +4,6 @@ compile
 qmail-local.o
 qmail.o
 quote.o
-now.o
 gfrom.o
 myctime.o
 slurpclose.o
@@ -55,6 +54,7 @@ fd_copy.o
 fd_move.o
 fd.a
 haswaitp.h
+ids.a
 wait_pid.o
 wait_nohang.o
 wait.a
@@ -84,7 +84,6 @@ subfdin.o
 subfdins.o
 substdio_copy.o
 substdio.a
-error.o
 error_str.o
 error_temp.o
 error.a
@@ -135,16 +134,6 @@ cdb_seek.o
 cdb.a
 uid.o
 gid.o
-auto_uida.o
-auto_uidd.o
-auto_uidl.o
-auto_uido.o
-auto_uidp.o
-auto_uidq.o
-auto_uidr.o
-auto_uids.o
-auto_gidn.o
-auto_gidq.o
 qmail-lspawn
 qmail-getpw.o
 auto_break.c
@@ -297,8 +286,6 @@ maildirmake.o
 maildirmake
 maildir2mbox.o
 maildir2mbox
-maildirwatch.o
-maildirwatch
 hier.o
 install
 instcheck.o
@@ -360,7 +347,6 @@ bouncesaying.0
 except.0
 maildirmake.0
 maildir2mbox.0
-maildirwatch.0
 qmail.0
 qmail-limits.7
 qmail-limits.0

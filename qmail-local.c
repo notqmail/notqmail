@@ -5,6 +5,7 @@
 #include "sig.h"
 #include "env.h"
 #include "byte.h"
+#include "datetime.h"
 #include "exit.h"
 #include "fork.h"
 #include "open.h"
@@ -83,7 +84,6 @@ char *dir;
  char myhost[64];
  char *s;
  int loop;
- struct stat st;
  int fd;
  substdio ss;
  substdio ssout;
@@ -101,17 +101,20 @@ char *dir;
    s += fmt_ulong(s,time); *s++ = '.';
    s += fmt_ulong(s,pid); *s++ = '.';
    s += fmt_strn(s,myhost,sizeof(myhost)); *s++ = 0;
-   if (stat(fntmptph,&st) == -1) if (errno == error_noent) break;
-   /* really should never get to this point */
-   if (loop == 2) _exit(1);
-   sleep(2);
+   alarm(86400);
+   fd = open_excl(fntmptph);
+   if (fd >= 0)
+     break;
+   if (errno == error_exist) {
+     /* really should never get to this point */
+     if (loop == 2) _exit(1);
+     sleep(2);
+   } else {
+     _exit(1);
+   }
   }
  str_copy(fnnewtph,fntmptph);
  byte_copy(fnnewtph,3,"new");
-
- alarm(86400);
- fd = open_excl(fntmptph);
- if (fd == -1) _exit(1);
 
  substdio_fdbuf(&ss,read,0,buf,sizeof(buf));
  substdio_fdbuf(&ssout,write,fd,outbuf,sizeof(outbuf));
@@ -317,11 +320,12 @@ void checkhome()
    strerr_die3x(111,"Unable to stat home directory: ",error_str(errno),". (#4.3.0)");
  if (st.st_mode & auto_patrn)
    strerr_die1x(111,"Uh-oh: home directory is writable. (#4.7.0)");
- if (st.st_mode & 01000)
+ if (st.st_mode & 01000) {
    if (flagdoit)
      strerr_die1x(111,"Home directory is sticky: user is editing his .qmail file. (#4.2.1)");
    else
      strerr_warn1("Warning: home directory is sticky.",0);
+ }
 }
 
 int qmeox(dashowner)
@@ -442,9 +446,7 @@ void sayit(char *type, char *cmd, unsigned int len)
  substdio_putsflush(subfdoutsmall,"\n");
 }
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
  int opt;
  unsigned int i;

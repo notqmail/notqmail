@@ -28,9 +28,7 @@ substdio ssout = SUBSTDIO_FDBUF(mywrite,-1,outbuf,sizeof outbuf);
 
 char num[FMT_ULONG];
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   char *sender;
   char *dtline;
@@ -38,7 +36,7 @@ char **argv;
   int wstat;
   char *qqx;
  
-  if (!argv[1] || !argv[2])
+  if (argc < 3)
     strerr_die1x(100,"condredirect: usage: condredirect newaddress program [ arg ... ]");
  
   pid = fork();

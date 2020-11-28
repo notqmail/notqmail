@@ -135,7 +135,7 @@ char *server;
 
 stralloc servers = {0};
 
-void
+int
 main()
 {
   int i;
@@ -156,5 +156,5 @@ main()
       i = j + 1;
     }
 
-  _exit(lasterror);
+  return lasterror;
 }

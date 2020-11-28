@@ -2,7 +2,7 @@
 #include <sys/file.h>
 #include <fcntl.h>
 
-void main()
+int main(void)
 {
-  flock(0,LOCK_EX | LOCK_UN | LOCK_NB);
+  return flock(0,LOCK_EX | LOCK_UN | LOCK_NB);
 }

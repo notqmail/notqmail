@@ -14,7 +14,7 @@ int timeoutread(t,fd,buf,len) int t; int fd; char *buf; int len;
   FD_ZERO(&rfds);
   FD_SET(fd,&rfds);
 
-  if (select(fd + 1,&rfds,(fd_set *) 0,(fd_set *) 0,&tv) == -1) return -1;
+  if (select(fd + 1,&rfds,NULL,NULL,&tv) == -1) return -1;
   if (FD_ISSET(fd,&rfds)) return read(fd,buf,len);
 
   errno = error_timeout;

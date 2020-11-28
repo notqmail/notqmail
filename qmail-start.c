@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include "fd.h"
 #include "prot.h"
 #include "exit.h"
@@ -37,9 +38,7 @@ void closepipes() {
   close(pi5[0]); close(pi5[1]); close(pi6[0]); close(pi6[1]);
 }
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
   if (chdir("/") == -1) die();
   umask(077);

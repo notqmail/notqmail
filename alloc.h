@@ -5,13 +5,17 @@
 
 #define alloc(x) malloc(x)
 #define alloc_free(x) free(x)
-static inline int alloc_re(char **x, unsigned int m, unsigned int n)
+
+#include "deprecated.h"
+#ifdef DEPRECATED_FUNCTIONS_AVAILABLE
+static inline int _deprecated_ alloc_re(void **x, unsigned int m, unsigned int n)
 {
-  char *y = realloc(*x, n);
+  void *y = realloc(*x, n);
   (void)m;
   if (y != NULL)
     *x = y;
   return !!y;
 }
+#endif
 
 #endif

@@ -1,0 +1,3 @@
+ranlib
+
+This will be used to build the index of the .a libraries.

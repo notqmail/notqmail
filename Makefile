@@ -25,10 +25,12 @@ addresses.0: \
 addresses.5
 
 auto-ccld.sh: \
-conf-cc conf-ld warn-auto.sh
+conf-cc conf-ld conf-ar conf-ranlib warn-auto.sh
 	( cat warn-auto.sh; \
 	echo CC=\'`head -n 1 conf-cc`\'; \
-	echo LD=\'`head -n 1 conf-ld`\' \
+	echo LD=\'`head -n 1 conf-ld`\'; \
+	echo AR=\'`head -n 1 conf-ar`\'; \
+	echo RANLIB=\'`head -n 1 conf-ranlib`\' \
 	) > auto-ccld.sh
 
 auto-int: \
@@ -351,9 +353,8 @@ case.h
 	./compile commands.c
 
 compile: \
-make-compile warn-auto.sh
-	( cat warn-auto.sh; ./make-compile ) > \
-	compile
+compile.sh auto-ccld.sh
+	cat auto-ccld.sh compile.sh > compile
 	chmod 755 compile
 
 condredirect: \
@@ -779,8 +780,8 @@ instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
 binm3 binm3+df
 
 load: \
-make-load warn-auto.sh
-	( cat warn-auto.sh; ./make-load ) > load
+load.sh auto-ccld.sh
+	cat auto-ccld.sh load.sh > load
 	chmod 755 load
 
 lock.a: \
@@ -849,25 +850,9 @@ warn-auto.sh mailsubj.sh conf-qmail conf-break conf-split
 mailsubj.0: \
 mailsubj.1
 
-make-compile: \
-make-compile.sh auto-ccld.sh
-	cat auto-ccld.sh make-compile.sh > make-compile
-	chmod 755 make-compile
-
-make-load: \
-make-load.sh auto-ccld.sh
-	cat auto-ccld.sh make-load.sh > make-load
-	chmod 755 make-load
-
-make-makelib: \
-make-makelib.sh auto-ccld.sh
-	cat auto-ccld.sh make-makelib.sh > make-makelib
-	chmod 755 make-makelib
-
 makelib: \
-make-makelib warn-auto.sh
-	( cat warn-auto.sh; ./make-makelib ) > \
-	makelib
+makelib.sh auto-ccld.sh
+	cat auto-ccld.sh makelib.sh > makelib
 	chmod 755 makelib
 
 man: \

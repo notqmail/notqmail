@@ -1043,7 +1043,7 @@ datetime_sec nextretry(birth,c)
 datetime_sec birth;
 int c;
 {
- int n;
+ datetime_sec n;
 
  if (birth > recent) n = 0;
  else n = squareroot(recent - birth); /* no need to add fuzz to recent */

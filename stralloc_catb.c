@@ -3,10 +3,7 @@
 #include "error.h"
 #include "oflops.h"
 
-int stralloc_catb(sa,s,n)
-stralloc *sa;
-char *s;
-unsigned int n;
+int stralloc_catb(stralloc *sa, const char *s, unsigned int n)
 {
   unsigned int i;
   if (!sa->s) return stralloc_copyb(sa,s,n);

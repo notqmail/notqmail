@@ -3,10 +3,7 @@
 #include "error.h"
 #include "oflops.h"
 
-int stralloc_copyb(sa,s,n)
-stralloc *sa;
-char *s;
-unsigned int n;
+int stralloc_copyb(stralloc *sa, const char *s, unsigned int n)
 {
   unsigned int i;
   if (__builtin_add_overflow(n, 1, &i)) {

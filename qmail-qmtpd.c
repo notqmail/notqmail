@@ -5,6 +5,7 @@
 #include "str.h"
 #include "fmt.h"
 #include "env.h"
+#include "noreturn.h"
 #include "scan.h"
 #include "sig.h"
 #include "rcpthosts.h"
@@ -14,8 +15,8 @@
 #include "received.h"
 #include "exit.h"
 
-void badproto() { _exit(100); }
-void resources() { _exit(111); }
+void _noreturn_ badproto() { _exit(100); }
+void _noreturn_ resources() { _exit(111); }
 
 ssize_t safewrite(int fd, const void *buf, size_t len)
 {

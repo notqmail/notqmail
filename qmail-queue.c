@@ -12,6 +12,7 @@
 #include "now.h"
 #include "triggerpull.h"
 #include "extra.h"
+#include "noreturn.h"
 #include "uidgid.h"
 #include "auto_qmail.h"
 #include "auto_uids.h"
@@ -60,11 +61,11 @@ void cleanup()
   }
 }
 
-void die(e) int e; { _exit(e); }
-void die_write() { cleanup(); die(53); }
-void die_read() { cleanup(); die(54); }
-void sigalrm() { /* thou shalt not clean up here */ die(52); }
-void sigbug() { die(81); }
+void _noreturn_ die(int e) { _exit(e); }
+void _noreturn_ die_write() { cleanup(); die(53); }
+void _noreturn_ die_read() { cleanup(); die(54); }
+void _noreturn_ sigalrm() { /* thou shalt not clean up here */ die(52); }
+void _noreturn_ sigbug() { die(81); }
 
 unsigned int receivedlen;
 char *received;

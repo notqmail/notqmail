@@ -22,6 +22,7 @@
 #include "now.h"
 #include "exit.h"
 #include "constmap.h"
+#include "noreturn.h"
 #include "tcpto.h"
 #include "readwrite.h"
 #include "timeoutconn.h"
@@ -49,38 +50,38 @@ struct ip_address partner;
 
 void out(s) char *s; { if (substdio_puts(subfdoutsmall,s) == -1) _exit(0); }
 void zero() { if (substdio_put(subfdoutsmall,"\0",1) == -1) _exit(0); }
-void zerodie() { zero(); substdio_flush(subfdoutsmall); _exit(0); }
+void _noreturn_ zerodie() { zero(); substdio_flush(subfdoutsmall); _exit(0); }
 void outsafe(sa) stralloc *sa; { int i; char ch;
 for (i = 0;i < sa->len;++i) {
 ch = sa->s[i]; if (ch < 33) ch = '?'; if (ch > 126) ch = '?';
 if (substdio_put(subfdoutsmall,&ch,1) == -1) _exit(0); } }
 
-void temp_nomem() { out("ZOut of memory. (#4.3.0)\n"); zerodie(); }
-void temp_oserr() { out("Z\
+void _noreturn_ temp_nomem() { out("ZOut of memory. (#4.3.0)\n"); zerodie(); }
+void _noreturn_ temp_oserr() { out("Z\
 System resources temporarily unavailable. (#4.3.0)\n"); zerodie(); }
-void temp_noconn() { out("Z\
+void _noreturn_ temp_noconn() { out("Z\
 Sorry, I wasn't able to establish an SMTP connection. (#4.4.1)\n"); zerodie(); }
-void temp_read() { out("ZUnable to read message. (#4.3.0)\n"); zerodie(); }
-void temp_dnscanon() { out("Z\
+void _noreturn_ temp_read() { out("ZUnable to read message. (#4.3.0)\n"); zerodie(); }
+void _noreturn_ temp_dnscanon() { out("Z\
 CNAME lookup failed temporarily. (#4.4.3)\n"); zerodie(); }
-void temp_dns() { out("Z\
+void _noreturn_ temp_dns() { out("Z\
 Sorry, I couldn't find any host by that name. (#4.1.2)\n"); zerodie(); }
-void temp_chdir() { out("Z\
+void _noreturn_ temp_chdir() { out("Z\
 Unable to switch to home directory. (#4.3.0)\n"); zerodie(); }
-void temp_control() { out("Z\
+void _noreturn_ temp_control() { out("Z\
 Unable to read control files. (#4.3.0)\n"); zerodie(); }
-void perm_partialline() { out("D\
+void _noreturn_ perm_partialline() { out("D\
 SMTP cannot transfer messages with partial final lines. (#5.6.2)\n"); zerodie(); }
-void perm_usage() { out("D\
+void _noreturn_ perm_usage() { out("D\
 I (qmail-remote) was invoked improperly. (#5.3.5)\n"); zerodie(); }
-void perm_dns() { out("D\
+void _noreturn_ perm_dns() { out("D\
 Sorry, I couldn't find any host named ");
 outsafe(&host);
 out(". (#5.1.2)\n"); zerodie(); }
-void perm_nomx() { out("D\
+void _noreturn_ perm_nomx() { out("D\
 Sorry, I couldn't find a mail exchanger or IP address. (#5.4.4)\n");
 zerodie(); }
-void perm_ambigmx() { out("D\
+void _noreturn_ perm_ambigmx() { out("D\
 Sorry. Although I'm listed as a best-preference MX or A for that host,\n\
 it isn't in my control/locals file, so I don't treat it as local. (#5.4.6)\n");
 zerodie(); }
@@ -93,7 +94,7 @@ void outhost()
 
 int flagcritical = 0;
 
-void dropped() {
+void _noreturn_ dropped() {
   out("ZConnected to ");
   outhost();
   out(" but connection died. ");

@@ -5,22 +5,23 @@
 #include "auto_qmail.h"
 #include "exit.h"
 #include "env.h"
+#include "noreturn.h"
 #include "str.h"
 
-void nomem()
+void _noreturn_ nomem()
 {
   substdio_putsflush(subfderr,"sendmail: fatal: out of memory\n");
   _exit(111);
 }
 
-void die_usage()
+void _noreturn_ die_usage()
 {
   substdio_putsflush(subfderr,"sendmail: usage: sendmail [ -t ] [ -fsender ] [ -Fname ] [ -bp ] [ -bs ] [ arg ... ]\n");
   _exit(100);
 }
 
 char *smtpdarg[] = { "bin/qmail-smtpd", 0 };
-void smtpd()
+void _noreturn_ smtpd()
 {
   if (!env_get("PROTO")) {
     if (!env_put("RELAYCLIENT=")) nomem();
@@ -38,7 +39,7 @@ void smtpd()
 }
 
 char *qreadarg[] = { "bin/qmail-qread", 0 };
-void mailq()
+void _noreturn_ mailq()
 {
   execv(*qreadarg,qreadarg);
   substdio_putsflush(subfderr,"sendmail: fatal: unable to run qmail-qread\n");

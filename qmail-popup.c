@@ -27,7 +27,7 @@ substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof(ssoutbuf));
 char ssinbuf[128];
 substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof(ssinbuf));
 
-void puts(s) char *s;
+void puts(const char *s)
 {
   substdio_puts(&ssout,s);
 }
@@ -35,7 +35,7 @@ void flush()
 {
   substdio_flush(&ssout);
 }
-void err(s) char *s;
+void err(const char *s)
 {
   puts("-ERR ");
   puts(s);
@@ -120,7 +120,7 @@ void pop3_greet()
   puts(">\r\n");
   flush();
 }
-void pop3_user(arg) char *arg;
+void pop3_user(const char *arg)
 {
   if (!*arg) { err_syntax(); return; }
   okay(0);

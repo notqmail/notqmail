@@ -36,11 +36,11 @@ substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof(ssoutbuf));
 char ssinbuf[128];
 substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof(ssinbuf));
 
-void put(buf,len) char *buf; int len;
+void put(const char *buf, int len)
 {
   substdio_put(&ssout,buf,len);
 }
-void puts(s) char *s;
+void puts(const char *s)
 {
   substdio_puts(&ssout,s);
 }
@@ -48,7 +48,7 @@ void flush()
 {
   substdio_flush(&ssout);
 }
-void err(s) char *s;
+void err(const char *s)
 {
   puts("-ERR ");
   puts(s);
@@ -74,7 +74,7 @@ void err_nounlink() { err("unable to unlink all deleted messages"); }
 
 void okay(arg) char *arg; { puts("+OK \r\n"); flush(); }
 
-void printfn(fn) char *fn;
+void printfn(const char *fn)
 {
   fn += 4;
   put(fn,str_chr(fn,':'));
@@ -195,7 +195,7 @@ void pop3_quit(arg) char *arg;
   die();
 }
 
-int msgno(arg) char *arg;
+int msgno(const char *arg)
 {
   unsigned long u;
   if (!scan_ulong(arg,&u)) { err_syntax(); return -1; }
@@ -206,7 +206,7 @@ int msgno(arg) char *arg;
   return u;
 }
 
-void pop3_dele(arg) char *arg;
+void pop3_dele(const char *arg)
 {
   int i;
   i = msgno(arg);
@@ -227,7 +227,7 @@ int flaguidl;
   puts("\r\n");
 }
 
-void dolisting(arg,flaguidl) char *arg; int flaguidl;
+void dolisting(const char *arg, int flaguidl)
 {
   unsigned int i;
   if (*arg) {
@@ -246,12 +246,12 @@ void dolisting(arg,flaguidl) char *arg; int flaguidl;
   flush();
 }
 
-void pop3_uidl(arg) char *arg; { dolisting(arg,1); }
-void pop3_list(arg) char *arg; { dolisting(arg,0); }
+void pop3_uidl(const char *arg) { dolisting(arg,1); }
+void pop3_list(const char *arg) { dolisting(arg,0); }
 
 substdio ssmsg; char ssmsgbuf[1024];
 
-void pop3_top(arg) char *arg;
+void pop3_top(const char *arg)
 {
   int i;
   unsigned long limit;

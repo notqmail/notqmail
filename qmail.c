@@ -109,11 +109,11 @@ struct qmail *qq;
   if (!qq->flagerr) if (substdio_flush(&qq->ss) == -1) qq->flagerr = 1;
   close(qq->fde);
   substdio_fdbuf(&qq->ss,read,qq->fderr,qq->buf,sizeof(qq->buf));
-  while( substdio_bget(&qq->ss,&ch,1) && len < 255){
-    errstr[len]=ch;
+  while (substdio_bget(&qq->ss,&ch,1) && len < 255) {
+    errstr[len] = ch;
     len++;
   }
-  if (len > 0) errstr[len]='\0'; /* add str-term */
+  if (len > 0) errstr[len] = '\0'; /* add str-term */
 
   close(qq->fderr);
 
@@ -148,11 +148,10 @@ struct qmail *qq;
     case 81: return "Zqq internal bug (#4.3.0)";
     case 120: return "Zunable to exec qq (#4.3.0)";
     default:
-      if (exitcode == 82 && len > 2){
+      if (exitcode == 82 && len > 2)
         return errstr;
-      }
       if ((exitcode >= 11) && (exitcode <= 40))
-        return "Dqq permanent problem (#5.3.0)";
+	return "Dqq permanent problem (#5.3.0)";
       return "Zqq temporary problem (#4.3.0)";
   }
 }

@@ -81,6 +81,18 @@ Mail server permanently refuses to send the message to any recipients.
 .BR qmail-queue ,
 but can be used by programs offering the same interface.)
 .PP
+A special
+.B qmail-queue
+error code indicates a custom error string is written to descriptor 6:
+.TP 5
+.B 82
+Mail server refuses to send the message to any recipients:
+permanently for strings starting with "D",
+temporarily for strings starting with "Z".
+(Not used by
+.BR qmail-queue ,
+but can be used by programs offering the same interface.)
+.PP
 All other
 .B qmail-queue
 error codes indicate temporary errors:

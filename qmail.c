@@ -94,26 +94,29 @@ void qmail_to(qq,s) struct qmail *qq; char *s;
   qmail_put(qq,"",1);
 }
 
+static size_t qmail_errstr(struct qmail *qq, char *s) {
+  size_t len = 0;
+  substdio_fdbuf(&qq->ss,read,qq->fderr,qq->buf,sizeof(qq->buf));
+  while (substdio_get(&qq->ss,s+len,1) > 0 && len < 255) {
+    len++;
+  }
+  s[len] = '\0';
+  return len;
+}
+
 char *qmail_close(qq)
 struct qmail *qq;
 {
   int wstat;
   int exitcode;
   int match;
-  char ch;
   static char errstr[256];
-  int len = 0;
+  size_t errlen;
 
   qmail_put(qq,"",1);
   if (!qq->flagerr) if (substdio_flush(&qq->ss) == -1) qq->flagerr = 1;
   close(qq->fde);
-  substdio_fdbuf(&qq->ss,read,qq->fderr,qq->buf,sizeof(qq->buf));
-  while (substdio_get(&qq->ss,&ch,1) > 0 && len < 255) {
-    errstr[len] = ch;
-    len++;
-  }
-  if (len > 0) errstr[len] = '\0'; /* add str-term */
-
+  errlen = qmail_errstr(qq, errstr);
   close(qq->fderr);
 
   if (wait_pid(&wstat,qq->pid) != qq->pid)
@@ -147,7 +150,7 @@ struct qmail *qq;
     case 81: return "Zqq internal bug (#4.3.0)";
     case 120: return "Zunable to exec qq (#4.3.0)";
     default:
-      if (exitcode == 82 && len > 2)
+      if (exitcode == 82 && errlen > 2)
         return errstr;
       if ((exitcode >= 11) && (exitcode <= 40))
 	return "Dqq permanent problem (#5.3.0)";

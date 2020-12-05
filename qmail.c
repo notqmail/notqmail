@@ -33,7 +33,6 @@ struct qmail *qq;
   if (pipe(pierr) == -1) {
     close(pim[0]); close(pim[1]);
     close(pie[0]); close(pie[1]);
-    close(pierr[0]); close(pierr[1]);
     return -1;
   }
  

@@ -38,9 +38,9 @@ struct qmail *qq;
  
   switch(qq->pid = fork()) {
     case -1:
-      close(pierr[0]); close(pierr[1]);
       close(pim[0]); close(pim[1]);
       close(pie[0]); close(pie[1]);
+      close(pierr[0]); close(pierr[1]);
       return -1;
     case 0:
       close(pim[1]);

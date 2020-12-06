@@ -1,3 +1,5 @@
+- 20201206 code: extend qmail-queue(8) interface so a custom rejection
+           message can be communicated to the caller.
 - 20201120 code: add instqueue for packagers, extracted from instpackage.
 - 20200803 avoid sending CRCRLF in qmail-remote if input contains CRLF
 - 20200614 remove maildirwatch

@@ -259,6 +259,14 @@ byte_zero.o: \
 compile byte_zero.c byte.h
 	./compile byte_zero.c
 
+caldate_fmjd.o: \
+compile caldate_fmjd.c caldate.h
+	./compile caldate_fmjd.c
+
+caltime_utc.o: \
+compile caltime_utc.c caltime.h
+	./compile caltime_utc.c
+
 case.a: \
 makelib case_diffb.o case_diffs.o case_lowerb.o case_lowers.o \
 case_starts.o
@@ -411,11 +419,13 @@ warn-auto.sh datemail.sh conf-qmail conf-break conf-split
 	chmod 755 datemail
 
 datetime.a: \
-makelib datetime.o datetime_un.o
-	./makelib datetime.a datetime.o datetime_un.o
+makelib datetime.o datetime_un.o caltime_utc.o caldate_fmjd.o leapsecs_sub.o \
+leapsecs_init.o tai_unpack.o
+	./makelib datetime.a datetime.o datetime_un.o caltime_utc.o \
+	caldate_fmjd.o leapsecs_sub.o leapsecs_init.o tai_unpack.o
 
 datetime.o: \
-compile datetime.c datetime.h
+compile datetime.c datetime.h caltime.h tai.h
 	./compile datetime.c
 
 datetime_un.o: \
@@ -777,6 +787,14 @@ forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox install instpackage instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
 binm3 binm3+df
+
+leapsecs_init.o: \
+compile leapsecs_init.c leapsecs.h
+	./compile leapsecs_init.c
+
+leapsecs_sub.o: \
+compile leapsecs_sub.c leapsecs.h
+	./compile leapsecs_sub.c
 
 load: \
 make-load warn-auto.sh
@@ -1268,10 +1286,10 @@ timeoutread.h timeoutwrite.h auto_qmail.h control.h fmt.h
 
 qmail-qmqpd: \
 load qmail-qmqpd.o received.o date822fmt.o qmail.o auto_qmail.o \
-env.a substdio.a sig.a error.a wait.a fd.a str.a datetime.a fs.a
+env.a substdio.a sig.a error.a wait.a fd.a str.a datetime.a fs.a open.a
 	./load qmail-qmqpd received.o date822fmt.o qmail.o \
 	auto_qmail.o env.a substdio.a sig.a error.a wait.a fd.a \
-	str.a datetime.a fs.a 
+	str.a datetime.a fs.a open.a
 
 qmail-qmqpd.0: \
 qmail-qmqpd.8
@@ -1842,6 +1860,10 @@ trysyslog.c compile load
 	./load trysyslog -lgen ) >/dev/null 2>&1 \
 	&& echo -lgen || exit 0 ) > syslog.lib
 	rm -f trysyslog.o trysyslog
+
+tai_unpack.o: \
+compile tai_unpack.c tai.h
+	./compile tai_unpack.c
 
 tcp-env: \
 load tcp-env.o dns.o remoteinfo.o timeoutread.o timeoutwrite.o \

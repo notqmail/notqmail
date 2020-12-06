@@ -109,7 +109,6 @@ struct qmail *qq;
 {
   int wstat;
   int exitcode;
-  int match;
   static char errstr[256];
   size_t errlen;
 

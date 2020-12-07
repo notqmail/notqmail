@@ -9,6 +9,7 @@
 #include "str.h"
 #include "seek.h"
 #include "utf8read.h"
+#include "hassmtputf8.h"
 
 int flagutf8, smtputf8;
 stralloc smtptext = { 0 };
@@ -114,7 +115,11 @@ START_TEST(test_utf8read1)
   ck_assert_int_eq(ret, 0);
   ret = dup2(fd, 0);
   ck_assert_int_ne(ret, -1);
+#ifdef SMTPUTF8
   ret = utf8read(); /*- we should return 0 */
+#else
+  ret = -1;
+#endif
   ck_assert_int_eq(ret, 0);
   close(fd);
   unlink("mail.txt");
@@ -137,7 +142,11 @@ START_TEST(test_utf8read2)
     ret = seek_set(fd, 0);
     ck_assert_int_eq(ret, 0);
     dup2(fd, 0);
+#ifdef SMTPUTF8
     ret = utf8read(); /*- we should return 1 */
+#else
+  ret = -1;
+#endif
     ck_assert_int_eq(ret, 1);
     close(fd);
   }
@@ -160,7 +169,11 @@ START_TEST(test_utf8read3)
   ck_assert_int_eq(ret, 0);
   dup2(fd, 0);
   flagutf8=1;
+#ifdef SMTPUTF8
   ret = utf8read(); /*- we should return 1 because flagutf8 is already set */
+#else
+  ret = -1;
+#endif
   /*- we should return 1 because we have set the flagutf8 */
   ck_assert_int_eq(ret, 1);
   close(fd);
@@ -317,7 +330,7 @@ Suite *smtpcode_suite(void)
 
 START_TEST(test_mailfrom_parms)
 {
-  int fd, i, ret;
+  int i;
 
   for (i=0;i<5;i++) {
     smtputf8=0;

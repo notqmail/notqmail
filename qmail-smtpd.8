@@ -14,6 +14,14 @@ must be supplied several environment variables;
 see
 .BR tcp-environ(5) .
 
+If the environment variable
+.B UTF8
+is non-empty
+.B qmail-smtpd
+offers RFC 5336 SMTP Email Address Internationalization support and will advertize the
+capability in the EHLO greeting. Since qmail-smtpd is 8 bit clean, setting of UTF8 has no real
+consequences except for displaying this setting in the received headers as \fBUTF8(E)SMTP\fR.
+
 .B qmail-smtpd
 is responsible for counting hops.
 It rejects any message with 100 or more 
@@ -35,6 +43,7 @@ see
 .B qmail-smtpd
 accepts messages that contain long lines or non-ASCII characters,
 even though such messages violate the SMTP protocol.
+
 .SH "CONTROL FILES"
 .TP 5
 .I badmailfrom

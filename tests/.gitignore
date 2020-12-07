@@ -1,4 +1,9 @@
 *.o
 unittest_blast
 unittest_stralloc
+unittest_utf8read
+unittest_prioq
 blast.c
+get_capability.c
+smtpcode.c
+mailfrom_parms.c

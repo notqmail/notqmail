@@ -47,6 +47,14 @@ arguments to
 The envelope sender address is listed as
 .I sender\fP.
 
+If the environment variable UTF8 is defined,
+.B qmail-remote
+will respect SMTPUTF8 and EAI addresses. If message is utf8,
+.B qmail-remote
+will use idn2_lookup_u8(3) to perform IDNA2008 lookup string conversion
+on
+.IR host .
+
 Note that
 .B qmail-remote
 does not take options

@@ -27,6 +27,12 @@
 #include "timeoutconn.h"
 #include "timeoutread.h"
 #include "timeoutwrite.h"
+#include "hassmtputf8.h"
+#ifdef SMTPUTF8
+#include <idn2.h>
+#include "utf8read.h"
+#include "env.h"
+#endif
 
 #define HUGESMTPTEXT 5000
 
@@ -46,6 +52,13 @@ stralloc sender = {0};
 saa reciplist = {0};
 
 struct ip_address partner;
+
+#ifdef SMTPUTF8
+static stralloc idnhost = { 0 };
+static int      smtputf8 = 0; /*- if remote has SMTPUTF8 capability */
+static char    *enable_utf8 = 0; /*- enable utf8 */
+int             flagutf8;
+#endif
 
 void out(s) char *s; { if (substdio_puts(subfdoutsmall,s) == -1) _exit(0); }
 void zero() { if (substdio_put(subfdoutsmall,"\0",1) == -1) _exit(0); }
@@ -118,36 +131,50 @@ substdio smtpfrom = SUBSTDIO_FDBUF(saferead,-1,smtpfrombuf,sizeof(smtpfrombuf));
 
 stralloc smtptext = {0};
 
-static void get(unsigned char *uc)
+static void get1(unsigned char *uc)
 {
   char *ch = (char *)uc;
   substdio_get(&smtpfrom,ch,1);
-  if (*ch != '\r')
-    if (smtptext.len < HUGESMTPTEXT)
-     if (!stralloc_append(&smtptext,ch)) temp_nomem();
+  if (*ch != '\r' && smtptext.len < HUGESMTPTEXT &&
+      !stralloc_append(&smtptext,ch))
+    temp_nomem();
+}
+
+static unsigned long get3()
+{
+  char            str[4];
+  int             i;
+  unsigned long   code;
+
+  substdio_get(&smtpfrom,str,3);
+  str[3] = 0;
+  for (i = 0;i < 3;i++) {
+    if (str[i] == '\r') continue;
+    if (smtptext.len < HUGESMTPTEXT &&
+        !stralloc_append(&smtptext,str+i))
+      temp_nomem();
+  }
+  scan_ulong(str,&code);
+  return code;
 }
 
 unsigned long smtpcode()
 {
-  unsigned char ch;
-  unsigned long code;
+  unsigned char   ch;
+  unsigned long   code;
+  int             err = 0;
 
   if (!stralloc_copys(&smtptext,"")) temp_nomem();
-
-  get(&ch); code = ch - '0';
-  get(&ch); code = code * 10 + (ch - '0');
-  get(&ch); code = code * 10 + (ch - '0');
+  if ((code = get3()) < 200) err = 1;
   for (;;) {
-    get(&ch);
+    get1((char *)&ch);
+    if (ch != ' ' && ch != '-') err = 1;
     if (ch != '-') break;
-    while (ch != '\n') get(&ch);
-    get(&ch);
-    get(&ch);
-    get(&ch);
+    while (ch != '\n') get1((char *)&ch);
+    if (get3() != code) err = 1;
   }
-  while (ch != '\n') get(&ch);
-
-  return code;
+  while (ch != '\n') get1((char *)&ch);
+  return err ? 400 : code;
 }
 
 void outsmtptext()
@@ -211,6 +238,33 @@ void blast()
   substdio_flush(&smtpto);
 }
 
+#ifdef SMTPUTF8
+/*
+ * this function is general purpose
+ * we could use it when we add AUTH,
+ * STARTTLS, SIZE extensions
+ */
+int get_capability(const char *capa)
+{
+  int i = 0, len;
+
+  /* e.g.
+   * 250-PIPELINING
+   * 250-8BITMIME
+   * 250-SIZE 10000000
+   * 250-ETRN
+   * 250-STARTTLS
+   * 250-SMTPUTF8
+   * 250 HELP
+   */
+  len = str_len(capa);
+  for (i = 0; i < smtptext.len-len; ++i)
+    if (case_starts(smtptext.s+i,capa)) return 1;
+
+  return 0;
+}
+#endif
+
 stralloc recip = {0};
 
 void smtp()
@@ -221,14 +275,44 @@ void smtp()
  
   if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
  
+#ifdef SMTPUTF8
+  /*-
+   * this part of the code is general purpose
+   * it can be used for
+   * checking other extensions like
+   * AUTH, STARTTLS, SIZE, etc
+   */
+  substdio_puts(&smtpto,"EHLO ");
+  substdio_put(&smtpto,helohost.s,helohost.len);
+  substdio_puts(&smtpto,"\r\n");
+  substdio_flush(&smtpto);
+
+  if (smtpcode() != 250) { /*- do a HELO if EHLO fails */
+    substdio_puts(&smtpto,"HELO ");
+    substdio_put(&smtpto,helohost.s,helohost.len);
+    substdio_puts(&smtpto,"\r\n");
+    substdio_flush(&smtpto);
+
+    code = smtpcode();
+    if (code >= 500) quit("DConnected to "," but my name was rejected");
+    if (code != 250) quit("ZConnected to "," but my name was rejected");
+  } else /* EHLO succeeded. Let's check SMTPUTF8 capa */
+    smtputf8 = get_capability("SMTPUTF8"); /*- did the remote server advertize SMTPUTF8 */
+#else
   substdio_puts(&smtpto,"HELO ");
   substdio_put(&smtpto,helohost.s,helohost.len);
   substdio_puts(&smtpto,"\r\n");
   substdio_flush(&smtpto);
   if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
+#endif
  
   substdio_puts(&smtpto,"MAIL FROM:<");
   substdio_put(&smtpto,sender.s,sender.len);
+#ifdef SMTPUTF8
+  if (enable_utf8 && (flagutf8 || utf8read()))
+    substdio_puts(&smtpto,"> SMTPUTF8\r\n");
+  else
+#endif
   substdio_puts(&smtpto,">\r\n");
   substdio_flush(&smtpto);
   code = smtpcode();
@@ -262,6 +346,9 @@ void smtp()
   if (code >= 500) quit("D"," failed on DATA command");
   if (code >= 400) quit("Z"," failed on DATA command");
  
+#ifdef SMTPUTF8
+  if (enable_utf8 && header.len) substdio_put(&smtpto, header.s, header.len);
+#endif
   blast();
   code = smtpcode();
   flagcritical = 0;
@@ -276,7 +363,12 @@ stralloc canonbox = {0};
 void addrmangle(stralloc *saout, char *s)
 {
   int j;
- 
+
+#ifdef SMTPUTF8
+  if (enable_utf8 && !flagutf8)
+    flagutf8 = containsutf8(s,str_len(s));
+#endif
+
   j = str_rchr(s,'@');
   if (!s[j]) {
     if (!stralloc_copys(saout,s)) temp_nomem();
@@ -325,6 +417,9 @@ int main(int argc, char **argv)
   if (chdir(auto_qmail) == -1) temp_chdir();
   getcontrols();
  
+#ifdef SMTPUTF8
+  enable_utf8 = env_get("UTF8");
+#endif
  
   if (!stralloc_copys(&host,argv[1])) temp_nomem();
  
@@ -342,6 +437,18 @@ int main(int argc, char **argv)
       relayhost[i] = 0;
     }
     if (!stralloc_copys(&host,relayhost)) temp_nomem();
+#ifdef SMTPUTF8
+  } else
+  if (enable_utf8) {
+      char *asciihost = 0;
+      if (!stralloc_0(&host)) temp_nomem();
+      switch (idn2_lookup_u8(host.s,(uint8_t**)&asciihost,IDN2_NFC_INPUT)) {
+        case IDN2_OK:     break;
+        case IDN2_MALLOC: temp_nomem();
+        default:          perm_dns();
+      }
+      if (!stralloc_copys(&idnhost,asciihost)) temp_nomem();
+#endif
   }
 
 
@@ -361,7 +468,11 @@ int main(int argc, char **argv)
 
  
   random = now() + (getpid() << 16);
+#ifdef SMTPUTF8
+  switch (relayhost ? dns_ip(&ip,&host) : dns_mxip(&ip,enable_utf8 ? &idnhost : &host,random)) {
+#else
   switch (relayhost ? dns_ip(&ip,&host) : dns_mxip(&ip,&host,random)) {
+#endif
     case DNS_MEM: temp_nomem();
     case DNS_SOFT: temp_dns();
     case DNS_HARD: perm_dns();

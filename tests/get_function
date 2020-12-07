@@ -7,7 +7,7 @@
 start_line=`grep -n "^$1" $2|cut -d: -f1`
 sed -n "$start_line,$"p $2 | while IFS= read -r "line"
 do
-	echo "$line"
+	printf "%s\n" "$line"
 	if [ " $line" = " }" ] ; then
 		break
 	fi

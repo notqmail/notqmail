@@ -76,7 +76,8 @@ mailfrom_parms.o ../substdio.a ../case.a
 
 unittest_utf8read.o: \
 ../compile unittest_utf8read.c ../open.h ../str.h \
-../seek.h ../utf8read.h ../substdio.h ../subfd.h
+../seek.h ../utf8read.h ../substdio.h ../subfd.h \
+../conf-smtputf8
 	../compile -I.. unittest_utf8read.c -I.. \
 	`pkg-config --cflags check`
 

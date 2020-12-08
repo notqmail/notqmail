@@ -13,6 +13,7 @@ addons:
     packages:
     - pkg-config
     - check
+    - libidn2-0-dev
 script:
  - echo "${CC} -O2 -Wall -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations ${EXTRA_CFLAGS}" > conf-cc
  - if [ -n "${FORCE_UTMP}" ]; then cp qtmp.h1 qtmp.h; fi

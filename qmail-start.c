@@ -103,6 +103,7 @@ int main(int argc, char **argv)
   switch(fork()) {
     case -1: die();
     case 0:
+      if (prot_gids(auto_userr, auto_gidq) == -1) die();
       if (prot_uid(auto_uidr) == -1) die();
       if (fd_copy(0,pi3[0]) == -1) die();
       if (fd_copy(1,pi4[1]) == -1) die();

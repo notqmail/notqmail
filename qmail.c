@@ -109,7 +109,7 @@ struct qmail *qq;
   if (!qq->flagerr) if (substdio_flush(&qq->ss) == -1) qq->flagerr = 1;
   close(qq->fde);
   substdio_fdbuf(&qq->ss,read,qq->fderr,qq->buf,sizeof(qq->buf));
-  while (substdio_bget(&qq->ss,&ch,1) && len < 255) {
+  while (substdio_get(&qq->ss,&ch,1) > 0 && len < 255) {
     errstr[len] = ch;
     len++;
   }

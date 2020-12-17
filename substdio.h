@@ -24,6 +24,7 @@ extern int substdio_bputs();
 extern int substdio_putsflush();
 
 extern ssize_t substdio_get(substdio *s, char *buf, size_t len);
+extern int substdio_bget();
 extern ssize_t substdio_feed(substdio *s);
 
 extern char *substdio_peek();

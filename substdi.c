@@ -43,6 +43,8 @@ ssize_t substdio_feed(substdio *s)
   return r;
 }
 
+#ifdef DEPRECATED_FUNCTIONS_AVAILABLE
+// might read fewer bytes than _get(); otherwise identical
 ssize_t substdio_bget(substdio *s, char *buf, size_t len)
 {
   ssize_t r;
@@ -53,6 +55,7 @@ ssize_t substdio_bget(substdio *s, char *buf, size_t len)
   if (r == 0 || r == -1) return r;
   return getthis(s,buf,len);
 }
+#endif
 
 ssize_t substdio_get(substdio *s, char *buf, size_t len)
 {

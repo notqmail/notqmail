@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
   while ((ch = *value++)) {
     if (is_legible(ch)) {
-      if (substdio_put(&ss1, &ch, 1) == -1)
+      if (substdio_put(&ss1, (char *)&ch, 1) == -1)
         _exit(111);
     } else {
       puts("\\");

@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+
+permfail_unqualified_recipient() {
+	echo >&6 "DBUG"
+	exit 82
+}
+
+tempfail_everything_else() {
+	echo >&6 "ZOK"
+	exit 82
+}
+
+grep -q '^To: djb$' && permfail_unqualified_recipient
+tempfail_everything_else

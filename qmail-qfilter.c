@@ -54,7 +54,7 @@
 
 static const char* qqargv[2];
 
-void mysetenvu(const char* key, unsigned long val)
+static void mysetenvu(const char* key, unsigned long val)
 {
   char strnum[FMT_ULONG];
   fmt_ulong(strnum,val);
@@ -65,7 +65,7 @@ static size_t env_len = 0;
 static size_t msg_len = 0;
 
 /* Parse the sender address into user and host portions */
-size_t parse_sender(const char* env)
+static size_t parse_sender(const char* env)
 {
   const char* ptr = env;
   char* at;
@@ -98,7 +98,7 @@ size_t parse_sender(const char* env)
   return ptr + len + 1 - env;
 }
 
-void parse_rcpts(const char* env, int offset)
+static void parse_rcpts(const char* env, int offset)
 {
   size_t len = env_len - offset;
   const char* ptr = env + offset;
@@ -120,7 +120,7 @@ void parse_rcpts(const char* env, int offset)
   free(buf);
 }
 
-void parse_envelope(void)
+static void parse_envelope(void)
 {
   const char* env;
   size_t offset;
@@ -132,7 +132,7 @@ void parse_envelope(void)
 }
 
 /* Create a temporary invisible file opened for read/write */
-int mktmpfile()
+static int mktmpfile()
 {
   char filename[sizeof(TMPDIR)+19] = TMPDIR "/fixheaders.XXXXXX";
   
@@ -149,7 +149,7 @@ int mktmpfile()
 }
 
 /* Renumber from one FD to another */
-void move_fd(int currfd, int newfd)
+static void move_fd(int currfd, int newfd)
 {
   if (currfd == newfd)
     return;
@@ -160,7 +160,7 @@ void move_fd(int currfd, int newfd)
 }
 
 /* Copy from one FD to a temporary FD */
-void copy_fd(int fdin, int fdout, size_t* var)
+static void copy_fd(int fdin, int fdout, size_t* var)
 {
   unsigned long bytes;
   int tmp = mktmpfile();
@@ -193,7 +193,7 @@ struct command
 typedef struct command command;
 
 /* Split up the command line into a linked list of seperate commands */
-command* parse_args(int argc, char* argv[])
+static command* parse_args(int argc, char* argv[])
 {
   command* tail = 0;
   command* head = 0;
@@ -268,7 +268,7 @@ static void read_qqfd(void)
 }
 
 /* Run each of the filters in sequence */
-void run_filters(const command* first)
+static void run_filters(const command* first)
 {
   const command* c;
   

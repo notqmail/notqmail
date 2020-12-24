@@ -83,8 +83,7 @@ size_t parse_sender(const char* env)
   unsetenv("QMAILNAME");
   
   if(!*ptr) {
-    if (putenv("QMAILUSER=") != 0
-	|| putenv("QMAILHOST=") != 0)
+    if (!env_put("QMAILUSER=") || !env_put("QMAILHOST="))
       exit(QQ_OOM);
     return 2;
   }
@@ -93,7 +92,7 @@ size_t parse_sender(const char* env)
   if(!at) {
     len = strlen(ptr);
     if (!env_put2("QMAILUSER",ptr)) exit(QQ_OOM);
-    putenv("QMAILHOST=");
+    if (!env_put("QMAILHOST=")) exit(QQ_OOM);
   }
   else {
     len = strlen(at);

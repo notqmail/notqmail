@@ -1263,14 +1263,14 @@ auto_users.h byte.h
 	./compile qmail-pw2u.c
 
 qmail-qfilter: \
-load qmail-qfilter.o
-	./load qmail-qfilter
+load qmail-qfilter.o env.a
+	./load qmail-qfilter env.a
 
 qmail-qfilter.0: \
 qmail-qfilter.1
 
 qmail-qfilter.o: \
-compile qmail-qfilter.c
+compile qmail-qfilter.c env.h
 	./compile qmail-qfilter.c
 
 qmail-qmqpc: \

@@ -24,6 +24,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <unistd.h>
+#include "env.h"
 
 #ifndef TMPDIR
 #define TMPDIR "/tmp"
@@ -52,20 +53,9 @@
 
 static const char* qqargv[2];
 
-/* a replacement for setenv(3) for systems that don't have one */
 void mysetenv(const char* key, const char* val, size_t vallen)
 {
-  char* tmp;
-  size_t keylen;
-  
-  keylen = strlen(key);
-  tmp = malloc(keylen + 1 + vallen + 1);
-  memcpy(tmp, key, keylen);
-  tmp[keylen] = '=';
-  memcpy(tmp+keylen+1, val, vallen);
-  tmp[keylen+1+vallen] = 0;
-  if (putenv(tmp) != 0)
-    exit(QQ_OOM);
+  if (!env_put2(key,val)) exit(QQ_OOM);
 }
 
 void mysetenvu(const char* key, unsigned long val)

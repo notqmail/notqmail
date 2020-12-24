@@ -234,7 +234,7 @@ static void mktmpfd(int fd)
 }
 
 static void move_unless_empty(int src, int dst, const void* reopen,
-			      size_t* var)
+                              size_t* var)
 {
   struct stat st;
   if (fstat(src, &st) != 0)
@@ -245,7 +245,7 @@ static void move_unless_empty(int src, int dst, const void* reopen,
     if (reopen) {
       mktmpfd(src);
       if (src == ENVOUT)
-	parse_envelope();
+        parse_envelope();
     }
   }
   else

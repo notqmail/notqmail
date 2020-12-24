@@ -60,8 +60,11 @@ int type;
      (responselen > 0 && (((HEADER *)response.buf)->tc)))
   {
    if (responsebuflen < 65536) {
-    if (alloc_re(&response.buf, responsebuflen, 65536))
+    unsigned char *newbuf = realloc(response.buf, 65536);
+    if (newbuf) {
+     response.buf = newbuf;
      responsebuflen = 65536;
+    }
     else return DNS_MEM;
     saveresoptions = _res.options;
     _res.options |= RES_USEVC;

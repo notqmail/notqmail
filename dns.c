@@ -50,7 +50,7 @@ int type;
  if (!stralloc_copy(&glue,domain)) return DNS_MEM;
  if (!stralloc_0(&glue)) return DNS_MEM;
  if (!responsebuflen)
-  if (response.buf = (unsigned char *)alloc(PACKETSZ+1))
+  if ((response.buf = (unsigned char *)alloc(PACKETSZ+1)))
    responsebuflen = PACKETSZ+1;
   else return DNS_MEM;
 

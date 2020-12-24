@@ -149,11 +149,6 @@ static int mktmpfile()
   return fd;
 }
 
-static void move_fd(int currfd, int newfd)
-{
-  if (fd_move(newfd,currfd) == -1) exit(QQ_WRITE_ERROR);
-}
-
 /* Copy from one FD to a temporary FD */
 static void copy_fd(int fdin, int fdout, size_t* var)
 {
@@ -176,7 +171,7 @@ static void copy_fd(int fdin, int fdout, size_t* var)
   close(fdin);
   if (lseek(tmp, 0, SEEK_SET) != 0)
     exit(QQ_WRITE_ERROR);
-  move_fd(tmp, fdout);
+  if (fd_move(fdout,tmp) == -1) exit(QQ_WRITE_ERROR);
   *var = bytes;
 }
 
@@ -220,7 +215,7 @@ static void mktmpfd(int fd)
   int tmp;
   close(fd);
   tmp = mktmpfile();
-  move_fd(tmp, fd);
+  if (fd_move(fd,tmp) == -1) exit(QQ_WRITE_ERROR);
 }
 
 static void move_unless_empty(int src, int dst, const void* reopen,
@@ -230,7 +225,7 @@ static void move_unless_empty(int src, int dst, const void* reopen,
   if (fstat(src, &st) != 0)
     exit(QQ_INTERNAL);
   if (st.st_size > 0) {
-    move_fd(src, dst);
+    if (fd_move(dst,src) == -1) exit(QQ_WRITE_ERROR);
     *var = st.st_size;
     if (reopen) {
       mktmpfd(src);
@@ -315,7 +310,7 @@ int main(int argc, char* argv[])
   run_filters(filters);
 
   read_qqfd();
-  move_fd(ENVIN, 1);
+  if (fd_move(1,ENVIN) == -1) exit(QQ_WRITE_ERROR);
   execv(qqargv[0], (char**)qqargv);
   return QQ_INTERNAL;
 }

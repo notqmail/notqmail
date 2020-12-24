@@ -25,6 +25,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include "env.h"
+#include "fd.h"
 #include "fmt.h"
 
 #ifndef TMPDIR
@@ -148,15 +149,9 @@ static int mktmpfile()
   return fd;
 }
 
-/* Renumber from one FD to another */
 static void move_fd(int currfd, int newfd)
 {
-  if (currfd == newfd)
-    return;
-  if (dup2(currfd, newfd) != newfd)
-    exit(QQ_WRITE_ERROR);
-  if (close(currfd) != 0)
-    exit(QQ_WRITE_ERROR);
+  if (fd_move(newfd,currfd) == -1) exit(QQ_WRITE_ERROR);
 }
 
 /* Copy from one FD to a temporary FD */

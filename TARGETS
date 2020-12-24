@@ -375,3 +375,6 @@ forgeries.0
 setup
 qtmp.h
 qmail-send.service
+qmail-qfilter.0
+qmail-qfilter.o
+qmail-qfilter

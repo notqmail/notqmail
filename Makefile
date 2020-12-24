@@ -790,7 +790,7 @@ dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
 forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox install instpackage instqueue instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
-binm3 binm3+df
+binm3 binm3+df qmail-qfilter
 
 load: \
 make-load warn-auto.sh
@@ -895,7 +895,7 @@ preline.0 condredirect.0 bouncesaying.0 except.0 maildirmake.0 \
 maildir2mbox.0 qmail.0 qmail-limits.0 qmail-log.0 \
 qmail-control.0 qmail-header.0 qmail-users.0 dot-qmail.0 \
 qmail-command.0 tcp-environ.0 maildir.0 mbox.0 addresses.0 \
-envelopes.0 forgeries.0
+envelopes.0 forgeries.0 qmail-qfilter.0
 
 mbox.0: \
 mbox.5
@@ -1261,6 +1261,17 @@ sgetopt.h subgetopt.h control.h constmap.h stralloc.h gen_alloc.h \
 fmt.h str.h scan.h open.h error.h getln.h exit.h auto_break.h auto_qmail.h \
 auto_users.h byte.h
 	./compile qmail-pw2u.c
+
+qmail-qfilter: \
+load qmail-qfilter.o
+	./load qmail-qfilter
+
+qmail-qfilter.0: \
+qmail-qfilter.1
+
+qmail-qfilter.o: \
+compile qmail-qfilter.c
+	./compile qmail-qfilter.c
 
 qmail-qmqpc: \
 load qmail-qmqpc.o slurpclose.o timeoutread.o timeoutwrite.o \

@@ -76,20 +76,20 @@ size_t parse_sender(const char* env)
   char* at;
   size_t len = strlen(env);
   
-  if(*ptr != 'F')
+  if (*ptr != 'F')
     exit(QQ_BAD_ENV);
   ++ptr;
   
   unsetenv("QMAILNAME");
   
-  if(!*ptr) {
+  if (!*ptr) {
     if (!env_put("QMAILUSER=") || !env_put("QMAILHOST="))
       exit(QQ_OOM);
     return 2;
   }
 
   at = strrchr(ptr, '@');
-  if(!at) {
+  if (!at) {
     len = strlen(ptr);
     if (!env_put2("QMAILUSER",ptr)) exit(QQ_OOM);
     if (!env_put("QMAILHOST=")) exit(QQ_OOM);
@@ -111,7 +111,7 @@ void parse_rcpts(const char* env, int offset)
   char* tmp = buf;
   unsigned long count;
   count = 0;
-  while(ptr < env + env_len && *ptr == 'T') {
+  while (ptr < env + env_len && *ptr == 'T') {
     size_t rcptlen = strlen(++ptr);
     memcpy(tmp, ptr, rcptlen);
     tmp[rcptlen] = '\n';
@@ -142,12 +142,12 @@ int mktmpfile()
   char filename[sizeof(TMPDIR)+19] = TMPDIR "/fixheaders.XXXXXX";
   
   int fd = mkstemp(filename);
-  if(fd == -1)
+  if (fd == -1)
     exit(QQ_WRITE_ERROR);
 
   /* The following makes the temporary file disappear immediately on
      program exit. */
-  if(unlink(filename) == -1)
+  if (unlink(filename) == -1)
     exit(QQ_WRITE_ERROR);
   
   return fd;
@@ -171,14 +171,14 @@ void copy_fd(int fdin, int fdout, size_t* var)
   int tmp = mktmpfile();
   
   /* Copy the message into the temporary file */
-  for(bytes = 0;;) {
+  for (bytes = 0;;) {
     char buf[BUFSIZE];
     ssize_t rd = read(fdin, buf, BUFSIZE);
-    if(rd == -1)
+    if (rd == -1)
       exit(QQ_WRITE_ERROR);
-    if(rd == 0)
+    if (rd == 0)
       break;
-    if(write(tmp, buf, rd) != rd)
+    if (write(tmp, buf, rd) != rd)
       exit(QQ_WRITE_ERROR);
     bytes += rd;
   }
@@ -202,18 +202,18 @@ command* parse_args(int argc, char* argv[])
 {
   command* tail = 0;
   command* head = 0;
-  while(argc > 0) {
+  while (argc > 0) {
     command* cmd;
     int end = 0;
-    while(end < argc && strcmp(argv[end], "--"))
+    while (end < argc && strcmp(argv[end], "--"))
       ++end;
-    if(end == 0)
+    if (end == 0)
       exit(QQ_INTERNAL);
     argv[end] = 0;
     cmd = malloc(sizeof(command));
     cmd->argv = argv;
     cmd->next = 0;
-    if(tail)
+    if (tail)
       tail->next = cmd;
     else
       head = cmd;
@@ -280,24 +280,24 @@ void run_filters(const command* first)
   mktmpfd(MSGOUT);
   mktmpfd(ENVOUT);
 
-  for(c = first; c; c = c->next) {
+  for (c = first; c; c = c->next) {
     pid_t pid;
     int status;
 
     mysetenvu("ENVSIZE", env_len);
     mysetenvu("MSGSIZE", msg_len);
     pid = fork();
-    if(pid == -1)
+    if (pid == -1)
       exit(QQ_OOM);
-    if(pid == 0) {
+    if (pid == 0) {
       execvp(c->argv[0], c->argv);
       exit(QQ_INTERNAL);
     }
-    if(waitpid(pid, &status, WUNTRACED) == -1)
+    if (waitpid(pid, &status, WUNTRACED) == -1)
       exit(QQ_INTERNAL);
-    if(!WIFEXITED(status))
+    if (!WIFEXITED(status))
       exit(QQ_INTERNAL);
-    if(WEXITSTATUS(status))
+    if (WEXITSTATUS(status))
       exit((WEXITSTATUS(status) == QQ_DROP_MSG) ? 0 : WEXITSTATUS(status));
     move_unless_empty(MSGOUT, MSGIN, c->next, &msg_len);
     move_unless_empty(ENVOUT, ENVIN, c->next, &env_len);

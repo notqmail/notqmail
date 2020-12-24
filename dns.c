@@ -20,6 +20,8 @@ extern int res_search();
 #include "stralloc.h"
 #include "case.h"
 
+#define MAX_EDNS_RESPONSE_SIZE 65536
+
 static unsigned short getshort(c) unsigned char *c;
 { unsigned short u; u = c[0]; return (u << 8) + c[1]; }
 
@@ -28,7 +30,7 @@ static int responsebuflen = 0;
 static int responselen;
 static unsigned char *responseend;
 static unsigned char *responsepos;
-static u_long saveresoptions;
+static unsigned long saveresoptions;
 
 static int numanswers;
 static char name[MAXDNAME];
@@ -59,11 +61,11 @@ int type;
  if ((responselen >= responsebuflen) ||
      (responselen > 0 && (((HEADER *)response.buf)->tc)))
   {
-   if (responsebuflen < 65536) {
-    unsigned char *newbuf = realloc(response.buf, 65536);
+   if (responsebuflen < MAX_EDNS_RESPONSE_SIZE) {
+    unsigned char *newbuf = realloc(response.buf, MAX_EDNS_RESPONSE_SIZE);
     if (newbuf) {
      response.buf = newbuf;
-     responsebuflen = 65536;
+     responsebuflen = MAX_EDNS_RESPONSE_SIZE;
     }
     else return DNS_MEM;
     saveresoptions = _res.options;

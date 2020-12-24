@@ -49,16 +49,17 @@ int type;
  errno = 0;
  if (!stralloc_copy(&glue,domain)) return DNS_MEM;
  if (!stralloc_0(&glue)) return DNS_MEM;
- if (!responsebuflen)
+ if (!responsebuflen) {
   if ((response.buf = (unsigned char *)alloc(PACKETSZ+1)))
    responsebuflen = PACKETSZ+1;
   else return DNS_MEM;
+ }
 
  responselen = lookup(glue.s,C_IN,type,response.buf,responsebuflen);
  if ((responselen >= responsebuflen) ||
      (responselen > 0 && (((HEADER *)response.buf)->tc)))
   {
-   if (responsebuflen < 65536)
+   if (responsebuflen < 65536) {
     if (alloc_re(&response.buf, responsebuflen, 65536))
      responsebuflen = 65536;
     else return DNS_MEM;
@@ -66,6 +67,7 @@ int type;
     _res.options |= RES_USEVC;
     responselen = lookup(glue.s,C_IN,type,response.buf,responsebuflen);
     _res.options = saveresoptions;
+   }
   }
  if (responselen <= 0)
   {

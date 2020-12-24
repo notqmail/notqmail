@@ -25,6 +25,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include "env.h"
+#include "fmt.h"
 
 #ifndef TMPDIR
 #define TMPDIR "/tmp"
@@ -55,15 +56,9 @@ static const char* qqargv[2];
 
 void mysetenvu(const char* key, unsigned long val)
 {
-  char buf[40];
-  int i;
-  i = sizeof buf;
-  buf[--i] = 0;
-  do {
-    buf[--i] = (val % 10) + '0';
-    val /= 10;
-  } while (val > 0);
-  if (!env_put2(key,buf+i)) exit(QQ_OOM);
+  char strnum[FMT_ULONG];
+  fmt_ulong(strnum,val);
+  if (!env_put2(key,strnum)) exit(QQ_OOM);
 }
 
 static size_t env_len = 0;

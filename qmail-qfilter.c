@@ -53,11 +53,6 @@
 
 static const char* qqargv[2];
 
-void mysetenv(const char* key, const char* val)
-{
-  if (!env_put2(key,val)) exit(QQ_OOM);
-}
-
 void mysetenvu(const char* key, unsigned long val)
 {
   char buf[40];
@@ -68,7 +63,7 @@ void mysetenvu(const char* key, unsigned long val)
     buf[--i] = (val % 10) + '0';
     val /= 10;
   } while (val > 0);
-  mysetenv(key, buf + i);
+  if (!env_put2(key,buf+i)) exit(QQ_OOM);
 }
 
 static size_t env_len = 0;
@@ -97,13 +92,13 @@ size_t parse_sender(const char* env)
   at = strrchr(ptr, '@');
   if(!at) {
     len = strlen(ptr);
-    mysetenv("QMAILUSER", ptr);
+    if (!env_put2("QMAILUSER",ptr)) exit(QQ_OOM);
     putenv("QMAILHOST=");
   }
   else {
     len = strlen(at);
-    mysetenv("QMAILUSER", ptr);
-    mysetenv("QMAILHOST", at+1);
+    if (!env_put2("QMAILUSER",ptr)) exit(QQ_OOM);
+    if (!env_put2("QMAILHOST",at+1)) exit(QQ_OOM);
     ptr = at;
   }
   return ptr + len + 1 - env;
@@ -126,7 +121,7 @@ void parse_rcpts(const char* env, int offset)
     ++count;
   }
   *tmp = 0;
-  mysetenv("QMAILRCPTS", buf);
+  if (!env_put2("QMAILRCPTS",buf)) exit(QQ_OOM);
   mysetenvu("NUMRCPTS", count);
   free(buf);
 }

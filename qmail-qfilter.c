@@ -149,10 +149,9 @@ static int mktmpfile()
   return fd;
 }
 
-/* Copy from one FD to a temporary FD */
-static void copy_fd(int fdin, int fdout, size_t* var)
+static size_t copy_fd_contents_and_close(int fdin, int fdout)
 {
-  unsigned long bytes;
+  size_t bytes;
   int tmp = mktmpfile();
   
   /* Copy the message into the temporary file */
@@ -172,7 +171,8 @@ static void copy_fd(int fdin, int fdout, size_t* var)
   if (lseek(tmp, 0, SEEK_SET) != 0)
     exit(QQ_WRITE_ERROR);
   if (fd_move(fdout,tmp) == -1) exit(QQ_WRITE_ERROR);
-  *var = bytes;
+
+  return bytes;
 }
 
 struct command
@@ -302,8 +302,8 @@ int main(int argc, char* argv[])
 
   mysetenvu("QMAILPPID", getppid());
 
-  copy_fd(0, 0, &msg_len);
-  copy_fd(1, ENVIN, &env_len);
+  msg_len = copy_fd_contents_and_close(0, 0);
+  env_len = copy_fd_contents_and_close(1, ENVIN);
   parse_envelope();
   mktmpfd(QQFD);
 

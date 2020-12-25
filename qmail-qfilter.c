@@ -72,7 +72,7 @@ static size_t parse_sender(const char* env)
     exit(QQ_BAD_ENV);
   ++ptr;
   
-  unsetenv("QMAILNAME");
+  env_unset("QMAILNAME");
   
   if (!*ptr) {
     if (!env_put("QMAILUSER=") || !env_put("QMAILHOST="))

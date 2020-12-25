@@ -36,10 +36,6 @@
 #define BUFSIZE 4096
 #endif
 
-#ifndef QMAIL_QUEUE
-#define QMAIL_QUEUE "/var/qmail/bin/qmail-queue"
-#endif
-
 #define QQ_OOM 51
 #define QQ_WRITE_ERROR 53
 #define QQ_INTERNAL 81
@@ -297,8 +293,10 @@ int main(int argc, char* argv[])
   
   filters = parse_args(argc-1, argv+1);
 
-  if ((qqargv[0] = getenv("QQF_QMAILQUEUE")) == 0)
-    qqargv[0] = QMAIL_QUEUE;
+  if (!qqargv[0])
+    qqargv[0] = env_get("QQF_QMAILQUEUE");
+  if (!qqargv[0])
+    qqargv[0] = "bin/qmail-queue";
 
   mysetenvu("QMAILPPID", getppid());
 

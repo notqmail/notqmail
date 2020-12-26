@@ -225,7 +225,9 @@ and
 .B LOGNAME
 unset, e.g.:
 .P
-.B "env -u MAILUSER -u USER -u LOGNAME qmail-inject -n"
+.EX
+    env -u MAILUSER -u USER -u LOGNAME qmail-inject -n
+.EE
 .P
 A message with an excessive number of recipients (more than 64K bytes of
 recipient data on Linux) will cause filter programs to fail to execute

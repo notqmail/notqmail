@@ -287,6 +287,15 @@ static void run_filters(const command* first)
   }
 }
 
+static void setup_qqargs(void)
+{
+  if (!qqargv[0])
+    qqargv[0] = env_get("QQF_QMAILQUEUE");
+  if (!qqargv[0])
+    qqargv[0] = "bin/qmail-queue";
+  read_qqfd();
+}
+
 int main(int argc, char* argv[])
 {
   const command* filters;
@@ -302,11 +311,7 @@ int main(int argc, char* argv[])
 
   run_filters(filters);
 
-  if (!qqargv[0])
-    qqargv[0] = env_get("QQF_QMAILQUEUE");
-  if (!qqargv[0])
-    qqargv[0] = "bin/qmail-queue";
-  read_qqfd();
+  setup_qqargs();
   if (fd_move(1,ENVIN) == -1) exit(QQ_WRITE_ERROR);
   execv(qqargv[0], (char**)qqargv);
   return QQ_INTERNAL;

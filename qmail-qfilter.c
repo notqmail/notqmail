@@ -236,21 +236,22 @@ static void move_unless_empty(int src, int dst, const void* reopen,
     exit(QQ_WRITE_ERROR);
 }
 
-static void read_qqfd(void)
+static char *qq_overridden_by_filter(int fd)
 {
   struct stat st;
   char* buf;
-  if (fstat(QQFD, &st) != 0)
+  buf = NULL;
+  if (fstat(fd, &st) != 0)
     exit(QQ_INTERNAL);
   if (st.st_size > 0) {
     if ((buf = malloc(st.st_size + 1)) == 0)
       exit(QQ_INTERNAL);
-    if (read(QQFD, buf, st.st_size) != st.st_size)
+    if (read(fd, buf, st.st_size) != st.st_size)
       exit(QQ_INTERNAL);
     buf[st.st_size] = 0;
-    binqqargs[0] = buf;
   }
-  close(QQFD);
+  close(fd);
+  return buf;
 }
 
 /* Run each of the filters in sequence */
@@ -290,10 +291,11 @@ static void run_filters(const command* first)
 static void setup_qqargs(void)
 {
   if (!binqqargs[0])
+    binqqargs[0] = qq_overridden_by_filter(QQFD);
+  if (!binqqargs[0])
     binqqargs[0] = env_get("QQF_QMAILQUEUE");
   if (!binqqargs[0])
     binqqargs[0] = "bin/qmail-queue";
-  read_qqfd();
 }
 
 int main(int argc, char* argv[])

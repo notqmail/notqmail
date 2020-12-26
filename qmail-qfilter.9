@@ -116,7 +116,8 @@ can't read or parse envelope data, it exits
 bad envelope data.
 .P
 Otherwise,
-.B qmail-qfilter exits with
+.B qmail-qfilter
+exits with
 .BR qmail-queue 's
 exit code.
 .SH "ENVIRONMENT VARIABLES"
@@ -152,24 +153,21 @@ For compatibility with previous versions,
 .B QMAILNAME
 is unset.
 .P
-Other programs included with qmail which invoke
-.B qmail-queue
-will invoke the contents of
-.B QMAILQUEUE
-instead, if set.
-.B qmail-qfilter
-does not.
-This avoids recursive loops with configurations that invoke
-.B qmail-qfilter
-by setting
-.BR QMAILQUEUE .
 To override
 .BR qmail-qfilter 's
 invocation of
 .BR qmail-queue ,
 set
-.B QQF_QMAILQUEUE
-instead.
+.BR QQF_QMAILQUEUE .
+Unlike other programs included with qmail,
+.B qmail-qfilter
+avoids using
+.B QMAILQUEUE
+for this purpose.
+This avoids recursive loops with configurations that use
+.B QMAILQUEUE
+to invoke
+.BR qmail-qfilter .
 .SH EXAMPLES
 To SMTP-reject incoming messages with long
 .B Date:

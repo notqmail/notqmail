@@ -293,11 +293,6 @@ int main(int argc, char* argv[])
   
   filters = parse_args(argc-1, argv+1);
 
-  if (!qqargv[0])
-    qqargv[0] = env_get("QQF_QMAILQUEUE");
-  if (!qqargv[0])
-    qqargv[0] = "bin/qmail-queue";
-
   env_put2_ulong("QMAILPPID", getppid());
 
   msg_len = copy_fd_contents_and_close(0, 0);
@@ -307,6 +302,10 @@ int main(int argc, char* argv[])
 
   run_filters(filters);
 
+  if (!qqargv[0])
+    qqargv[0] = env_get("QQF_QMAILQUEUE");
+  if (!qqargv[0])
+    qqargv[0] = "bin/qmail-queue";
   read_qqfd();
   if (fd_move(1,ENVIN) == -1) exit(QQ_WRITE_ERROR);
   execv(qqargv[0], (char**)qqargv);

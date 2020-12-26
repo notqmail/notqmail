@@ -1269,6 +1269,12 @@ load qmail-qfilter.o env.a fd.a fs.a
 qmail-qfilter.0: \
 qmail-qfilter.1
 
+qmail-qfilter.1: \
+qmail-qfilter.9 conf-qmail
+	cat qmail-qfilter.9 \
+	| sed s}QMAILHOME}"`head -n 1 conf-qmail`"}g \
+	> qmail-qfilter.1
+
 qmail-qfilter.o: \
 compile qmail-qfilter.c env.h
 	./compile qmail-qfilter.c

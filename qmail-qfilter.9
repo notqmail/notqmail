@@ -171,15 +171,11 @@ set
 .B QQF_QMAILQUEUE
 instead.
 .SH EXAMPLES
-To add SpamAssassin headers to every message:
-.P
-.EX
-    spamc
-.EE
-.P
-To reject messages with long
+To SMTP-reject incoming messages with long
 .B Date:
-headers:
+headers,
+then add SpamAssassin headers to the rest, create
+.BR QMAILHOME/bin/qfilter-block-long-dates :
 .P
 .EX
     #!/usr/bin/perl
@@ -192,6 +188,33 @@ headers:
       print;
     }
 .EE
+.P
+And
+.BR QMAILHOME/bin/qfilter-mark-spamminess :
+.P
+.EX
+    #!/bin/sh
+    exec spamc
+.EE
+.P
+And
+.B QMAILHOME/bin/qmail-qfilter-smtpd-queue
+to run them in sequence:
+.P
+.EX
+    #!/bin/sh
+    exec QMAILHOME/bin/qmail-qfilter \\
+        QMAILHOME/bin/qfilter-block-long-dates \\
+        -- \\
+        QMAILHOME/bin/qfilter-mark-spamminess
+.EE
+.P
+Then set
+.B QMAILQUEUE
+for your
+.B qmail-smtpd
+service to
+.BR QMAILHOME/bin/qmail-qfilter-smtpd-queue .
 .SH WARNINGS
 If
 .I filter

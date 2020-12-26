@@ -39,15 +39,15 @@
 #define QQ_OOM 51
 #define QQ_WRITE_ERROR 53
 #define QQ_INTERNAL 81
-#define QQ_BAD_ENV 91
+#define QQ_BAD_ENVELOPE 91
 
-#define QQ_DROP_MSG 99
+#define QQ_DROP_MESSAGE 99
 
-#define MSGIN 0
-#define MSGOUT 1
-#define ENVIN 3
-#define ENVOUT 4
-#define QQFD 5
+#define MESSAGE_IN 0
+#define MESSAGE_OUT 1
+#define ENVELOPE_IN 3
+#define ENVELOPE_OUT 4
+#define QMAILQUEUE_OVERRIDE 5
 
 static const char* binqqargs[2];
 
@@ -59,18 +59,17 @@ static void env_put2_ulong(const char* key, unsigned long val)
   if (!env_put2(key,strnum)) exit(QQ_OOM);
 }
 
-static size_t env_len = 0;
-static size_t msg_len = 0;
+static size_t envelope_len = 0;
+static size_t message_len = 0;
 
-/* Parse the sender address into user and host portions */
-static size_t parse_sender(const char* env)
+static size_t parse_sender(const char* envelope)
 {
-  const char* ptr = env;
+  const char* ptr = envelope;
   char* at;
-  size_t len = strlen(env);
+  size_t len = strlen(envelope);
 
   if (*ptr != 'F')
-    exit(QQ_BAD_ENV);
+    exit(QQ_BAD_ENVELOPE);
   ++ptr;
 
   env_unset("QMAILNAME");
@@ -94,18 +93,18 @@ static size_t parse_sender(const char* env)
     ptr = at;
   }
 
-  return ptr + len + 1 - env;
+  return ptr + len + 1 - envelope;
 }
 
-static void parse_rcpts(const char* env, int offset)
+static void parse_recipients(const char* envelope, int offset)
 {
-  size_t len = env_len - offset;
-  const char* ptr = env + offset;
+  size_t len = envelope_len - offset;
+  const char* ptr = envelope + offset;
   char* buf = malloc(len);
   char* tmp = buf;
   unsigned long count = 0;
 
-  while (ptr < env + env_len && *ptr == 'T') {
+  while (ptr < envelope + envelope_len && *ptr == 'T') {
     size_t rcptlen = strlen(++ptr);
 
     memcpy(tmp, ptr, rcptlen);
@@ -122,18 +121,17 @@ static void parse_rcpts(const char* env, int offset)
 
 static void parse_envelope(int fd)
 {
-  const char* env;
+  const char* envelope;
   size_t offset;
 
-  if ((env = mmap(0, env_len, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
+  if ((envelope = mmap(0, envelope_len, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
     exit(QQ_OOM);
-  offset = parse_sender(env);
-  parse_rcpts(env, offset);
-  munmap((void*)env, env_len);
+  offset = parse_sender(envelope);
+  parse_recipients(envelope, offset);
+  munmap((void*)envelope, envelope_len);
 }
 
-/* Create a temporary invisible file opened for read/write */
-static int mktmpfile()
+static int invisible_readwrite_tempfile()
 {
   char filename[sizeof(TMPDIR)+19] = TMPDIR "/fixheaders.XXXXXX";
   int fd = mkstemp(filename);
@@ -141,8 +139,6 @@ static int mktmpfile()
   if (fd == -1)
     exit(QQ_WRITE_ERROR);
 
-  /* The following makes the temporary file disappear immediately on
-     program exit. */
   if (unlink(filename) == -1)
     exit(QQ_WRITE_ERROR);
 
@@ -152,9 +148,8 @@ static int mktmpfile()
 static size_t copy_fd_contents_and_close(int fdin, int fdout)
 {
   size_t bytes;
-  int tmp = mktmpfile();
+  int tmp = invisible_readwrite_tempfile();
 
-  /* Copy the message into the temporary file */
   for (bytes = 0;;) {
     char buf[BUFSIZE];
     ssize_t rd = read(fdin, buf, BUFSIZE);
@@ -183,8 +178,7 @@ struct command
 };
 typedef struct command command;
 
-/* Split up the command line into a linked list of seperate commands */
-static command* parse_args(int argc, char* argv[])
+static command* parse_args_to_linked_list_of_filters(int argc, char* argv[])
 {
   command* tail = 0;
   command* head = 0;
@@ -214,12 +208,12 @@ static command* parse_args(int argc, char* argv[])
   return head;
 }
 
-static void mktmpfd(int fd)
+static void invisible_readwrite_tempfd(int fd)
 {
   int tmp;
 
   close(fd);
-  tmp = mktmpfile();
+  tmp = invisible_readwrite_tempfile();
   if (fd_move(fd,tmp) == -1) exit(QQ_WRITE_ERROR);
 }
 
@@ -234,9 +228,9 @@ static void move_unless_empty(int src, int dst, const void* reopen,
     if (fd_move(dst,src) == -1) exit(QQ_WRITE_ERROR);
     *var = st.st_size;
     if (reopen) {
-      mktmpfd(src);
-      if (src == ENVOUT)
-        parse_envelope(ENVIN);
+      invisible_readwrite_tempfd(src);
+      if (src == ENVELOPE_OUT)
+        parse_envelope(ENVELOPE_IN);
     }
   }
   else
@@ -265,20 +259,19 @@ static char *qq_overridden_by_filter(int fd)
   return buf;
 }
 
-/* Run each of the filters in sequence */
-static void run_filters(const command* first)
+static void run_filters_in_sequence(const command* first)
 {
   const command* c;
 
-  mktmpfd(MSGOUT);
-  mktmpfd(ENVOUT);
+  invisible_readwrite_tempfd(MESSAGE_OUT);
+  invisible_readwrite_tempfd(ENVELOPE_OUT);
 
   for (c = first; c; c = c->next) {
     pid_t pid;
     int status;
 
-    env_put2_ulong("ENVSIZE", env_len);
-    env_put2_ulong("MSGSIZE", msg_len);
+    env_put2_ulong("ENVSIZE", envelope_len);
+    env_put2_ulong("MSGSIZE", message_len);
     pid = fork();
     if (pid == -1)
       exit(QQ_OOM);
@@ -291,10 +284,10 @@ static void run_filters(const command* first)
     if (!WIFEXITED(status))
       exit(QQ_INTERNAL);
     if (WEXITSTATUS(status))
-      exit((WEXITSTATUS(status) == QQ_DROP_MSG) ? 0 : WEXITSTATUS(status));
-    move_unless_empty(MSGOUT, MSGIN, c->next, &msg_len);
-    move_unless_empty(ENVOUT, ENVIN, c->next, &env_len);
-    if (lseek(QQFD, 0, SEEK_SET) != 0)
+      exit((WEXITSTATUS(status) == QQ_DROP_MESSAGE) ? 0 : WEXITSTATUS(status));
+    move_unless_empty(MESSAGE_OUT, MESSAGE_IN, c->next, &message_len);
+    move_unless_empty(ENVELOPE_OUT, ENVELOPE_IN, c->next, &envelope_len);
+    if (lseek(QMAILQUEUE_OVERRIDE, 0, SEEK_SET) != 0)
       exit(QQ_WRITE_ERROR);
   }
 }
@@ -311,19 +304,19 @@ static void setup_qqargs(int fd)
 
 int main(int argc, char* argv[])
 {
-  const command* filters = parse_args(argc-1, argv+1);
+  const command* filters = parse_args_to_linked_list_of_filters(argc-1, argv+1);
 
   env_put2_ulong("QMAILPPID", getppid());
 
-  msg_len = copy_fd_contents_and_close(0, 0);
-  env_len = copy_fd_contents_and_close(1, ENVIN);
-  parse_envelope(ENVIN);
-  mktmpfd(QQFD);
+  message_len = copy_fd_contents_and_close(0, 0);
+  envelope_len = copy_fd_contents_and_close(1, ENVELOPE_IN);
+  parse_envelope(ENVELOPE_IN);
+  invisible_readwrite_tempfd(QMAILQUEUE_OVERRIDE);
 
-  run_filters(filters);
+  run_filters_in_sequence(filters);
 
-  setup_qqargs(QQFD);
-  if (fd_move(1,ENVIN) == -1) exit(QQ_WRITE_ERROR);
+  setup_qqargs(QMAILQUEUE_OVERRIDE);
+  if (fd_move(1,ENVELOPE_IN) == -1) exit(QQ_WRITE_ERROR);
   execv(binqqargs[0], (char**)binqqargs);
 
   return QQ_INTERNAL;

@@ -117,11 +117,11 @@ static void parse_rcpts(const char* env, int offset)
   free(buf);
 }
 
-static void parse_envelope(void)
+static void parse_envelope(int fd)
 {
   const char* env;
   size_t offset;
-  if ((env = mmap(0, env_len, PROT_READ, MAP_PRIVATE, ENVIN, 0)) == MAP_FAILED)
+  if ((env = mmap(0, env_len, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
     exit(QQ_OOM);
   offset = parse_sender(env);
   parse_rcpts(env, offset);
@@ -226,7 +226,7 @@ static void move_unless_empty(int src, int dst, const void* reopen,
     if (reopen) {
       mktmpfd(src);
       if (src == ENVOUT)
-        parse_envelope();
+        parse_envelope(ENVIN);
     }
   }
   else
@@ -288,10 +288,10 @@ static void run_filters(const command* first)
   }
 }
 
-static void setup_qqargs(void)
+static void setup_qqargs(int fd)
 {
   if (!binqqargs[0])
-    binqqargs[0] = qq_overridden_by_filter(QQFD);
+    binqqargs[0] = qq_overridden_by_filter(fd);
   if (!binqqargs[0])
     binqqargs[0] = env_get("QQF_QMAILQUEUE");
   if (!binqqargs[0])
@@ -308,12 +308,12 @@ int main(int argc, char* argv[])
 
   msg_len = copy_fd_contents_and_close(0, 0);
   env_len = copy_fd_contents_and_close(1, ENVIN);
-  parse_envelope();
+  parse_envelope(ENVIN);
   mktmpfd(QQFD);
 
   run_filters(filters);
 
-  setup_qqargs();
+  setup_qqargs(QQFD);
   if (fd_move(1,ENVIN) == -1) exit(QQ_WRITE_ERROR);
   execv(binqqargs[0], (char**)binqqargs);
   return QQ_INTERNAL;

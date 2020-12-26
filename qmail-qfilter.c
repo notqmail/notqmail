@@ -67,13 +67,13 @@ static size_t parse_sender(const char* env)
   const char* ptr = env;
   char* at;
   size_t len = strlen(env);
-  
+
   if (*ptr != 'F')
     exit(QQ_BAD_ENV);
   ++ptr;
-  
+
   env_unset("QMAILNAME");
-  
+
   if (!*ptr) {
     if (!env_put("QMAILUSER=") || !env_put("QMAILHOST="))
       exit(QQ_OOM);
@@ -132,7 +132,7 @@ static void parse_envelope(void)
 static int mktmpfile()
 {
   char filename[sizeof(TMPDIR)+19] = TMPDIR "/fixheaders.XXXXXX";
-  
+
   int fd = mkstemp(filename);
   if (fd == -1)
     exit(QQ_WRITE_ERROR);
@@ -141,7 +141,7 @@ static int mktmpfile()
      program exit. */
   if (unlink(filename) == -1)
     exit(QQ_WRITE_ERROR);
-  
+
   return fd;
 }
 
@@ -149,7 +149,7 @@ static size_t copy_fd_contents_and_close(int fdin, int fdout)
 {
   size_t bytes;
   int tmp = mktmpfile();
-  
+
   /* Copy the message into the temporary file */
   for (bytes = 0;;) {
     char buf[BUFSIZE];
@@ -257,7 +257,7 @@ static void read_qqfd(void)
 static void run_filters(const command* first)
 {
   const command* c;
-  
+
   mktmpfd(MSGOUT);
   mktmpfd(ENVOUT);
 
@@ -299,7 +299,7 @@ static void setup_qqargs(void)
 int main(int argc, char* argv[])
 {
   const command* filters;
-  
+
   filters = parse_args(argc-1, argv+1);
 
   env_put2_ulong("QMAILPPID", getppid());

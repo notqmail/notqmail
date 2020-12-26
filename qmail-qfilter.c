@@ -54,6 +54,7 @@ static const char* binqqargs[2];
 static void env_put2_ulong(const char* key, unsigned long val)
 {
   char strnum[FMT_ULONG];
+
   fmt_ulong(strnum,val);
   if (!env_put2(key,strnum)) exit(QQ_OOM);
 }
@@ -92,6 +93,7 @@ static size_t parse_sender(const char* env)
     if (!env_put2("QMAILHOST",at+1)) exit(QQ_OOM);
     ptr = at;
   }
+
   return ptr + len + 1 - env;
 }
 
@@ -101,10 +103,11 @@ static void parse_rcpts(const char* env, int offset)
   const char* ptr = env + offset;
   char* buf = malloc(len);
   char* tmp = buf;
-  unsigned long count;
-  count = 0;
+  unsigned long count = 0;
+
   while (ptr < env + env_len && *ptr == 'T') {
     size_t rcptlen = strlen(++ptr);
+
     memcpy(tmp, ptr, rcptlen);
     tmp[rcptlen] = '\n';
     tmp += rcptlen + 1;
@@ -121,6 +124,7 @@ static void parse_envelope(int fd)
 {
   const char* env;
   size_t offset;
+
   if ((env = mmap(0, env_len, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
     exit(QQ_OOM);
   offset = parse_sender(env);
@@ -132,8 +136,8 @@ static void parse_envelope(int fd)
 static int mktmpfile()
 {
   char filename[sizeof(TMPDIR)+19] = TMPDIR "/fixheaders.XXXXXX";
-
   int fd = mkstemp(filename);
+
   if (fd == -1)
     exit(QQ_WRITE_ERROR);
 
@@ -154,6 +158,7 @@ static size_t copy_fd_contents_and_close(int fdin, int fdout)
   for (bytes = 0;;) {
     char buf[BUFSIZE];
     ssize_t rd = read(fdin, buf, BUFSIZE);
+
     if (rd == -1)
       exit(QQ_WRITE_ERROR);
     if (rd == 0)
@@ -183,9 +188,11 @@ static command* parse_args(int argc, char* argv[])
 {
   command* tail = 0;
   command* head = 0;
+
   while (argc > 0) {
     command* cmd;
     int end = 0;
+
     while (end < argc && strcmp(argv[end], "--"))
       ++end;
     if (end == 0)
@@ -203,12 +210,14 @@ static command* parse_args(int argc, char* argv[])
     argv += end;
     argc -= end;
   }
+
   return head;
 }
 
 static void mktmpfd(int fd)
 {
   int tmp;
+
   close(fd);
   tmp = mktmpfile();
   if (fd_move(fd,tmp) == -1) exit(QQ_WRITE_ERROR);
@@ -218,6 +227,7 @@ static void move_unless_empty(int src, int dst, const void* reopen,
                               size_t* var)
 {
   struct stat st;
+
   if (fstat(src, &st) != 0)
     exit(QQ_INTERNAL);
   if (st.st_size > 0) {
@@ -239,8 +249,8 @@ static void move_unless_empty(int src, int dst, const void* reopen,
 static char *qq_overridden_by_filter(int fd)
 {
   struct stat st;
-  char* buf;
-  buf = NULL;
+  char* buf = 0;
+
   if (fstat(fd, &st) != 0)
     exit(QQ_INTERNAL);
   if (st.st_size > 0) {
@@ -251,6 +261,7 @@ static char *qq_overridden_by_filter(int fd)
     buf[st.st_size] = 0;
   }
   close(fd);
+
   return buf;
 }
 
@@ -300,9 +311,7 @@ static void setup_qqargs(int fd)
 
 int main(int argc, char* argv[])
 {
-  const command* filters;
-
-  filters = parse_args(argc-1, argv+1);
+  const command* filters = parse_args(argc-1, argv+1);
 
   env_put2_ulong("QMAILPPID", getppid());
 
@@ -316,5 +325,6 @@ int main(int argc, char* argv[])
   setup_qqargs(QQFD);
   if (fd_move(1,ENVIN) == -1) exit(QQ_WRITE_ERROR);
   execv(binqqargs[0], (char**)binqqargs);
+
   return QQ_INTERNAL;
 }

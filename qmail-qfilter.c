@@ -51,7 +51,7 @@
 
 static const char* qqargv[2];
 
-static void mysetenvu(const char* key, unsigned long val)
+static void env_put2_ulong(const char* key, unsigned long val)
 {
   char strnum[FMT_ULONG];
   fmt_ulong(strnum,val);
@@ -113,7 +113,7 @@ static void parse_rcpts(const char* env, int offset)
   }
   *tmp = 0;
   if (!env_put2("QMAILRCPTS",buf)) exit(QQ_OOM);
-  mysetenvu("NUMRCPTS", count);
+  env_put2_ulong("NUMRCPTS", count);
   free(buf);
 }
 
@@ -265,8 +265,8 @@ static void run_filters(const command* first)
     pid_t pid;
     int status;
 
-    mysetenvu("ENVSIZE", env_len);
-    mysetenvu("MSGSIZE", msg_len);
+    env_put2_ulong("ENVSIZE", env_len);
+    env_put2_ulong("MSGSIZE", msg_len);
     pid = fork();
     if (pid == -1)
       exit(QQ_OOM);
@@ -298,7 +298,7 @@ int main(int argc, char* argv[])
   if (!qqargv[0])
     qqargv[0] = "bin/qmail-queue";
 
-  mysetenvu("QMAILPPID", getppid());
+  env_put2_ulong("QMAILPPID", getppid());
 
   msg_len = copy_fd_contents_and_close(0, 0);
   env_len = copy_fd_contents_and_close(1, ENVIN);

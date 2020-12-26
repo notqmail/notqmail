@@ -49,7 +49,7 @@
 #define ENVOUT 4
 #define QQFD 5
 
-static const char* qqargv[2];
+static const char* binqqargs[2];
 
 static void env_put2_ulong(const char* key, unsigned long val)
 {
@@ -248,7 +248,7 @@ static void read_qqfd(void)
     if (read(QQFD, buf, st.st_size) != st.st_size)
       exit(QQ_INTERNAL);
     buf[st.st_size] = 0;
-    qqargv[0] = buf;
+    binqqargs[0] = buf;
   }
   close(QQFD);
 }
@@ -289,10 +289,10 @@ static void run_filters(const command* first)
 
 static void setup_qqargs(void)
 {
-  if (!qqargv[0])
-    qqargv[0] = env_get("QQF_QMAILQUEUE");
-  if (!qqargv[0])
-    qqargv[0] = "bin/qmail-queue";
+  if (!binqqargs[0])
+    binqqargs[0] = env_get("QQF_QMAILQUEUE");
+  if (!binqqargs[0])
+    binqqargs[0] = "bin/qmail-queue";
   read_qqfd();
 }
 
@@ -313,6 +313,6 @@ int main(int argc, char* argv[])
 
   setup_qqargs();
   if (fd_move(1,ENVIN) == -1) exit(QQ_WRITE_ERROR);
-  execv(qqargv[0], (char**)qqargv);
+  execv(binqqargs[0], (char**)binqqargs);
   return QQ_INTERNAL;
 }

@@ -170,6 +170,28 @@ invocation of
 set
 .B QQF_QMAILQUEUE
 instead.
+.SH EXAMPLES
+To add SpamAssassin headers to every message:
+.P
+.EX
+    spamc
+.EE
+.P
+To reject messages with long
+.B Date:
+headers:
+.P
+.EX
+    #!/usr/bin/perl
+    while (<>) {
+      print;
+      last if /^\n$/o;
+      exit 31 if /^Date: .{80,}/oi;
+    }
+    while (<>) {
+      print;
+    }
+.EE
 .SH WARNINGS
 If
 .I filter
@@ -193,5 +215,8 @@ Each
 gets file descriptor 5 open to the same temporary file.
 When writing a program name to it, make sure to write a trailing ASCII NUL byte.
 Otherwise, multiple filters could overwrite the value in undesirable ways.
+.SH HISTORY
+.B qmail-qfilter
+was originally written by Bruce Guenter.
 .SH "SEE ALSO"
 qmail-queue(8)

@@ -162,14 +162,14 @@ static size_t copy_fd_contents_and_close(int fdin, int fdout)
   substdio_fdbuf(&ssin,read,fdin,inbuf,sizeof(inbuf));
   substdio_fdbuf(&sstmp,write,tmp,tmpbuf,sizeof(tmpbuf));
   for (bytes = 0;;) {
-    ssize_t rd = substdio_get(&ssin,inbuf,sizeof(inbuf));
+    ssize_t r = substdio_get(&ssin,inbuf,sizeof(inbuf));
 
-    if (rd == -1) die_write();
-    if (rd == 0)
+    if (r == -1) die_write();
+    if (r == 0)
       break;
 
-    if (substdio_put(&sstmp,tmpbuf,sizeof(tmpbuf)) != rd) die_write();
-    bytes += rd;
+    if (substdio_put(&sstmp,tmpbuf,sizeof(tmpbuf)) != r) die_write();
+    bytes += r;
   }
   if (substdio_flush(&sstmp) == -1) die_write();
 

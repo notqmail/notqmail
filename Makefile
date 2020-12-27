@@ -1263,8 +1263,8 @@ auto_users.h byte.h
 	./compile qmail-pw2u.c
 
 qmail-qfilter: \
-load qmail-qfilter.o env.a fd.a fs.a str.a substdio.a
-	./load qmail-qfilter env.a fd.a fs.a str.a substdio.a
+load qmail-qfilter.o env.a fd.a substdio.a str.a fs.a
+	./load qmail-qfilter env.a fd.a substdio.a str.a fs.a
 
 qmail-qfilter.0: \
 qmail-qfilter.1

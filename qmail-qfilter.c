@@ -118,12 +118,7 @@ static size_t parse_sender(const char* envelope)
   }
 
   at = strrchr(ptr, '@');
-  if (!at) {
-    len = str_len(ptr);
-    if (!env_put2("QMAILUSER",ptr)) die_nomem();
-    if (!env_put("QMAILHOST=")) die_nomem();
-  }
-  else {
+  if (at) {
     char *user;
     size_t user_len;
 
@@ -138,6 +133,11 @@ static size_t parse_sender(const char* envelope)
     if (!env_put2("QMAILUSER",user)) die_nomem();
     if (!env_put2("QMAILHOST",at+1)) die_nomem();
     ptr = at;
+  }
+  else {
+    len = str_len(ptr);
+    if (!env_put2("QMAILUSER",ptr)) die_nomem();
+    if (!env_put("QMAILHOST=")) die_nomem();
   }
 
   return ptr + len + 1 - envelope;

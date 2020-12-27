@@ -49,6 +49,10 @@ static const char* binqqargs[2];
 static size_t envelope_len = 0;
 static size_t message_len = 0;
 
+static char errbuf[SUBSTDIO_OUTSIZE];
+static substdio sserr = SUBSTDIO_FDBUF(write,2,errbuf,sizeof(errbuf));
+static char pidstr[FMT_ULONG];
+
 struct command
 {
   char** argv;
@@ -60,6 +64,18 @@ static void die_nomem(void)    { exit(51); }
 static void die_write(void)    { exit(53); }
 static void die_internal(void) { exit(81); }
 static void die_envelope(void) { exit(91); }
+
+static void qqf_debug(const char *s1,const char *s2)
+{
+  if (!env_get("QQF_DEBUG")) return;
+
+  substdio_puts(&sserr,"qmail-qfilter pid ");
+  substdio_puts(&sserr,pidstr);
+  substdio_puts(&sserr," ");
+  substdio_puts(&sserr,s1);
+  substdio_puts(&sserr,s2);
+  substdio_flush(&sserr);
+}
 
 static int env_put2_ulong(const char* key, unsigned long val)
 {
@@ -269,6 +285,7 @@ static void run_filters_in_sequence(const command* first)
 
     if (!env_put2_ulong("ENVSIZE", envelope_len)) die_nomem();
     if (!env_put2_ulong("MSGSIZE", message_len)) die_nomem();
+    qqf_debug("execvp filter as ",c->argv[0]);
     pid = fork();
     if (pid == -1) die_nomem();
     if (pid == 0) {
@@ -299,7 +316,10 @@ int main(int argc, char* argv[])
 {
   const command* filters = parse_args_to_linked_list_of_filters(argc-1, argv+1);
 
+  fmt_ulong(pidstr,getpid());
+
   if (!env_put2_ulong("QMAILPPID", getppid())) die_nomem();
+  qqf_debug("parent ",env_get("QMAILPPID"));
 
   message_len = copy_fd_contents_and_close(0, 0);
   envelope_len = copy_fd_contents_and_close(1, ENVELOPE_IN);
@@ -310,6 +330,7 @@ int main(int argc, char* argv[])
 
   setup_qqargs(QMAILQUEUE_OVERRIDE);
   if (fd_move(1,ENVELOPE_IN) == -1) die_write();
+  qqf_debug("execv qmail-queue as ",binqqargs[0]);
   execv(binqqargs[0], (char**)binqqargs);
 
   return 81;

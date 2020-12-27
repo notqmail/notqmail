@@ -17,6 +17,7 @@
 
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include "alloc.h"
 #include "byte.h"
 #include "env.h"

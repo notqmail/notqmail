@@ -27,6 +27,7 @@
 #include "env.h"
 #include "fd.h"
 #include "fmt.h"
+#include "substdio.h"
 
 #ifndef TMPDIR
 #define TMPDIR "/tmp"
@@ -154,18 +155,23 @@ static void rewind_fd(int fd)
 static size_t copy_fd_contents_and_close(int fdin, int fdout)
 {
   size_t bytes;
+  substdio ssin, sstmp;
+  char inbuf[BUFSIZE], tmpbuf[BUFSIZE];
   int tmp = invisible_readwrite_tempfile();
 
+  substdio_fdbuf(&ssin,read,fdin,inbuf,sizeof(inbuf));
+  substdio_fdbuf(&sstmp,write,tmp,tmpbuf,sizeof(tmpbuf));
   for (bytes = 0;;) {
-    char buf[BUFSIZE];
-    ssize_t rd = read(fdin, buf, BUFSIZE);
+    ssize_t rd = substdio_get(&ssin,inbuf,sizeof(inbuf));
 
     if (rd == -1) die_write();
     if (rd == 0)
       break;
-    if (write(tmp, buf, rd) != rd) die_write();
+
+    if (substdio_put(&sstmp,tmpbuf,sizeof(tmpbuf)) != rd) die_write();
     bytes += rd;
   }
+  if (substdio_flush(&sstmp) == -1) die_write();
 
   close(fdin);
   rewind_fd(tmp);

@@ -204,7 +204,7 @@ static command* parse_args_to_linked_list_of_filters(int argc, char* argv[])
   return head;
 }
 
-static void invisible_readwrite_tempfd(int fd)
+static void invisible_readwrite_tempfileat(int fd)
 {
   int tmp;
 
@@ -223,7 +223,7 @@ static void move_unless_empty(int src, int dst, const void* reopen,
     if (fd_move(dst,src) == -1) die_write();
     *var = st.st_size;
     if (reopen) {
-      invisible_readwrite_tempfd(src);
+      invisible_readwrite_tempfileat(src);
       if (src == ENVELOPE_OUT)
         parse_envelope(ENVELOPE_IN);
     }
@@ -255,8 +255,8 @@ static void run_filters_in_sequence(const command* first)
 {
   const command* c;
 
-  invisible_readwrite_tempfd(MESSAGE_OUT);
-  invisible_readwrite_tempfd(ENVELOPE_OUT);
+  invisible_readwrite_tempfileat(MESSAGE_OUT);
+  invisible_readwrite_tempfileat(ENVELOPE_OUT);
 
   for (c = first; c; c = c->next) {
     pid_t pid;
@@ -299,7 +299,7 @@ int main(int argc, char* argv[])
   message_len = copy_fd_contents_and_close(0, 0);
   envelope_len = copy_fd_contents_and_close(1, ENVELOPE_IN);
   parse_envelope(ENVELOPE_IN);
-  invisible_readwrite_tempfd(QMAILQUEUE_OVERRIDE);
+  invisible_readwrite_tempfileat(QMAILQUEUE_OVERRIDE);
 
   run_filters_in_sequence(filters);
 

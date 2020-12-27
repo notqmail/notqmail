@@ -1276,7 +1276,7 @@ qmail-qfilter.9 conf-qmail
 	> qmail-qfilter.1
 
 qmail-qfilter.o: \
-compile qmail-qfilter.c byte.h env.h fd.h fmt.h substdio.h
+compile qmail-qfilter.c alloc.h byte.h env.h fd.h fmt.h fork.h str.h substdio.h
 	./compile qmail-qfilter.c
 
 qmail-qmqpc: \

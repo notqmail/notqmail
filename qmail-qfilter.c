@@ -15,19 +15,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <unistd.h>
+#include "alloc.h"
 #include "byte.h"
 #include "env.h"
 #include "fd.h"
 #include "fmt.h"
+#include "fork.h"
+#include "str.h"
 #include "substdio.h"
 
 #ifndef TMPDIR
@@ -108,7 +104,7 @@ static size_t parse_sender(const char* envelope)
 {
   const char* ptr = envelope;
   char* at;
-  size_t len = strlen(envelope);
+  size_t len = str_len(envelope);
 
   if (*ptr != 'F') die_envelope();
   ++ptr;
@@ -122,12 +118,12 @@ static size_t parse_sender(const char* envelope)
 
   at = strrchr(ptr, '@');
   if (!at) {
-    len = strlen(ptr);
+    len = str_len(ptr);
     if (!env_put2("QMAILUSER",ptr)) die_nomem();
     if (!env_put("QMAILHOST=")) die_nomem();
   }
   else {
-    len = strlen(at);
+    len = str_len(at);
     if (!env_put2("QMAILUSER",ptr)) die_nomem();
     if (!env_put2("QMAILHOST",at+1)) die_nomem();
     ptr = at;
@@ -145,7 +141,7 @@ static void parse_recipients(const char* envelope, int offset)
   unsigned long count = 0;
 
   while (ptr < envelope + envelope_len && *ptr == 'T') {
-    size_t rcptlen = strlen(++ptr);
+    size_t rcptlen = str_len(++ptr);
 
     memcpy(tmp, ptr, rcptlen);
     tmp[rcptlen] = '\n';
@@ -222,7 +218,7 @@ static command* parse_args_to_linked_list_of_filters(int argc, char* argv[])
     command* cmd;
     int end = 0;
 
-    while (end < argc && strcmp(argv[end], "--"))
+    while (end < argc && str_diff(argv[end], "--"))
       ++end;
     if (end == 0) die_internal();
     argv[end] = 0;

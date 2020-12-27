@@ -140,6 +140,11 @@ static int invisible_readwrite_tempfile()
   return fd;
 }
 
+static void rewind_fd(int fd)
+{
+  if (lseek(fd, 0, SEEK_SET) != 0) die_write();
+}
+
 static size_t copy_fd_contents_and_close(int fdin, int fdout)
 {
   size_t bytes;
@@ -157,7 +162,7 @@ static size_t copy_fd_contents_and_close(int fdin, int fdout)
   }
 
   close(fdin);
-  if (lseek(tmp, 0, SEEK_SET) != 0) die_write();
+  rewind_fd(tmp);
   if (fd_move(fdout,tmp) == -1) die_write();
 
   return bytes;
@@ -226,7 +231,7 @@ static void move_unless_empty(int src, int dst, const void* reopen,
   else
     if (!reopen)
       close(src);
-  if (lseek(dst, 0, SEEK_SET) != 0) die_write();
+  rewind_fd(dst);
 }
 
 static char *qq_overridden_by_filter(int fd)
@@ -271,7 +276,7 @@ static void run_filters_in_sequence(const command* first)
       exit((WEXITSTATUS(status) == QQ_DROP_MESSAGE) ? 0 : WEXITSTATUS(status));
     move_unless_empty(MESSAGE_OUT, MESSAGE_IN, c->next, &message_len);
     move_unless_empty(ENVELOPE_OUT, ENVELOPE_IN, c->next, &envelope_len);
-    if (lseek(QMAILQUEUE_OVERRIDE, 0, SEEK_SET) != 0) die_write();
+    rewind_fd(QMAILQUEUE_OVERRIDE);
   }
 }
 

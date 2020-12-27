@@ -32,16 +32,17 @@ the message is accepted by executing
 Exceptions:
 .TP 5
 .BR 1 .
-If
-.B QQF_QMAILQUEUE
-is set, it specifies an alternate program to be executed. See
-.BR "ENVIRONMENT VARIABLES" .
-.TP
-.BR 2 .
 If any filters have written to file descriptor 5
 (a temporary file managed by
 .BR qmail-qfilter ),
 its contents specify an alternate program to be executed.
+.TP
+.BR 2 .
+Otherwise, if
+.B QQF_QMAILQUEUE
+is set, it specifies an alternate program to be executed.
+(See
+.BR "ENVIRONMENT VARIABLES" .)
 .P
 In any case, accepted messages must be passed to a program that adheres to the
 .B qmail-queue
@@ -211,8 +212,7 @@ Create
 .EE
 .P
 Finally, create
-.B QMAILHOME/bin/qmail-qfilter-smtpd-queue
-to run them in sequence:
+.BR QMAILHOME/bin/qmail-qfilter-smtpd-queue :
 .P
 .EX
     #!/bin/sh

@@ -112,7 +112,8 @@ static size_t parse_sender(const char* envelope)
   env_unset("QMAILNAME");
 
   if (!*ptr) {
-    if (!env_put("QMAILUSER=") || !env_put("QMAILHOST=")) die_nomem();
+    if (!env_put("QMAILUSER=")) die_nomem();
+    if (!env_put("QMAILHOST=")) die_nomem();
     return 2;
   }
 
@@ -123,8 +124,18 @@ static size_t parse_sender(const char* envelope)
     if (!env_put("QMAILHOST=")) die_nomem();
   }
   else {
+    char *user;
+    size_t user_len;
+
     len = str_len(at);
-    if (!env_put2("QMAILUSER",ptr)) die_nomem();
+
+    user_len = str_len(ptr) - len;
+    user = malloc(user_len + 1);
+    for (int i = 0; i < user_len; i++)
+      user[i] = ptr[i];
+    user[user_len] = 0;
+
+    if (!env_put2("QMAILUSER",user)) die_nomem();
     if (!env_put2("QMAILHOST",at+1)) die_nomem();
     ptr = at;
   }

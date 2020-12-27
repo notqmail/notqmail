@@ -24,6 +24,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <unistd.h>
+#include "byte.h"
 #include "env.h"
 #include "fd.h"
 #include "fmt.h"
@@ -60,11 +61,6 @@ struct command
 };
 typedef struct command command;
 
-static void die_nomem(void)    { exit(51); }
-static void die_write(void)    { exit(53); }
-static void die_internal(void) { exit(81); }
-static void die_envelope(void) { exit(91); }
-
 static void qqf_debug(const char *s1,const char *s2)
 {
   if (!env_get("QQF_DEBUG")) return;
@@ -73,14 +69,37 @@ static void qqf_debug(const char *s1,const char *s2)
   substdio_puts(&sserr,pidstr);
   substdio_puts(&sserr," ");
   substdio_puts(&sserr,s1);
+  substdio_puts(&sserr," ");
   substdio_puts(&sserr,s2);
+  substdio_puts(&sserr,"\n");
   substdio_flush(&sserr);
 }
+
+static void qqf_debug_ulong(const char *s1,unsigned long val)
+{
+  char strnum[FMT_ULONG];
+
+  byte_zero(strnum,FMT_ULONG);
+  fmt_ulong(strnum,val);
+  return qqf_debug(s1,strnum);
+}
+
+static void die(int exitcode)
+{
+  qqf_debug_ulong("exit",exitcode);
+  exit(exitcode);
+}
+
+static void die_nomem(void)    { die(51); }
+static void die_write(void)    { die(53); }
+static void die_internal(void) { die(81); }
+static void die_envelope(void) { die(91); }
 
 static int env_put2_ulong(const char* key, unsigned long val)
 {
   char strnum[FMT_ULONG];
 
+  byte_zero(strnum,FMT_ULONG);
   fmt_ulong(strnum,val);
   return env_put2(key,strnum);
 }
@@ -171,23 +190,21 @@ static void rewind_fd(int fd)
 static size_t copy_fd_contents_and_close(int fdin, int fdout)
 {
   size_t bytes;
-  substdio ssin, sstmp;
-  char inbuf[BUFSIZE], tmpbuf[BUFSIZE];
   int tmp = invisible_readwrite_tempfile();
+  char buf[BUFSIZE];
+  substdio ssin = SUBSTDIO_FDBUF(read,fdin,buf,sizeof(buf));
+  substdio sstmp = SUBSTDIO_FDBUF(write,tmp,buf,sizeof(buf));
 
-  substdio_fdbuf(&ssin,read,fdin,inbuf,sizeof(inbuf));
-  substdio_fdbuf(&sstmp,write,tmp,tmpbuf,sizeof(tmpbuf));
   for (bytes = 0;;) {
-    ssize_t r = substdio_get(&ssin,inbuf,sizeof(inbuf));
+    ssize_t r = substdio_get(&ssin,buf,sizeof(buf));
 
     if (r == -1) die_write();
     if (r == 0)
       break;
 
-    if (substdio_put(&sstmp,tmpbuf,sizeof(tmpbuf)) != r) die_write();
+    if (substdio_putflush(&sstmp,buf,sizeof(buf)) == -1) die_write();
     bytes += r;
   }
-  if (substdio_flush(&sstmp) == -1) die_write();
 
   close(fdin);
   rewind_fd(tmp);
@@ -285,17 +302,17 @@ static void run_filters_in_sequence(const command* first)
 
     if (!env_put2_ulong("ENVSIZE", envelope_len)) die_nomem();
     if (!env_put2_ulong("MSGSIZE", message_len)) die_nomem();
-    qqf_debug("execvp filter as ",c->argv[0]);
     pid = fork();
     if (pid == -1) die_nomem();
     if (pid == 0) {
       execvp(c->argv[0], c->argv);
       die_internal();
     }
+    qqf_debug_ulong(c->argv[0],pid);
     if (waitpid(pid, &status, WUNTRACED) == -1) die_internal();
     if (!WIFEXITED(status)) die_internal();
     if (WEXITSTATUS(status))
-      exit((WEXITSTATUS(status) == QQ_DROP_MESSAGE) ? 0 : WEXITSTATUS(status));
+      die((WEXITSTATUS(status) == QQ_DROP_MESSAGE) ? 0 : WEXITSTATUS(status));
     move_unless_empty(MESSAGE_OUT, MESSAGE_IN, c->next, &message_len);
     move_unless_empty(ENVELOPE_OUT, ENVELOPE_IN, c->next, &envelope_len);
     rewind_fd(QMAILQUEUE_OVERRIDE);
@@ -319,7 +336,7 @@ int main(int argc, char* argv[])
   fmt_ulong(pidstr,getpid());
 
   if (!env_put2_ulong("QMAILPPID", getppid())) die_nomem();
-  qqf_debug("parent ",env_get("QMAILPPID"));
+  qqf_debug("ppid",env_get("QMAILPPID"));
 
   message_len = copy_fd_contents_and_close(0, 0);
   envelope_len = copy_fd_contents_and_close(1, ENVELOPE_IN);
@@ -330,8 +347,7 @@ int main(int argc, char* argv[])
 
   setup_qqargs(QMAILQUEUE_OVERRIDE);
   if (fd_move(1,ENVELOPE_IN) == -1) die_write();
-  qqf_debug("execv qmail-queue as ",binqqargs[0]);
+  qqf_debug("execv",binqqargs[0]);
   execv(binqqargs[0], (char**)binqqargs);
-
-  return 81;
+  die_internal();
 }

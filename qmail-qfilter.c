@@ -103,6 +103,7 @@ static int env_put2_ulong(const char* key, unsigned long val)
 static size_t parse_sender(const char* envelope)
 {
   const char* ptr = envelope;
+  size_t pos;
   char* at;
   size_t len = str_len(envelope);
 
@@ -117,7 +118,13 @@ static size_t parse_sender(const char* envelope)
     return 2;
   }
 
-  at = strrchr(ptr, '@');
+  pos = str_rchr(ptr, '@');
+  len = str_len(ptr);
+  if (pos >= len)
+    at = 0;
+  else
+    at = (char *)ptr + pos;
+
   if (at) {
     char *user;
     size_t user_len;
@@ -135,7 +142,6 @@ static size_t parse_sender(const char* envelope)
     ptr = at;
   }
   else {
-    len = str_len(ptr);
     if (!env_put2("QMAILUSER",ptr)) die_nomem();
     if (!env_put("QMAILHOST=")) die_nomem();
   }

@@ -60,12 +60,12 @@ static void die_write(void)    { exit(53); }
 static void die_internal(void) { exit(81); }
 static void die_envelope(void) { exit(91); }
 
-static void env_put2_ulong(const char* key, unsigned long val)
+static int env_put2_ulong(const char* key, unsigned long val)
 {
   char strnum[FMT_ULONG];
 
   fmt_ulong(strnum,val);
-  if (!env_put2(key,strnum)) die_nomem();
+  return env_put2(key,strnum);
 }
 
 static size_t parse_sender(const char* envelope)
@@ -119,7 +119,7 @@ static void parse_recipients(const char* envelope, int offset)
   }
   *tmp = 0;
   if (!env_put2("QMAILRCPTS",buf)) die_nomem();
-  env_put2_ulong("NUMRCPTS", count);
+  if (!env_put2_ulong("NUMRCPTS", count)) die_nomem();
   free(buf);
 }
 
@@ -261,8 +261,8 @@ static void run_filters_in_sequence(const command* first)
     pid_t pid;
     int status;
 
-    env_put2_ulong("ENVSIZE", envelope_len);
-    env_put2_ulong("MSGSIZE", message_len);
+    if (!env_put2_ulong("ENVSIZE", envelope_len)) die_nomem();
+    if (!env_put2_ulong("MSGSIZE", message_len)) die_nomem();
     pid = fork();
     if (pid == -1) die_nomem();
     if (pid == 0) {
@@ -293,7 +293,7 @@ int main(int argc, char* argv[])
 {
   const command* filters = parse_args_to_linked_list_of_filters(argc-1, argv+1);
 
-  env_put2_ulong("QMAILPPID", getppid());
+  if (!env_put2_ulong("QMAILPPID", getppid())) die_nomem();
 
   message_len = copy_fd_contents_and_close(0, 0);
   envelope_len = copy_fd_contents_and_close(1, ENVELOPE_IN);

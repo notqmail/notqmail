@@ -68,15 +68,13 @@ static size_t parse_sender(const char* envelope)
   char* at;
   size_t len = strlen(envelope);
 
-  if (*ptr != 'F')
-    die_envelope();
+  if (*ptr != 'F') die_envelope();
   ++ptr;
 
   env_unset("QMAILNAME");
 
   if (!*ptr) {
-    if (!env_put("QMAILUSER=") || !env_put("QMAILHOST="))
-      die_nomem();
+    if (!env_put("QMAILUSER=") || !env_put("QMAILHOST=")) die_nomem();
     return 2;
   }
 
@@ -124,8 +122,8 @@ static void parse_envelope(int fd)
   const char* envelope;
   size_t offset;
 
-  if ((envelope = mmap(0, envelope_len, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-    die_nomem();
+  envelope = mmap(0, envelope_len, PROT_READ, MAP_PRIVATE, fd, 0);
+  if (envelope == MAP_FAILED) die_nomem();
   offset = parse_sender(envelope);
   parse_recipients(envelope, offset);
   munmap((void*)envelope, envelope_len);
@@ -136,11 +134,8 @@ static int invisible_readwrite_tempfile()
   char filename[sizeof(TMPDIR)+19] = TMPDIR "/fixheaders.XXXXXX";
   int fd = mkstemp(filename);
 
-  if (fd == -1)
-    die_write();
-
-  if (unlink(filename) == -1)
-    die_write();
+  if (fd == -1) die_write();
+  if (unlink(filename) == -1) die_write();
 
   return fd;
 }
@@ -154,18 +149,15 @@ static size_t copy_fd_contents_and_close(int fdin, int fdout)
     char buf[BUFSIZE];
     ssize_t rd = read(fdin, buf, BUFSIZE);
 
-    if (rd == -1)
-      die_write();
+    if (rd == -1) die_write();
     if (rd == 0)
       break;
-    if (write(tmp, buf, rd) != rd)
-      die_write();
+    if (write(tmp, buf, rd) != rd) die_write();
     bytes += rd;
   }
 
   close(fdin);
-  if (lseek(tmp, 0, SEEK_SET) != 0)
-    die_write();
+  if (lseek(tmp, 0, SEEK_SET) != 0) die_write();
   if (fd_move(fdout,tmp) == -1) die_write();
 
   return bytes;
@@ -189,8 +181,7 @@ static command* parse_args_to_linked_list_of_filters(int argc, char* argv[])
 
     while (end < argc && strcmp(argv[end], "--"))
       ++end;
-    if (end == 0)
-      die_internal();
+    if (end == 0) die_internal();
     argv[end] = 0;
     cmd = malloc(sizeof(command));
     cmd->argv = argv;
@@ -222,8 +213,7 @@ static void move_unless_empty(int src, int dst, const void* reopen,
 {
   struct stat st;
 
-  if (fstat(src, &st) != 0)
-    die_internal();
+  if (fstat(src, &st) != 0) die_internal();
   if (st.st_size > 0) {
     if (fd_move(dst,src) == -1) die_write();
     *var = st.st_size;
@@ -236,8 +226,7 @@ static void move_unless_empty(int src, int dst, const void* reopen,
   else
     if (!reopen)
       close(src);
-  if (lseek(dst, 0, SEEK_SET) != 0)
-    die_write();
+  if (lseek(dst, 0, SEEK_SET) != 0) die_write();
 }
 
 static char *qq_overridden_by_filter(int fd)
@@ -245,13 +234,11 @@ static char *qq_overridden_by_filter(int fd)
   struct stat st;
   char* buf = 0;
 
-  if (fstat(fd, &st) != 0)
-    die_internal();
+  if (fstat(fd, &st) != 0) die_internal();
   if (st.st_size > 0) {
-    if ((buf = malloc(st.st_size + 1)) == 0)
-      die_internal();
-    if (read(fd, buf, st.st_size) != st.st_size)
-      die_internal();
+    buf = malloc(st.st_size + 1);
+    if (!buf) die_internal();
+    if (read(fd, buf, st.st_size) != st.st_size) die_internal();
     buf[st.st_size] = 0;
   }
   close(fd);
@@ -273,22 +260,18 @@ static void run_filters_in_sequence(const command* first)
     env_put2_ulong("ENVSIZE", envelope_len);
     env_put2_ulong("MSGSIZE", message_len);
     pid = fork();
-    if (pid == -1)
-      die_nomem();
+    if (pid == -1) die_nomem();
     if (pid == 0) {
       execvp(c->argv[0], c->argv);
       die_internal();
     }
-    if (waitpid(pid, &status, WUNTRACED) == -1)
-      die_internal();
-    if (!WIFEXITED(status))
-      die_internal();
+    if (waitpid(pid, &status, WUNTRACED) == -1) die_internal();
+    if (!WIFEXITED(status)) die_internal();
     if (WEXITSTATUS(status))
       exit((WEXITSTATUS(status) == QQ_DROP_MESSAGE) ? 0 : WEXITSTATUS(status));
     move_unless_empty(MESSAGE_OUT, MESSAGE_IN, c->next, &message_len);
     move_unless_empty(ENVELOPE_OUT, ENVELOPE_IN, c->next, &envelope_len);
-    if (lseek(QMAILQUEUE_OVERRIDE, 0, SEEK_SET) != 0)
-      die_write();
+    if (lseek(QMAILQUEUE_OVERRIDE, 0, SEEK_SET) != 0) die_write();
   }
 }
 

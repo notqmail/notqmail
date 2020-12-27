@@ -45,6 +45,15 @@
 #define QMAILQUEUE_OVERRIDE 5
 
 static const char* binqqargs[2];
+static size_t envelope_len = 0;
+static size_t message_len = 0;
+
+struct command
+{
+  char** argv;
+  struct command* next;
+};
+typedef struct command command;
 
 static void die_nomem(void)    { exit(51); }
 static void die_write(void)    { exit(53); }
@@ -58,9 +67,6 @@ static void env_put2_ulong(const char* key, unsigned long val)
   fmt_ulong(strnum,val);
   if (!env_put2(key,strnum)) die_nomem();
 }
-
-static size_t envelope_len = 0;
-static size_t message_len = 0;
 
 static size_t parse_sender(const char* envelope)
 {
@@ -167,13 +173,6 @@ static size_t copy_fd_contents_and_close(int fdin, int fdout)
 
   return bytes;
 }
-
-struct command
-{
-  char** argv;
-  struct command* next;
-};
-typedef struct command command;
 
 static command* parse_args_to_linked_list_of_filters(int argc, char* argv[])
 {

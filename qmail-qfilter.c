@@ -36,7 +36,6 @@
 #define BUFSIZE 4096
 #endif
 
-#define QQ_OOM 51
 #define QQ_WRITE_ERROR 53
 #define QQ_INTERNAL 81
 #define QQ_BAD_ENVELOPE 91
@@ -51,12 +50,14 @@
 
 static const char* binqqargs[2];
 
+static void die_nomem(void) { exit(51); }
+
 static void env_put2_ulong(const char* key, unsigned long val)
 {
   char strnum[FMT_ULONG];
 
   fmt_ulong(strnum,val);
-  if (!env_put2(key,strnum)) exit(QQ_OOM);
+  if (!env_put2(key,strnum)) die_nomem();
 }
 
 static size_t envelope_len = 0;
@@ -76,20 +77,20 @@ static size_t parse_sender(const char* envelope)
 
   if (!*ptr) {
     if (!env_put("QMAILUSER=") || !env_put("QMAILHOST="))
-      exit(QQ_OOM);
+      die_nomem();
     return 2;
   }
 
   at = strrchr(ptr, '@');
   if (!at) {
     len = strlen(ptr);
-    if (!env_put2("QMAILUSER",ptr)) exit(QQ_OOM);
-    if (!env_put("QMAILHOST=")) exit(QQ_OOM);
+    if (!env_put2("QMAILUSER",ptr)) die_nomem();
+    if (!env_put("QMAILHOST=")) die_nomem();
   }
   else {
     len = strlen(at);
-    if (!env_put2("QMAILUSER",ptr)) exit(QQ_OOM);
-    if (!env_put2("QMAILHOST",at+1)) exit(QQ_OOM);
+    if (!env_put2("QMAILUSER",ptr)) die_nomem();
+    if (!env_put2("QMAILHOST",at+1)) die_nomem();
     ptr = at;
   }
 
@@ -114,7 +115,7 @@ static void parse_recipients(const char* envelope, int offset)
     ++count;
   }
   *tmp = 0;
-  if (!env_put2("QMAILRCPTS",buf)) exit(QQ_OOM);
+  if (!env_put2("QMAILRCPTS",buf)) die_nomem();
   env_put2_ulong("NUMRCPTS", count);
   free(buf);
 }
@@ -125,7 +126,7 @@ static void parse_envelope(int fd)
   size_t offset;
 
   if ((envelope = mmap(0, envelope_len, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-    exit(QQ_OOM);
+    die_nomem();
   offset = parse_sender(envelope);
   parse_recipients(envelope, offset);
   munmap((void*)envelope, envelope_len);
@@ -274,7 +275,7 @@ static void run_filters_in_sequence(const command* first)
     env_put2_ulong("MSGSIZE", message_len);
     pid = fork();
     if (pid == -1)
-      exit(QQ_OOM);
+      die_nomem();
     if (pid == 0) {
       execvp(c->argv[0], c->argv);
       exit(QQ_INTERNAL);

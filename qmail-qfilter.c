@@ -36,9 +36,6 @@
 #define BUFSIZE 4096
 #endif
 
-#define QQ_INTERNAL 81
-#define QQ_BAD_ENVELOPE 91
-
 #define QQ_DROP_MESSAGE 99
 
 #define MESSAGE_IN 0
@@ -49,8 +46,10 @@
 
 static const char* binqqargs[2];
 
-static void die_nomem(void) { exit(51); }
-static void die_write(void) { exit(53); }
+static void die_nomem(void)    { exit(51); }
+static void die_write(void)    { exit(53); }
+static void die_internal(void) { exit(81); }
+static void die_envelope(void) { exit(91); }
 
 static void env_put2_ulong(const char* key, unsigned long val)
 {
@@ -70,7 +69,7 @@ static size_t parse_sender(const char* envelope)
   size_t len = strlen(envelope);
 
   if (*ptr != 'F')
-    exit(QQ_BAD_ENVELOPE);
+    die_envelope();
   ++ptr;
 
   env_unset("QMAILNAME");
@@ -191,7 +190,7 @@ static command* parse_args_to_linked_list_of_filters(int argc, char* argv[])
     while (end < argc && strcmp(argv[end], "--"))
       ++end;
     if (end == 0)
-      exit(QQ_INTERNAL);
+      die_internal();
     argv[end] = 0;
     cmd = malloc(sizeof(command));
     cmd->argv = argv;
@@ -224,7 +223,7 @@ static void move_unless_empty(int src, int dst, const void* reopen,
   struct stat st;
 
   if (fstat(src, &st) != 0)
-    exit(QQ_INTERNAL);
+    die_internal();
   if (st.st_size > 0) {
     if (fd_move(dst,src) == -1) die_write();
     *var = st.st_size;
@@ -247,12 +246,12 @@ static char *qq_overridden_by_filter(int fd)
   char* buf = 0;
 
   if (fstat(fd, &st) != 0)
-    exit(QQ_INTERNAL);
+    die_internal();
   if (st.st_size > 0) {
     if ((buf = malloc(st.st_size + 1)) == 0)
-      exit(QQ_INTERNAL);
+      die_internal();
     if (read(fd, buf, st.st_size) != st.st_size)
-      exit(QQ_INTERNAL);
+      die_internal();
     buf[st.st_size] = 0;
   }
   close(fd);
@@ -278,12 +277,12 @@ static void run_filters_in_sequence(const command* first)
       die_nomem();
     if (pid == 0) {
       execvp(c->argv[0], c->argv);
-      exit(QQ_INTERNAL);
+      die_internal();
     }
     if (waitpid(pid, &status, WUNTRACED) == -1)
-      exit(QQ_INTERNAL);
+      die_internal();
     if (!WIFEXITED(status))
-      exit(QQ_INTERNAL);
+      die_internal();
     if (WEXITSTATUS(status))
       exit((WEXITSTATUS(status) == QQ_DROP_MESSAGE) ? 0 : WEXITSTATUS(status));
     move_unless_empty(MESSAGE_OUT, MESSAGE_IN, c->next, &message_len);
@@ -320,5 +319,5 @@ int main(int argc, char* argv[])
   if (fd_move(1,ENVELOPE_IN) == -1) die_write();
   execv(binqqargs[0], (char**)binqqargs);
 
-  return QQ_INTERNAL;
+  return 81;
 }

@@ -36,7 +36,6 @@
 #define BUFSIZE 4096
 #endif
 
-#define QQ_WRITE_ERROR 53
 #define QQ_INTERNAL 81
 #define QQ_BAD_ENVELOPE 91
 
@@ -51,6 +50,7 @@
 static const char* binqqargs[2];
 
 static void die_nomem(void) { exit(51); }
+static void die_write(void) { exit(53); }
 
 static void env_put2_ulong(const char* key, unsigned long val)
 {
@@ -138,10 +138,10 @@ static int invisible_readwrite_tempfile()
   int fd = mkstemp(filename);
 
   if (fd == -1)
-    exit(QQ_WRITE_ERROR);
+    die_write();
 
   if (unlink(filename) == -1)
-    exit(QQ_WRITE_ERROR);
+    die_write();
 
   return fd;
 }
@@ -156,18 +156,18 @@ static size_t copy_fd_contents_and_close(int fdin, int fdout)
     ssize_t rd = read(fdin, buf, BUFSIZE);
 
     if (rd == -1)
-      exit(QQ_WRITE_ERROR);
+      die_write();
     if (rd == 0)
       break;
     if (write(tmp, buf, rd) != rd)
-      exit(QQ_WRITE_ERROR);
+      die_write();
     bytes += rd;
   }
 
   close(fdin);
   if (lseek(tmp, 0, SEEK_SET) != 0)
-    exit(QQ_WRITE_ERROR);
-  if (fd_move(fdout,tmp) == -1) exit(QQ_WRITE_ERROR);
+    die_write();
+  if (fd_move(fdout,tmp) == -1) die_write();
 
   return bytes;
 }
@@ -215,7 +215,7 @@ static void invisible_readwrite_tempfd(int fd)
 
   close(fd);
   tmp = invisible_readwrite_tempfile();
-  if (fd_move(fd,tmp) == -1) exit(QQ_WRITE_ERROR);
+  if (fd_move(fd,tmp) == -1) die_write();
 }
 
 static void move_unless_empty(int src, int dst, const void* reopen,
@@ -226,7 +226,7 @@ static void move_unless_empty(int src, int dst, const void* reopen,
   if (fstat(src, &st) != 0)
     exit(QQ_INTERNAL);
   if (st.st_size > 0) {
-    if (fd_move(dst,src) == -1) exit(QQ_WRITE_ERROR);
+    if (fd_move(dst,src) == -1) die_write();
     *var = st.st_size;
     if (reopen) {
       invisible_readwrite_tempfd(src);
@@ -238,7 +238,7 @@ static void move_unless_empty(int src, int dst, const void* reopen,
     if (!reopen)
       close(src);
   if (lseek(dst, 0, SEEK_SET) != 0)
-    exit(QQ_WRITE_ERROR);
+    die_write();
 }
 
 static char *qq_overridden_by_filter(int fd)
@@ -289,7 +289,7 @@ static void run_filters_in_sequence(const command* first)
     move_unless_empty(MESSAGE_OUT, MESSAGE_IN, c->next, &message_len);
     move_unless_empty(ENVELOPE_OUT, ENVELOPE_IN, c->next, &envelope_len);
     if (lseek(QMAILQUEUE_OVERRIDE, 0, SEEK_SET) != 0)
-      exit(QQ_WRITE_ERROR);
+      die_write();
   }
 }
 
@@ -317,7 +317,7 @@ int main(int argc, char* argv[])
   run_filters_in_sequence(filters);
 
   setup_qqargs(QMAILQUEUE_OVERRIDE);
-  if (fd_move(1,ENVELOPE_IN) == -1) exit(QQ_WRITE_ERROR);
+  if (fd_move(1,ENVELOPE_IN) == -1) die_write();
   execv(binqqargs[0], (char**)binqqargs);
 
   return QQ_INTERNAL;

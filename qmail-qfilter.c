@@ -15,6 +15,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "qmail-qfilter.h"
+
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -27,22 +29,6 @@
 #include "str.h"
 #include "substdio.h"
 
-#ifndef TMPDIR
-#define TMPDIR "/tmp"
-#endif
-
-#ifndef BUFSIZE
-#define BUFSIZE 4096
-#endif
-
-#define QQ_DROP_MESSAGE 99
-
-#define MESSAGE_IN 0
-#define MESSAGE_OUT 1
-#define ENVELOPE_IN 3
-#define ENVELOPE_OUT 4
-#define QMAILQUEUE_OVERRIDE 5
-
 static const char* binqqargs[2];
 static size_t envelope_len = 0;
 static size_t message_len = 0;
@@ -50,13 +36,6 @@ static size_t message_len = 0;
 static char errbuf[SUBSTDIO_OUTSIZE];
 static substdio sserr = SUBSTDIO_FDBUF(write,2,errbuf,sizeof(errbuf));
 static char pidstr[FMT_ULONG];
-
-struct command
-{
-  char** argv;
-  struct command* next;
-};
-typedef struct command command;
 
 static void qqf_debug(const char *s1,const char *s2)
 {
@@ -227,7 +206,7 @@ static size_t copy_fd_contents_and_close(int fdin, int fdout)
   return bytes;
 }
 
-static command* parse_args_to_linked_list_of_filters(int argc, char* argv[])
+command* parse_args_to_linked_list_of_filters(int argc, char* argv[])
 {
   command* tail = 0;
   command* head = 0;
@@ -303,7 +282,7 @@ static char *qq_overridden_by_filter(int fd)
   return buf;
 }
 
-static void run_filters_in_sequence(const command* first)
+void run_filters_in_sequence(const command* first)
 {
   const command* c;
 
@@ -333,7 +312,7 @@ static void run_filters_in_sequence(const command* first)
   }
 }
 
-static void setup_qqargs(int fd)
+void setup_qqargs(int fd)
 {
   if (!binqqargs[0])
     binqqargs[0] = qq_overridden_by_filter(fd);
@@ -343,12 +322,17 @@ static void setup_qqargs(int fd)
     binqqargs[0] = "bin/qmail-queue";
 }
 
-int main(int argc, char* argv[])
+void exec_qq(void)
 {
-  const command* filters = parse_args_to_linked_list_of_filters(argc-1, argv+1);
+  if (fd_move(1,ENVELOPE_IN) == -1) die_write();
+  qqf_debug("execv",binqqargs[0]);
+  execv(binqqargs[0], (char**)binqqargs);
+  die_internal();
+}
 
+void prepare_to_run_filters(void)
+{
   fmt_ulong(pidstr,getpid());
-
   if (!env_put2_ulong("QMAILPPID", getppid())) die_nomem();
   qqf_debug("ppid",env_get("QMAILPPID"));
 
@@ -356,12 +340,4 @@ int main(int argc, char* argv[])
   envelope_len = copy_fd_contents_and_close(1, ENVELOPE_IN);
   parse_envelope(ENVELOPE_IN);
   invisible_readwrite_tempfileat(QMAILQUEUE_OVERRIDE);
-
-  run_filters_in_sequence(filters);
-
-  setup_qqargs(QMAILQUEUE_OVERRIDE);
-  if (fd_move(1,ENVELOPE_IN) == -1) die_write();
-  qqf_debug("execv",binqqargs[0]);
-  execv(binqqargs[0], (char**)binqqargs);
-  die_internal();
 }

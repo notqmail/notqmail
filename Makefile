@@ -1263,8 +1263,14 @@ auto_users.h byte.h
 	./compile qmail-pw2u.c
 
 qmail-qfilter: \
-load qmail-qfilter.o env.a fd.a substdio.a str.a fs.a
-	./load qmail-qfilter env.a fd.a substdio.a str.a fs.a
+load qmail-qfilter.o qmail-qfilter-main.o env.a fd.a \
+substdio.a str.a fs.a
+	./load qmail-qfilter qmail-qfilter-main.o env.a fd.a \
+	substdio.a str.a fs.a
+
+qmail-qfilter-main.o: \
+compile qmail-qfilter-main.c qmail-qfilter.h
+	./compile qmail-qfilter-main.c
 
 qmail-qfilter.0: \
 qmail-qfilter.1
@@ -1276,7 +1282,8 @@ qmail-qfilter.9 conf-qmail
 	> qmail-qfilter.1
 
 qmail-qfilter.o: \
-compile qmail-qfilter.c alloc.h byte.h env.h fd.h fmt.h fork.h str.h substdio.h
+compile qmail-qfilter.c qmail-qfilter.h \
+alloc.h byte.h env.h fd.h fmt.h fork.h str.h substdio.h
 	./compile qmail-qfilter.c
 
 qmail-qmqpc: \

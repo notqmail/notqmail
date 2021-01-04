@@ -11,10 +11,7 @@ static ssize_t oneread(ssize_t (*op)(), int fd, char *buf, size_t len)
   }
 }
 
-static int getthis(s,buf,len)
-substdio *s;
-char *buf;
-int len;
+static int getthis(substdio *s, char *buf, int len)
 {
   int r;
   int q;
@@ -68,15 +65,12 @@ ssize_t substdio_get(substdio *s, char *buf, size_t len)
   return getthis(s,buf,len);
 }
 
-char *substdio_peek(s)
-substdio *s;
+char *substdio_peek(substdio *s)
 {
   return s->x + s->n;
 }
 
-void substdio_seek(s,len)
-substdio *s;
-int len;
+void substdio_seek(substdio *s, int len)
 {
   s->n += len;
   s->p -= len;

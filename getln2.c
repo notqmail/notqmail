@@ -3,12 +3,9 @@
 #include "byte.h"
 #include "getln.h"
 
-int getln2(ss,sa,cont,clen,sep)
-substdio *ss;
-stralloc *sa;
-/*@out@*/char **cont;
-/*@out@*/unsigned int *clen;
-int sep;
+int getln2(substdio *ss, stralloc *sa,
+           /*@out@*/char **cont, /*@out@*/unsigned int *clen,
+           int sep)
 {
   char *x;
   unsigned int i;

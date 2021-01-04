@@ -4,11 +4,7 @@
 #include "byte.h"
 #include "stralloc.h"
 
-int getln(ss,sa,match,sep)
-substdio *ss;
-stralloc *sa;
-int *match;
-int sep;
+int getln(substdio *ss, stralloc *sa, int *match, int sep)
 {
   char *cont;
   unsigned int clen;

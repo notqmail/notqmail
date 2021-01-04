@@ -20,8 +20,7 @@ static int allwrite(ssize_t (*op)(), int fd, char *buf, size_t len)
   return 0;
 }
 
-int substdio_flush(s)
-substdio *s;
+int substdio_flush(substdio *s)
 {
   int p;
  
@@ -78,23 +77,17 @@ int substdio_putflush(substdio *s, char *buf, size_t len)
   return allwrite(s->op,s->fd,buf,len);
 }
 
-int substdio_bputs(s,buf)
-substdio *s;
-char *buf;
+int substdio_bputs(substdio *s, char *buf)
 {
   return substdio_bput(s,buf,str_len(buf));
 }
 
-int substdio_puts(s,buf)
-substdio *s;
-char *buf;
+int substdio_puts(substdio *s, char *buf)
 {
   return substdio_put(s,buf,str_len(buf));
 }
 
-int substdio_putsflush(s,buf)
-substdio *s;
-char *buf;
+int substdio_putsflush(substdio *s, char *buf)
 {
   return substdio_putflush(s,buf,str_len(buf));
 }

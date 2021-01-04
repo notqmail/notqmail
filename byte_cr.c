@@ -1,9 +1,6 @@
 #include "byte.h"
 
-void byte_copyr(to,n,from)
-char *to;
-unsigned int n;
-char *from;
+void byte_copyr(char *to, unsigned int n, char *from)
 {
   to += n;
   from += n;

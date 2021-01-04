@@ -1,8 +1,6 @@
 #include "case.h"
 
-int case_starts(s,t)
-char *s;
-char *t;
+int case_starts(char *s, char *t)
 {
   unsigned char x;
   unsigned char y;

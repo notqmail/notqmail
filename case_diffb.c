@@ -1,9 +1,6 @@
 #include "case.h"
 
-int case_diffb(s,len,t)
-char *s;
-unsigned int len;
-char *t;
+int case_diffb(char *s, unsigned int len, char *t)
 {
   unsigned char x;
   unsigned char y;

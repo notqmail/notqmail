@@ -1,8 +1,6 @@
 #include "str.h"
 
-int str_start(s,t)
-char *s;
-char *t;
+int str_start(char *s, char *t)
 {
   char x;
 

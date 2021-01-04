@@ -1,8 +1,6 @@
 #include "str.h"
 
-unsigned int str_rchr(s,c)
-char *s;
-int c;
+unsigned int str_rchr(char *s, int c)
 {
   char ch;
   char *t;

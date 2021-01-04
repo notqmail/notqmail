@@ -1,9 +1,6 @@
 #include "byte.h"
 
-unsigned int byte_rchr(s,n,c)
-char *s;
-unsigned int n;
-int c;
+unsigned int byte_rchr(char *s, unsigned int n, int c)
 {
   char ch;
   char *t;

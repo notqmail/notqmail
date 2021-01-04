@@ -1,8 +1,6 @@
 #include "substdio.h"
 
-int substdio_copy(ssout,ssin)
-substdio *ssout;
-substdio *ssin;
+int substdio_copy(substdio *ssout, substdio *ssin)
 {
   char *x;
 

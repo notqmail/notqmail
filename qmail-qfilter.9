@@ -1,4 +1,4 @@
-.TH qmail-qfilter 1 2020-12-25
+.TH qmail-qfilter 1 2021-01-05
 .SH NAME
 qmail-qfilter \- filter messages before they reach the queue
 .SH SYNOPSIS
@@ -9,126 +9,147 @@ qmail-qfilter \- filter messages before they reach the queue
 ]
 .SH DESCRIPTION
 .B qmail-qfilter
-lets programs easily inspect and act on messages before they reach the queue.
+runs the given sequence of
+.I filter
+programs
+before it executes
+.BR qmail-queue .
 Each
 .I filter
-can
-accept,
-modify before accepting,
-reject temporarily, or
-reject permanently.
-.P
-.B qmail-qfilter
-runs the given sequence of filters, separated by
-.BR \(dq--\(dq .
-If any
-.I filter
-rejects, the message is rejected.
+can accept, modify before accepting, reject temporarily or permanently, or silently drop.
 If every
 .I filter
 accepts,
-the message is accepted by executing
-.BR qmail-queue .
-Exceptions:
-.TP 5
-.BR 1 .
-If any filters have written to file descriptor 5
-(a temporary file managed by
-.BR qmail-qfilter ),
-its contents specify an alternate program to be executed.
-.TP
-.BR 2 .
-Otherwise, if
-.B QQF_QMAILQUEUE
-is set, it specifies an alternate program to be executed.
-(See
-.BR "ENVIRONMENT VARIABLES" .)
-.P
-In any case, accepted messages must be passed to a program that adheres to the
+the message is queued.
+If any
+.I filter
+rejects or drops, the sequence terminates and
 .B qmail-queue
-interface.
+is not executed.
 .P
 .B qmail-qfilter
-provides a simpler interface.
-Each
+takes effect when programs that would normally invoke
+.B qmail-queue
+have been configured to invoke
+.B qmail-qfilter
+instead.
+.P
+.B qmail-qfilter
+provides a simple
 .I filter
-receives the message on its standard input
-and the envelope on file descriptor 3.
-To pass the message unmodified,
+interface:
+.TP 5
+To inspect a message with full headers,
 .I filter
-may simply exit 0;
-otherwise, it must write the modified message to its standard output
-and/or the modified envelope to file descriptor 4.
-(These are also temporary files managed by
-.BR qmail-qfilter .)
+reads from standard input.
+.TP
+To accept it,
+.I filter
+exits 0.
+.TP
+To modify it first,
+.I filter
+writes to standard output.
+.TP
+To modify its envelope,
+.I filter
+reads from file descriptor 3
+and writes to 4.
+.P
+.B qmail-qfilter
+also provides many convenient environment variables.
 .P
 A typical
 .I filter
-reads stdin, perhaps writes stdout, and chooses its exit code carefully.
+reads stdin, perhaps writes stdout, and exits with a particular code.
 .SH "EXIT CODES"
-Following the
-.B qmail-queue
-interface,
-.I filter
-can exit:
-.TP 5
-.B 0
-to accept the message,
-.TP
-.B 31
-to reject the message permanently, or
-.TP
-.B 82
-to reject the message (temporarily or permanently) with a custom error string.
-.P
-.I filter
-can additionally exit:
-.TP 5
-.B 99
-to have
-.B qmail-qfilter
-exit 0 immediately without running any further filters.
-.P
-If
-.I filter
-exits anything other than 0 or 99,
-.B qmail-qfilter
-exits with
-.IR filter's
-exit code.
-.P
-Exception:
-If
-.B qmail-qfilter
-can't create temporary files or execute filters, it exits:
-.TP 5
-.B 51
-Out of memory,
-.TP
-.B 53
-Write error, or
-.TP
-.B 81
-Internal error.
-.P
-Exception:
-If
-.B qmail-qfilter
-can't read or parse envelope data, it exits
-.TP 5
-.B 91
-Bad envelope data.
-.P
-(These exit codes, as usual, adhere to the
-.B qmail-queue
-interface.)
-.P
-Otherwise,
+In the simplest case,
 .B qmail-qfilter
 exits with
 .BR qmail-queue 's
 exit code.
+In all cases,
+.B qmail-qfilter
+exits with a
+.BR qmail-queue -compatible
+code.
+.P
+If
+.B qmail-qfilter
+can't create temporary files or execute filters, it exits with one of:
+.TP 5
+.B 51
+Out of memory.
+.TP
+.B 53
+Write error.
+.TP
+.B 81
+Internal error.
+.P
+If
+.B qmail-qfilter
+can't read or parse envelope data, it exits:
+.TP 5
+.B 91
+Bad envelope data.
+.P
+.I filter
+exits with one of:
+.TP 5
+.B 0
+Accept the message.
+.TP
+.B 31
+Reject the message permanently.
+.TP
+.B 71
+Reject the message temporarily.
+.TP
+.B 82
+Reject the message (temporarily or permanently) with a custom error string
+written to file descriptor 6.
+.TP
+.B 99
+Drop the message.
+.P
+A nonzero exit code from
+.I filter
+terminates the sequence.
+.B qmail-qfilter
+exits with
+.IR filter 's
+exit code unless it was 99,
+in which case
+.B qmail-qfilter
+exits 0.
 .SH "ENVIRONMENT VARIABLES"
+To configure programs that would normally invoke
+.B qmail-queue
+to invoke
+.B qmail-qfilter
+instead, set
+.BR QMAILQUEUE .
+.P
+To configure
+.B qmail-qfilter
+to run an alternate
+.B qmail-queue
+program,
+set
+.BR QQF_QMAILQUEUE .
+(This avoids recursive loops.
+.B qmail-qfilter
+itself does not honor
+.BR QMAILQUEUE .)
+.P
+.I filter
+can specify an alternate
+.B qmail-queue
+program by writing a path to file descriptor 5.
+This overrides
+.BR QQF_QMAILQUEUE .
+.P
 Each
 .IR filter 's
 environment contains:
@@ -160,24 +181,6 @@ The number of recipients.
 For compatibility with previous versions,
 .B QMAILNAME
 is unset.
-.P
-Unlike other programs included with qmail,
-.B qmail-qfilter
-does not run an alternate
-.B qmail-queue
-if
-.B QMAILQUEUE
-is set.
-This avoids recursive loops with configurations that use
-.B QMAILQUEUE
-to invoke
-.BR qmail-qfilter .
-To override
-.BR qmail-qfilter 's
-invocation of
-.BR qmail-queue ,
-set
-.BR QQF_QMAILQUEUE .
 .P
 If
 .B QQF_DEBUG
@@ -257,4 +260,4 @@ Otherwise, multiple filters could overwrite the value in undesirable ways.
 .B qmail-qfilter
 was originally written by Bruce Guenter.
 .SH "SEE ALSO"
-qmail-queue(8)
+qmail-queue(8), envelopes(5)

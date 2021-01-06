@@ -113,16 +113,16 @@ written to file descriptor 6.
 .B 99
 Drop the message.
 .P
-A nonzero exit code from
+If
 .I filter
-terminates the sequence.
+exits 0, the sequence continues; otherwise the sequence terminates and
 .B qmail-qfilter
 exits with
 .IR filter 's
-exit code unless it was 99,
-in which case
+exit code.
+(Exception: if it was 99,
 .B qmail-qfilter
-exits 0.
+exits 0.)
 .SH "ENVIRONMENT VARIABLES"
 To configure programs that would normally invoke
 .B qmail-queue

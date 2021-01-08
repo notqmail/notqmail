@@ -1,0 +1,47 @@
+name: C CI on Solaris
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Solaris-${{ matrix.config.name }}
+    runs-on: macos-latest
+    env:
+      CFLAGS: ${{ matrix.config.cflags }}
+      NROFF: ${{ matrix.config.nroff }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+         - {
+           name: default,
+           nroff: nroff,
+           cflags: ""
+         }
+         - {
+           name: no_obsolete,
+           nroff: true,
+           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED"
+         }
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: Test in solaris
+      id: test
+      uses: vmactions/solaris-vm@v0.0.2
+      with:
+        envs: 'CFLAGS NROFF'
+        prepare: pkgutil -y -i libcheck_dev gcc4core pkgconfig
+        run: |
+          echo "gcc -O2 -pipe ${CFLAGS}" > conf-cc
+          echo "gcc -s" > conf-ld
+          make it man NROFF=${NROFF}
+          cd tests
+          make test

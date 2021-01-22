@@ -9,7 +9,7 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_stralloc unittest_blast unittest_prioq
+TESTBINS = unittest_stralloc unittest_blast unittest_prioq unittest_qfilter
 
 clean:
 	rm -f $(TESTBINS) *.o blast.c
@@ -61,4 +61,16 @@ unittest_prioq: \
 unittest_prioq.o: \
 ../compile unittest_prioq.c
 	../compile unittest_prioq.c -I.. \
+	`pkg-config --cflags check`
+
+unittest_qfilter: \
+../load unittest_qfilter.o ../qmail-qfilter.o ../env.a ../fd.a \
+../substdio.a ../str.a ../fs.a
+	../load unittest_qfilter ../qmail-qfilter.o ../env.a ../fd.a \
+	../substdio.a ../str.a ../fs.a \
+	`pkg-config --libs check`
+
+unittest_qfilter.o: \
+../compile unittest_qfilter.c
+	../compile unittest_qfilter.c -I.. \
 	`pkg-config --cflags check`

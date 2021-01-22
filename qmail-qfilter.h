@@ -24,10 +24,17 @@ struct command
 };
 typedef struct command command;
 
+//for main()
 command *parse_args_to_linked_list_of_filters(int,char *[]);
 void prepare_to_run_filters(void);
 void run_filters_in_sequence(const command *);
 void setup_qqargs(int);
 void exec_qq(void);
+
+//for tests
+#include <sys/types.h>
+size_t parse_sender(const char *);
+void qqf_debug_ulong(const char *,unsigned long);
+void die(int);
 
 #endif

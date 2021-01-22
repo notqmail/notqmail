@@ -51,7 +51,7 @@ static void qqf_debug(const char *s1,const char *s2)
   substdio_flush(&sserr);
 }
 
-static void qqf_debug_ulong(const char *s1,unsigned long val)
+void qqf_debug_ulong(const char *s1,unsigned long val)
 {
   char strnum[FMT_ULONG];
 
@@ -60,16 +60,25 @@ static void qqf_debug_ulong(const char *s1,unsigned long val)
   return qqf_debug(s1,strnum);
 }
 
-static void die(int exitcode)
-{
-  qqf_debug_ulong("exit",exitcode);
-  exit(exitcode);
-}
+extern void die(int);
 
 static void die_nomem(void)    { die(51); }
 static void die_write(void)    { die(53); }
 static void die_internal(void) { die(81); }
 static void die_envelope(void) { die(91); }
+
+static int env_put2_with_len(const char *key, const char *val, size_t vallen)
+{
+  char *tmp;
+
+  tmp = alloc(vallen + 1);
+  for (int i = 0; i < vallen; i++)
+    tmp[i] = val[i];
+  tmp[vallen] = 0;
+
+  return env_put2(key,tmp);
+  // XXX free tmp?
+}
 
 static int env_put2_ulong(const char* key, unsigned long val)
 {
@@ -80,10 +89,9 @@ static int env_put2_ulong(const char* key, unsigned long val)
   return env_put2(key,strnum);
 }
 
-static size_t parse_sender(const char* envelope)
+size_t parse_sender(const char* envelope)
 {
   const char* ptr = envelope;
-  size_t pos;
   char* at;
   size_t len = str_len(envelope);
 
@@ -98,31 +106,16 @@ static size_t parse_sender(const char* envelope)
     return 2;
   }
 
-  pos = str_rchr(ptr, '@');
-  len = str_len(ptr);
-  if (pos >= len)
-    at = 0;
-  else
-    at = (char *)ptr + pos;
-
+  at = strrchr(ptr, '@');
   if (at) {
-    char *user;
-    size_t user_len;
-
     len = str_len(at);
-
-    user_len = str_len(ptr) - len;
-    user = malloc(user_len + 1);
-    for (int i = 0; i < user_len; i++)
-      user[i] = ptr[i];
-    user[user_len] = 0;
-
-    if (!env_put2("QMAILUSER",user)) die_nomem();
-    if (!env_put2("QMAILHOST",at+1)) die_nomem();
+    if (!env_put2_with_len("QMAILUSER",ptr,at-ptr)) die_nomem();
+    if (!env_put2_with_len("QMAILHOST",at+1,len-1)) die_nomem();
     ptr = at;
   }
   else {
-    if (!env_put2("QMAILUSER",ptr)) die_nomem();
+    len = str_len(ptr);
+    if (!env_put2_with_len("QMAILUSER",ptr,len)) die_nomem();
     if (!env_put("QMAILHOST=")) die_nomem();
   }
 
@@ -147,7 +140,7 @@ static void parse_recipients(const char* envelope, int offset)
     ++count;
   }
   *tmp = 0;
-  if (!env_put2("QMAILRCPTS",buf)) die_nomem();
+  if (!env_put2_with_len("QMAILRCPTS",buf,tmp-buf)) die_nomem();
   if (!env_put2_ulong("NUMRCPTS", count)) die_nomem();
   free(buf);
 }

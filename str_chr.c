@@ -1,17 +1,11 @@
 #include "str.h"
 
-unsigned int str_chr(char *s, int c)
-{
-  char ch;
-  char *t;
+#include <string.h>
 
-  ch = c;
-  t = s;
-  for (;;) {
-    if (!*t) break; if (*t == ch) break; ++t;
-    if (!*t) break; if (*t == ch) break; ++t;
-    if (!*t) break; if (*t == ch) break; ++t;
-    if (!*t) break; if (*t == ch) break; ++t;
-  }
-  return t - s;
+unsigned int str_chr(const char *s, int c)
+{
+  const char *r = strchr(s, c);
+  if (!r)
+    return strlen(s);
+  return r - s;
 }

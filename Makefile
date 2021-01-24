@@ -9,6 +9,9 @@ default: it
 
 .SUFFIXES: .0 .1 .5 .7 .8
 
+addresses.0: \
+addresses.5
+
 .1.0:
 	$(NROFF) -man $< >$@
 
@@ -20,9 +23,6 @@ default: it
 
 .8.0:
 	$(NROFF) -man $< >$@
-
-addresses.0: \
-addresses.5
 
 auto-ccld.sh: \
 conf-cc conf-ld warn-auto.sh

@@ -1,14 +1,15 @@
 #include "hassmtputf8.h"
+#include "stralloc.h"
+
+stralloc        header = { 0 };
 
 #ifdef SMTPUTF8
 #include "utf8read.h"
-#include "stralloc.h"
 #include "case.h"
 #include "substdio.h"
 #include "subfd.h"
 
 static stralloc receivedline = { 0 };
-stralloc        header = { 0 };
 extern void temp_nomem();
 extern void temp_read();
 
@@ -45,11 +46,11 @@ utf8read()
       if (case_starts(receivedline.s, "Received: from")) received++;  /* found Received header */
       if (received) {
         for (i = 0; i < receivedline.len; i++)
-          if (*(receivedline.s + i) != ' ' && *(receivedline.s + i) != '\t')
+          if (receivedline.s[i] != ' ' && receivedline.s[i] != '\t')
             break;
         if (case_starts(receivedline.s + i, "by ")) {
           for (i += 3; i < receivedline.len; ++i)
-            if (*(receivedline.s + i) == ' ' || *(receivedline.s + i) == '\t')
+            if (receivedline.s[i] == ' ' || receivedline.s[i] == '\t')
               if (case_starts(receivedline.s + i + 1, "with UTF8")) {
                 flagutf8 = 1;return 1;
               }
@@ -58,7 +59,7 @@ utf8read()
         for (i = 0; i < receivedline.len; i++) {
           if (case_starts(receivedline.s + i, "by ")) {
             for (i += 3; i < receivedline.len; ++i)
-              if (*(receivedline.s + i) == ' ' || *(receivedline.s + i) == '\t')
+              if (receivedline.s[i] == ' ' || receivedline.s[i] == '\t')
                 if (case_starts(receivedline.s + i + 1, "with UTF8")) {
                   flagutf8 = 1;return 1;
                 }
@@ -72,6 +73,18 @@ utf8read()
       if (!stralloc_catb(&receivedline, &ch, 1)) temp_nomem();
     }
   }
+  return 0;
+}
+#else
+int
+containsutf8(unsigned char *p, int l)
+{
+  return 0;
+}
+
+int
+utf8read()
+{
   return 0;
 }
 #endif

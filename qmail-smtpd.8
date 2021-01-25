@@ -14,13 +14,10 @@ must be supplied several environment variables;
 see
 .BR tcp-environ(5) .
 
-If the environment variable
-.B UTF8
-is non-empty
 .B qmail-smtpd
 offers RFC 5336 SMTP Email Address Internationalization support and will advertize the
-capability in the EHLO greeting. Since qmail-smtpd is 8 bit clean, setting of UTF8 has no real
-consequences except for displaying this setting in the received headers as \fBUTF8(E)SMTP\fR.
+capability in the EHLO greeting. Since qmail-smtpd is 8 bit clean, setting of SMTPUTF8 has no real
+consequences except for displaying this setting in the received headers as \fBUTF8SMTP\fR.
 
 .B qmail-smtpd
 is responsible for counting hops.
@@ -178,6 +175,9 @@ Number of seconds
 .B qmail-smtpd
 will wait for each new buffer of data from the remote SMTP client.
 Default: 1200.
+.TP 5
+.I smtputf8
+Non-zero value in this control file enables RFC6531 SMTP Extension for Internationalized Email. 
 .SH "SEE ALSO"
 tcp-env(1),
 tcp-environ(5),

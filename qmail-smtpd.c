@@ -24,7 +24,6 @@
 #include "timeoutread.h"
 #include "timeoutwrite.h"
 #include "commands.h"
-#include "hassmtputf8.h"
 
 #define MAXHOPS 100
 unsigned int databytes = 0;
@@ -34,9 +33,8 @@ GEN_SAFE_TIMEOUTWRITE(safewrite,timeout,fd,_exit(1))
 
 char ssoutbuf[512];
 substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof(ssoutbuf));
-#ifdef SMTPUTF8
-int  smtputf8 = 0, flagutf8 = 0;
-#endif
+int smtputf8; /*- set by mailfrom_parms */
+int enable_smtputf8; /*- set by control/smtputf8 */
 
 void flush() { substdio_flush(&ssout); }
 void out(s) char *s; { substdio_puts(&ssout,s); }
@@ -120,6 +118,8 @@ void setup()
   x = env_get("DATABYTES");
   if (x) { scan_ulong(x,&u); databytes = u; }
   if (!(databytes + 1)) --databytes;
+
+  if (control_readint(&enable_smtputf8, "control/smtputf8") == -1) die_control();
  
   remoteip = env_get("TCPREMOTEIP");
   if (!remoteip) remoteip = "unknown";
@@ -221,12 +221,11 @@ int flagbarf; /* defined if seenmail */
 stralloc mailfrom = {0};
 stralloc rcptto = {0};
 
-#ifdef SMTPUTF8
 stralloc mfparms = {0};
 void mailfrom_parms(const char *arg)
 {
-  int i;
-  int len;
+  size_t i;
+  size_t len;
 
   len = str_len(arg);
   mfparms.len=0;
@@ -242,7 +241,6 @@ void mailfrom_parms(const char *arg)
     }
   }
 }
-#endif
 
 void smtp_helo(arg) char *arg;
 {
@@ -252,12 +250,7 @@ void smtp_helo(arg) char *arg;
 void smtp_ehlo(arg) char *arg;
 {
   smtp_greet("250-"); out("\r\n250-PIPELINING\r\n");
-#ifdef SMTPUTF8
-  if (env_get("UTF8")) {
-    flagutf8 = 1;
-    out("250-SMTPUTF8\r\n");
-  }
-#endif
+  if (enable_smtputf8) out("250-SMTPUTF8\r\n");
   out("250 8BITMIME\r\n");
   seenmail = 0; dohelo(arg);
 }
@@ -269,9 +262,7 @@ void smtp_rset(arg) char *arg;
 void smtp_mail(arg) char *arg;
 {
   if (!addrparse(arg)) { err_syntax(); return; }
-#ifdef SMTPUTF8
-  if (flagutf8) mailfrom_parms(arg);
-#endif
+  mailfrom_parms(arg);
   flagbarf = bmfcheck();
   seenmail = 1;
   if (!stralloc_copys(&rcptto,"")) die_nomem();
@@ -409,11 +400,7 @@ void smtp_data(arg) char *arg; {
   qp = qmail_qp(&qqt);
   out("354 go ahead\r\n");
  
-#ifdef SMTPUTF8
   received(&qqt,smtputf8 ? "UTF8SMTP" : "SMTP",local,remoteip,remotehost,remoteinfo,fakehelo);
-#else
-  received(&qqt,"SMTP",local,remoteip,remotehost,remoteinfo,fakehelo);
-#endif
   blast(&hops);
   hops = (hops >= MAXHOPS);
   if (hops) qmail_fail(&qqt);

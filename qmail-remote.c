@@ -30,9 +30,9 @@
 #include "hassmtputf8.h"
 #ifdef SMTPUTF8
 #include <idn2.h>
+#endif
 #include "utf8read.h"
 #include "env.h"
-#endif
 
 #define HUGESMTPTEXT 5000
 
@@ -53,12 +53,11 @@ saa reciplist = {0};
 
 struct ip_address partner;
 
-#ifdef SMTPUTF8
 static stralloc idnhost = { 0 };
-static int      smtputf8 = 0; /*- if remote has SMTPUTF8 capability */
-static char    *enable_utf8 = 0; /*- enable utf8 */
-int             flagutf8;
-#endif
+static int smtputf8 = 0; /*- if remote has SMTPUTF8 capability */
+/* set by control file control/smtputf8. zero if SMTPUTF8 not #defined */
+static int enable_smtputf8; 
+int flagutf8; /*- if sender, recipient headers, body have utf8 */
 
 void out(s) char *s; { if (substdio_puts(subfdoutsmall,s) == -1) _exit(0); }
 void zero() { if (substdio_put(subfdoutsmall,"\0",1) == -1) _exit(0); }
@@ -131,7 +130,7 @@ substdio smtpfrom = SUBSTDIO_FDBUF(saferead,-1,smtpfrombuf,sizeof(smtpfrombuf));
 
 stralloc smtptext = {0};
 
-static void get1(unsigned char *uc)
+static void get(unsigned char *uc)
 {
   char *ch = (char *)uc;
   substdio_get(&smtpfrom,ch,1);
@@ -167,13 +166,13 @@ unsigned long smtpcode()
   if (!stralloc_copys(&smtptext,"")) temp_nomem();
   if ((code = get3()) < 200) err = 1;
   for (;;) {
-    get1((char *)&ch);
+    get((char *)&ch);
     if (ch != ' ' && ch != '-') err = 1;
     if (ch != '-') break;
-    while (ch != '\n') get1((char *)&ch);
+    while (ch != '\n') get((char *)&ch);
     if (get3() != code) err = 1;
   }
-  while (ch != '\n') get1((char *)&ch);
+  while (ch != '\n') get((char *)&ch);
   return err ? 400 : code;
 }
 
@@ -297,7 +296,11 @@ void smtp()
     if (code >= 500) quit("DConnected to "," but my name was rejected");
     if (code != 250) quit("ZConnected to "," but my name was rejected");
   } else /* EHLO succeeded. Let's check SMTPUTF8 capa */
-    smtputf8 = get_capability("SMTPUTF8"); /*- did the remote server advertize SMTPUTF8 */
+      smtputf8 = get_capability("SMTPUTF8"); /*- did the remote server advertize SMTPUTF8 */
+  if (!flagutf8)
+    flagutf8 = utf8read();
+  if (enable_smtputf8 && flagutf8 && !smtputf8)
+    quit("DConnected to "," but server does not support internationalized email addresses");
 #else
   substdio_puts(&smtpto,"HELO ");
   substdio_put(&smtpto,helohost.s,helohost.len);
@@ -308,12 +311,10 @@ void smtp()
  
   substdio_puts(&smtpto,"MAIL FROM:<");
   substdio_put(&smtpto,sender.s,sender.len);
-#ifdef SMTPUTF8
-  if (enable_utf8 && (flagutf8 || utf8read()))
+  if (enable_smtputf8 && flagutf8)
     substdio_puts(&smtpto,"> SMTPUTF8\r\n");
   else
-#endif
-  substdio_puts(&smtpto,">\r\n");
+    substdio_puts(&smtpto,">\r\n");
   substdio_flush(&smtpto);
   code = smtpcode();
   if (code >= 500) quit("DConnected to "," but sender was rejected");
@@ -346,9 +347,7 @@ void smtp()
   if (code >= 500) quit("D"," failed on DATA command");
   if (code >= 400) quit("Z"," failed on DATA command");
  
-#ifdef SMTPUTF8
-  if (enable_utf8 && header.len) substdio_put(&smtpto, header.s, header.len);
-#endif
+  if (enable_smtputf8 && header.len) substdio_put(&smtpto, header.s, header.len);
   blast();
   code = smtpcode();
   flagcritical = 0;
@@ -364,10 +363,8 @@ void addrmangle(stralloc *saout, char *s)
 {
   int j;
 
-#ifdef SMTPUTF8
-  if (enable_utf8 && !flagutf8)
+  if (enable_smtputf8 && !flagutf8)
     flagutf8 = containsutf8(s,str_len(s));
-#endif
 
   j = str_rchr(s,'@');
   if (!s[j]) {
@@ -391,6 +388,9 @@ void getcontrols()
   if (control_readint(&timeout,"control/timeoutremote") == -1) temp_control();
   if (control_readint(&timeoutconnect,"control/timeoutconnect") == -1)
     temp_control();
+#ifdef SMTPUTF8
+  if (control_readint(&enable_smtputf8,"control/smtputf8") == -1) temp_control();
+#endif
   if (control_rldef(&helohost,"control/helohost",1,NULL) != 1)
     temp_control();
   switch(control_readfile(&routes,"control/smtproutes",0)) {
@@ -417,10 +417,6 @@ int main(int argc, char **argv)
   if (chdir(auto_qmail) == -1) temp_chdir();
   getcontrols();
  
-#ifdef SMTPUTF8
-  enable_utf8 = env_get("UTF8");
-#endif
- 
   if (!stralloc_copys(&host,argv[1])) temp_nomem();
  
   relayhost = 0;
@@ -437,10 +433,11 @@ int main(int argc, char **argv)
       relayhost[i] = 0;
     }
     if (!stralloc_copys(&host,relayhost)) temp_nomem();
+  }
 #ifdef SMTPUTF8
-  } else
-  if (enable_utf8) {
-      char *asciihost = 0;
+  else
+  if (enable_smtputf8) {
+      char *asciihost = NULL;
       if (!stralloc_0(&host)) temp_nomem();
       switch (idn2_lookup_u8(host.s,(uint8_t**)&asciihost,IDN2_NFC_INPUT)) {
         case IDN2_OK:     break;
@@ -448,10 +445,10 @@ int main(int argc, char **argv)
         default:          perm_dns();
       }
       if (!stralloc_copys(&idnhost,asciihost)) temp_nomem();
-#endif
   }
+#endif
 
-
+  /*- addrmangle also sets flagutf8 */
   addrmangle(&sender,argv[2]);
  
   if (!saa_readyplus(&reciplist,0)) temp_nomem();
@@ -468,11 +465,8 @@ int main(int argc, char **argv)
 
  
   random = now() + (getpid() << 16);
-#ifdef SMTPUTF8
-  switch (relayhost ? dns_ip(&ip,&host) : dns_mxip(&ip,enable_utf8 ? &idnhost : &host,random)) {
-#else
-  switch (relayhost ? dns_ip(&ip,&host) : dns_mxip(&ip,&host,random)) {
-#endif
+  i = relayhost ? dns_ip(&ip,&host) : dns_mxip(&ip,enable_smtputf8 ? &idnhost : &host,random);
+  switch (i) {
     case DNS_MEM: temp_nomem();
     case DNS_SOFT: temp_dns();
     case DNS_HARD: perm_dns();

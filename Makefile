@@ -1348,6 +1348,8 @@ alloc.h substdio.h datetime.h now.h datetime.h triggerpull.h extra.h \
 uidgid.h auto_qmail.h auto_uids.h auto_users.h date822fmt.h fmtqfn.h
 	./compile qmail-queue.c
 
+# use tryidn21 for idn2.lib instead of tryidn2 else parallel compile race condition will
+# break things for idn2.lib
 hassmtputf8.h: \
 tryidn2.c compile load conf-smtputf8
 	((./compile `grep -h -v "^#" conf-smtputf8` tryidn2.c \
@@ -1357,10 +1359,10 @@ tryidn2.c compile load conf-smtputf8
 
 idn2.lib: \
 tryidn2.c compile load conf-smtputf8
-	((./compile `grep -h -v "^#" conf-smtputf8` tryidn2.c \
-		&& ./load tryidn2 -lidn2) >/dev/null 2>&1 \
+	((./compile `grep -h -v "^#" conf-smtputf8` tryidn2.c -o tryidn21.o \
+		&& ./load tryidn21 -lidn2) >/dev/null 2>&1 \
 	&& echo "-lidn2" || echo "WARNING!!! Not linked with libidn2" 1>&2) > idn2.lib
-	rm -f tryidn2.o tryidn2
+	rm -f tryidn21.o tryidn21
 
 utf8read.o: \
 compile utf8read.c hassmtputf8.h stralloc.h case.h substdio.h subfd.h
@@ -1484,7 +1486,7 @@ compile qmail-smtpd.c sig.h readwrite.h stralloc.h gen_alloc.h \
 substdio.h alloc.h auto_qmail.h control.h received.h constmap.h \
 error.h ipme.h ip.h ipalloc.h ip.h gen_alloc.h ip.h qmail.h \
 substdio.h str.h fmt.h scan.h byte.h case.h env.h now.h datetime.h \
-exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h hassmtputf8.h
+exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h
 	./compile qmail-smtpd.c
 
 qmail-start: \

@@ -295,8 +295,11 @@ instcheck.o
 instcheck
 instchown.o
 instchown
+instfiles.o
 instpackage.o
 instpackage
+instqueue.o
+instqueue
 instuidgid.o
 home
 home+df

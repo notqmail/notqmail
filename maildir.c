@@ -1,3 +1,5 @@
+#include "maildir.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -8,7 +10,6 @@
 #include "datetime.h"
 #include "now.h"
 #include "str.h"
-#include "maildir.h"
 
 struct strerr maildir_chdir_err;
 struct strerr maildir_scan_err;

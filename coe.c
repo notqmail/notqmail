@@ -1,5 +1,6 @@
-#include <fcntl.h>
 #include "coe.h"
+
+#include <fcntl.h>
 
 int coe(fd)
 int fd;

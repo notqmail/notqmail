@@ -3,6 +3,8 @@
 
 #include <sys/types.h>
 
+#include "deprecated.h"
+
 typedef struct substdio {
   char *x;
   int p;
@@ -24,6 +26,9 @@ extern int substdio_bputs();
 extern int substdio_putsflush();
 
 extern ssize_t substdio_get(substdio *s, char *buf, size_t len);
+#ifdef DEPRECATED_FUNCTIONS_AVAILABLE
+extern ssize_t substdio_bget(substdio *s, char *buf, size_t len);
+#endif
 extern ssize_t substdio_feed(substdio *s);
 
 extern char *substdio_peek();

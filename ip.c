@@ -1,6 +1,7 @@
+#include "ip.h"
+
 #include "fmt.h"
 #include "scan.h"
-#include "ip.h"
 
 unsigned int ip_fmt(s,ip)
 char *s;

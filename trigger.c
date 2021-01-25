@@ -1,7 +1,8 @@
+#include "trigger.h"
+
 #include <unistd.h>
 #include "select.h"
 #include "open.h"
-#include "trigger.h"
 #include "hasnpbg1.h"
 
 static int fd = -1;

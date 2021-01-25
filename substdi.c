@@ -11,13 +11,10 @@ static ssize_t oneread(ssize_t (*op)(), int fd, char *buf, size_t len)
   }
 }
 
-static int getthis(s,buf,len)
-register substdio *s;
-register char *buf;
-register int len;
+static int getthis(substdio *s, char *buf, int len)
 {
-  register int r;
-  register int q;
+  int r;
+  int q;
  
   r = s->p;
   q = r - len;
@@ -30,7 +27,7 @@ register int len;
 ssize_t substdio_feed(substdio *s)
 {
   ssize_t r;
-  register int q;
+  int q;
 
   if (s->p) return s->p;
   q = s->n;
@@ -43,26 +40,37 @@ ssize_t substdio_feed(substdio *s)
   return r;
 }
 
+#ifdef DEPRECATED_FUNCTIONS_AVAILABLE
+// might read fewer bytes than _get(); otherwise identical
+ssize_t substdio_bget(substdio *s, char *buf, size_t len)
+{
+  ssize_t r;
+ 
+  if (s->p > 0) return getthis(s,buf,len);
+  r = s->n; if (r <= len) return oneread(s->op,s->fd,buf,r);
+  r = substdio_feed(s);
+  if (r == 0 || r == -1) return r;
+  return getthis(s,buf,len);
+}
+#endif
+
 ssize_t substdio_get(substdio *s, char *buf, size_t len)
 {
   ssize_t r;
  
   if (s->p > 0) return getthis(s,buf,len);
-  if (s->n <= len) return oneread(s->op,s->fd,buf,len);
+  r = s->n; if (r <= len) return oneread(s->op,s->fd,buf,len);
   r = substdio_feed(s);
   if (r == 0 || r == -1) return r;
   return getthis(s,buf,len);
 }
 
-char *substdio_peek(s)
-register substdio *s;
+char *substdio_peek(substdio *s)
 {
   return s->x + s->n;
 }
 
-void substdio_seek(s,len)
-register substdio *s;
-register int len;
+void substdio_seek(substdio *s, int len)
 {
   s->n += len;
   s->p -= len;

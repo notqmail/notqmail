@@ -20,10 +20,9 @@ static int allwrite(ssize_t (*op)(), int fd, char *buf, size_t len)
   return 0;
 }
 
-int substdio_flush(s)
-register substdio *s;
+int substdio_flush(substdio *s)
 {
-  register int p;
+  int p;
  
   p = s->p;
   if (!p) return 0;
@@ -33,7 +32,7 @@ register substdio *s;
 
 int substdio_bput(substdio *s, char *buf, size_t len)
 {
-  register unsigned int n;
+  unsigned int n;
  
   while (len > (n = s->n - s->p)) {
     byte_copy(s->x + s->p,n,buf);
@@ -50,7 +49,7 @@ int substdio_bput(substdio *s, char *buf, size_t len)
 
 int substdio_put(substdio *s, char *buf, size_t len)
 {
-  register unsigned int n = s->n; /* how many bytes to write in next chunk */
+  unsigned int n = s->n; /* how many bytes to write in next chunk */
  
   /* check if the input would fit in the buffer without flushing */
   if (len > n - (unsigned int)s->p) {
@@ -78,23 +77,17 @@ int substdio_putflush(substdio *s, char *buf, size_t len)
   return allwrite(s->op,s->fd,buf,len);
 }
 
-int substdio_bputs(s,buf)
-register substdio *s;
-register char *buf;
+int substdio_bputs(substdio *s, char *buf)
 {
   return substdio_bput(s,buf,str_len(buf));
 }
 
-int substdio_puts(s,buf)
-register substdio *s;
-register char *buf;
+int substdio_puts(substdio *s, char *buf)
 {
   return substdio_put(s,buf,str_len(buf));
 }
 
-int substdio_putsflush(s,buf)
-register substdio *s;
-register char *buf;
+int substdio_putsflush(substdio *s, char *buf)
 {
   return substdio_putflush(s,buf,str_len(buf));
 }

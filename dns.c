@@ -1,3 +1,5 @@
+#include "dns.h"
+
 #include <stdio.h>
 #include <netdb.h>
 #include <sys/types.h>
@@ -16,16 +18,19 @@ extern int res_search();
 #include "alloc.h"
 #include "str.h"
 #include "stralloc.h"
-#include "dns.h"
 #include "case.h"
+
+#define MAX_EDNS_RESPONSE_SIZE 65536
 
 static unsigned short getshort(c) unsigned char *c;
 { unsigned short u; u = c[0]; return (u << 8) + c[1]; }
 
-static union { HEADER hdr; unsigned char buf[PACKETSZ]; } response;
+static struct { unsigned char *buf; } response;
+static int responsebuflen = 0;
 static int responselen;
 static unsigned char *responseend;
 static unsigned char *responsepos;
+static unsigned long saveresoptions;
 
 static int numanswers;
 static char name[MAXDNAME];
@@ -46,18 +51,38 @@ int type;
  errno = 0;
  if (!stralloc_copy(&glue,domain)) return DNS_MEM;
  if (!stralloc_0(&glue)) return DNS_MEM;
- responselen = lookup(glue.s,C_IN,type,response.buf,sizeof(response));
+ if (!responsebuflen) {
+  if ((response.buf = malloc(PACKETSZ+1)))
+   responsebuflen = PACKETSZ+1;
+  else return DNS_MEM;
+ }
+
+ responselen = lookup(glue.s,C_IN,type,response.buf,responsebuflen);
+ if ((responselen >= responsebuflen) ||
+     (responselen > 0 && (((HEADER *)response.buf)->tc)))
+  {
+   if (responsebuflen < MAX_EDNS_RESPONSE_SIZE) {
+    unsigned char *newbuf = realloc(response.buf, MAX_EDNS_RESPONSE_SIZE);
+    if (newbuf) {
+     response.buf = newbuf;
+     responsebuflen = MAX_EDNS_RESPONSE_SIZE;
+    }
+    else return DNS_MEM;
+    saveresoptions = _res.options;
+    _res.options |= RES_USEVC;
+    responselen = lookup(glue.s,C_IN,type,response.buf,responsebuflen);
+    _res.options = saveresoptions;
+   }
+  }
  if (responselen <= 0)
   {
    if (errno == ECONNREFUSED) return DNS_SOFT;
    if (h_errno == TRY_AGAIN) return DNS_SOFT;
    return DNS_HARD;
   }
- if (responselen >= sizeof(response))
-   responselen = sizeof(response);
  responseend = response.buf + responselen;
  responsepos = response.buf + sizeof(HEADER);
- n = ntohs(response.hdr.qdcount);
+ n = ntohs(((HEADER *)response.buf)->qdcount);
  while (n-- > 0)
   {
    i = dn_expand(response.buf,responseend,responsepos,name,MAXDNAME);
@@ -67,7 +92,7 @@ int type;
    if (i < QFIXEDSZ) return DNS_SOFT;
    responsepos += QFIXEDSZ;
   }
- numanswers = ntohs(response.hdr.ancount);
+ numanswers = ntohs(((HEADER *)response.buf)->ancount);
  return 0;
 }
 

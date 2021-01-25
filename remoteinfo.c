@@ -1,3 +1,5 @@
+#include "remoteinfo.h"
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -10,7 +12,6 @@
 #include "timeoutconn.h"
 #include "timeoutread.h"
 #include "timeoutwrite.h"
-#include "remoteinfo.h"
 
 static char line[999];
 static int t;

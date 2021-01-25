@@ -1,10 +1,11 @@
 #ifndef QSUTIL_H
 #define QSUTIL_H
 
+#include "deprecated.h"
+
 extern void log1();
 extern void qslog2(char *, char *);
 
-#include "deprecated.h"
 #ifdef DEPRECATED_FUNCTIONS_AVAILABLE
 static inline void _deprecated_ log2(char *s1, char *s2)
 {

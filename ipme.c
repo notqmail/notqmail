@@ -1,3 +1,5 @@
+#include "ipme.h"
+
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/time.h>
@@ -14,7 +16,6 @@
 #include "ip.h"
 #include "ipalloc.h"
 #include "stralloc.h"
-#include "ipme.h"
 
 static int ipmeok = 0;
 ipalloc ipme = {0};

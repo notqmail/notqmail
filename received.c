@@ -1,9 +1,10 @@
+#include "received.h"
+
 #include "fmt.h"
 #include "qmail.h"
 #include "now.h"
 #include "datetime.h"
 #include "date822fmt.h"
-#include "received.h"
 
 static int issafe(ch) char ch;
 {

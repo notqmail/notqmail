@@ -115,7 +115,7 @@ compile auto_usera.c
 
 auto_userd.c: \
 auto-str conf-users
-	./auto-str auto_userd `head -n 2 conf-users | tail -n -1` > auto_userd.c
+	./auto-str auto_userd `head -n 2 conf-users | tail -1` > auto_userd.c
 
 auto_userd.o: \
 compile auto_userd.c
@@ -123,7 +123,7 @@ compile auto_userd.c
 
 auto_userl.c: \
 auto-str conf-users
-	./auto-str auto_userl `head -n 3 conf-users | tail -n -1` > auto_userl.c
+	./auto-str auto_userl `head -n 3 conf-users | tail -1` > auto_userl.c
 
 auto_userl.o: \
 compile auto_userl.c
@@ -131,7 +131,7 @@ compile auto_userl.c
 
 auto_usero.c: \
 auto-str conf-users
-	./auto-str auto_usero `head -n 4 conf-users | tail -n -1` > auto_usero.c
+	./auto-str auto_usero `head -n 4 conf-users | tail -1` > auto_usero.c
 
 auto_usero.o: \
 compile auto_usero.c
@@ -139,7 +139,7 @@ compile auto_usero.c
 
 auto_userp.c: \
 auto-str conf-users
-	./auto-str auto_userp `head -n 5 conf-users | tail -n -1` > auto_userp.c
+	./auto-str auto_userp `head -n 5 conf-users | tail -1` > auto_userp.c
 
 auto_userp.o: \
 compile auto_userp.c
@@ -147,7 +147,7 @@ compile auto_userp.c
 
 auto_userq.c: \
 auto-str conf-users
-	./auto-str auto_userq `head -n 6 conf-users | tail -n -1` > auto_userq.c
+	./auto-str auto_userq `head -n 6 conf-users | tail -1` > auto_userq.c
 
 auto_userq.o: \
 compile auto_userq.c
@@ -155,7 +155,7 @@ compile auto_userq.c
 
 auto_userr.c: \
 auto-str conf-users
-	./auto-str auto_userr `head -n 7 conf-users | tail -n -1` > auto_userr.c
+	./auto-str auto_userr `head -n 7 conf-users | tail -1` > auto_userr.c
 
 auto_userr.o: \
 compile auto_userr.c
@@ -163,7 +163,7 @@ compile auto_userr.c
 
 auto_users.c: \
 auto-str conf-users
-	./auto-str auto_users `head -n 8 conf-users | tail -n -1` > auto_users.c
+	./auto-str auto_users `head -n 8 conf-users | tail -1` > auto_users.c
 
 auto_users.o: \
 compile auto_users.c
@@ -171,7 +171,7 @@ compile auto_users.c
 
 auto_groupn.c: \
 auto-str conf-groups
-	./auto-str auto_groupn `head -n 2 conf-groups | tail -n -1` > auto_groupn.c
+	./auto-str auto_groupn `head -n 2 conf-groups | tail -1` > auto_groupn.c
 
 auto_groupn.o: \
 compile auto_groupn.c
@@ -352,8 +352,7 @@ case.h
 
 compile: \
 make-compile warn-auto.sh
-	( cat warn-auto.sh; ./make-compile ) > \
-	compile
+	( cat warn-auto.sh; ./make-compile ) > compile
 	chmod 755 compile
 
 condredirect: \
@@ -701,8 +700,9 @@ hostname.o: \
 compile hostname.c substdio.h subfd.h substdio.h readwrite.h
 	./compile hostname.c
 
-install:
-	echo './instpackage && ./instchown' > install
+install: \
+instpackage instchown warn-auto.sh
+	( cat warn-auto.sh; echo './instpackage && ./instchown' ) > install
 	chmod 755 install
 
 instcheck: \
@@ -725,16 +725,30 @@ instchown.o: \
 compile instchown.c strerr.h error.h exit.h hier.h
 	./compile instchown.c
 
+instfiles.o: \
+compile instfiles.c substdio.h strerr.h env.h error.h fifo.h open.h \
+str.h stralloc.h
+	./compile instfiles.c
+
 instpackage: \
-load instpackage.o fifo.o hier.o auto_qmail.o auto_split.o strerr.a \
+load instpackage.o instfiles.o fifo.o hier.o auto_qmail.o auto_split.o strerr.a \
 substdio.a open.a error.a env.a str.a fs.a stralloc.a
-	./load instpackage fifo.o hier.o auto_qmail.o auto_split.o \
+	./load instpackage instfiles.o fifo.o hier.o auto_qmail.o auto_split.o \
 	strerr.a substdio.a open.a error.a env.a str.a fs.a stralloc.a
 
 instpackage.o: \
-compile instpackage.c substdio.h strerr.h env.h error.h fifo.h open.h \
-readwrite.h exit.h alloc.h str.h stralloc.h hier.h
+compile instpackage.c open.h strerr.h hier.h
 	./compile instpackage.c
+
+instqueue: \
+load instqueue.o instfiles.o fifo.o hier.o auto_qmail.o auto_split.o strerr.a \
+substdio.a open.a error.a env.a str.a fs.a stralloc.a
+	./load instqueue instfiles.o fifo.o hier.o auto_qmail.o auto_split.o \
+	strerr.a substdio.a open.a error.a env.a str.a fs.a stralloc.a
+
+instqueue.o: \
+compile instqueue.c open.h strerr.h hier.h
+	./compile instqueue.c
 
 instuidgid.o: \
 compile instuidgid.c uidgid.h auto_uids.h auto_users.h
@@ -774,7 +788,7 @@ qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
 dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
 forward preline condredirect bouncesaying except maildirmake \
-maildir2mbox install instpackage instchown \
+maildir2mbox install instpackage instqueue instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
 binm3 binm3+df
 

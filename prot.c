@@ -1,7 +1,8 @@
+#include "prot.h"
+
 #include <sys/types.h>
 #include <unistd.h>
 #include <grp.h>
-#include "prot.h"
 
 int prot_gid(gid_t gid)
 {

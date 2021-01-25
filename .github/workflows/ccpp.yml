@@ -20,25 +20,49 @@ jobs:
            name: gcc-default,
            cc: gcc,
            nroff: nroff,
-           cflags: ""
+           utmp: false,
+           cflags: "",
+           makeflags: ""
          }
          - {
            name: gcc-no_obsolete,
            cc: gcc,
            nroff: nroff,
-           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED"
+           utmp: false,
+           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED",
+           makeflags: ""
+         }
+         - {
+           name: gcc-utmp,
+           cc: gcc,
+           nroff: true,
+           utmp: true,
+           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED",
+           makeflags: "-o qtmp.h"
          }
          - {
            name: clang-default,
            cc: clang,
            nroff: nroff,
-           cflags: ""
+           utmp: false,
+           cflags: "",
+           makeflags: ""
          }
          - {
            name: clang-no_obsolete,
            cc: clang,
            nroff: true,
-           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED"
+           utmp: false,
+           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED",
+           makeflags: ""
+         }
+         - {
+           name: clang-utmp,
+           cc: clang,
+           nroff: true,
+           utmp: true,
+           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED",
+           makeflags: "-o qtmp.h"
          }
 
     steps:
@@ -56,10 +80,15 @@ jobs:
         CC: ${{ matrix.config.cc }}
         CFLAGS: ${{ matrix.config.cflags }}
 
+    - name: copy utmp
+      if: matrix.config.utmp
+      run: cp qtmp.h1 qtmp.h
+
     - name: make
-      run: make it man NROFF=${NROFF}
+      run: make -j 2 ${MAKEFLAGS} it man NROFF=${NROFF}
       env:
         NROFF: ${{ matrix.config.nroff }}
+        MAKEFLAGS: ${{ matrix.config.makeflags }}
 
     - name: unittests
       run: make test

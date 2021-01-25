@@ -1,9 +1,10 @@
+#include "newfield.h"
+
 #include <unistd.h>
 #include "fmt.h"
 #include "datetime.h"
 #include "stralloc.h"
 #include "date822fmt.h"
-#include "newfield.h"
 
 /* "Date: 26 Sep 1995 04:46:53 -0000\n" */
 stralloc newfield_date = {0};

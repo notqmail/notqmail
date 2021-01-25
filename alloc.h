@@ -3,10 +3,11 @@
 
 #include <stdlib.h>
 
+#include "deprecated.h"
+
 #define alloc(x) malloc(x)
 #define alloc_free(x) free(x)
 
-#include "deprecated.h"
 #ifdef DEPRECATED_FUNCTIONS_AVAILABLE
 static inline int _deprecated_ alloc_re(void **x, unsigned int m, unsigned int n)
 {

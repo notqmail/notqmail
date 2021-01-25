@@ -1,3 +1,9 @@
+- 20210122 code: remove register storage class declaration from codebase.
+- 20201224 bug: in qmail-remote, handle DNS packets up to max EDNS
+           response size.
+- 20201206 code: extend qmail-queue(8) interface so a custom rejection
+           message can be communicated to the caller.
+- 20201120 code: add instqueue for packagers, extracted from instpackage.
 - 20200803 avoid sending CRCRLF in qmail-remote if input contains CRLF
 - 20200614 remove maildirwatch
 - 20200614 stop rewriting RCPT TO: domains when they are a CNAME (RFC 5321 5.1)

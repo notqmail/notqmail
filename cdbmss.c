@@ -1,7 +1,8 @@
+#include "cdbmss.h"
+
 #include "readwrite.h"
 #include "seek.h"
 #include "alloc.h"
-#include "cdbmss.h"
 
 int cdbmss_start(c,fd)
 struct cdbmss *c;
@@ -27,8 +28,8 @@ unsigned int datalen;
   cdbmake_pack(c->packbuf,(uint32) keylen);
   cdbmake_pack(c->packbuf + 4,(uint32) datalen);
   if (substdio_put(&c->ss,c->packbuf,8) == -1) return -1;
-  if (substdio_put(&c->ss,key,keylen) == -1) return -1;
-  if (substdio_put(&c->ss,data,datalen) == -1) return -1;
+  if (substdio_put(&c->ss,(char *)key,keylen) == -1) return -1;
+  if (substdio_put(&c->ss,(char *)data,datalen) == -1) return -1;
 
   h = CDBMAKE_HASHSTART;
   for (i = 0;i < keylen;++i)

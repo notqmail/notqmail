@@ -210,6 +210,11 @@ Number of seconds
 .B qmail-remote
 will wait for each response from the remote SMTP server.
 Default: 1200.
+.TP 5
+.I smtputf8
+Non-zero value in this control file enables
+.B qmail-remote
+to check if remote SMTP supports RFC6531 SMTP Extension for Internationalized Email. 
 .SH "SEE ALSO"
 addresses(5),
 envelopes(5),

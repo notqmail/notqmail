@@ -57,7 +57,7 @@ static stralloc idnhost = { 0 };
 static int smtputf8 = 0; /*- if remote has SMTPUTF8 capability */
 /* set by control file control/smtputf8. zero if SMTPUTF8 not #defined */
 static int enable_smtputf8; 
-int flagutf8; /*- if sender, recipient headers, body have utf8 */
+int flagutf8; /*- if sender, recipient, received headers have utf8 */
 
 void out(s) char *s; { if (substdio_puts(subfdoutsmall,s) == -1) _exit(0); }
 void zero() { if (substdio_put(subfdoutsmall,"\0",1) == -1) _exit(0); }
@@ -296,11 +296,13 @@ void smtp()
     if (code >= 500) quit("DConnected to "," but my name was rejected");
     if (code != 250) quit("ZConnected to "," but my name was rejected");
   } else /* EHLO succeeded. Let's check SMTPUTF8 capa */
-      smtputf8 = get_capability("SMTPUTF8"); /*- did the remote server advertize SMTPUTF8 */
-  if (!flagutf8)
-    flagutf8 = utf8read();
-  if (enable_smtputf8 && flagutf8 && !smtputf8)
-    quit("DConnected to "," but server does not support internationalized email addresses");
+  if (enable_smtputf8) {
+    smtputf8 = get_capability("SMTPUTF8"); /*- did the remote server advertize SMTPUTF8 */
+    if (!flagutf8)
+      flagutf8 = utf8read();
+    if (flagutf8 && !smtputf8)
+      quit("DConnected to "," but server does not support internationalized email addresses");
+  }
 #else
   substdio_puts(&smtpto,"HELO ");
   substdio_put(&smtpto,helohost.s,helohost.len);

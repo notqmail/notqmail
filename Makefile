@@ -1352,16 +1352,16 @@ uidgid.h auto_qmail.h auto_uids.h auto_users.h date822fmt.h fmtqfn.h
 # break things for idn2.lib
 hassmtputf8.h: \
 tryidn2.c compile load conf-smtputf8
-	((./compile `grep -h -v "^#" conf-smtputf8` tryidn2.c \
-		&& ./load tryidn2 -lidn2) >/dev/null 2>&1 \
-	&& echo \#define SMTPUTF8 1 || echo "WARNING!!! Not compiled with -DSMTPUTF8" 1<&2) > hassmtputf8.h
+	( ( ./compile `grep -h -v "^#" conf-smtputf8` tryidn2.c \
+		&& ./load tryidn2 -lidn2 ) >/dev/null 2>&1 \
+	&& echo \#define SMTPUTF8 1 || echo "WARNING!!! Not compiled with -DSMTPUTF8" 1<&2 ) > hassmtputf8.h
 	rm -f tryidn2.o tryidn2
 
 idn2.lib: \
 tryidn2.c compile load conf-smtputf8
-	((./compile `grep -h -v "^#" conf-smtputf8` tryidn2.c -o tryidn21.o \
-		&& ./load tryidn21 -lidn2) >/dev/null 2>&1 \
-	&& echo "-lidn2" || echo "WARNING!!! Not linked with libidn2" 1>&2) > idn2.lib
+	( ( ./compile `grep -h -v "^#" conf-smtputf8` tryidn2.c -o tryidn21.o \
+		&& ./load tryidn21 -lidn2 ) >/dev/null 2>&1 \
+	&& echo "-lidn2" || echo "WARNING!!! Not linked with libidn2" 1>&2 ) > idn2.lib
 	rm -f tryidn21.o tryidn21
 
 utf8read.o: \

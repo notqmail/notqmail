@@ -34,20 +34,30 @@ char maildata_1[] =
   "Received: (indimail-mta 3748 invoked by uid 0); Thu, 3 Dec 2020 10:30:00 +0530\n";
 
 char maildata_2[] =
-  "DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed;\n"
-  "  d=argos.indimail.org; s=default; x=1607576400; h=Date:Message-ID:\n"
-  "  From:Subject:To; bh=pTv4MFW2fHcqP6Nreg/Zf8GFhtQ=; b=AD6ytMimMiPu\n"
-  "  kdbP9+hbH8rQqIiUP5uU+125jwlESXVXG8xdMzVPspmP4K4Lo4KkcUR86xKpC0ee\n"
-  "  Ak+T6fp3gqhZszbocYfag1YGIDTrc8fxmjf9Ycmg5BvGzxa+cEVs7CYfJ9hFZM7m\n"
-  "  0AvoOdQ5fmWMCThNoHJzWDC3rTH7JFI=\n"
-  "Date: Thu, 3 Dec 2020 10:29:33 +0530\n"
-  "Message-ID: <20201203045933.3741.indimail@argos>\n"
-  "From: anonymous@argos.indimail.org\n"
-  "Subject: Output from your job      110\n"
-  "To: root\n"
-  "\n"
-  "error: can't create transaction lock on /var/lib/rpm/.rpm.lock (Resource temporarily unavailable)\n"
-  "error: /tmp/skype.gpgsig.zgIdKM: key 1 import failed.\n";
+ "DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed;\n"
+ "  d=argos.indimail.org; s=default; x=1611732901; h=Date:Message-ID:\n"
+ "  From:To:Subject:MIME-Version:Content-Type:Auto-Submitted:\n"
+ "  Precedence; bh=YO8RHkkmIcH3BqustllIxIdZlXE=; b=fHLyeqGJKtdQESwIL\n"
+ "  I3PFjiL3ShfqpIXtgKdWOS6vsaul0W79mnRZu2q4u9kckZya9iheCsZNWHrKjYUq\n"
+ "  pmARj01+39ZMdspg1JKboE7NSBtwBf2lsQvptFlgaDtE/NJY3Ac9+NcMhZuV7Ebb\n"
+ "  3FHoa/WA41ULRrRVbKh8em/HVs=\n"
+ "Date: Wed, 20 Jan 2021 13:04:34 +0530\n"
+ "Message-ID: <20210120073434.19789.indimail@argos>\n"
+ "From: \"\\(Cron Daemon\\)\" <root@argos.indimail.org>\n"
+ "To: root@argos.indimail.org\n"
+ "Subject: Cron <root@argos> /usr/sbin/clearopensmtp\n"
+ "MIME-Version: 1.0\n"
+ "Content-Type: text/plain; charset=UTF-8\n"
+ "Auto-Submitted: auto-generated\n"
+ "Precedence: bulk\n"
+ "X-Cron-Env: <LANG=en_IN.UTF-8>\n"
+ "X-Cron-Env: <SHELL=/bin/sh>\n"
+ "X-Cron-Env: <HOME=/root>\n"
+ "X-Cron-Env: <PATH=/usr/bin:/bin>\n"
+ "X-Cron-Env: <LOGNAME=root>\n"
+ "X-Cron-Env: <USER=root>\n"
+ "\n"
+ "mysql_init: couldn't load libmysqlclient: file does not exist\n";
 
 char *received[] = {
   /*- one long received string */

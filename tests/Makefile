@@ -86,7 +86,7 @@ get_capability.o: \
 	../compile -I.. get_capability.c
 
 get_capability.c: \
-../qmail-remote.c ./get_function
+../qmail-remote.c ./get_function Makefile
 	(echo "#include \"str.h\""; \
 	echo "#include \"case.h\""; \
 	echo "#include \"stralloc.h\""; \
@@ -100,7 +100,7 @@ smtpcode.o: \
 	../compile -I.. smtpcode.c
 
 smtpcode.c: \
-../qmail-remote.c ./get_function
+../qmail-remote.c ./get_function Makefile
 	(\
 	echo "#include \"stralloc.h\""; \
 	echo "#include \"substdio.h\""; \
@@ -109,7 +109,7 @@ smtpcode.c: \
 	echo "extern stralloc smtptext;"; \
 	echo "extern substdio smtpfrom;"; \
 	echo "extern void temp_nomem();"; \
-	./get_function "static void get1" ../qmail-remote.c; \
+	./get_function "static void get" ../qmail-remote.c; \
 	./get_function "static unsigned long get3" ../qmail-remote.c; \
 	./get_function "unsigned long smtpcode" ../qmail-remote.c) > smtpcode.c
 
@@ -118,7 +118,7 @@ mailfrom_parms.o: \
 	../compile -I.. mailfrom_parms.c
 
 mailfrom_parms.c: \
-../qmail-smtpd.c ./get_function
+../qmail-smtpd.c ./get_function Makefile
 	(\
 	echo "#include \"stralloc.h\""; \
 	echo "#include \"str.h\""; \

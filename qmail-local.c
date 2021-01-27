@@ -40,7 +40,7 @@ void _noreturn_ temp_fork() { strerr_die3x(111,"Unable to fork: ",error_str(errn
 void _noreturn_ temp_read() { strerr_die3x(111,"Unable to read message: ",error_str(errno),". (#4.3.0)"); }
 void _noreturn_ temp_slowlock()
 { strerr_die1x(111,"File has been locked for 30 seconds straight. (#4.3.0)"); }
-void _noreturn_ temp_qmail(char *fn)
+void _noreturn_ temp_qmail(const char *fn)
 { strerr_die5x(111,"Unable to open ",fn,": ",error_str(errno),". (#4.3.0)"); }
 
 int flagdoit;
@@ -76,8 +76,7 @@ char fnnewtph[80 + FMT_ULONG * 2];
 void tryunlinktmp() { unlink(fntmptph); }
 void sigalrm() { tryunlinktmp(); _exit(3); }
 
-void maildir_child(dir)
-char *dir;
+void maildir_child(const char *dir)
 {
  unsigned long pid;
  unsigned long time;
@@ -140,8 +139,7 @@ char *dir;
 
 /* end child process */
 
-void maildir(fn)
-char *fn;
+void maildir(const char *fn)
 {
  int child;
  int wstat;
@@ -170,8 +168,7 @@ char *fn;
   }
 }
 
-void mailfile(fn)
-char *fn;
+void mailfile(const char *fn)
 {
  int fd;
  substdio ss;
@@ -328,8 +325,7 @@ void checkhome()
  }
 }
 
-int qmeox(dashowner)
-char *dashowner;
+int qmeox(const char *dashowner)
 {
  struct stat st;
 
@@ -439,7 +435,7 @@ void count_print()
  substdio_flush(subfdoutsmall);
 }
 
-void sayit(char *type, char *cmd, unsigned int len)
+void sayit(const char *type, char *cmd, unsigned int len)
 {
  substdio_puts(subfdoutsmall,type);
  substdio_put(subfdoutsmall,cmd,len);

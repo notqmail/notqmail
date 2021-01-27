@@ -3,9 +3,7 @@
 #include "alloc.h"
 #include "case.h"
 
-static constmap_hash hash(s,len)
-char *s;
-int len;
+static constmap_hash hash(const char *s, int len)
 {
   unsigned char ch;
   constmap_hash h;
@@ -19,10 +17,7 @@ int len;
   return h;
 }
 
-char *constmap(cm,s,len)
-struct constmap *cm;
-char *s;
-int len;
+char *constmap(struct constmap *cm, const char *s, int len)
 {
   constmap_hash h;
   int pos;
@@ -35,14 +30,10 @@ int len;
 	  return cm->input[pos] + cm->inputlen[pos] + 1;
     pos = cm->next[pos];
   }
-  return 0;
+  return NULL;
 }
 
-int constmap_init(cm,s,len,flagcolon)
-struct constmap *cm;
-char *s;
-int len;
-int flagcolon;
+int constmap_init(struct constmap *cm, char *s, int len, int flagcolon)
 {
   int i;
   int j;
@@ -104,8 +95,7 @@ int flagcolon;
   return 0;
 }
 
-void constmap_free(cm)
-struct constmap *cm;
+void constmap_free(struct constmap *cm)
 {
   alloc_free(cm->next);
   alloc_free(cm->hash);

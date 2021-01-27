@@ -11,6 +11,7 @@ default: it
 
 TESTBINS = unittest_blast \
 	unittest_case \
+	unittest_cdb \
 	unittest_ehlo_parse \
 	unittest_prioq \
 	unittest_smtpcode \
@@ -92,6 +93,16 @@ unittest_blast: \
 unittest_blast.o: \
 ../compile unittest_blast.c ../alloc.h ../stralloc.h
 	../compile unittest_blast.c -I.. \
+	$(CHECK_INCLUDES)
+
+unittest_cdb: \
+../load unittest_cdb.o ../cdb.a
+	../load unittest_cdb ../cdb.a \
+	$(CHECK_LIBS)
+
+unittest_cdb.o: \
+../compile ../cdb.h ../uint32.h
+	../compile unittest_cdb.c -I.. \
 	$(CHECK_INCLUDES)
 
 unittest_prioq: \

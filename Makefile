@@ -1746,11 +1746,11 @@ compile str_chr.c str.h
 
 stralloc.a: \
 makelib stralloc_eady.o stralloc_pend.o stralloc_copy.o \
-stralloc_opys.o stralloc_opyb.o stralloc_cat.o stralloc_cats.o \
+stralloc_opyb.o stralloc_cat.o \
 stralloc_catb.o stralloc_arts.o
 	./makelib stralloc.a stralloc_eady.o stralloc_pend.o \
-	stralloc_copy.o stralloc_opys.o stralloc_opyb.o \
-	stralloc_cat.o stralloc_cats.o stralloc_catb.o \
+	stralloc_copy.o stralloc_opyb.o \
+	stralloc_cat.o stralloc_catb.o \
 	stralloc_arts.o
 
 stralloc_arts.o: \
@@ -1765,10 +1765,6 @@ stralloc_catb.o: \
 compile stralloc_catb.c stralloc.h gen_alloc.h byte.h error.h oflops.h
 	./compile stralloc_catb.c
 
-stralloc_cats.o: \
-compile stralloc_cats.c byte.h str.h stralloc.h gen_alloc.h
-	./compile stralloc_cats.c
-
 stralloc_copy.o: \
 compile stralloc_copy.c byte.h stralloc.h gen_alloc.h
 	./compile stralloc_copy.c
@@ -1781,10 +1777,6 @@ gen_allocdefs.h oflops.h error.h
 stralloc_opyb.o: \
 compile stralloc_opyb.c stralloc.h gen_alloc.h byte.h error.h oflops.h
 	./compile stralloc_opyb.c
-
-stralloc_opys.o: \
-compile stralloc_opys.c byte.h str.h stralloc.h gen_alloc.h
-	./compile stralloc_opys.c
 
 stralloc_pend.o: \
 compile stralloc_pend.c alloc.h stralloc.h gen_alloc.h \

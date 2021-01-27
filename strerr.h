@@ -6,9 +6,9 @@
 struct strerr
  {
   struct strerr *who;
-  char *x;
-  char *y;
-  char *z;
+  const char *x;
+  const char *y;
+  const char *z;
  }
 ;
 
@@ -16,8 +16,12 @@ extern struct strerr strerr_sys;
 extern void strerr_sysinit();
 
 extern char *strerr();
-extern void strerr_warn();
-extern void _noreturn_ strerr_die();
+extern void strerr_warn(const char *x1, const char *x2, const char *x3,
+                        const char *x4, const char *x5, const char *x6,
+                        struct strerr *se);
+extern void _noreturn_ strerr_die(int e, const char *x1, const char *x2, const char *x3,
+                       const char *x4, const char *x5, const char *x6,
+                       struct strerr *se);
 
 #define STRERR(r,se,a) \
 { se.who = 0; se.x = a; se.y = 0; se.z = 0; return r; }

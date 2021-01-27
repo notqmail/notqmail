@@ -17,7 +17,7 @@ void die(n) int n; { substdio_flush(subfdout); _exit(n); }
 
 void warn(s) char *s;
 {
- char *x;
+ const char *x;
  x = error_str(errno);
  substdio_puts(subfdout,s);
  substdio_puts(subfdout,": ");

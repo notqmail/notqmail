@@ -70,7 +70,7 @@ stralloc messid = {0};
 stralloc sender = {0};
 stralloc recip = {0};
 
-void err(s) char *s;
+void err(const char *s)
 {
  char ch; ch = delnum; substdio_put(&ssout,&ch,1);
  substdio_puts(&ssout,s); substdio_putflush(&ssout,"",1);

@@ -260,18 +260,14 @@ compile byte_zero.c byte.h
 	./compile byte_zero.c
 
 case.a: \
-makelib case_diffb.o case_diffs.o case_lowerb.o case_lowers.o \
+makelib case_diffb.o case_lowerb.o case_lowers.o \
 case_starts.o
-	./makelib case.a case_diffb.o case_diffs.o case_lowerb.o \
+	./makelib case.a case_diffb.o case_lowerb.o \
 	case_lowers.o case_starts.o
 
 case_diffb.o: \
 compile case_diffb.c case.h
 	./compile case_diffb.c
-
-case_diffs.o: \
-compile case_diffs.c case.h
-	./compile case_diffs.c
 
 case_lowerb.o: \
 compile case_lowerb.c case.h
@@ -1726,23 +1722,15 @@ scan.h fmt.h
 
 str.a: \
 makelib str_chr.o \
-str_rchr.o str_start.o byte_chr.o byte_rchr.o byte_copy.o \
+byte_chr.o byte_rchr.o byte_copy.o \
 byte_cr.o byte_zero.o
 	./makelib str.a \
-	str_chr.o str_rchr.o str_start.o byte_chr.o byte_rchr.o \
+	str_chr.o byte_chr.o byte_rchr.o \
 	byte_copy.o byte_cr.o byte_zero.o
 
 str_chr.o: \
 compile str_chr.c str.h
 	./compile str_chr.c
-
-str_rchr.o: \
-compile str_rchr.c str.h
-	./compile str_rchr.c
-
-str_start.o: \
-compile str_start.c str.h
-	./compile str_start.c
 
 stralloc.a: \
 makelib stralloc_eady.o stralloc_pend.o stralloc_copy.o \

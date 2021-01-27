@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "fd.h"
 #include "spawn.h"
 #include "wait.h"

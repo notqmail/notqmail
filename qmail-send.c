@@ -2,6 +2,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <string.h>
+#include <unistd.h>
 #include "readwrite.h"
 #include "sig.h"
 #include "direntry.h"

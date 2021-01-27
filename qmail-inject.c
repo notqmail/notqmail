@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "sig.h"
 #include "substdio.h"
 #include "stralloc.h"

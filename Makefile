@@ -255,10 +255,6 @@ byte_rchr.o: \
 compile byte_rchr.c byte.h
 	./compile byte_rchr.c
 
-byte_zero.o: \
-compile byte_zero.c byte.h
-	./compile byte_zero.c
-
 case.a: \
 makelib case_diffb.o case_lowerb.o case_lowers.o \
 case_starts.o
@@ -1735,10 +1731,10 @@ scan.h fmt.h
 str.a: \
 makelib str_chr.o \
 byte_chr.o byte_rchr.o byte_copy.o \
-byte_cr.o byte_zero.o
+byte_cr.o
 	./makelib str.a \
 	str_chr.o byte_chr.o byte_rchr.o \
-	byte_copy.o byte_cr.o byte_zero.o
+	byte_copy.o byte_cr.o
 
 str_chr.o: \
 compile str_chr.c str.h

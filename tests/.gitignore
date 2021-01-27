@@ -1,7 +1,8 @@
 *.o
-unittest_blast
 unittest_case
 unittest_prioq
 unittest_str
+unittest_prioq
+unittest_smtpcode
 unittest_stralloc
 blast.c

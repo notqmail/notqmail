@@ -9,7 +9,13 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_blast unittest_case unittest_ehlo_parse unittest_prioq unittest_str unittest_stralloc
+TESTBINS = unittest_blast \
+	unittest_case \
+	unittest_ehlo_parse \
+	unittest_prioq \
+	unittest_smtpcode \
+	unittest_str \
+	unittest_stralloc
 
 CHECK_INCLUDES := `pkg-config --cflags check`
 CHECK_LIBS := `pkg-config --libs check`
@@ -74,11 +80,11 @@ blast.o: ../compile blast.c
 
 unittest_blast: \
 ../load unittest_blast.o blast.o ../control.o ../ip.o ../constmap.o \
-../ehlo_parse.o ../timeoutread.o ../timeoutwrite.o ../quote.o \
+../ehlo_parse.o ../timeoutread.o ../timeoutwrite.o ../quote.o ../smtpcode.o \
 ../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a ../str.a \
 ../getln.a ../case.a
 	../load unittest_blast blast.o ../control.o ../ip.o ../constmap.o \
-	../ehlo_parse.o ../timeoutread.o ../timeoutwrite.o ../quote.o \
+	../ehlo_parse.o ../timeoutread.o ../timeoutwrite.o ../quote.o ../smtpcode.o \
 	../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a \
 	../getln.a ../str.a ../case.a \
 	$(CHECK_LIBS)
@@ -96,4 +102,14 @@ unittest_prioq: \
 unittest_prioq.o: \
 ../compile unittest_prioq.c
 	../compile unittest_prioq.c -I.. \
+	$(CHECK_INCLUDES)
+
+unittest_smtpcode: \
+../load unittest_smtpcode.o ../smtpcode.o ../stralloc.a ../substdio.a ../str.a
+	../load unittest_smtpcode ../smtpcode.o ../stralloc.a ../substdio.a ../str.a \
+	$(CHECK_LIBS)
+
+unittest_smtpcode.o: \
+../compile unittest_smtpcode.c ../smtpcode.h ../stralloc.h ../substdio.h
+	../compile unittest_smtpcode.c -I.. \
 	$(CHECK_INCLUDES)

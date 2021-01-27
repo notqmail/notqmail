@@ -12,13 +12,14 @@
 #include "open.h"
 #include "datetime.h"
 #include "date822fmt.h"
+#include "noreturn.h"
 #include "readwrite.h"
 #include "error.h"
 #include "exit.h"
 
 readsubdir rs;
 
-void die(n) int n; { substdio_flush(subfdout); _exit(n); }
+void _noreturn_ die(n) int n; { substdio_flush(subfdout); _exit(n); }
 
 void warn(s1,s2) char *s1; char *s2;
 {
@@ -31,9 +32,9 @@ void warn(s1,s2) char *s1; char *s2;
  substdio_puts(subfdout,"\n");
 }
 
-void die_nomem() { substdio_puts(subfdout,"fatal: out of memory\n"); die(111); }
-void die_chdir() { warn("fatal: unable to chdir",""); die(111); }
-void die_opendir(fn) char *fn; { warn("fatal: unable to opendir ",fn); die(111); }
+void _noreturn_ die_nomem() { substdio_puts(subfdout,"fatal: out of memory\n"); die(111); }
+void _noreturn_ die_chdir() { warn("fatal: unable to chdir",""); die(111); }
+void _noreturn_ die_opendir(char *fn) { warn("fatal: unable to opendir ",fn); die(111); }
 
 void err(id) unsigned long id;
 {

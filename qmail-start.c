@@ -3,6 +3,7 @@
 #include "prot.h"
 #include "exit.h"
 #include "fork.h"
+#include "noreturn.h"
 #include "uidgid.h"
 #include "auto_uids.h"
 #include "auto_users.h"
@@ -12,7 +13,7 @@ char *(qcargs[]) = { "qmail-clean", 0 };
 char *(qlargs[]) = { "qmail-lspawn", "./Mailbox", 0 };
 char *(qrargs[]) = { "qmail-rspawn", 0 };
 
-void die() { _exit(111); }
+void _noreturn_ die() { _exit(111); }
 
 int pi0[2];
 int pi1[2];

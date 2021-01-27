@@ -10,11 +10,12 @@
 #include "now.h"
 #include "fmt.h"
 #include "exit.h"
+#include "noreturn.h"
 #include "readwrite.h"
 #include "timeoutread.h"
 #include "timeoutwrite.h"
 
-void die() { _exit(1); }
+void _noreturn_ die() { _exit(1); }
 
 GEN_SAFE_TIMEOUTREAD(saferead,1200,fd,die())
 GEN_SAFE_TIMEOUTWRITE(safewrite,1200,fd,die())
@@ -41,11 +42,11 @@ void err(s) char *s;
   flush();
 }
 
-void die_usage() { err("usage: popup hostname subprogram"); die(); }
-void die_nomem() { err("out of memory"); die(); }
-void die_pipe() { err("unable to open pipe"); die(); }
-void die_write() { err("unable to write pipe"); die(); }
-void die_fork() { err("unable to fork"); die(); }
+void _noreturn_ die_usage() { err("usage: popup hostname subprogram"); die(); }
+void _noreturn_ die_nomem() { err("out of memory"); die(); }
+void _noreturn_ die_pipe() { err("unable to open pipe"); die(); }
+void _noreturn_ die_write() { err("unable to write pipe"); die(); }
+void _noreturn_ die_fork() { err("unable to fork"); die(); }
 void die_childcrashed() { err("aack, child crashed"); }
 void die_badauth() { err("authorization failed"); }
 
@@ -54,7 +55,7 @@ void err_wantuser() { err("USER first"); }
 void err_authoriz(arg) char *arg; { err("authorization first"); }
 
 void okay(arg) char *arg; { puts("+OK \r\n"); flush(); }
-void pop3_quit(arg) char *arg; { okay(0); die(); }
+void _noreturn_ pop3_quit(char *arg) { okay(0); die(); }
 
 
 char unique[FMT_ULONG + FMT_ULONG + 3];
@@ -66,10 +67,9 @@ substdio ssup;
 char upbuf[128];
 
 
-void doanddie(user,userlen,pass)
-char *user;
-unsigned int userlen; /* including 0 byte */
-char *pass;
+void _noreturn_ doanddie(char *user,
+                         unsigned int userlen, /* including 0 byte */
+                         char *pass)
 {
   int child;
   int wstat;

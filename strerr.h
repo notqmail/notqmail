@@ -1,6 +1,8 @@
 #ifndef STRERR_H
 #define STRERR_H
 
+#include "noreturn.h"
+
 struct strerr
  {
   struct strerr *who;
@@ -15,7 +17,7 @@ extern void strerr_sysinit();
 
 extern char *strerr();
 extern void strerr_warn();
-extern void strerr_die();
+extern void _noreturn_ strerr_die();
 
 #define STRERR(r,se,a) \
 { se.who = 0; se.x = a; se.y = 0; se.z = 0; return r; }

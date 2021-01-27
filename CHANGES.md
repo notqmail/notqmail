@@ -1,3 +1,4 @@
+- 20201116 honor all groups of qmailr user when spawning qmail-rspawn
 - 20210124 code: replace str_* functions with stubs calling the libc equivalent
 - 20210122 code: remove register storage class declaration from codebase.
 - 20201224 bug: in qmail-remote, handle DNS packets up to max EDNS

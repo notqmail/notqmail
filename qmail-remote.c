@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
@@ -10,6 +11,7 @@
 #include "scan.h"
 #include "case.h"
 #include "error.h"
+#include "fmt.h"
 #include "auto_qmail.h"
 #include "control.h"
 #include "dns.h"
@@ -272,7 +274,21 @@ void smtp()
  
   substdio_puts(&smtpto,"MAIL FROM:<");
   substdio_put(&smtpto,sender.s,sender.len);
-  substdio_puts(&smtpto,">\r\n");
+  if (remotesize >= 0) {
+    struct stat st;
+    /* in case the input is e.g. a pipe or socket we can't use the size */
+    if (fstat(0, &st) != 0 || !S_ISREG(st.st_mode)) {
+      substdio_puts(&smtpto,">\r\n");
+    } else {
+      char buf[FMT_ULONG + 10] = "> SIZE=";
+      unsigned int off = 7 + fmt_ulong(buf + 7, st.st_size);
+      buf[off++] = '\r';
+      buf[off++] = '\n';
+      substdio_bput(&smtpto,buf,off);
+    }
+  } else {
+    substdio_puts(&smtpto,">\r\n");
+  }
   substdio_flush(&smtpto);
   code = smtpcode();
   if (code >= 500) quit("DConnected to "," but sender was rejected");

@@ -4,6 +4,7 @@
 #include "stralloc.h"
 
 #include <sys/types.h>
+#include <stdint.h>
 
 /**
  * Callbacks for EHLO response parsing
@@ -40,5 +41,9 @@ struct smtpext {
  * entries in the callbacks param.
  */
 unsigned int ehlo_parse(const stralloc *smtptext, const struct smtpext *callbacks, unsigned int count);
+
+/*** SIZE extension */
+extern int64_t remotesize; /**< SIZE supported by the remote server, -1 if extension not announced */
+int ehlo_size(const char *ext, size_t extlen);
 
 #endif

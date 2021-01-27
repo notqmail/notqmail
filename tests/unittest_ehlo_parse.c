@@ -137,12 +137,58 @@ TCase
   return tc;
 }
 
+START_TEST(test_size_noargs)
+{
+  remotesize = -1;
+  ck_assert_int_eq(ehlo_size("SIZE", 4), 1);
+  ck_assert_int_eq(remotesize, 0);
+}
+END_TEST
+
+START_TEST(test_size_1k)
+{
+  remotesize = -1;
+  ck_assert_int_eq(ehlo_size("SIZE 1000", 9), 1);
+  ck_assert_int_eq(remotesize, 1000);
+}
+END_TEST
+
+START_TEST(test_size_00_1k)
+{
+  remotesize = -1;
+  ck_assert_int_eq(ehlo_size("SIZE 0000000000000000000000000000001000", 39), 1);
+  ck_assert_int_eq(remotesize, 1000);
+}
+END_TEST
+
+START_TEST(test_size_invalid)
+{
+  remotesize = -1;
+  ck_assert_int_eq(ehlo_size("SIZE abc", 8), 0);
+  ck_assert_int_eq(remotesize, -1);
+}
+END_TEST
+
+TCase
+*ehlo_size_checks(void)
+{
+  TCase *tc = tcase_create("SIZE extension");
+
+  tcase_add_test(tc, test_size_noargs);
+  tcase_add_test(tc, test_size_1k);
+  tcase_add_test(tc, test_size_00_1k);
+  tcase_add_test(tc, test_size_invalid);
+
+  return tc;
+}
+
 Suite
 *stralloc_suite(void)
 {
   Suite *s = suite_create("notqmail ehlo_parse");
 
   suite_add_tcase(s, ehlo_parse_checks());
+  suite_add_tcase(s, ehlo_size_checks());
 
   return s;
 }

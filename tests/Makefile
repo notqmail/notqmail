@@ -35,9 +35,9 @@ unittest_case.o: \
 	$(CHECK_INCLUDES)
 
 unittest_ehlo_parse: \
-../load unittest_ehlo_parse.o ../ehlo_parse.o \
+../load unittest_ehlo_parse.o ../ehlo_parse.o ../ehlo_size.o \
 ../stralloc.a ../case.a ../str.a
-	../load unittest_ehlo_parse ../ehlo_parse.o \
+	../load unittest_ehlo_parse ../ehlo_parse.o ../ehlo_size.o \
 	../stralloc.a ../case.a ../str.a \
 	$(CHECK_LIBS)
 

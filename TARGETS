@@ -9,6 +9,7 @@ quote.o
 gfrom.o
 myctime.o
 slurpclose.o
+smtpcode.o
 make-makelib
 makelib
 case_diffb.o

@@ -9,7 +9,13 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_stralloc unittest_blast unittest_prioq
+TESTBINS = unittest_blast \
+	unittest_prioq \
+	unittest_smtpcode \
+	unittest_stralloc
+
+CHECK_INCLUDES := `pkg-config --cflags check`
+CHECK_LIBS := `pkg-config --libs check`
 
 clean:
 	rm -f $(TESTBINS) *.o blast.c
@@ -24,12 +30,12 @@ test: it
 unittest_stralloc: \
 ../load unittest_stralloc.o ../stralloc.a ../str.a ../error.a
 	../load unittest_stralloc ../stralloc.a ../str.a ../error.a \
-	`pkg-config --libs check`
+	$(CHECK_LIBS)
 
 unittest_stralloc.o: \
 ../compile unittest_stralloc.c ../alloc.h ../stralloc.h
 	../compile unittest_stralloc.c -I.. \
-	`pkg-config --cflags check`
+	$(CHECK_INCLUDES)
 
 blast.c: ../qmail-remote.c
 	`head -n $$(grep -n '^int main(' ../qmail-remote.c | sed 's/:.*//') ../qmail-remote.c | sed '/^int main(/d' > blast.c`
@@ -39,26 +45,36 @@ blast.o: ../compile blast.c
 
 unittest_blast: \
 ../load unittest_blast.o blast.o ../control.o ../ip.o ../constmap.o \
-../timeoutread.o ../timeoutwrite.o ../quote.o \
+../timeoutread.o ../timeoutwrite.o ../quote.o ../smtpcode.o \
 ../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a ../str.a \
 ../getln.a ../case.a
 	../load unittest_blast blast.o ../control.o ../ip.o ../constmap.o \
-	../timeoutread.o ../timeoutwrite.o ../quote.o \
+	../timeoutread.o ../timeoutwrite.o ../quote.o ../smtpcode.o \
 	../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a \
 	../getln.a ../str.a ../case.a \
-	`pkg-config --libs check`
+	$(CHECK_LIBS)
 
 unittest_blast.o: \
 ../compile unittest_blast.c ../alloc.h ../stralloc.h
 	../compile unittest_blast.c -I.. \
-	`pkg-config --cflags check`
+	$(CHECK_INCLUDES)
 
 unittest_prioq: \
 ../load unittest_prioq.o ../prioq.o ../error.a
 	../load unittest_prioq ../prioq.o ../error.a \
-	`pkg-config --libs check`
+	$(CHECK_LIBS)
 
 unittest_prioq.o: \
 ../compile unittest_prioq.c
 	../compile unittest_prioq.c -I.. \
-	`pkg-config --cflags check`
+	$(CHECK_INCLUDES)
+
+unittest_smtpcode: \
+../load unittest_smtpcode.o ../smtpcode.o ../stralloc.a ../substdio.a ../str.a
+	../load unittest_smtpcode ../smtpcode.o ../stralloc.a ../substdio.a ../str.a \
+	$(CHECK_LIBS)
+
+unittest_smtpcode.o: \
+../compile unittest_smtpcode.c ../smtpcode.h ../stralloc.h ../substdio.h
+	../compile unittest_smtpcode.c -I.. \
+	$(CHECK_INCLUDES)

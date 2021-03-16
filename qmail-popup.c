@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "commands.h"
 #include "fd.h"
 #include "sig.h"

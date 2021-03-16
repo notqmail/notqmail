@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "auto_qmail.h"
 #include "qmail.h"
 #include "received.h"

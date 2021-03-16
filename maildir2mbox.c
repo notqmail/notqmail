@@ -1,4 +1,6 @@
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include "readwrite.h"
 #include "prioq.h"
 #include "env.h"

@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "strerr.h"
 #include "substdio.h"
 #include "lock.h"

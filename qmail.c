@@ -1,5 +1,6 @@
 #include "qmail.h"
 
+#include <unistd.h>
 #include "substdio.h"
 #include "readwrite.h"
 #include "wait.h"

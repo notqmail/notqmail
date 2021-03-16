@@ -1,5 +1,6 @@
 #include "tcpto.h"
 
+#include <unistd.h>
 #include "open.h"
 #include "lock.h"
 #include "seek.h"

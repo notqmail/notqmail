@@ -494,7 +494,7 @@ struct job
 int numjobs;
 struct job *jo;
 
-void job_init()
+static void job_init()
 {
  while (!(jo = calloc(numjobs, sizeof(*jo))))
     nomem();
@@ -505,14 +505,14 @@ void job_init()
  * @returns the index of the next free slot
  * @retval -1 all job slots are in use
  */
-int job_avail()
+static int job_avail()
 {
  int j;
  for (j = 0;j < numjobs;++j) if (!jo[j].refs) return j;
  return -1;
 }
 
-void job_open(unsigned long id, int channel, int j)
+static void job_open(unsigned long id, int channel, int j)
 {
  jo[j].refs = 1;
  jo[j].id = id;
@@ -521,8 +521,7 @@ void job_open(unsigned long id, int channel, int j)
  jo[j].flaghiteof = 0;
 }
 
-void job_close(j)
-int j;
+static void job_close(int j)
 {
  struct prioq_elt pe;
  struct stat st;

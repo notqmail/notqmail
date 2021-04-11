@@ -17,6 +17,7 @@ case_lowerb.o
 case_lowers.o
 case_starts.o
 case.a
+ehlo_parse.o
 getln.o
 getln2.o
 getln.a

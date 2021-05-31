@@ -11,15 +11,22 @@ default: it
 
 TESTBINS = unittest_stralloc unittest_qmail-remote unittest_prioq unittest_qmail-send
 
+SINGLETESTBIN = unittest_prioq
+
 clean:
 	rm -f $(TESTBINS) *.o *-without-main.c
 
 it: $(TESTBINS)
 
+singleit: ${SINGLETESTBIN}
+
 test: it
 	@for tbin in $(TESTBINS); do \
 		./$$tbin || exit 1 ; \
 	done
+
+singletest: singleit
+	./${SINGLETESTBIN} || exit 1;
 
 unittest_stralloc: \
 ../load unittest_stralloc.o ../stralloc.a ../str.a ../error.a

@@ -1,10 +1,13 @@
 #include <check.h>
 
 #include <stdlib.h>
-
+#include <stdio.h>
 #include "prioq.h"
+#include "gen_allocdefs.h"
 
-START_TEST(test_prioq_empty)
+GEN_ALLOC_readyplus(prioq,struct prioq_elt,p,len,a,100,check_readyplus)
+
+START_TEST(test_given_empty_prioq_should_return_0)
 {
   prioq pq = {0};
   struct prioq_elt pe;
@@ -13,6 +16,17 @@ START_TEST(test_prioq_empty)
   ck_assert_int_eq(0, prioq_min(&pq,&pe));
 }
 END_TEST
+
+START_TEST(test_gen_alloc_readyplus_given_pq_empty_failed_and_set_a_to_2)
+{
+  prioq pq = {0};
+  int return_code = check_readyplus(&pq, 2);
+
+  ck_assert_int_eq(1, return_code);
+  ck_assert_int_eq(2, pq.a);
+}
+END_TEST
+
 
 START_TEST(test_prioq_one_item)
 {
@@ -186,17 +200,45 @@ START_TEST(test_prioq_insert_no_particular_order)
 }
 END_TEST
 
+START_TEST(test_prioq_min_given_insert_element_from_high_to_low_dt_with_same_id_should_return_pq_with_lowest_dt)
+{
+    prioq pq = {0};
+    struct prioq_elt pe;
+
+    unsigned long value;
+    // insert the values that don't change the id value, but dt value is decreasing
+    for (value = 0; value < 5; value++) {
+        pe.dt = value;
+        pe.id = 10;
+        ck_assert_int_ne(0, prioq_insert(&pq,&pe));
+    }
+
+    // check to see if the element with the lowest dt is returned
+    // if we have 2 values changed, which changes are considered in determine the priority of the queue
+    // todo might need to add these comments to the existing tests
+    // todo refactor the tests to make sure it's easy to understand from non-author dev (even for the author)
+    int return_code = prioq_min(&pq,&pe);
+
+    ck_assert_int_eq(pe.id, 10);
+    ck_assert_int_eq(pe.dt, 0);
+    ck_assert_int_eq(1, return_code);
+}
+END_TEST
+
 TCase
 *prioq_something(void)
 {
   TCase *tc = tcase_create("basic operations");
 
-  tcase_add_test(tc, test_prioq_empty);
+  tcase_add_test(tc, test_given_empty_prioq_should_return_0);
+  tcase_add_test(tc, test_gen_alloc_readyplus_given_pq_empty_failed_and_set_a_to_2);
+
   tcase_add_test(tc, test_prioq_one_item);
   tcase_add_test(tc, test_prioq_insert_low_priority_to_high);
   tcase_add_test(tc, test_prioq_insert_high_priority_to_low);
   tcase_add_test(tc, test_prioq_insert_all_same_priority);
   tcase_add_test(tc, test_prioq_insert_no_particular_order);
+  tcase_add_test(tc, test_prioq_min_given_insert_element_from_high_to_low_dt_with_same_id_should_return_pq_with_lowest_dt);
 
   return tc;
 }

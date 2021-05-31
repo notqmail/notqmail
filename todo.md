@@ -1,0 +1,7 @@
+- write tests for gen_alloc_readyplus
+- what's _internal?
+- what's ta stand for?
+- what's a good site for c language reference?
+- what's a good book to read more about c language?
+- what's a good code standard convention to follow?
+- what's a good way to run a single test case of single unit tests

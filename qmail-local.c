@@ -31,16 +31,16 @@
 #include "gfrom.h"
 #include "auto_patrn.h"
 
-void usage() { strerr_die1x(100,"qmail-local: usage: qmail-local [ -nN ] user homedir local dash ext domain sender aliasempty"); }
+void _noreturn_ usage() { strerr_die1x(100,"qmail-local: usage: qmail-local [ -nN ] user homedir local dash ext domain sender aliasempty"); }
 
-void temp_nomem() { strerr_die1x(111,"Out of memory. (#4.3.0)"); }
-void temp_rewind() { strerr_die1x(111,"Unable to rewind message. (#4.3.0)"); }
-void temp_childcrashed() { strerr_die1x(111,"Aack, child crashed. (#4.3.0)"); }
-void temp_fork() { strerr_die3x(111,"Unable to fork: ",error_str(errno),". (#4.3.0)"); }
-void temp_read() { strerr_die3x(111,"Unable to read message: ",error_str(errno),". (#4.3.0)"); }
-void temp_slowlock()
+void _noreturn_ temp_nomem() { strerr_die1x(111,"Out of memory. (#4.3.0)"); }
+void _noreturn_ temp_rewind() { strerr_die1x(111,"Unable to rewind message. (#4.3.0)"); }
+void _noreturn_ temp_childcrashed() { strerr_die1x(111,"Aack, child crashed. (#4.3.0)"); }
+void _noreturn_ temp_fork() { strerr_die3x(111,"Unable to fork: ",error_str(errno),". (#4.3.0)"); }
+void _noreturn_ temp_read() { strerr_die3x(111,"Unable to read message: ",error_str(errno),". (#4.3.0)"); }
+void _noreturn_ temp_slowlock()
 { strerr_die1x(111,"File has been locked for 30 seconds straight. (#4.3.0)"); }
-void temp_qmail(fn) char *fn;
+void _noreturn_ temp_qmail(char *fn)
 { strerr_die5x(111,"Unable to open ",fn,": ",error_str(errno),". (#4.3.0)"); }
 
 int flagdoit;

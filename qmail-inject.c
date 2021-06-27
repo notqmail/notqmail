@@ -17,6 +17,7 @@
 #include "qmail.h"
 #include "now.h"
 #include "exit.h"
+#include "noreturn.h"
 #include "quote.h"
 #include "headerbody.h"
 #include "auto_qmail.h"
@@ -57,18 +58,18 @@ void put(s,len) char *s; int len;
 { if (flagqueue) qmail_put(&qqt,s,len); else substdio_put(subfdout,s,len); }
 void puts(s) char *s; { put(s,str_len(s)); }
 
-void perm() { _exit(100); }
-void temp() { _exit(111); }
-void die_nomem() {
+void _noreturn_ perm() { _exit(100); }
+void _noreturn_ temp() { _exit(111); }
+void _noreturn_ die_nomem() {
  substdio_putsflush(subfderr,"qmail-inject: fatal: out of memory\n"); temp(); }
-void die_invalid(sa) stralloc *sa; {
+void _noreturn_ die_invalid(sa) stralloc *sa; {
  substdio_putsflush(subfderr,"qmail-inject: fatal: invalid header field: ");
  substdio_putflush(subfderr,sa->s,sa->len); perm(); }
-void die_qqt() {
+void _noreturn_ die_qqt() {
  substdio_putsflush(subfderr,"qmail-inject: fatal: unable to run qmail-queue\n"); temp(); }
-void die_chdir() {
+void _noreturn_ die_chdir() {
  substdio_putsflush(subfderr,"qmail-inject: fatal: internal bug\n"); temp(); }
-void die_read() {
+void _noreturn_ die_read() {
  if (errno == error_nomem) die_nomem();
  substdio_putsflush(subfderr,"qmail-inject: fatal: read error\n"); temp(); }
 void doordie(sa,r) stralloc *sa; int r; {
@@ -88,7 +89,7 @@ saa hrrlist = {0};
 saa reciplist = {0};
 int flagresent;
 
-void exitnicely()
+void _noreturn_ exitnicely()
 {
  char *qqx;
 

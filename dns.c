@@ -25,8 +25,8 @@ extern int res_search();
 static unsigned short getshort(c) unsigned char *c;
 { unsigned short u; u = c[0]; return (u << 8) + c[1]; }
 
-static struct { unsigned char *buf; } response;
-static int responsebuflen = 0;
+static char *responsebuf;
+static int responsebuflen;
 static int responselen;
 static unsigned char *responseend;
 static unsigned char *responsepos;
@@ -52,47 +52,44 @@ int type;
  if (!stralloc_copy(&glue,domain)) return DNS_MEM;
  if (!stralloc_0(&glue)) return DNS_MEM;
  if (!responsebuflen) {
-  if ((response.buf = malloc(PACKETSZ+1)))
-   responsebuflen = PACKETSZ+1;
-  else return DNS_MEM;
+  responsebuf = malloc(PACKETSZ+1);
+  if (!responsebuf) return DNS_MEM;
+  responsebuflen = PACKETSZ+1;
  }
 
- responselen = lookup(glue.s,C_IN,type,response.buf,responsebuflen);
+ responselen = lookup(glue.s,C_IN,type,responsebuf,responsebuflen);
  if ((responselen >= responsebuflen) ||
-     (responselen > 0 && (((HEADER *)response.buf)->tc)))
-  {
+     (responselen > 0 && ((HEADER *)responsebuf)->tc)) {
    if (responsebuflen < MAX_EDNS_RESPONSE_SIZE) {
-    unsigned char *newbuf = realloc(response.buf, MAX_EDNS_RESPONSE_SIZE);
-    if (newbuf) {
-     response.buf = newbuf;
-     responsebuflen = MAX_EDNS_RESPONSE_SIZE;
-    }
-    else return DNS_MEM;
+    unsigned char *newbuf = realloc(responsebuf, MAX_EDNS_RESPONSE_SIZE);
+    if (!newbuf) return DNS_MEM;
+    responsebuf = newbuf;
+    responsebuflen = MAX_EDNS_RESPONSE_SIZE;
     saveresoptions = _res.options;
     _res.options |= RES_USEVC;
-    responselen = lookup(glue.s,C_IN,type,response.buf,responsebuflen);
+    responselen = lookup(glue.s,C_IN,type,responsebuf,responsebuflen);
     _res.options = saveresoptions;
    }
   }
  if (responselen <= 0)
-  {
+ {
    if (errno == ECONNREFUSED) return DNS_SOFT;
    if (h_errno == TRY_AGAIN) return DNS_SOFT;
    return DNS_HARD;
   }
- responseend = response.buf + responselen;
- responsepos = response.buf + sizeof(HEADER);
- n = ntohs(((HEADER *)response.buf)->qdcount);
+ responseend = responsebuf + responselen;
+ responsepos = responsebuf + sizeof(HEADER);
+ n = ntohs(((HEADER *)responsebuf)->qdcount);
  while (n-- > 0)
   {
-   i = dn_expand(response.buf,responseend,responsepos,name,MAXDNAME);
+   i = dn_expand(responsebuf,responseend,responsepos,name,MAXDNAME);
    if (i < 0) return DNS_SOFT;
    responsepos += i;
    i = responseend - responsepos;
    if (i < QFIXEDSZ) return DNS_SOFT;
    responsepos += QFIXEDSZ;
   }
- numanswers = ntohs(((HEADER *)response.buf)->ancount);
+ numanswers = ntohs(((HEADER *)responsebuf)->ancount);
  return 0;
 }
 
@@ -107,7 +104,7 @@ int wanttype;
  --numanswers;
  if (responsepos == responseend) return DNS_SOFT;
 
- i = dn_expand(response.buf,responseend,responsepos,name,MAXDNAME);
+ i = dn_expand(responsebuf,responseend,responsepos,name,MAXDNAME);
  if (i < 0) return DNS_SOFT;
  responsepos += i;
 
@@ -120,7 +117,7 @@ int wanttype;
 
  if (rrtype == wanttype)
   {
-   if (dn_expand(response.buf,responseend,responsepos,name,MAXDNAME) < 0)
+   if (dn_expand(responsebuf,responseend,responsepos,name,MAXDNAME) < 0)
      return DNS_SOFT;
    responsepos += rrdlen;
    return 1;
@@ -141,7 +138,7 @@ int wanttype;
  --numanswers;
  if (responsepos == responseend) return DNS_SOFT;
 
- i = dn_expand(response.buf,responseend,responsepos,name,MAXDNAME);
+ i = dn_expand(responsebuf,responseend,responsepos,name,MAXDNAME);
  if (i < 0) return DNS_SOFT;
  responsepos += i;
 
@@ -179,7 +176,7 @@ int wanttype;
  --numanswers;
  if (responsepos == responseend) return DNS_SOFT;
 
- i = dn_expand(response.buf,responseend,responsepos,name,MAXDNAME);
+ i = dn_expand(responsebuf,responseend,responsepos,name,MAXDNAME);
  if (i < 0) return DNS_SOFT;
  responsepos += i;
 
@@ -195,7 +192,7 @@ int wanttype;
    if (rrdlen < 3)
      return DNS_SOFT;
    pref = (responsepos[0] << 8) + responsepos[1];
-   if (dn_expand(response.buf,responseend,responsepos + 2,name,MAXDNAME) < 0)
+   if (dn_expand(responsebuf,responseend,responsepos + 2,name,MAXDNAME) < 0)
      return DNS_SOFT;
    responsepos += rrdlen;
    return 1;

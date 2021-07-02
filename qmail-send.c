@@ -493,41 +493,34 @@ struct job
 int numjobs;
 struct job *jo;
 
-void job_init()
+static void job_init()
 {
- int j;
- while (!(jo = (struct job *) alloc(numjobs * sizeof(struct job)))) nomem();
- for (j = 0;j < numjobs;++j)
-  {
-   jo[j].refs = 0;
-   jo[j].sender.s = 0;
-  }
+ while (!(jo = calloc(numjobs, sizeof(*jo))))
+    nomem();
 }
 
-int job_avail()
+/**
+ * @brief find the next available job slot
+ * @returns the index of the next free slot
+ * @retval -1 all job slots are in use
+ */
+static int job_avail()
 {
  int j;
- for (j = 0;j < numjobs;++j) if (!jo[j].refs) return 1;
- return 0;
+ for (j = 0;j < numjobs;++j) if (!jo[j].refs) return j;
+ return -1;
 }
 
-int job_open(id,channel)
-unsigned long id;
-int channel;
+static void job_open(unsigned long id, int channel, int j)
 {
- int j;
- for (j = 0;j < numjobs;++j) if (!jo[j].refs) break;
- if (j == numjobs) return -1;
  jo[j].refs = 1;
  jo[j].id = id;
  jo[j].channel = channel;
  jo[j].numtodo = 0;
  jo[j].flaghiteof = 0;
- return j;
 }
 
-void job_close(j)
-int j;
+static void job_close(int j)
 {
  struct prioq_elt pe;
  struct stat st;
@@ -1063,7 +1056,8 @@ int c;
 
  if (!pass[c].id)
   {
-   if (!job_avail()) return;
+   int j = job_avail();
+   if (j < 0) return;
    if (!prioq_min(&pqchan[c],&pe)) return;
    if (pe.dt > recent) return;
    fnmake_chanaddr(pe.id,c);
@@ -1075,10 +1069,11 @@ int c;
    if (!getinfo(&line,&birth,pe.id)) { close(pass[c].fd); goto trouble; }
    pass[c].id = pe.id;
    substdio_fdbuf(&pass[c].ss,read,pass[c].fd,pass[c].buf,sizeof(pass[c].buf));
-   pass[c].j = job_open(pe.id,c);
-   jo[pass[c].j].retry = nextretry(birth,c);
-   jo[pass[c].j].flagdying = (recent > birth + lifetime);
-   while (!stralloc_copy(&jo[pass[c].j].sender,&line)) nomem();
+   job_open(pe.id,c,j);
+   pass[c].j = j;
+   jo[j].retry = nextretry(birth,c);
+   jo[j].flagdying = (recent > birth + lifetime);
+   while (!stralloc_copy(&jo[j].sender,&line)) nomem();
   }
 
  if (!del_avail(c)) return;

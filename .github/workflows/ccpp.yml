@@ -70,7 +70,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: test_deps
-      run: if [ "${OS}" = "macos-latest" ]; then brew install check; else sudo apt-get install check; fi
+      run: if [ "${OS}" = "macos-latest" ]; then brew install check; else sudo apt-get install check libidn2-0-dev; fi
       env:
         OS: ${{ matrix.host }}
 

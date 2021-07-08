@@ -12,9 +12,10 @@ task:
       - MAKE_FLAGS: "-j 2 NROFF=true"
 
   pkginstall_script:
-    - pkg install -y groff pkgconf check
+    - pkg install -y groff pkgconf check libidn2
   configure_script:
-    - echo "clang -O2 -Wall -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations" > conf-cc
+    - echo "clang -O2 -Wall -I/usr/local/include -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations" > conf-cc
+    - echo "cc -s -L/usr/local/lib" > conf-ld
   compile_script:
     - make ${MAKE_FLAGS} it man
   test_script:

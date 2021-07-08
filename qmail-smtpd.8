@@ -15,6 +15,11 @@ see
 .BR tcp-environ(5) .
 
 .B qmail-smtpd
+offers RFC 5336 SMTP Email Address Internationalization support and will advertize the
+capability in the EHLO greeting. Since qmail-smtpd is 8 bit clean, setting of SMTPUTF8 has no real
+consequences except for displaying this setting in the received headers as \fBUTF8SMTP\fR.
+
+.B qmail-smtpd
 is responsible for counting hops.
 It rejects any message with 100 or more 
 .B Received
@@ -35,6 +40,7 @@ see
 .B qmail-smtpd
 accepts messages that contain long lines or non-ASCII characters,
 even though such messages violate the SMTP protocol.
+
 .SH "CONTROL FILES"
 .TP 5
 .I badmailfrom
@@ -169,6 +175,9 @@ Number of seconds
 .B qmail-smtpd
 will wait for each new buffer of data from the remote SMTP client.
 Default: 1200.
+.TP 5
+.I smtputf8
+Non-zero value in this control file enables RFC6531 SMTP Extension for Internationalized Email. 
 .SH "SEE ALSO"
 tcp-env(1),
 tcp-environ(5),

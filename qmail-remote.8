@@ -47,6 +47,14 @@ arguments to
 The envelope sender address is listed as
 .I sender\fP.
 
+If the environment variable SMTPUTF8 is defined,
+.B qmail-remote
+will respect SMTPUTF8 and EAI addresses. If message is utf8,
+.B qmail-remote
+will use idn2_lookup_u8(3) to perform IDNA2008 lookup string conversion
+on
+.IR host .
+
 Note that
 .B qmail-remote
 does not take options
@@ -202,6 +210,11 @@ Number of seconds
 .B qmail-remote
 will wait for each response from the remote SMTP server.
 Default: 1200.
+.TP 5
+.I smtputf8
+Non-zero value in this control file enables
+.B qmail-remote
+to check if remote SMTP supports RFC6531 SMTP Extension for Internationalized Email. 
 .SH "SEE ALSO"
 addresses(5),
 envelopes(5),

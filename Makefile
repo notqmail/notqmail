@@ -338,7 +338,7 @@ auto_spawn.h
 
 clean: \
 TARGETS
-	rm -f `cat TARGETS`
+	rm -f `grep -v '^#' TARGETS`
 	$(MAKE) -C tests clean
 
 coe.o: \

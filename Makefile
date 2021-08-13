@@ -55,15 +55,6 @@ auto-str.o: \
 compile auto-str.c substdio.h readwrite.h exit.h
 	./compile auto-str.c
 
-auto-uid: \
-load auto-uid.o substdio.a error.a str.a fs.a
-	./load auto-uid substdio.a error.a str.a fs.a 
-
-auto-uid.o: \
-compile auto-uid.c subfd.h substdio.h substdio.h readwrite.h exit.h \
-scan.h fmt.h
-	./compile auto-uid.c
-
 auto_break.c: \
 auto-str conf-break
 	./auto-str auto_break \

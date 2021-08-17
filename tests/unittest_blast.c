@@ -13,6 +13,7 @@ static const char *readexpect;
 static const char *writeexpect;
 static size_t readoffs;
 static size_t writeoffs;
+int64_t remotesize;
 
 int readstub(int fd, char *buf, int len)
 {

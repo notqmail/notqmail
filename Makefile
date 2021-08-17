@@ -480,6 +480,14 @@ dot-qmail.9 conf-qmail conf-break conf-spawn
 	| sed s}SPAWN}"`head -n 1 conf-spawn`"}g \
 	> dot-qmail.5
 
+ehlo_parse.o: \
+compile ehlo_parse.c ehlo_parse.h
+	./compile ehlo_parse.c
+
+ehlo_size.o: \
+compile ehlo_size.c ehlo_parse.h
+	./compile ehlo_size.c
+
 env.a: \
 makelib env.o envread.o
 	./makelib env.a env.o envread.o
@@ -1355,12 +1363,12 @@ uidgid.h auto_qmail.h auto_uids.h auto_users.h date822fmt.h fmtqfn.h
 
 qmail-remote: \
 load qmail-remote.o control.o constmap.o timeoutread.o timeoutwrite.o \
-timeoutconn.o tcpto.o dns.o ip.o ipalloc.o ipme.o quote.o \
-ndelay.a case.a sig.a open.a lock.a getln.a stralloc.a \
+timeoutconn.o tcpto.o dns.o ip.o ipalloc.o ipme.o quote.o ehlo_size.o \
+ndelay.a case.a sig.a open.a lock.a getln.a stralloc.a ehlo_parse.o \
 substdio.a error.a str.a fs.a auto_qmail.o dns.lib socket.lib
 	./load qmail-remote control.o constmap.o timeoutread.o \
-	timeoutwrite.o timeoutconn.o tcpto.o dns.o ip.o \
-	ipalloc.o ipme.o quote.o ndelay.a case.a sig.a open.a \
+	timeoutwrite.o timeoutconn.o tcpto.o dns.o ip.o ehlo_parse.o \
+	ehlo_size.o ipalloc.o ipme.o quote.o ndelay.a case.a sig.a open.a \
 	lock.a getln.a stralloc.a substdio.a error.a \
 	str.a fs.a auto_qmail.o  `cat dns.lib` `cat socket.lib`
 

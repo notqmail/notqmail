@@ -1353,16 +1353,37 @@ alloc.h substdio.h datetime.h now.h datetime.h triggerpull.h extra.h \
 uidgid.h auto_qmail.h auto_uids.h auto_users.h date822fmt.h fmtqfn.h
 	./compile qmail-queue.c
 
+# use tryidn21 for idn2.lib instead of tryidn2 else parallel compile race condition will
+# break things for idn2.lib
+hassmtputf8.h: \
+tryidn2.c compile load conf-smtputf8
+	( ( ./compile `grep -h -v "^#" conf-smtputf8` tryidn2.c \
+		&& ./load tryidn2 -lidn2 ) >/dev/null 2>&1 \
+	&& echo \#define SMTPUTF8 1 || echo "WARNING!!! Not compiled with -DSMTPUTF8" 1<&2 ) > hassmtputf8.h
+	rm -f tryidn2.o tryidn2
+
+idn2.lib: \
+tryidn2.c compile load conf-smtputf8
+	( ( ./compile `grep -h -v "^#" conf-smtputf8` tryidn2.c -o tryidn21.o \
+		&& ./load tryidn21 -lidn2 ) >/dev/null 2>&1 \
+	&& echo "-lidn2" || echo "WARNING!!! Not linked with libidn2" 1>&2 ) > idn2.lib
+	rm -f tryidn21.o tryidn21
+
+utf8read.o: \
+compile utf8read.c hassmtputf8.h stralloc.h case.h substdio.h subfd.h
+	./compile utf8read.c
+
 qmail-remote: \
 load qmail-remote.o control.o constmap.o timeoutread.o timeoutwrite.o \
-timeoutconn.o tcpto.o dns.o ip.o ipalloc.o ipme.o quote.o \
-ndelay.a case.a sig.a open.a lock.a getln.a stralloc.a \
-substdio.a error.a str.a fs.a auto_qmail.o dns.lib socket.lib
+timeoutconn.o tcpto.o dns.o ip.o ipalloc.o ipme.o quote.o envread.o \
+utf8read.o ndelay.a case.a sig.a open.a lock.a getln.a stralloc.a \
+substdio.a error.a str.a fs.a auto_qmail.o dns.lib socket.lib \
+idn2.lib
 	./load qmail-remote control.o constmap.o timeoutread.o \
-	timeoutwrite.o timeoutconn.o tcpto.o dns.o ip.o \
+	timeoutwrite.o timeoutconn.o tcpto.o dns.o ip.o utf8read.o \
 	ipalloc.o ipme.o quote.o ndelay.a case.a sig.a open.a \
-	lock.a getln.a stralloc.a substdio.a error.a \
-	str.a fs.a auto_qmail.o  `cat dns.lib` `cat socket.lib`
+	envread.o lock.a getln.a stralloc.a substdio.a error.a \
+	str.a fs.a auto_qmail.o  `cat dns.lib socket.lib idn2.lib`
 
 qmail-remote.0: \
 qmail-remote.8
@@ -1373,7 +1394,7 @@ subfd.h substdio.h scan.h case.h error.h auto_qmail.h control.h dns.h \
 alloc.h quote.h ip.h ipalloc.h ip.h gen_alloc.h ipme.h ip.h ipalloc.h \
 gen_alloc.h gen_allocdefs.h str.h now.h datetime.h exit.h constmap.h \
 tcpto.h readwrite.h timeoutconn.h timeoutread.h timeoutwrite.h oflops.h \
-error.h
+error.h hassmtputf8.h utf8read.h env.h
 	./compile qmail-remote.c
 
 qmail-rspawn: \

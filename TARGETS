@@ -375,3 +375,7 @@ forgeries.0
 setup
 qtmp.h
 qmail-send.service
+trysmtputf8
+idn2.lib
+hassmtputf8.h
+utf8read.o

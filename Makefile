@@ -5,6 +5,32 @@ NROFF?=nroff
 
 default: it
 
+TARGETS = qmail-local qmail-lspawn qmail-getpw qmail-remote qmail-rspawn \
+	qmail-clean qmail-send qmail-start splogger qmail-queue qmail-inject \
+	predate datemail mailsubj qmail-upq qmail-showctl qmail-newu \
+	qmail-pw2u qmail-qread qmail-qstat qmail-tcpto qmail-tcpok \
+	qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
+	qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
+	dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
+	forward preline condredirect bouncesaying except maildirmake \
+	maildir2mbox install instpackage instqueue instchown \
+	instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
+	binm3 binm3+df
+
+GEN_MAN = dot-qmail.5 qmail-control.5 qmail-getpw.8 qmail-limits.7 \
+	qmail-newmrh.8 qmail-newu.8 qmail-pw2u.8 qmail-send.8 \
+	qmail-start.8 qmail-users.5
+
+# helper tools needed for building, but not in production
+BUILD_TOOLS = auto-ccld.sh auto-int auto-int8 auto-str chkspawn compile \
+	load make-compile makelib make-load make-makelib setup
+
+# source files generated during build
+GEN_FILES = auto_break.c auto_group[nq].c auto_patrn.c auto_qmail.c \
+	auto_spawn.c auto_split.c auto_user[adlopqrs].c \
+	direntry.h hasflock.h hasmkffo.h hasnpbg1.h hassalen.h hassgact.h \
+	hassgprm.h haswaitp.h oflops.h qtmp.h select.h
+
 .PHONY: check clean default it man test
 
 .SUFFIXES: .0 .1 .5 .7 .8
@@ -327,9 +353,9 @@ compile chkspawn.c substdio.h subfd.h substdio.h fmt.h select.h \
 auto_spawn.h
 	./compile chkspawn.c
 
-clean: \
-TARGETS
-	rm -f `grep -v '^#' TARGETS`
+clean:
+	rm -f $(BUILD_TOOLS) $(GEN_FILES) $(TARGETS) *.o *.a *.lib \
+		$(GEN_MAN) *.0 qmail-send.service
 	$(MAKE) -C tests clean
 
 coe.o: \
@@ -770,18 +796,7 @@ compile ipmeprint.c subfd.h substdio.h substdio.h ip.h ipme.h ip.h \
 ipalloc.h ip.h gen_alloc.h
 	./compile ipmeprint.c
 
-it: \
-qmail-local qmail-lspawn qmail-getpw qmail-remote qmail-rspawn \
-qmail-clean qmail-send qmail-start splogger qmail-queue qmail-inject \
-predate datemail mailsubj qmail-upq qmail-showctl qmail-newu \
-qmail-pw2u qmail-qread qmail-qstat qmail-tcpto qmail-tcpok \
-qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
-qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
-dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
-forward preline condredirect bouncesaying except maildirmake \
-maildir2mbox install instpackage instqueue instchown \
-instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
-binm3 binm3+df
+it: $(TARGETS)
 
 load: \
 make-load warn-auto.sh

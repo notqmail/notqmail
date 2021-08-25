@@ -1,4 +1,3 @@
-# Keep .gitignore and TARGETS in sync!
 auto-ccld.sh
 make-load
 load

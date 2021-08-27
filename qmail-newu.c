@@ -2,6 +2,7 @@
 #include "stralloc.h"
 #include "subfd.h"
 #include "getln.h"
+#include "noreturn.h"
 #include "substdio.h"
 #include "byte.h"
 #include "cdbmss.h"
@@ -14,44 +15,44 @@
 
 extern int rename(const char *, const char *);
 
-void die_temp() { _exit(111); }
+void _noreturn_ die_temp(void) { _exit(111); }
 
-void die_chdir()
+void _noreturn_ die_chdir(void)
 {
   substdio_putsflush(subfderr,"qmail-newu: fatal: unable to chdir\n");
   die_temp();
 }
-void die_nomem()
+void _noreturn_ die_nomem(void)
 {
   substdio_putsflush(subfderr,"qmail-newu: fatal: out of memory\n");
   die_temp();
 }
-void die_opena()
+void _noreturn_ die_opena(void)
 {
   substdio_putsflush(subfderr,"qmail-newu: fatal: unable to open users/assign\n");
   die_temp();
 }
-void die_reada()
+void _noreturn_ die_reada(void)
 {
   substdio_putsflush(subfderr,"qmail-newu: fatal: unable to read users/assign\n");
   die_temp();
 }
-void die_format()
+void _noreturn_ die_format(void)
 {
   substdio_putsflush(subfderr,"qmail-newu: fatal: bad format in users/assign\n");
   die_temp();
 }
-void die_opent()
+void _noreturn_ die_opent(void)
 {
   substdio_putsflush(subfderr,"qmail-newu: fatal: unable to open users/cdb.tmp\n");
   die_temp();
 }
-void die_writet()
+void _noreturn_ die_writet(void)
 {
   substdio_putsflush(subfderr,"qmail-newu: fatal: unable to write users/cdb.tmp\n");
   die_temp();
 }
-void die_rename()
+void _noreturn_ die_rename(void)
 {
   substdio_putsflush(subfderr,"qmail-newu: fatal: unable to move users/cdb.tmp to users/cdb\n");
   die_temp();

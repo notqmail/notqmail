@@ -11,7 +11,7 @@
 
 #define FATAL "preline: fatal: "
 
-void die_usage()
+void _noreturn_ die_usage(void)
 {
   strerr_die1x(100,"preline: usage: preline cmd [ arg ... ]");
 }

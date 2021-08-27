@@ -8,7 +8,7 @@
 
 #define FATAL "forward: fatal: "
 
-void die_nomem() { strerr_die2x(111,FATAL,"out of memory"); }
+void _noreturn_ die_nomem(void) { strerr_die2x(111,FATAL,"out of memory"); }
 
 struct qmail qqt;
 

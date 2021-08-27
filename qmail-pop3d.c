@@ -6,6 +6,7 @@
 #include "commands.h"
 #include "sig.h"
 #include "getln.h"
+#include "noreturn.h"
 #include "stralloc.h"
 #include "substdio.h"
 #include "alloc.h"
@@ -20,7 +21,7 @@
 #include "timeoutread.h"
 #include "timeoutwrite.h"
 
-void die() { _exit(0); }
+void _noreturn_ die(void) { _exit(0); }
 
 extern int rename(const char *, const char *);
 
@@ -56,13 +57,13 @@ void err(s) char *s;
   flush();
 }
 
-void die_nomem() { err("out of memory"); die(); }
-void die_nomaildir() { err("this user has no $HOME/Maildir"); die(); }
-void die_root() {
+void _noreturn_ die_nomem(void) { err("out of memory"); die(); }
+void _noreturn_ die_nomaildir(void) { err("this user has no $HOME/Maildir"); die(); }
+void _noreturn_ die_root(void) {
   substdio_putsflush(&sserr,"qmail-pop3d invoked as uid 0, terminating\n");
   _exit(1);
 }
-void die_scan() { err("unable to scan $HOME/Maildir"); die(); }
+void _noreturn_ die_scan(void) { err("unable to scan $HOME/Maildir"); die(); }
 
 void err_syntax() { err("syntax error"); }
 void err_unimpl(arg) char *arg; { err("unimplemented"); }
@@ -176,7 +177,7 @@ void pop3_last(arg) char *arg;
   flush();
 }
 
-void pop3_quit(arg) char *arg;
+void _noreturn_  pop3_quit(const char *arg)
 {
   unsigned int i;
   for (i = 0;i < numm;++i)

@@ -8,6 +8,7 @@
 #include "datetime.h"
 #include "exit.h"
 #include "fork.h"
+#include "noreturn.h"
 #include "open.h"
 #include "wait.h"
 #include "lock.h"
@@ -74,10 +75,9 @@ char outbuf[1024];
 char fntmptph[80 + FMT_ULONG * 2];
 char fnnewtph[80 + FMT_ULONG * 2];
 void tryunlinktmp() { unlink(fntmptph); }
-void sigalrm() { tryunlinktmp(); _exit(3); }
+void _noreturn_ sigalrm() { tryunlinktmp(); _exit(3); }
 
-void maildir_child(dir)
-char *dir;
+void _noreturn_ maildir_child(const char *dir)
 {
  unsigned long pid;
  unsigned long time;

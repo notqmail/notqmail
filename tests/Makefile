@@ -9,10 +9,10 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_stralloc unittest_blast unittest_prioq
+TESTBINS = unittest_stralloc unittest_qmail-remote unittest_prioq unittest_qmail-send
 
 clean:
-	rm -f $(TESTBINS) *.o blast.c
+	rm -f $(TESTBINS) *.o *-without-main.c
 
 it: $(TESTBINS)
 
@@ -31,26 +31,28 @@ unittest_stralloc.o: \
 	../compile unittest_stralloc.c -I.. \
 	`pkg-config --cflags check`
 
-blast.c: ../qmail-remote.c
-	`head -n $$(grep -n '^int main(' ../qmail-remote.c | sed 's/:.*//') ../qmail-remote.c | sed '/^int main(/d' > blast.c`
+qmail-remote-without-main.c: \
+../qmail-remote.c
+	head -n $$(grep -n '^int main(' ../qmail-remote.c | sed 's/:.*//') ../qmail-remote.c | sed '/^int main(/d' > qmail-remote-without-main.c
 
-blast.o: ../compile blast.c
-	../compile blast.c -I..
+qmail-remote-without-main.o: \
+../compile qmail-remote-without-main.c
+	../compile qmail-remote-without-main.c -I..
 
-unittest_blast: \
-../load unittest_blast.o blast.o ../control.o ../ip.o ../constmap.o \
+unittest_qmail-remote: \
+../load unittest_qmail-remote.o qmail-remote-without-main.o ../control.o ../ip.o ../constmap.o \
 ../timeoutread.o ../timeoutwrite.o ../quote.o \
 ../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a ../str.a \
 ../getln.a ../case.a
-	../load unittest_blast blast.o ../control.o ../ip.o ../constmap.o \
+	../load unittest_qmail-remote qmail-remote-without-main.o ../control.o ../ip.o ../constmap.o \
 	../timeoutread.o ../timeoutwrite.o ../quote.o \
 	../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a \
 	../getln.a ../str.a ../case.a \
 	`pkg-config --libs check`
 
-unittest_blast.o: \
-../compile unittest_blast.c ../alloc.h ../stralloc.h
-	../compile unittest_blast.c -I.. \
+unittest_qmail-remote.o: \
+../compile unittest_qmail-remote.c ../alloc.h ../stralloc.h
+	../compile unittest_qmail-remote.c -I.. \
 	`pkg-config --cflags check`
 
 unittest_prioq: \
@@ -59,6 +61,29 @@ unittest_prioq: \
 	`pkg-config --libs check`
 
 unittest_prioq.o: \
-../compile unittest_prioq.c
+../compile unittest_prioq.c ../prioq.h
 	../compile unittest_prioq.c -I.. \
+	`pkg-config --cflags check`
+
+qmail-send-without-main.c: \
+../qmail-send.c
+	head -n $$(grep -n '^int main(' ../qmail-send.c | sed 's/:.*//') ../qmail-send.c | sed '/^int main(/d' > qmail-send-without-main.c
+
+unittest_qmail-send: \
+../load unittest_qmail-send.o ../qsutil.o ../control.o ../constmap.o ../newfield.o ../prioq.o \
+../trigger.o ../fmtqfn.o ../quote.o ../readsubdir.o ../qmail.o ../date822fmt.o \
+../datetime.a ../case.a ../ndelay.a ../getln.a ../wait.a ../fd.a ../sig.a ../open.a \
+../lock.a ../stralloc.a ../substdio.a ../error.a ../str.a ../fs.a ../auto_qmail.o \
+../auto_split.o ../env.a
+	../load unittest_qmail-send \
+	../qsutil.o ../control.o ../constmap.o ../newfield.o \
+	../prioq.o ../trigger.o ../fmtqfn.o ../quote.o ../readsubdir.o \
+	../qmail.o ../date822fmt.o ../datetime.a ../case.a ../ndelay.a ../getln.a \
+	../wait.a ../fd.a ../sig.a ../open.a ../lock.a ../stralloc.a \
+	../substdio.a ../error.a ../str.a ../fs.a ../auto_qmail.o ../auto_split.o ../env.a \
+	`pkg-config --libs check`
+
+unittest_qmail-send.o: \
+../compile unittest_qmail-send.c qmail-send-without-main.c
+	../compile unittest_qmail-send.c -I.. \
 	`pkg-config --cflags check`

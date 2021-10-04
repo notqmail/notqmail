@@ -258,8 +258,8 @@ char *append;
 {
   /* shouldn't talk to the client unless in an appropriate state */
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
-  OSSL_HANDSHAKE_STATE state = ssl ? SSL_get_state(ssl) : TLS_ST_BEFORE;
-  if (state & TLS_ST_OK || (!smtps && state & TLS_ST_BEFORE))
+  int state = ssl ? SSL_get_state(ssl) : SSL_ST_BEFORE;
+  if (state & SSL_ST_OK || (!smtps && state & SSL_ST_BEFORE))
 #else
   int state = ssl ? ssl->state : SSL_ST_BEFORE;
   if (state & SSL_ST_OK || (!smtps && state & SSL_ST_BEFORE))
@@ -424,7 +424,8 @@ int tls_init()
     SSL_CTX_use_RSAPrivateKey_file(ctx, CLIENTCERT, SSL_FILETYPE_PEM);
 # undef CLIENTCERT
 
-#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L && \
+    OPENSSL_VERSION_NUMBER < 0x20000000L /* LibreSSL */
   SSL_CTX_set_post_handshake_auth(ctx, 1);
 #endif
 

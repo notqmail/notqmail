@@ -2,6 +2,7 @@
 #include "error.h"
 #include "ndelay.h"
 #include "now.h"
+#include "datetime.h"
 #include "ssl_timeoutio.h"
 
 int ssl_timeoutio(int (*fun)(),
@@ -72,7 +73,8 @@ int ssl_timeoutrehandshake(int t, int rfd, int wfd, SSL *ssl)
 {
   int r=0;
 
-#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L && \
+    OPENSSL_VERSION_NUMBER < 0x20000000L /* LibreSSL */
   if (SSL_version(ssl) >= TLS1_3_VERSION){
     if(SSL_verify_client_post_handshake(ssl) != 1)
       return -EPROTO;
@@ -89,7 +91,8 @@ int ssl_timeoutrehandshake(int t, int rfd, int wfd, SSL *ssl)
   fd_set fds;
   r = ssl_timeoutio(SSL_do_handshake, t, rfd, wfd, ssl, NULL, 0);
   if (r <=0) return r;
-#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L && \
+    OPENSSL_VERSION_NUMBER < 0x20000000L /* LibreSSL */
   if (SSL_version(ssl) >= TLS1_3_VERSION) return r;
 #endif
 

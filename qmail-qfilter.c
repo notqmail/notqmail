@@ -1,6 +1,5 @@
 /* This is free and unencumbered software released into the public * domain. */
 
-#include <bglibs/sysdeps.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -85,7 +84,7 @@ size_t parse_sender(const char* env)
   
   if(!*ptr) {
     if (putenv("QMAILUSER=") != 0
-	|| putenv("QMAILHOST=") != 0)
+        || putenv("QMAILHOST=") != 0)
       exit(QQ_OOM);
     return 2;
   }
@@ -236,7 +235,7 @@ static void mktmpfd(int fd)
 }
 
 static void move_unless_empty(int src, int dst, const void* reopen,
-			      size_t* var)
+                              size_t* var)
 {
   struct stat st;
   if (fstat(src, &st) != 0)
@@ -247,7 +246,7 @@ static void move_unless_empty(int src, int dst, const void* reopen,
     if (reopen) {
       mktmpfd(src);
       if (src == ENVOUT)
-	parse_envelope();
+        parse_envelope();
     }
   }
   else

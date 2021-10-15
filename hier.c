@@ -129,6 +129,7 @@ void hier()
   c(auto_qmail,"bin","qmail-tcpok",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qmail-pop3d",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qmail-popup",auto_uido,auto_gidq,0711);
+  c(auto_qmail,"bin","qmail-qfilter",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qmail-qmqpc",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qmail-qmqpd",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qmail-qmtpd",auto_uido,auto_gidq,0755);
@@ -195,6 +196,8 @@ void hier()
   c(auto_qmail,"man/cat1","preline.0",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/man1","tcp-env.1",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat1","tcp-env.0",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/man1","qmail-qfilter.1",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/cat1","qmail-qfilter.0",auto_uido,auto_gidq,0644);
 
   c(auto_qmail,"man/man8","qmail-local.8",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat8","qmail-local.0",auto_uido,auto_gidq,0644);

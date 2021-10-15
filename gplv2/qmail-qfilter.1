@@ -1,0 +1,118 @@
+.TH qmail-qfilter 1
+.SH NAME
+qmail-qfilter \- front end for qmail-queue that does filtering
+.SH SYNOPSIS
+.B qmail-qfilter
+.I filter
+[
+.I -- filter ...
+]
+.SH DESCRIPTION
+.B qmail-qfilter
+sends the message text through each of the filter commands named on
+the command line. 
+Each filter is run separately, with standard input opened to the input
+email, and standard output opened to a new temporary file that will
+become the input to either the next filter, or
+.BR qmail-queue .
+If the filter does not modify the message it passes unchanged to the
+next step.
+It also makes the envelope available to each filter as
+file descriptor 3.  File descriptor 4 is opened to a new temporary file for the
+modified envelope, allowing the filter to modify the envelope or the
+message.  If the filter does not modify the envelope, the envelope
+remains unchanged for either the next filter or 
+.BR qmail-queue .  
+This provides compatibility for existing filters that do not know about
+the envelope.
+.B qmail-qfilter
+also opens up file descriptor 5 to a temporary file.  If this file is
+not empty after all the filters have executed, its contents are read and
+used to specify a program to execute in place of
+.BR qmail-queue .
+Each filter on the command line is separated with
+.BR -- .  
+.SH "RETURN VALUES"
+Returns 51 (out of memory), 53 (write error), or 81 (internal error)
+if it can't create the temporary files or has problems executing the
+filters.
+Returns 91 (bad envelope data) if it can't read or parse the envelope
+data.
+If a filter returns anything other than 0 or 99,
+.B qmail-qfilter
+returns its exit code.
+If a filter returns 99,
+.B qmail-qfilter
+returns 0 immediately without running any other filters.
+Otherwise returns the exit code of
+.BR qmail-queue .
+.SH ENVIRONMENT
+.B qmail-qfilter
+sets
+.B QMAILPPID
+to the PID of its parent (e.g.,
+.BR qmail-smtpd )
+so that a filter can log the PID of the session that invoked it.
+.P
+For compatibility with previous versions,
+.B qmail-qfilter
+sets
+.B QMAILUSER
+and
+.B QMAILHOST
+to the user and host portions of the envelope sender address, and
+unsets
+.BR QMAILNAME .
+It also sets
+.B QMAILRCPTS
+to the list of envelope recipients, each followed by a newline.
+.P
+It also sets
+.B ENVSIZE
+to the size of the envelope,
+.B MSGSIZE
+to the length of the message, and
+.B NUMRCPTS
+to the number of recipients. These values are updated before each
+filter is run.
+.P
+If
+.B QQF_QMAILQUEUE
+is set, its value is used in place of
+.BR qmail-queue .
+.SH "SEE ALSO"
+qmail-queue(8)
+.SH NOTES
+.B $QMAILQUEUE
+is deliberately not used to override
+.B qmail-queue
+in order to avoid recursive loops with configurations that set
+.B $QMAILQUEUE
+to invoke
+.B qmail-qfilter
+itself.
+.SH WARNINGS
+If you are using
+.B qmail-inject -n
+as one of the filters, you may want to unset
+.BR MAILUSER ,
+.BR USER ,
+and
+.B LOGNAME
+by using
+.B env -u QMAILNAME -u MAILNAME -u NAME qmail-inject -n
+as the command to invoke qmail-inject.
+Note that the
+.B env
+command with some OSes doesn't support the
+.B -u
+option.
+.P
+A message with an excessive number of recipients (more than 64K bytes of
+recipient data on Linux) will cause execution of the filter programs to
+fail, and the message to be rejected.
+.P
+The same temporary file is reused for file descriptor 5 for each filter.
+Make sure each filter writes a trailing ASCII NUL byte following the
+program name, as multiple filters could otherwise overwrite the value in
+undesirable ways.

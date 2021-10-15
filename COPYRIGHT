@@ -44,3 +44,13 @@ notqmail-1.08
 -------------
 No copyright is claimed by the distributors of notqmail for changes from
 netqmail 1.07 to notqmail 1.08.
+
+notqmail-1.09
+-------------
+No copyright is claimed by the distributors of notqmail for changes from
+netqmail 1.08 to notqmail 1.09.
+EXCEPTION: qmail-qfilter has been added.
+qmail-qfilter is Copyright(C) 2001,2004-2005 Bruce Guenter, and may be
+copied according to the GNU GENERAL PUBLIC LICENSE (GPL) Version 2 or a
+later version. A copy of this license is included with this package.
+qmail-qfilter comes with no warranty of any kind.

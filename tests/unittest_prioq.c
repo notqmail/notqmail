@@ -28,32 +28,34 @@ START_TEST(test_gen_alloc_readyplus_given_pq_empty_failed_and_set_a_to_2)
 END_TEST
 
 
-START_TEST(test_prioq_one_item)
+START_TEST(test_prioq_one_item_insert_fetch_delete)
 {
   prioq pq = {0};
-  struct prioq_elt pe;
-  unsigned int count;
+  struct prioq_elt element;
 
-  pe.dt = 12345;
-  pe.id = 77;
-  prioq_insert(&pq,&pe);
+  element.dt = 12345;
+  element.id = 77;
+  prioq_insert(&pq, &element);
 
-  pe.dt = 0;
-  pe.id = 0;
+  element.dt = 0;
+  element.id = 0;
 
-  count = 0;
-  while (prioq_min(&pq,&pe)) {
-    prioq_delmin(&pq);
-    count++;
-    // prioq_min stores priority and value in pe
-    ck_assert_int_eq(12345, pe.dt);
-    ck_assert_uint_eq(77, pe.id);
-  }
+  unsigned int has_value = prioq_min(&pq, &element);
+  ck_assert_uint_eq(has_value, 1);
 
-  // there was exactly one entry in the queue
-  ck_assert_uint_eq(count, 1);
+  // prioq_min stores priority and value in element
+  ck_assert_int_eq(12345, element.dt);
+  ck_assert_uint_eq(77, element.id);
+ 
+  // there is now exactly one entry in the queue
+  prioq_delmin(&pq);
+  ck_assert_uint_eq(prioq_min(&pq, &element), 0);
 }
 END_TEST
+
+// We should make some helper functions
+// - populating elements with our values
+// - compare elements (assert) more generally way; extract method in line 47/8
 
 START_TEST(test_prioq_insert_low_priority_to_high)
 {
@@ -233,7 +235,7 @@ TCase
   tcase_add_test(tc, test_given_empty_prioq_should_return_0);
   tcase_add_test(tc, test_gen_alloc_readyplus_given_pq_empty_failed_and_set_a_to_2);
 
-  tcase_add_test(tc, test_prioq_one_item);
+  tcase_add_test(tc, test_prioq_one_item_insert_fetch_delete);
   tcase_add_test(tc, test_prioq_insert_low_priority_to_high);
   tcase_add_test(tc, test_prioq_insert_high_priority_to_low);
   tcase_add_test(tc, test_prioq_insert_all_same_priority);

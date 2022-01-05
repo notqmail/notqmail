@@ -45,7 +45,19 @@ int flagmadeintd = 0;
 
 uid_t auto_uida;
 uid_t auto_uidd;
+static uid_t get_uidd(void)
+{
+  if (auto_uidd == 0)
+    auto_uidd = inituid(auto_userd);
+  return auto_uidd;
+}
 uid_t auto_uids;
+static uid_t get_uids(void)
+{
+  if (auto_uids == 0)
+    auto_uids = inituid(auto_users);
+  return auto_uids;
+}
 
 void cleanup()
 {
@@ -82,9 +94,9 @@ char *s;
  i = fmt_str(s," invoked "); len += i; if (s) s += i;
  if (uid == auto_uida)
   { i = fmt_str(s,"by alias"); len += i; if (s) s += i; }
- else if (uid == auto_uidd)
+ else if (uid == get_uidd())
   { i = fmt_str(s,"from network"); len += i; if (s) s += i; }
- else if (uid == auto_uids)
+ else if (uid == get_uids())
   { i = fmt_str(s,"for bounce"); len += i; if (s) s += i; }
  else
   {
@@ -174,8 +186,6 @@ int main(void)
  datetime_tai(&dt,starttime);
 
  auto_uida = inituid(auto_usera);
- auto_uidd = inituid(auto_userd);
- auto_uids = inituid(auto_users);
 
  received_setup();
 

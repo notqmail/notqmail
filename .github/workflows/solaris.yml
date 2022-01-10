@@ -10,21 +10,22 @@ on:
 jobs:
   build:
     name: Solaris-${{ matrix.config.name }}
-    runs-on: macos-latest
+    runs-on: macos-10.15
     env:
       CFLAGS: ${{ matrix.config.cflags }}
       NROFF: ${{ matrix.config.nroff }}
+      LIBCHECK_VERSION: "0.15.2"
     strategy:
       fail-fast: false
       matrix:
         config:
          - {
-           name: default,
+           name: default64,
            nroff: nroff,
            cflags: ""
          }
          - {
-           name: no_obsolete,
+           name: no_obsolete64,
            nroff: true,
            cflags: "-DDEPRECATED_FUNCTIONS_REMOVED"
          }
@@ -35,13 +36,21 @@ jobs:
 
     - name: Test in solaris
       id: test
-      uses: vmactions/solaris-vm@v0.0.2
+      uses: vmactions/solaris-vm@v0.0.5
       with:
-        envs: 'CFLAGS NROFF'
-        prepare: pkgutil -y -i libcheck_dev gcc4core pkgconfig
+        envs: 'CFLAGS NROFF LIBCHECK_VERSION'
+        prepare: |
+          pkgutil -y -i gcc4core pkgconfig curl
+          curl -L -O https://github.com/libcheck/check/releases/download/${LIBCHECK_VERSION}/check-${LIBCHECK_VERSION}.tar.gz
+          gunzip check-${LIBCHECK_VERSION}.tar.gz
+          tar -xvf check-${LIBCHECK_VERSION}.tar
+          cd check-${LIBCHECK_VERSION}
+          env CFLAGS="-m64" ./configure --prefix=/opt/csw && gmake && gmake install
+          sed -e 's|^Libs: |Libs: -Wl,-R${libdir} |' < /opt/csw/lib/pkgconfig/check.pc > /opt/csw/lib/pkgconfig/check.pc.tmp && mv /opt/csw/lib/pkgconfig/check.pc.tmp /opt/csw/lib/pkgconfig/check.pc
         run: |
-          echo "gcc -O2 -pipe ${CFLAGS}" > conf-cc
-          echo "gcc -s" > conf-ld
+          echo "gcc -m64 -O2 -pipe ${CFLAGS}" > conf-cc
+          sed -e 's|ar cr |ar Scr |g' make-makelib.sh > make-makelib.sh.tmp && mv make-makelib.sh.tmp make-makelib.sh
+          echo "gcc -m64 -s" > conf-ld
           make it man NROFF=${NROFF}
           cd tests
           make test

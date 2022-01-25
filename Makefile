@@ -330,7 +330,7 @@ auto_spawn.h
 clean: \
 TARGETS
 	rm -f `grep -v '^#' TARGETS`
-	cd tests && $(MAKE) clean
+	( cd tests && $(MAKE) clean )
 
 coe.o: \
 compile coe.c coe.h
@@ -1896,7 +1896,7 @@ compile tcpto_clean.c tcpto.h open.h substdio.h readwrite.h
 	./compile tcpto_clean.c
 
 test: it
-	@cd tests && $(MAKE) test
+	@( cd tests && $(MAKE) test )
 
 timeoutconn.o: \
 compile timeoutconn.c ndelay.h select.h error.h readwrite.h ip.h \

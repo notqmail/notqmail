@@ -7,19 +7,28 @@ SHELL=/bin/sh
 
 default: it
 
-.PHONY: clean default it test
+.PHONY: clean default it unittest integrationtest test
 
-TESTBINS = unittest_stralloc unittest_blast unittest_prioq
+UNITTESTS = unittest_stralloc unittest_blast unittest_prioq
+INTEGRATIONTESTS = integrationtest_inject
 
 clean:
-	rm -f $(TESTBINS) *.o blast.c
+	rm -f $(UNITTESTS) $(INTEGRATIONTESTS) *.o blast.c
+	rm -rf testable
 
-it: $(TESTBINS)
+it: $(UNITTESTS) $(INTEGRATIONTESTS)
 
-test: it
-	@for tbin in $(TESTBINS); do \
-		./$$tbin || exit 1 ; \
+unittest: $(UNITTESTS)
+	@for testprogram in $(UNITTESTS); do \
+		./$$testprogram || exit 1; \
 	done
+
+integrationtest: $(INTEGRATIONTESTS)
+	@for testprogram in $(INTEGRATIONTESTS); do \
+		./$$testprogram || exit 2; \
+	done
+
+test: unittest integrationtest
 
 unittest_stralloc: \
 ../load unittest_stralloc.o ../stralloc.a ../str.a ../error.a
@@ -62,3 +71,23 @@ unittest_prioq.o: \
 ../compile unittest_prioq.c
 	../compile unittest_prioq.c -I.. \
 	`pkg-config --cflags check`
+
+testable:
+	( cd .. && mkdir -p tests/testable \
+		&& cp Makefile TARGETS conf-* *.c *.h* *.sh tests/testable/ \
+		&& mkdir tests/testable/gplv2 \
+		&& cp gplv2/* tests/testable/gplv2/ )
+	pwd > testable/conf-qmail
+
+testable/qmail-inject: \
+testable
+	( cd testable && $(MAKE) qmail-inject )
+
+testable/qmail-qfilter: \
+testable
+	( cd testable && $(MAKE) qmail-qfilter )
+
+integrationtest_inject: \
+testable/qmail-inject testable/qmail-qfilter integrationtest_inject.sh
+	cp integrationtest_inject.sh integrationtest_inject
+	chmod 755 integrationtest_inject

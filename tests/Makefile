@@ -61,7 +61,7 @@ unittest_prioq: \
 	`pkg-config --libs check`
 
 unittest_prioq.o: \
-../compile unittest_prioq.c ../prioq.h
+../compile unittest_prioq.c ../prioq.h ../gen_allocdefs.h
 	../compile unittest_prioq.c -I.. \
 	`pkg-config --cflags check`
 

@@ -376,3 +376,7 @@ setup
 qtmp.h
 qmail-send.service
 realrcptto.o
+qmail-rcptcheck-realrcptto.8
+qmail-rcptcheck-realrcptto.0
+qmail-rcptcheck-realrcptto.o
+qmail-rcptcheck-realrcptto

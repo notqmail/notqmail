@@ -778,6 +778,7 @@ qmail-pw2u qmail-qread qmail-qstat qmail-tcpto qmail-tcpok \
 qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
 dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
+qmail-rcptcheck-realrcptto \
 forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox install instpackage instqueue instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
@@ -882,6 +883,7 @@ qmail-queue.0 qmail-inject.0 mailsubj.0 qmail-showctl.0 qmail-newu.0 \
 qmail-pw2u.0 qmail-qread.0 qmail-qstat.0 qmail-tcpto.0 qmail-tcpok.0 \
 qmail-pop3d.0 qmail-popup.0 qmail-qmqpc.0 qmail-qmqpd.0 qmail-qmtpd.0 \
 qmail-smtpd.0 tcp-env.0 qmail-newmrh.0 qreceipt.0 qbiff.0 forward.0 \
+qmail-rcptcheck-realrcptto.0 \
 preline.0 condredirect.0 bouncesaying.0 except.0 maildirmake.0 \
 maildir2mbox.0 qmail.0 qmail-limits.0 qmail-log.0 \
 qmail-control.0 qmail-header.0 qmail-users.0 dot-qmail.0 \
@@ -1287,15 +1289,14 @@ sig.h substdio.h readwrite.h exit.h now.h datetime.h fmt.h env.h byte.h
 	./compile qmail-qmqpd.c
 
 qmail-qmtpd: \
-load qmail-qmtpd.o realrcptto.o rcpthosts.o control.o constmap.o received.o \
+load qmail-qmtpd.o rcpthosts.o control.o constmap.o received.o \
 date822fmt.o qmail.o cdb.a fd.a wait.a datetime.a open.a \
 getln.a sig.a case.a env.a stralloc.a substdio.a error.a \
-str.a fs.a auto_qmail.o auto_break.o auto_usera.o
-	./load qmail-qmtpd realrcptto.o rcpthosts.o control.o constmap.o \
+str.a fs.a auto_qmail.o
+	./load qmail-qmtpd rcpthosts.o control.o constmap.o \
 	received.o date822fmt.o qmail.o cdb.a fd.a wait.a \
 	datetime.a open.a getln.a sig.a case.a env.a stralloc.a \
-	substdio.a error.a str.a fs.a auto_qmail.o auto_break.o \
-	auto_usera.o
+	substdio.a error.a str.a fs.a auto_qmail.o
 
 qmail-qmtpd.0: \
 qmail-qmtpd.8
@@ -1353,6 +1354,26 @@ compile qmail-queue.c readwrite.h sig.h exit.h open.h seek.h fmt.h \
 alloc.h substdio.h datetime.h now.h datetime.h triggerpull.h extra.h \
 uidgid.h auto_qmail.h auto_uids.h auto_users.h date822fmt.h fmtqfn.h
 	./compile qmail-queue.c
+
+qmail-rcptcheck-realrcptto: \
+load qmail-rcptcheck-realrcptto.o realrcptto.o auto_break.o \
+auto_usera.o control.o constmap.o timeoutwrite.o \
+case.a cdb.a env.a error.a fs.a getln.a open.a str.a stralloc.a \
+substdio.a
+	./load qmail-rcptcheck-realrcptto realrcptto.o auto_break.o \
+	auto_usera.o control.o constmap.o timeoutwrite.o \
+	case.a cdb.a env.a error.a fs.a getln.a open.a str.a stralloc.a \
+	substdio.a
+
+qmail-rcptcheck-realrcptto.o: \
+compile qmail-rcptcheck-realrcptto.c env.h realrcptto.h
+	./compile qmail-rcptcheck-realrcptto.c
+
+qmail-rcptcheck-realrcptto.8: \
+qmail-rcptcheck-realrcptto.9 conf-qmail
+	cat qmail-rcptcheck-realrcptto.9 \
+	| sed s}QMAILHOME}"`head -n 1 conf-qmail`"}g \
+	> qmail-rcptcheck-realrcptto.8
 
 qmail-remote: \
 load qmail-remote.o control.o constmap.o timeoutread.o timeoutwrite.o \
@@ -1451,17 +1472,17 @@ auto_spawn.h auto_split.h
 	./compile qmail-showctl.c
 
 qmail-smtpd: \
-load qmail-smtpd.o realrcptto.o rcpthosts.o commands.o timeoutread.o \
+load qmail-smtpd.o rcpthosts.o commands.o timeoutread.o \
 timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
 date822fmt.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
 open.a sig.a case.a env.a stralloc.a substdio.a error.a str.a \
-fs.a auto_qmail.o auto_break.o auto_usera.o socket.lib
-	./load qmail-smtpd realrcptto.o rcpthosts.o commands.o timeoutread.o \
+fs.a auto_qmail.o socket.lib
+	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
 	received.o date822fmt.o qmail.o cdb.a fd.a wait.a \
 	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
-	substdio.a error.a str.a fs.a auto_qmail.o auto_break.o \
-	auto_usera.o `cat socket.lib`
+	substdio.a error.a str.a fs.a auto_qmail.o  `cat \
+	socket.lib`
 
 qmail-smtpd.0: \
 qmail-smtpd.8

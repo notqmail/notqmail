@@ -74,7 +74,7 @@ void realrcptto_init()
     case 1: if (!constmap_init(&mapvdoms,vdoms.s,vdoms.len,1)) die_nomem();
   }
 
-  str_copy(pidbuf + fmt_ulong(pidbuf,getpid())," ");
+  str_copy(pidbuf + fmt_ulong(pidbuf,getppid())," ");
   x=env_get("PROTO");
   if (x) {
     static char const remoteip[]="REMOTEIP";
@@ -104,7 +104,7 @@ void realrcptto_start()
 static int denyaddr(addr)
 char *addr;
 {
-  substdio_puts(&sserr,"realrcptto ");
+  substdio_puts(&sserr,"rcptcheck: realrcptto ");
   substdio_puts(&sserr,pidbuf);
   substdio_puts(&sserr,remoteipbuf);
   substdio_puts(&sserr,addr);

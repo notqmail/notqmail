@@ -1593,7 +1593,7 @@ auto_split.h
 	./compile readsubdir.c
 
 realrcptto.o: \
-compile realrcptto.c auto_break.h auto_usera.h byte.h case.h cdb.h \
+compile realrcptto.c auto_break.h auto_users.h byte.h case.h cdb.h \
 constmap.h error.h fmt.h open.h str.h stralloc.h uint32.h
 	./compile realrcptto.c
 

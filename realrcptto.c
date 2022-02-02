@@ -3,11 +3,12 @@
 #include <unistd.h>
 #include <pwd.h>
 #include "auto_break.h"
-#include "auto_usera.h"
+#include "auto_users.h"
 #include "byte.h"
 #include "case.h"
 #include "cdb.h"
 #include "constmap.h"
+#include "control.h"
 #include "error.h"
 #include "fmt.h"
 #include "open.h"
@@ -16,6 +17,13 @@
 #include "uint32.h"
 #include "substdio.h"
 #include "env.h"
+
+/*
+ * TODO:
+ * "copies logic from qmail-send, qmail-lspawn, qmail-getpw, and qmail-local"
+ * Reduce this duplication: factor out what we need from these programs,
+ * then link with those objects at their original sites and also here.
+ */
 
 extern void die_nomem();
 extern void die_control();
@@ -129,23 +137,25 @@ static int userext()
   for (;;) {
     if (extension - local < sizeof(username))
       if (!*extension || (*extension == *auto_break)) {
-	byte_copy(username,extension - local,local);
-	username[extension - local] = 0;
-	case_lowers(username);
-	errno = 0;
-	pw = getpwnam(username);
-	if (errno == error_txtbsy) die_sys();
-	if (pw)
-	  if (pw->pw_uid)
-	    if (stat(pw->pw_dir,&st) == 0) {
-	      if (st.st_uid == pw->pw_uid) {
-		dash = "";
-		if (*extension) { ++extension; dash = "-"; }
-		return 1;
-	      }
-	    }
-	    else
-	      if (error_temp(errno)) die_sys();
+        byte_copy(username,extension - local,local);
+        username[extension - local] = 0;
+        case_lowers(username);
+        errno = 0;
+        pw = getpwnam(username);
+        if (errno == error_txtbsy) die_sys();
+        if (pw) {
+          if (pw->pw_uid) {
+            if (stat(pw->pw_dir,&st) == 0) {
+              if (st.st_uid == pw->pw_uid) {
+                dash = "";
+                if (*extension) { ++extension; dash = "-"; }
+                return 1;
+              }
+            }
+            else
+              if (error_temp(errno)) die_sys();
+          }
+        }
       }
     if (extension == local) return 0;
     --extension;

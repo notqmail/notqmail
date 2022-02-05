@@ -1,0 +1,94 @@
+.TH qmail-rcptcheck 8
+.SH NAME
+qmail-rcptcheck \- run a sequence of sender/recipient checks
+.SH SYNOPSIS
+.B qmail-rcptcheck
+.SH DESCRIPTION
+.B qmail-rcptcheck
+runs an administrator-defined sequence of programs
+to check SMTP envelope senders and recipients.
+Checks must adhere to the
+.B RCPTCHECK
+interface.
+If any check rejects, the message is rejected.
+.PP
+.B qmail-rcptcheck
+is most commonly invoked from
+.B qmail-smtpd
+via
+.BR RCPTCHECK .
+.SH "ENVIRONMENT VARIABLES"
+Set
+.B RCPTCHECK
+to
+.I QMAILHOME/bin/qmail-rcptcheck
+in your
+.BR tcpserver 's
+tcprules (and rebuild the CDB).
+.PP
+Recipient-checking programs can inspect these variables:
+.TP 5
+.I SENDER
+Contains the envelope sender.
+.TP 5
+.I RECIPIENT
+Contains the envelope recipient.
+.SH "CONTROL FILES"
+.TP 5
+.I rcptchecks
+Sequence of checks.
+.P
+.BR RCPTCHECK -compatible
+programs must be listed one per line,
+with no arguments.
+Changing the sequence takes effect immediately, no restart required.
+If the control file is empty,
+contains only comments,
+or doesn't exist,
+messages are not rejected.
+.P
+To test your configuration, as
+.IR root ,
+in
+.IR QMAILHOME :
+.P
+# env SENDER=a RECIPIENT=b setuidgid qmaild qmail-rcptcheck; echo $?
+.SH "EXIT CODES"
+As defined by the
+.B RCPTCHECK
+interface,
+.I 120
+is reserved.
+Recipient-checking programs should exit
+.I 111
+when unable to verify,
+.I 100
+to reject, or
+any other non-reserved code to accept.
+.SH ERRORS
+Some typical SMTP errors and their likely causes:
+.TP 5
+.I "421 unable to execute recipient check (#4.3.0)"
+The control file lists a program that doesn't exist
+or otherwise can't be executed.
+.SH EXAMPLES
+To check envelope recipients during the SMTP protocol conversation,
+rejecting any that would eventually bounce due to a missing .qmail file,
+and then check any remaining recipients with rejectutils' qmail-rcptcheck-badrcptto(8):
+
+.EX
+# echo 'QMAILHOME/bin/qmail-rcptcheck-realrcptto' > QMAILHOME/control/rcptchecks
+# echo 'QMAILHOME/bin/qmail-rcptcheck-badrcptto' >> QMAILHOME/control/rcptchecks
+# echo ':allow,RCPTCHECK="QMAILHOME/bin/qmail-rcptcheck"' >> /etc/tcp.smtp
+# qmailctl cdb
+.EE
+
+(If you already have an :allow line, don't add another, just change it to define
+.B RCPTCHECK
+as above.)
+.SH HISTORY
+.B qmail-rcptcheck
+was originally written by Amitai Schleier.
+.SH "SEE ALSO"
+qmail-rcptcheck-realrcptto(8),
+qmail-smtpd(8)

@@ -137,6 +137,8 @@ void hier()
   c(auto_qmail,"bin","tcp-env",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qreceipt",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qbiff",auto_uido,auto_gidq,0755);
+  c(auto_qmail,"bin","qmail-rcptcheck",auto_uido,auto_gidq,0755);
+  c(auto_qmail,"bin","qmail-rcptcheck-realrcptto",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","forward",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","preline",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","condredirect",auto_uido,auto_gidq,0755);
@@ -144,7 +146,6 @@ void hier()
   c(auto_qmail,"bin","except",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","maildirmake",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","maildir2mbox",auto_uido,auto_gidq,0755);
-  c(auto_qmail,"bin","qmail-rcptcheck-realrcptto",auto_uido,auto_gidq,0755);
 
   c(auto_qmail,"man/man5","addresses.5",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat5","addresses.0",auto_uido,auto_gidq,0644);
@@ -249,6 +250,8 @@ void hier()
   c(auto_qmail,"man/cat8","qmail-smtpd.0",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/man8","qmail-command.8",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat8","qmail-command.0",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/man8","qmail-rcptcheck.8",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/cat8","qmail-rcptcheck.0",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/man8","qmail-rcptcheck-realrcptto.8",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat8","qmail-rcptcheck-realrcptto.0",auto_uido,auto_gidq,0644);
 }

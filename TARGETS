@@ -380,3 +380,7 @@ qmail-rcptcheck-realrcptto.8
 qmail-rcptcheck-realrcptto.0
 qmail-rcptcheck-realrcptto.o
 qmail-rcptcheck-realrcptto
+qmail-rcptcheck.8
+qmail-rcptcheck.0
+qmail-rcptcheck.o
+qmail-rcptcheck

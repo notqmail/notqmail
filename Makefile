@@ -778,7 +778,7 @@ qmail-pw2u qmail-qread qmail-qstat qmail-tcpto qmail-tcpok \
 qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
 dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
-qmail-rcptcheck-realrcptto \
+qmail-rcptcheck qmail-rcptcheck-realrcptto \
 forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox install instpackage instqueue instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
@@ -883,7 +883,7 @@ qmail-queue.0 qmail-inject.0 mailsubj.0 qmail-showctl.0 qmail-newu.0 \
 qmail-pw2u.0 qmail-qread.0 qmail-qstat.0 qmail-tcpto.0 qmail-tcpok.0 \
 qmail-pop3d.0 qmail-popup.0 qmail-qmqpc.0 qmail-qmqpd.0 qmail-qmtpd.0 \
 qmail-smtpd.0 tcp-env.0 qmail-newmrh.0 qreceipt.0 qbiff.0 forward.0 \
-qmail-rcptcheck-realrcptto.0 \
+qmail-rcptcheck.0 qmail-rcptcheck-realrcptto.0 \
 preline.0 condredirect.0 bouncesaying.0 except.0 maildirmake.0 \
 maildir2mbox.0 qmail.0 qmail-limits.0 qmail-log.0 \
 qmail-control.0 qmail-header.0 qmail-users.0 dot-qmail.0 \
@@ -1354,6 +1354,22 @@ compile qmail-queue.c readwrite.h sig.h exit.h open.h seek.h fmt.h \
 alloc.h substdio.h datetime.h now.h datetime.h triggerpull.h extra.h \
 uidgid.h auto_qmail.h auto_uids.h auto_users.h date822fmt.h fmtqfn.h
 	./compile qmail-queue.c
+
+qmail-rcptcheck: \
+load qmail-rcptcheck.o control.o env.a error.a fs.a getln.a open.a \
+stralloc.a substdio.a str.a wait.a
+	./load qmail-rcptcheck control.o env.a error.a fs.a getln.a open.a \
+	stralloc.a substdio.a str.a wait.a
+
+qmail-rcptcheck.o: \
+compile qmail-rcptcheck.c control.h env.h stralloc.h substdio.h wait.h
+	./compile qmail-rcptcheck.c
+
+qmail-rcptcheck.8: \
+qmail-rcptcheck.9 conf-qmail
+	cat qmail-rcptcheck.9 \
+	| sed s}QMAILHOME}"`head -n 1 conf-qmail`"}g \
+	> qmail-rcptcheck.8
 
 qmail-rcptcheck-realrcptto: \
 load qmail-rcptcheck-realrcptto.o realrcptto.o auto_break.o \

@@ -8,16 +8,8 @@ qmail-rcptcheck-realrcptto \- realrcptto patch as standalone program
 is Paul Jarc's realrcptto patch repackaged as a
 .BR RCPTCHECK -compatible
 program.
-.SH EXAMPLES
-To check envelope recipients during the SMTP protocol conversation,
-rejecting any that would eventually bounce due to a missing .qmail file:
-
-.EX
-   # echo ':allow,RCPTCHECK="QMAILHOME/bin/qmail-rcptcheck-realrcptto"' >> /etc/tcp.smtp
-   # qmailctl cdb
-.EE
-
-(If you already have an :allow line, don’t add another, just extend it to define RCPTCHECK as above.)
+It can check envelope recipients during the SMTP protocol conversation,
+rejecting any that would eventually bounce due to a missing .qmail file.
 .SH ENVIRONMENT
 If
 .B QMAILRRTDENYALL
@@ -34,4 +26,6 @@ Originally adapted for rejectutils by Amitai Schleier, based on this code from P
 .PP
 .I http://code.dogmap.org/qmail/#realrcptto
 .SH "SEE ALSO"
-qmail-smtpd(8), dot-qmail(5).
+dot-qmail(5),
+qmail-rcptcheck(8),
+qmail-smtpd(8)

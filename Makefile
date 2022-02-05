@@ -1402,12 +1402,6 @@ qmail-rcptcheck-realrcptto.o: \
 compile qmail-rcptcheck-realrcptto.c env.h realrcptto.h
 	./compile qmail-rcptcheck-realrcptto.c
 
-qmail-rcptcheck-realrcptto.8: \
-qmail-rcptcheck-realrcptto.9 conf-qmail
-	cat qmail-rcptcheck-realrcptto.9 \
-	| sed s}QMAILHOME}"`head -n 1 conf-qmail`"}g \
-	> qmail-rcptcheck-realrcptto.8
-
 qmail-remote: \
 load qmail-remote.o control.o constmap.o timeoutread.o timeoutwrite.o \
 timeoutconn.o tcpto.o dns.o ip.o ipalloc.o ipme.o quote.o \

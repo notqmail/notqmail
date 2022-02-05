@@ -74,7 +74,7 @@ or otherwise can't be executed.
 .SH EXAMPLES
 To check envelope recipients during the SMTP protocol conversation,
 rejecting any that would eventually bounce due to a missing .qmail file,
-and then check any remaining recipients with rejectutils' qmail-rcptcheck-badrcptto(8):
+and then check any remaining recipients against a blocklist:
 
 .EX
 # echo 'QMAILHOME/bin/qmail-rcptcheck-realrcptto' > QMAILHOME/control/rcptchecks
@@ -90,5 +90,6 @@ as above.)
 .B qmail-rcptcheck
 was originally written by Amitai Schleier.
 .SH "SEE ALSO"
+qmail-rcptcheck-badrcptto(8),
 qmail-rcptcheck-realrcptto(8),
 qmail-smtpd(8)

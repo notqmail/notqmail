@@ -138,6 +138,7 @@ void hier()
   c(auto_qmail,"bin","qreceipt",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qbiff",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qmail-rcptcheck",auto_uido,auto_gidq,0755);
+  c(auto_qmail,"bin","qmail-rcptcheck-badrcptto",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qmail-rcptcheck-realrcptto",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","forward",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","preline",auto_uido,auto_gidq,0755);
@@ -252,6 +253,8 @@ void hier()
   c(auto_qmail,"man/cat8","qmail-command.0",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/man8","qmail-rcptcheck.8",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat8","qmail-rcptcheck.0",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/man8","qmail-rcptcheck-badrcptto.8",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/cat8","qmail-rcptcheck-badrcptto.0",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/man8","qmail-rcptcheck-realrcptto.8",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat8","qmail-rcptcheck-realrcptto.0",auto_uido,auto_gidq,0644);
 }

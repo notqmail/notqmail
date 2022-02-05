@@ -1,7 +1,9 @@
 - 20220202 code: apply Jay Soffian's RCPTCHECK patch to qmail-smtpd(8),
            add qmail-rcptcheck(8) to run an admin-defined sequence of
-           checks, and add qmail-rcptcheck-realrcptto(8) derived from
-           Paul Jarc's qmail-realrcptto patch
+           checks, and provide two such programs:
+           qmail-rcptcheck-realrcptto(8) derived from Paul Jarc's
+           qmail-realrcptto patch, and qmail-rcptcheck-badrcptto(8)
+           derived from Ward Vandewege's badrcptto patch
 - 20210122 code: remove register storage class declaration from codebase.
 - 20201224 bug: in qmail-remote, handle DNS packets up to max EDNS
            response size.

@@ -1,0 +1,31 @@
+.TH qmail-rcptcheck-badrcptto 8
+.SH NAME
+qmail-rcptcheck-badrcptto \- badrcptto patch as standalone program
+.SH SYNOPSIS
+.B qmail-rcptcheck-badrcptto
+.SH DESCRIPTION
+.B qmail-rcptcheck-badrcptto
+is Ward Vandewege's badrcptto patch repackaged as a
+.BR RCPTCHECK -compatible
+program.
+It can check envelope recipients against a blocklist
+during the SMTP protocol conversation.
+.SH "CONTROL FILES"
+.TP 5
+.I badrcptto
+Contains recipients to be rejected, one per line.
+.SH ENVIRONMENT
+IF
+.B RELAYCLIENT
+is set,
+the blocklist is not consulted, and
+recipients are simply accepted.
+.SH HISTORY
+Originally adapted for rejectutils by Amitai Schleier,
+based on this code from Ward Vandewege:
+.PP
+.I http://patch.be/qmail/
+.SH "SEE ALSO"
+qmail-control(5),
+qmail-rcptcheck(8),
+qmail-smtpd(8)

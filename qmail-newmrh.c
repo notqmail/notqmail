@@ -66,7 +66,7 @@ int main(void)
   if (cdbmss_finish(&cdbmss) == -1) die_write();
   if (fsync(fdtemp) == -1) die_write();
   if (close(fdtemp) == -1) die_write(); /* NFS stupidity */
-  if (syncdir_rename("control/morercpthosts.tmp","control/morercpthosts.cdb") == -1)
+  if (rename("control/morercpthosts.tmp","control/morercpthosts.cdb") == -1)
     strerr_die2sys(111,FATAL,"unable to move control/morercpthosts.tmp to control/morercpthosts.cdb");
 
   return 0;

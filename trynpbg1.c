@@ -23,7 +23,7 @@ int main(void)
       if (select(1,&rfds,NULL,NULL,&instant) > 0)
         flagbug = 1;
     }
-    syncdir_unlink(FN);
+    unlink(FN);
   }
   return !flagbug;
 }

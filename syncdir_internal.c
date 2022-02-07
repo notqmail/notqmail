@@ -1,7 +1,12 @@
 #include <errno.h>
 #include <fcntl.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+
+int (*real_link)(const char *, const char *) = &link;
+int (*real_rename)(const char *, const char *) = &rename;
+int (*real_unlink)(const char *) = &unlink;
 
 // XXX this entire file is from Bruce Guenter's GPL'd syncdir, nearly verbatim!
 

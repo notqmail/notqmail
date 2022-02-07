@@ -23,6 +23,8 @@
 
 void die() { _exit(0); }
 
+extern int rename(const char *, const char *);
+
 GEN_SAFE_TIMEOUTREAD(saferead,1200,fd,die())
 GEN_SAFE_TIMEOUTWRITE(safewrite,1200,fd,die())
 
@@ -180,7 +182,7 @@ void pop3_quit(arg) char *arg;
   unsigned int i;
   for (i = 0;i < numm;++i)
     if (m[i].flagdeleted) {
-      if (syncdir_unlink(m[i].fn) == -1) err_nounlink();
+      if (unlink(m[i].fn) == -1) err_nounlink();
     }
     else
       if (str_start(m[i].fn,"new/")) {
@@ -188,7 +190,7 @@ void pop3_quit(arg) char *arg;
 	if (!stralloc_cats(&line,m[i].fn + 4)) die_nomem();
 	if (!stralloc_cats(&line,":2,")) die_nomem();
 	if (!stralloc_0(&line)) die_nomem();
-	syncdir_rename(m[i].fn,line.s); /* if it fails, bummer */
+	rename(m[i].fn,line.s); /* if it fails, bummer */
       }
   okay(0);
   die();

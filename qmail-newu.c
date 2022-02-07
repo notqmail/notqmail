@@ -134,7 +134,7 @@ int main(void)
   if (cdbmss_finish(&cdbmss) == -1) die_writet();
   if (fsync(fdtemp) == -1) die_writet();
   if (close(fdtemp) == -1) die_writet(); /* NFS stupidity */
-  if (syncdir_rename("users/cdb.tmp","users/cdb") == -1) die_rename();
+  if (rename("users/cdb.tmp","users/cdb") == -1) die_rename();
 
   return 0;
 }

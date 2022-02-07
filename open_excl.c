@@ -1,7 +1,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
-#include "syncdir.h"
 #include "open.h"
+#include "syncdir.h"
 
 int open_excl(char *fn)
 {

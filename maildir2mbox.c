@@ -149,13 +149,13 @@ int main(void)
    strerr_die4sys(111,FATAL,"unable to write to ",mboxtmp,": ");
  if (close(fdnewmbox) == -1) /* NFS dorks */
    strerr_die4sys(111,FATAL,"unable to write to ",mboxtmp,": ");
- if (syncdir_rename(mboxtmp,mbox) == -1)
+ if (rename(mboxtmp,mbox) == -1)
    strerr_die6(111,FATAL,"unable to move ",mboxtmp," to ",mbox,": ",&strerr_sys);
  
  while (prioq_min(&pq2,&pe))
   {
    prioq_delmin(&pq2);
-   if (syncdir_unlink(filenames.s + pe.id) == -1)
+   if (unlink(filenames.s + pe.id) == -1)
      strerr_warn4(WARNING,"$MAILDIR/",filenames.s + pe.id," will be delivered twice; unable to unlink: ",&strerr_sys);
   }
 

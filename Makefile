@@ -620,7 +620,7 @@ trymkffo.c compile load
 	rm -f trymkffo.o trymkffo
 
 hasnpbg1.h: \
-trynpbg1.c compile load open.h open.a fifo.h fifo.o select.h syncdir.h
+trynpbg1.c compile load open.h open.a fifo.h fifo.o select.h
 	( ( ./compile trynpbg1.c \
 	&& ./load trynpbg1 fifo.o open.a && ./trynpbg1 ) \
 	>/dev/null 2>&1 \
@@ -810,7 +810,7 @@ maildir.5
 maildir.o: \
 compile maildir.c prioq.h datetime.h gen_alloc.h env.h stralloc.h \
 gen_alloc.h direntry.h datetime.h now.h datetime.h str.h maildir.h \
-strerr.h syncdir.h
+strerr.h
 	./compile maildir.c
 
 maildir2mbox: \
@@ -828,7 +828,7 @@ maildir2mbox.o: \
 compile maildir2mbox.c readwrite.h prioq.h datetime.h gen_alloc.h \
 env.h stralloc.h gen_alloc.h subfd.h substdio.h substdio.h getln.h \
 error.h open.h lock.h gfrom.h str.h myctime.h maildir.h \
-strerr.h syncdir.h
+strerr.h
 	./compile maildir2mbox.c
 
 maildirmake: \
@@ -926,11 +926,11 @@ open_write.o syncdir_internal.o syncdir_open.o
 	open_trunc.o open_write.o syncdir_internal.o syncdir_open.o
 
 open_append.o: \
-compile open_append.c open.h syncdir.h
+compile open_append.c open.h
 	./compile open_append.c
 
 open_excl.o: \
-compile open_excl.c open.h syncdir.h
+compile open_excl.c open.h
 	./compile open_excl.c
 
 open_read.o: \
@@ -938,11 +938,11 @@ compile open_read.c open.h
 	./compile open_read.c
 
 open_trunc.o: \
-compile open_trunc.c open.h syncdir.h
+compile open_trunc.c open.h
 	./compile open_trunc.c
 
 open_write.o: \
-compile open_write.c open.h syncdir.h
+compile open_write.c open.h
 	./compile open_write.c
 
 package: \
@@ -1024,7 +1024,7 @@ qmail-clean.8
 qmail-clean.o: \
 compile qmail-clean.c readwrite.h sig.h now.h datetime.h str.h \
 direntry.h getln.h stralloc.h gen_alloc.h substdio.h subfd.h \
-substdio.h byte.h scan.h fmt.h error.h exit.h fmtqfn.h auto_qmail.h syncdir.h
+substdio.h byte.h scan.h fmt.h error.h exit.h fmtqfn.h auto_qmail.h
 	./compile qmail-clean.c
 
 qmail-command.0: \
@@ -1116,7 +1116,7 @@ qmail-local.8
 
 qmail-local.o: \
 compile qmail-local.c readwrite.h sig.h env.h byte.h exit.h fork.h \
-open.h syncdir.h wait.h lock.h seek.h substdio.h getln.h strerr.h subfd.h \
+open.h wait.h lock.h seek.h substdio.h getln.h strerr.h subfd.h \
 substdio.h sgetopt.h subgetopt.h alloc.h error.h stralloc.h \
 gen_alloc.h fmt.h str.h now.h datetime.h case.h quote.h qmail.h \
 substdio.h slurpclose.h myctime.h gfrom.h auto_patrn.h
@@ -1163,7 +1163,7 @@ qmail-newmrh.9 conf-qmail conf-break conf-spawn
 
 qmail-newmrh.o: \
 compile qmail-newmrh.c strerr.h stralloc.h gen_alloc.h substdio.h \
-getln.h exit.h readwrite.h open.h syncdir.h auto_qmail.h cdbmss.h cdbmake.h \
+getln.h exit.h readwrite.h open.h auto_qmail.h cdbmss.h cdbmake.h \
 uint32.h substdio.h case.h
 	./compile qmail-newmrh.c
 
@@ -1188,7 +1188,7 @@ qmail-newu.9 conf-qmail conf-break conf-spawn
 qmail-newu.o: \
 compile qmail-newu.c stralloc.h gen_alloc.h subfd.h substdio.h \
 getln.h substdio.h cdbmss.h cdbmake.h uint32.h substdio.h exit.h \
-readwrite.h open.h syncdir.h error.h case.h auto_qmail.h byte.h
+readwrite.h open.h error.h case.h auto_qmail.h byte.h
 	./compile qmail-newu.c
 
 qmail-pop3d: \
@@ -1207,7 +1207,7 @@ qmail-pop3d.o: \
 compile qmail-pop3d.c commands.h sig.h getln.h stralloc.h gen_alloc.h \
 substdio.h alloc.h open.h prioq.h datetime.h gen_alloc.h scan.h fmt.h \
 str.h exit.h maildir.h strerr.h readwrite.h timeoutread.h \
-timeoutwrite.h syncdir.h
+timeoutwrite.h
 	./compile qmail-pop3d.c
 
 qmail-popup: \
@@ -1348,7 +1348,7 @@ qmail-queue.0: \
 qmail-queue.8
 
 qmail-queue.o: \
-compile qmail-queue.c readwrite.h sig.h exit.h open.h syncdir.h seek.h fmt.h \
+compile qmail-queue.c readwrite.h sig.h exit.h open.h seek.h fmt.h \
 alloc.h substdio.h datetime.h now.h datetime.h triggerpull.h extra.h \
 uidgid.h auto_qmail.h auto_uids.h auto_users.h date822fmt.h fmtqfn.h
 	./compile qmail-queue.c
@@ -1422,7 +1422,7 @@ open.h seek.h exit.h lock.h ndelay.h now.h datetime.h getln.h \
 substdio.h alloc.h error.h stralloc.h gen_alloc.h str.h byte.h fmt.h \
 scan.h case.h auto_qmail.h trigger.h newfield.h stralloc.h quote.h \
 qmail.h substdio.h qsutil.h prioq.h datetime.h gen_alloc.h constmap.h \
-fmtqfn.h readsubdir.h direntry.h syncdir.h
+fmtqfn.h readsubdir.h direntry.h
 	./compile qmail-send.c
 
 qmail-send.service: \

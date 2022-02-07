@@ -47,9 +47,13 @@ static int fdirsyncfn(const char *filename)
 
 int schmonz(const char *fn, const int fd)
 {
+  if (fd == -1)
+    return fd;
+
   if (fdirsyncfn(fn) == -1) {
     close(fd);
     return -1;
   }
+
   return fd;
 }

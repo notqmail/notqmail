@@ -41,18 +41,3 @@ int fdirsyncfn(const char *filename)
    else
      return fdirsync(".", 1);
 }
-
-// XXX well, it's also borrowed from syncdir
-
-int syncdir_open(const char *fn, const int fd)
-{
-  if (fd == -1)
-    return fd;
-
-  if (fdirsyncfn(fn) == -1) {
-    close(fd);
-    return -1;
-  }
-
-  return fd;
-}

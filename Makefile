@@ -622,7 +622,7 @@ trymkffo.c compile load
 hasnpbg1.h: \
 trynpbg1.c compile load open.h open.a fifo.h fifo.o select.h syncdir.h
 	( ( ./compile trynpbg1.c \
-	&& ./load trynpbg1 fifo.o open.a syncdir.o && ./trynpbg1 ) \
+	&& ./load trynpbg1 fifo.o open.a syncdir.a && ./trynpbg1 ) \
 	>/dev/null 2>&1 \
 	&& echo \#define HASNAMEDPIPEBUG1 1 || exit 0 ) > \
 	hasnpbg1.h
@@ -921,9 +921,9 @@ chkbiofl.c compile load oflops_bi.h oflops_compat.h
 
 open.a: \
 makelib open_append.o open_excl.o open_read.o open_trunc.o \
-open_write.o syncdir.o
+open_write.o syncdir.o syncdir_open.o
 	./makelib open.a open_append.o open_excl.o open_read.o \
-	open_trunc.o open_write.o syncdir.o
+	open_trunc.o open_write.o syncdir.o syncdir_open.o
 
 open_append.o: \
 compile open_append.c open.h syncdir.h
@@ -1144,9 +1144,9 @@ open.h spawn.h
 	./compile qmail-lspawn.c
 
 qmail-newmrh: \
-load qmail-newmrh.o cdbmss.o getln.a open.a cdbmake.a case.a \
+load qmail-newmrh.o cdbmss.o getln.a open.a syncdir.a cdbmake.a case.a \
 stralloc.a strerr.a substdio.a error.a str.a auto_qmail.o
-	./load qmail-newmrh cdbmss.o getln.a open.a cdbmake.a \
+	./load qmail-newmrh cdbmss.o getln.a open.a syncdir.a cdbmake.a \
 	case.a stralloc.a strerr.a substdio.a \
 	error.a str.a auto_qmail.o 
 
@@ -1168,9 +1168,9 @@ uint32.h substdio.h case.h
 	./compile qmail-newmrh.c
 
 qmail-newu: \
-load qmail-newu.o cdbmss.o getln.a open.a cdbmake.a case.a \
+load qmail-newu.o cdbmss.o getln.a open.a syncdir.a cdbmake.a case.a \
 stralloc.a substdio.a error.a str.a auto_qmail.o
-	./load qmail-newu cdbmss.o getln.a open.a cdbmake.a \
+	./load qmail-newu cdbmss.o getln.a open.a syncdir.a cdbmake.a \
 	case.a stralloc.a substdio.a error.a str.a \
 	auto_qmail.o 
 
@@ -1841,7 +1841,6 @@ substdo.o: \
 compile substdo.c substdio.h str.h byte.h error.h
 	./compile substdo.c
 
-# XXX link from individual .o so unneeded symbols are omitted
 syncdir.a: \
 makelib syncdir.o syncdir_link.o syncdir_rename.o syncdir_unlink.o
 	./makelib syncdir.a syncdir.o syncdir_link.o syncdir_rename.o syncdir_unlink.o
@@ -1849,6 +1848,10 @@ makelib syncdir.o syncdir_link.o syncdir_rename.o syncdir_unlink.o
 syncdir_link.o: \
 compile syncdir_link.c
 	./compile syncdir_link.c
+
+syncdir_open.o: \
+compile syncdir_open.c
+	./compile syncdir_open.c
 
 syncdir_rename.o: \
 compile syncdir_rename.c

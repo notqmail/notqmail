@@ -376,3 +376,4 @@ setup
 qtmp.h
 qmail-send.service
 fsyncdir.o
+linksync.o

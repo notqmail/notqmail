@@ -792,6 +792,10 @@ make-load warn-auto.sh
 	( cat warn-auto.sh; ./make-load ) > load
 	chmod 755 load
 
+linksync.o: \
+compile linksync.c
+	./compile linksync.c
+
 lock.a: \
 makelib lock_ex.o lock_exnb.o lock_un.o
 	./makelib lock.a lock_ex.o lock_exnb.o lock_un.o
@@ -1106,11 +1110,11 @@ qmail-limits.9 conf-qmail conf-break conf-spawn
 
 qmail-local: \
 load qmail-local.o qmail.o quote.o gfrom.o myctime.o \
-slurpclose.o case.a getln.a getopt.a sig.a open.a lock.a fd.a \
+slurpclose.o case.a getln.a getopt.a sig.a open.a linksync.o lock.a fd.a \
 wait.a env.a stralloc.a strerr.a substdio.a error.a str.a \
 fs.a datetime.a auto_qmail.o auto_patrn.o socket.lib
 	./load qmail-local qmail.o quote.o gfrom.o myctime.o \
-	slurpclose.o case.a getln.a getopt.a sig.a open.a \
+	slurpclose.o case.a getln.a getopt.a sig.a open.a linksync.o \
 	lock.a fd.a wait.a env.a stralloc.a strerr.a \
 	substdio.a error.a str.a fs.a datetime.a auto_qmail.o \
 	auto_patrn.o  `cat socket.lib`
@@ -1120,7 +1124,7 @@ qmail-local.8
 
 qmail-local.o: \
 compile qmail-local.c readwrite.h sig.h env.h byte.h exit.h fork.h \
-open.h wait.h lock.h seek.h substdio.h getln.h strerr.h subfd.h \
+open.h linksync.h wait.h lock.h seek.h substdio.h getln.h strerr.h subfd.h \
 substdio.h sgetopt.h subgetopt.h alloc.h error.h stralloc.h \
 gen_alloc.h fmt.h str.h now.h datetime.h case.h quote.h qmail.h \
 substdio.h slurpclose.h myctime.h gfrom.h auto_patrn.h
@@ -1341,10 +1345,10 @@ qmail-qstat.8
 
 qmail-queue: \
 load qmail-queue.o triggerpull.o fmtqfn.o date822fmt.o \
-datetime.a ndelay.a open.a sig.a substdio.a error.a \
+datetime.a ndelay.a open.a linksync.o sig.a substdio.a error.a \
 str.a fs.a auto_qmail.o auto_split.o ids.a
 	./load qmail-queue triggerpull.o fmtqfn.o \
-	date822fmt.o datetime.a ndelay.a open.a sig.a \
+	date822fmt.o datetime.a ndelay.a open.a linksync.o sig.a \
 	auto_qmail.o auto_split.o ids.a \
 	substdio.a error.a str.a fs.a
 
@@ -1352,7 +1356,7 @@ qmail-queue.0: \
 qmail-queue.8
 
 qmail-queue.o: \
-compile qmail-queue.c readwrite.h sig.h exit.h open.h seek.h fmt.h \
+compile qmail-queue.c readwrite.h sig.h exit.h open.h linksync.h seek.h fmt.h \
 alloc.h substdio.h datetime.h now.h datetime.h triggerpull.h extra.h \
 uidgid.h auto_qmail.h auto_uids.h auto_users.h date822fmt.h fmtqfn.h
 	./compile qmail-queue.c

@@ -22,7 +22,7 @@ static int fdirsync(const char* filename, unsigned length)
   return retval;
 }
 
-static int fdirsyncfn(const char *filename)
+int fdirsyncfn(const char *filename)
 {
    const char *slash = filename+strlen(filename)-1;
 
@@ -43,7 +43,7 @@ static int fdirsyncfn(const char *filename)
      return fdirsync(".", 1);
 }
 
-// XXX this code is not, woweee
+// XXX well, it's also borrowed from syncdir
 
 int schmonz(const char *fn, const int fd)
 {

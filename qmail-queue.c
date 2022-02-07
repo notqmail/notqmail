@@ -4,6 +4,7 @@
 #include "sig.h"
 #include "exit.h"
 #include "open.h"
+#include "linksync.h"
 #include "seek.h"
 #include "fmt.h"
 #include "alloc.h"
@@ -194,7 +195,7 @@ int main(void)
  todofn = fnnum("todo/",0);
  intdfn = fnnum("intd/",0);
 
- if (link(pidfn,messfn) == -1) die(64);
+ if (linksync(pidfn,messfn) == -1) die(64);
  if (unlink(pidfn) == -1) die(63);
  flagmademess = 1;
 
@@ -258,7 +259,7 @@ int main(void)
  if (substdio_flush(&ssout) == -1) die_write();
  if (fsync(intdfd) == -1) die_write();
 
- if (link(intdfn,todofn) == -1) die(66);
+ if (linksync(intdfn,todofn) == -1) die(66);
 
  triggerpull();
  return 0;

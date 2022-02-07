@@ -9,6 +9,7 @@
 #include "exit.h"
 #include "fork.h"
 #include "open.h"
+#include "linksync.h"
 #include "wait.h"
 #include "lock.h"
 #include "seek.h"
@@ -131,7 +132,7 @@ char *dir;
  if (fsync(fd) == -1) goto fail;
  if (close(fd) == -1) goto fail; /* NFS dorks */
 
- if (link(fntmptph,fnnewtph) == -1) goto fail;
+ if (linksync(fntmptph,fnnewtph) == -1) goto fail;
    /* if it was error_exist, almost certainly successful; i hate NFS */
  tryunlinktmp(); _exit(0);
 

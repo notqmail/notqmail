@@ -925,16 +925,16 @@ chkbiofl.c compile load oflops_bi.h oflops_compat.h
 
 open.a: \
 makelib open_append.o open_excl.o open_read.o open_trunc.o \
-open_write.o
+open_write.o fsyncdir.o
 	./makelib open.a open_append.o open_excl.o open_read.o \
-	open_trunc.o open_write.o
+	open_trunc.o open_write.o fsyncdir.o
 
 open_append.o: \
-compile open_append.c open.h
+compile open_append.c open.h fsyncdir.h
 	./compile open_append.c
 
 open_excl.o: \
-compile open_excl.c open.h
+compile open_excl.c open.h fsyncdir.h
 	./compile open_excl.c
 
 open_read.o: \
@@ -942,11 +942,11 @@ compile open_read.c open.h
 	./compile open_read.c
 
 open_trunc.o: \
-compile open_trunc.c open.h
+compile open_trunc.c open.h fsyncdir.h
 	./compile open_trunc.c
 
 open_write.o: \
-compile open_write.c open.h
+compile open_write.c open.h fsyncdir.h
 	./compile open_write.c
 
 package: \

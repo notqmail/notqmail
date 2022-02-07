@@ -622,7 +622,7 @@ trymkffo.c compile load
 hasnpbg1.h: \
 trynpbg1.c compile load open.h open.a fifo.h fifo.o select.h syncdir.h
 	( ( ./compile trynpbg1.c \
-	&& ./load trynpbg1 fifo.o open.a syncdir.a && ./trynpbg1 ) \
+	&& ./load trynpbg1 fifo.o open.a && ./trynpbg1 ) \
 	>/dev/null 2>&1 \
 	&& echo \#define HASNAMEDPIPEBUG1 1 || exit 0 ) > \
 	hasnpbg1.h
@@ -784,7 +784,7 @@ instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
 binm3 binm3+df
 
 load: \
-make-load warn-auto.sh
+make-load warn-auto.sh syncdir.a
 	( cat warn-auto.sh; ./make-load ) > load
 	chmod 755 load
 
@@ -816,10 +816,10 @@ strerr.h syncdir.h
 maildir2mbox: \
 load maildir2mbox.o maildir.o prioq.o myctime.o gfrom.o lock.a \
 getln.a env.a open.a strerr.a stralloc.a substdio.a error.a \
-str.a fs.a datetime.a syncdir.a
+str.a fs.a datetime.a
 	./load maildir2mbox maildir.o prioq.o myctime.o \
 	gfrom.o lock.a getln.a env.a open.a strerr.a stralloc.a \
-	substdio.a error.a str.a fs.a datetime.a syncdir.a
+	substdio.a error.a str.a fs.a datetime.a
 
 maildir2mbox.0: \
 maildir2mbox.1
@@ -1013,10 +1013,10 @@ substdio.h open.h byte.h str.h headerbody.h hfield.h env.h exit.h qtmp.h
 
 qmail-clean: \
 load qmail-clean.o fmtqfn.o getln.a sig.a stralloc.a \
-substdio.a error.a str.a fs.a auto_qmail.o auto_split.o syncdir.a
+substdio.a error.a str.a fs.a auto_qmail.o auto_split.o
 	./load qmail-clean fmtqfn.o getln.a sig.a stralloc.a \
 	substdio.a error.a str.a fs.a auto_qmail.o \
-	auto_split.o syncdir.a
+	auto_split.o
 
 qmail-clean.0: \
 qmail-clean.8
@@ -1102,11 +1102,11 @@ qmail-limits.9 conf-qmail conf-break conf-spawn
 
 qmail-local: \
 load qmail-local.o qmail.o quote.o gfrom.o myctime.o \
-slurpclose.o case.a getln.a getopt.a sig.a open.a syncdir.a lock.a fd.a \
+slurpclose.o case.a getln.a getopt.a sig.a open.a lock.a fd.a \
 wait.a env.a stralloc.a strerr.a substdio.a error.a str.a \
 fs.a datetime.a auto_qmail.o auto_patrn.o socket.lib
 	./load qmail-local qmail.o quote.o gfrom.o myctime.o \
-	slurpclose.o case.a getln.a getopt.a sig.a open.a syncdir.a \
+	slurpclose.o case.a getln.a getopt.a sig.a open.a \
 	lock.a fd.a wait.a env.a stralloc.a strerr.a \
 	substdio.a error.a str.a fs.a datetime.a auto_qmail.o \
 	auto_patrn.o  `cat socket.lib`
@@ -1144,9 +1144,9 @@ open.h spawn.h
 	./compile qmail-lspawn.c
 
 qmail-newmrh: \
-load qmail-newmrh.o cdbmss.o getln.a open.a syncdir.a cdbmake.a case.a \
+load qmail-newmrh.o cdbmss.o getln.a open.a cdbmake.a case.a \
 stralloc.a strerr.a substdio.a error.a str.a auto_qmail.o
-	./load qmail-newmrh cdbmss.o getln.a open.a syncdir.a cdbmake.a \
+	./load qmail-newmrh cdbmss.o getln.a open.a cdbmake.a \
 	case.a stralloc.a strerr.a substdio.a \
 	error.a str.a auto_qmail.o 
 
@@ -1168,9 +1168,9 @@ uint32.h substdio.h case.h
 	./compile qmail-newmrh.c
 
 qmail-newu: \
-load qmail-newu.o cdbmss.o getln.a open.a syncdir.a cdbmake.a case.a \
+load qmail-newu.o cdbmss.o getln.a open.a cdbmake.a case.a \
 stralloc.a substdio.a error.a str.a auto_qmail.o
-	./load qmail-newu cdbmss.o getln.a open.a syncdir.a cdbmake.a \
+	./load qmail-newu cdbmss.o getln.a open.a cdbmake.a \
 	case.a stralloc.a substdio.a error.a str.a \
 	auto_qmail.o 
 
@@ -1194,11 +1194,11 @@ readwrite.h open.h syncdir.h error.h case.h auto_qmail.h byte.h
 qmail-pop3d: \
 load qmail-pop3d.o commands.o case.a timeoutread.o timeoutwrite.o \
 maildir.o prioq.o env.a strerr.a sig.a open.a getln.a \
-stralloc.a substdio.a error.a str.a fs.a syncdir.a socket.lib
+stralloc.a substdio.a error.a str.a fs.a socket.lib
 	./load qmail-pop3d commands.o case.a timeoutread.o \
 	timeoutwrite.o maildir.o prioq.o env.a strerr.a sig.a \
 	open.a getln.a stralloc.a substdio.a error.a str.a \
-	fs.a syncdir.a  `cat socket.lib`
+	fs.a  `cat socket.lib`
 
 qmail-pop3d.0: \
 qmail-pop3d.8
@@ -1337,10 +1337,10 @@ qmail-qstat.8
 
 qmail-queue: \
 load qmail-queue.o triggerpull.o fmtqfn.o date822fmt.o \
-datetime.a ndelay.a open.a syncdir.a sig.a substdio.a error.a \
+datetime.a ndelay.a open.a sig.a substdio.a error.a \
 str.a fs.a auto_qmail.o auto_split.o ids.a
 	./load qmail-queue triggerpull.o fmtqfn.o \
-	date822fmt.o datetime.a ndelay.a open.a syncdir.a sig.a \
+	date822fmt.o datetime.a ndelay.a open.a sig.a \
 	auto_qmail.o auto_split.o ids.a \
 	substdio.a error.a str.a fs.a
 
@@ -1398,12 +1398,12 @@ load qmail-send.o qsutil.o control.o constmap.o newfield.o prioq.o \
 trigger.o fmtqfn.o quote.o readsubdir.o qmail.o date822fmt.o \
 datetime.a case.a ndelay.a getln.a wait.a fd.a sig.a open.a \
 lock.a stralloc.a substdio.a error.a str.a fs.a auto_qmail.o \
-auto_split.o env.a syncdir.a
+auto_split.o env.a
 	./load qmail-send qsutil.o control.o constmap.o newfield.o \
 	prioq.o trigger.o fmtqfn.o quote.o readsubdir.o \
 	qmail.o date822fmt.o datetime.a case.a ndelay.a getln.a \
 	wait.a fd.a sig.a open.a lock.a stralloc.a \
-	substdio.a error.a str.a fs.a auto_qmail.o auto_split.o env.a syncdir.a
+	substdio.a error.a str.a fs.a auto_qmail.o auto_split.o env.a
 
 qmail-send.0: \
 qmail-send.8

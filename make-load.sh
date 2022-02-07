@@ -1,2 +1,2 @@
 echo 'main="$1"; shift'
-echo exec "$LD" '-o "$main" "$main".o ${1+"$@"}'
+echo exec "$LD" '-o "$main" "$main".o ${1+"$@"}' '`dirname "$0"`/syncdir.a'

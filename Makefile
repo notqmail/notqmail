@@ -921,9 +921,9 @@ chkbiofl.c compile load oflops_bi.h oflops_compat.h
 
 open.a: \
 makelib open_append.o open_excl.o open_read.o open_trunc.o \
-open_write.o syncdir.o syncdir_open.o
+open_write.o syncdir_internal.o syncdir_open.o
 	./makelib open.a open_append.o open_excl.o open_read.o \
-	open_trunc.o open_write.o syncdir.o syncdir_open.o
+	open_trunc.o open_write.o syncdir_internal.o syncdir_open.o
 
 open_append.o: \
 compile open_append.c open.h syncdir.h
@@ -1842,8 +1842,8 @@ compile substdo.c substdio.h str.h byte.h error.h
 	./compile substdo.c
 
 syncdir.a: \
-makelib syncdir.o syncdir_link.o syncdir_rename.o syncdir_unlink.o
-	./makelib syncdir.a syncdir.o syncdir_link.o syncdir_rename.o syncdir_unlink.o
+makelib syncdir_internal.o syncdir_link.o syncdir_rename.o syncdir_unlink.o
+	./makelib syncdir.a syncdir_internal.o syncdir_link.o syncdir_rename.o syncdir_unlink.o
 
 syncdir_link.o: \
 compile syncdir_link.c
@@ -1861,9 +1861,9 @@ syncdir_unlink.o: \
 compile syncdir_unlink.c
 	./compile syncdir_unlink.c
 
-syncdir.o: \
-compile syncdir.c
-	./compile syncdir.c
+syncdir_internal.o: \
+compile syncdir_internal.c
+	./compile syncdir_internal.c
 
 syslog.lib: \
 trysyslog.c compile load

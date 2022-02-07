@@ -53,12 +53,12 @@ void cleanup()
  if (flagmadeintd)
   {
    seek_trunc(intdfd,0);
-   if (unlinksync(intdfn) == -1) return;
+   if (syncdir_unlink(intdfn) == -1) return;
   }
  if (flagmademess)
   {
    seek_trunc(messfd,0);
-   if (unlinksync(messfn) == -1) return;
+   if (syncdir_unlink(messfn) == -1) return;
   }
 }
 
@@ -195,8 +195,8 @@ int main(void)
  todofn = fnnum("todo/",0);
  intdfn = fnnum("intd/",0);
 
- if (linksync(pidfn,messfn) == -1) die(64);
- if (unlinksync(pidfn) == -1) die(63);
+ if (syncdir_link(pidfn,messfn) == -1) die(64);
+ if (syncdir_unlink(pidfn) == -1) die(63);
  flagmademess = 1;
 
  substdio_fdbuf(&ssout,write,messfd,outbuf,sizeof(outbuf));
@@ -259,7 +259,7 @@ int main(void)
  if (substdio_flush(&ssout) == -1) die_write();
  if (fsync(intdfd) == -1) die_write();
 
- if (linksync(intdfn,todofn) == -1) die(66);
+ if (syncdir_link(intdfn,todofn) == -1) die(66);
 
  triggerpull();
  return 0;

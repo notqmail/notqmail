@@ -74,7 +74,7 @@ char outbuf[1024];
 
 char fntmptph[80 + FMT_ULONG * 2];
 char fnnewtph[80 + FMT_ULONG * 2];
-void tryunlinktmp() { unlinksync(fntmptph); }
+void tryunlinktmp() { syncdir_unlink(fntmptph); }
 void sigalrm() { tryunlinktmp(); _exit(3); }
 
 void maildir_child(dir)
@@ -132,7 +132,7 @@ char *dir;
  if (fsync(fd) == -1) goto fail;
  if (close(fd) == -1) goto fail; /* NFS dorks */
 
- if (linksync(fntmptph,fnnewtph) == -1) goto fail;
+ if (syncdir_link(fntmptph,fnnewtph) == -1) goto fail;
    /* if it was error_exist, almost certainly successful; i hate NFS */
  tryunlinktmp(); _exit(0);
 

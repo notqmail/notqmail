@@ -42,7 +42,7 @@ void cleanuppid()
    if (!stralloc_0(&line)) continue;
    if (stat(line.s,&st) == -1) continue;
    if (time < st.st_atime + OSSIFIED) continue;
-   unlinksync(line.s);
+   syncdir_unlink(line.s);
   }
  closedir(dir);
 }
@@ -82,7 +82,7 @@ int main(void)
    if (byte_equal(line.s,5,"foop/"))
     {
 #define U(prefix,flag) fmtqfn(fnbuf,prefix,id,flag); \
-if (unlinksync(fnbuf) == -1) if (errno != error_noent) { respond("!"); continue; }
+if (syncdir_unlink(fnbuf) == -1) if (errno != error_noent) { respond("!"); continue; }
      U("intd/",0)
      U("mess/",1)
      respond("+");

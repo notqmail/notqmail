@@ -155,7 +155,7 @@ int main(void)
  while (prioq_min(&pq2,&pe))
   {
    prioq_delmin(&pq2);
-   if (unlinksync(filenames.s + pe.id) == -1)
+   if (syncdir_unlink(filenames.s + pe.id) == -1)
      strerr_warn4(WARNING,"$MAILDIR/",filenames.s + pe.id," will be delivered twice; unable to unlink: ",&strerr_sys);
   }
 

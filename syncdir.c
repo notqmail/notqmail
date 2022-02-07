@@ -60,7 +60,7 @@ int fsync_after_open_or_bust(const char *fn, const int fd)
   return fd;
 }
 
-int linksync(const char *oldpath, const char *newpath)
+int syncdir_link(const char *oldpath, const char *newpath)
 {
   if (link(oldpath, newpath) == -1)
     return -1;
@@ -68,7 +68,7 @@ int linksync(const char *oldpath, const char *newpath)
   return fdirsyncfn(newpath);
 }
 
-int unlinksync(const char *path)
+int syncdir_unlink(const char *path)
 {
   if (unlink(path) == -1)
     return -1;

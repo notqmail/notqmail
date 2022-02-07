@@ -180,7 +180,7 @@ void pop3_quit(arg) char *arg;
   unsigned int i;
   for (i = 0;i < numm;++i)
     if (m[i].flagdeleted) {
-      if (unlinksync(m[i].fn) == -1) err_nounlink();
+      if (syncdir_unlink(m[i].fn) == -1) err_nounlink();
     }
     else
       if (str_start(m[i].fn,"new/")) {

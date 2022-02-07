@@ -47,7 +47,7 @@ stralloc *tmpname;
    if (!stralloc_0(tmpname)) break;
    if (stat(tmpname->s,&st) == 0)
      if (time > st.st_atime + 129600)
-       unlinksync(tmpname->s);
+       syncdir_unlink(tmpname->s);
   }
  closedir(dir);
 }

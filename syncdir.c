@@ -23,8 +23,7 @@ static int fdirsync(const char* filename, unsigned length)
   return retval;
 }
 
-// XXX static?
-int fdirsyncfn(const char *filename)
+static int fdirsyncfn(const char *filename)
 {
    const char *slash = filename+strlen(filename)-1;
 

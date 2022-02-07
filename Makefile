@@ -581,10 +581,6 @@ scan_ulong.o scan_8long.o
 	./makelib fs.a fmt_str.o fmt_strn.o fmt_uint.o fmt_uint0.o \
 	fmt_ulong.o scan_ulong.o scan_8long.o
 
-fsyncdir.o: \
-compile fsyncdir.c
-	./compile fsyncdir.c
-
 getln.a: \
 makelib getln.o getln2.o
 	./makelib getln.a getln.o getln2.o
@@ -624,9 +620,9 @@ trymkffo.c compile load
 	rm -f trymkffo.o trymkffo
 
 hasnpbg1.h: \
-trynpbg1.c compile load open.h open.a fifo.h fifo.o select.h
+trynpbg1.c compile load open.h open.a fifo.h fifo.o select.h syncdir.h
 	( ( ./compile trynpbg1.c \
-	&& ./load trynpbg1 fifo.o open.a && ./trynpbg1 ) \
+	&& ./load trynpbg1 fifo.o open.a syncdir.o && ./trynpbg1 ) \
 	>/dev/null 2>&1 \
 	&& echo \#define HASNAMEDPIPEBUG1 1 || exit 0 ) > \
 	hasnpbg1.h
@@ -792,10 +788,6 @@ make-load warn-auto.sh
 	( cat warn-auto.sh; ./make-load ) > load
 	chmod 755 load
 
-linksync.o: \
-compile linksync.c
-	./compile linksync.c
-
 lock.a: \
 makelib lock_ex.o lock_exnb.o lock_un.o
 	./makelib lock.a lock_ex.o lock_exnb.o lock_un.o
@@ -818,16 +810,16 @@ maildir.5
 maildir.o: \
 compile maildir.c prioq.h datetime.h gen_alloc.h env.h stralloc.h \
 gen_alloc.h direntry.h datetime.h now.h datetime.h str.h maildir.h \
-strerr.h
+strerr.h syncdir.h
 	./compile maildir.c
 
 maildir2mbox: \
 load maildir2mbox.o maildir.o prioq.o myctime.o gfrom.o lock.a \
 getln.a env.a open.a strerr.a stralloc.a substdio.a error.a \
-str.a fs.a datetime.a
+str.a fs.a datetime.a syncdir.a
 	./load maildir2mbox maildir.o prioq.o myctime.o \
 	gfrom.o lock.a getln.a env.a open.a strerr.a stralloc.a \
-	substdio.a error.a str.a fs.a datetime.a
+	substdio.a error.a str.a fs.a datetime.a syncdir.a
 
 maildir2mbox.0: \
 maildir2mbox.1
@@ -836,7 +828,7 @@ maildir2mbox.o: \
 compile maildir2mbox.c readwrite.h prioq.h datetime.h gen_alloc.h \
 env.h stralloc.h gen_alloc.h subfd.h substdio.h substdio.h getln.h \
 error.h open.h lock.h gfrom.h str.h myctime.h maildir.h \
-strerr.h
+strerr.h syncdir.h
 	./compile maildir2mbox.c
 
 maildirmake: \
@@ -929,16 +921,16 @@ chkbiofl.c compile load oflops_bi.h oflops_compat.h
 
 open.a: \
 makelib open_append.o open_excl.o open_read.o open_trunc.o \
-open_write.o fsyncdir.o
+open_write.o syncdir.o
 	./makelib open.a open_append.o open_excl.o open_read.o \
-	open_trunc.o open_write.o fsyncdir.o
+	open_trunc.o open_write.o syncdir.o
 
 open_append.o: \
-compile open_append.c open.h fsyncdir.h
+compile open_append.c open.h syncdir.h
 	./compile open_append.c
 
 open_excl.o: \
-compile open_excl.c open.h fsyncdir.h
+compile open_excl.c open.h syncdir.h
 	./compile open_excl.c
 
 open_read.o: \
@@ -946,11 +938,11 @@ compile open_read.c open.h
 	./compile open_read.c
 
 open_trunc.o: \
-compile open_trunc.c open.h fsyncdir.h
+compile open_trunc.c open.h syncdir.h
 	./compile open_trunc.c
 
 open_write.o: \
-compile open_write.c open.h fsyncdir.h
+compile open_write.c open.h syncdir.h
 	./compile open_write.c
 
 package: \
@@ -1021,10 +1013,10 @@ substdio.h open.h byte.h str.h headerbody.h hfield.h env.h exit.h qtmp.h
 
 qmail-clean: \
 load qmail-clean.o fmtqfn.o getln.a sig.a stralloc.a \
-substdio.a error.a str.a fs.a auto_qmail.o auto_split.o
+substdio.a error.a str.a fs.a auto_qmail.o auto_split.o syncdir.a
 	./load qmail-clean fmtqfn.o getln.a sig.a stralloc.a \
 	substdio.a error.a str.a fs.a auto_qmail.o \
-	auto_split.o 
+	auto_split.o syncdir.a
 
 qmail-clean.0: \
 qmail-clean.8
@@ -1032,7 +1024,7 @@ qmail-clean.8
 qmail-clean.o: \
 compile qmail-clean.c readwrite.h sig.h now.h datetime.h str.h \
 direntry.h getln.h stralloc.h gen_alloc.h substdio.h subfd.h \
-substdio.h byte.h scan.h fmt.h error.h exit.h fmtqfn.h auto_qmail.h
+substdio.h byte.h scan.h fmt.h error.h exit.h fmtqfn.h auto_qmail.h syncdir.h
 	./compile qmail-clean.c
 
 qmail-command.0: \
@@ -1110,11 +1102,11 @@ qmail-limits.9 conf-qmail conf-break conf-spawn
 
 qmail-local: \
 load qmail-local.o qmail.o quote.o gfrom.o myctime.o \
-slurpclose.o case.a getln.a getopt.a sig.a open.a linksync.o lock.a fd.a \
+slurpclose.o case.a getln.a getopt.a sig.a open.a syncdir.a lock.a fd.a \
 wait.a env.a stralloc.a strerr.a substdio.a error.a str.a \
 fs.a datetime.a auto_qmail.o auto_patrn.o socket.lib
 	./load qmail-local qmail.o quote.o gfrom.o myctime.o \
-	slurpclose.o case.a getln.a getopt.a sig.a open.a linksync.o \
+	slurpclose.o case.a getln.a getopt.a sig.a open.a syncdir.a \
 	lock.a fd.a wait.a env.a stralloc.a strerr.a \
 	substdio.a error.a str.a fs.a datetime.a auto_qmail.o \
 	auto_patrn.o  `cat socket.lib`
@@ -1124,7 +1116,7 @@ qmail-local.8
 
 qmail-local.o: \
 compile qmail-local.c readwrite.h sig.h env.h byte.h exit.h fork.h \
-open.h linksync.h wait.h lock.h seek.h substdio.h getln.h strerr.h subfd.h \
+open.h syncdir.h wait.h lock.h seek.h substdio.h getln.h strerr.h subfd.h \
 substdio.h sgetopt.h subgetopt.h alloc.h error.h stralloc.h \
 gen_alloc.h fmt.h str.h now.h datetime.h case.h quote.h qmail.h \
 substdio.h slurpclose.h myctime.h gfrom.h auto_patrn.h
@@ -1202,11 +1194,11 @@ readwrite.h open.h error.h case.h auto_qmail.h byte.h
 qmail-pop3d: \
 load qmail-pop3d.o commands.o case.a timeoutread.o timeoutwrite.o \
 maildir.o prioq.o env.a strerr.a sig.a open.a getln.a \
-stralloc.a substdio.a error.a str.a fs.a socket.lib
+stralloc.a substdio.a error.a str.a fs.a syncdir.a socket.lib
 	./load qmail-pop3d commands.o case.a timeoutread.o \
 	timeoutwrite.o maildir.o prioq.o env.a strerr.a sig.a \
 	open.a getln.a stralloc.a substdio.a error.a str.a \
-	fs.a  `cat socket.lib`
+	fs.a syncdir.a  `cat socket.lib`
 
 qmail-pop3d.0: \
 qmail-pop3d.8
@@ -1215,7 +1207,7 @@ qmail-pop3d.o: \
 compile qmail-pop3d.c commands.h sig.h getln.h stralloc.h gen_alloc.h \
 substdio.h alloc.h open.h prioq.h datetime.h gen_alloc.h scan.h fmt.h \
 str.h exit.h maildir.h strerr.h readwrite.h timeoutread.h \
-timeoutwrite.h
+timeoutwrite.h syncdir.h
 	./compile qmail-pop3d.c
 
 qmail-popup: \
@@ -1345,10 +1337,10 @@ qmail-qstat.8
 
 qmail-queue: \
 load qmail-queue.o triggerpull.o fmtqfn.o date822fmt.o \
-datetime.a ndelay.a open.a linksync.o sig.a substdio.a error.a \
+datetime.a ndelay.a open.a syncdir.a sig.a substdio.a error.a \
 str.a fs.a auto_qmail.o auto_split.o ids.a
 	./load qmail-queue triggerpull.o fmtqfn.o \
-	date822fmt.o datetime.a ndelay.a open.a linksync.o sig.a \
+	date822fmt.o datetime.a ndelay.a open.a syncdir.a sig.a \
 	auto_qmail.o auto_split.o ids.a \
 	substdio.a error.a str.a fs.a
 
@@ -1356,7 +1348,7 @@ qmail-queue.0: \
 qmail-queue.8
 
 qmail-queue.o: \
-compile qmail-queue.c readwrite.h sig.h exit.h open.h linksync.h seek.h fmt.h \
+compile qmail-queue.c readwrite.h sig.h exit.h open.h syncdir.h seek.h fmt.h \
 alloc.h substdio.h datetime.h now.h datetime.h triggerpull.h extra.h \
 uidgid.h auto_qmail.h auto_uids.h auto_users.h date822fmt.h fmtqfn.h
 	./compile qmail-queue.c
@@ -1406,12 +1398,12 @@ load qmail-send.o qsutil.o control.o constmap.o newfield.o prioq.o \
 trigger.o fmtqfn.o quote.o readsubdir.o qmail.o date822fmt.o \
 datetime.a case.a ndelay.a getln.a wait.a fd.a sig.a open.a \
 lock.a stralloc.a substdio.a error.a str.a fs.a auto_qmail.o \
-auto_split.o env.a
+auto_split.o env.a syncdir.a
 	./load qmail-send qsutil.o control.o constmap.o newfield.o \
 	prioq.o trigger.o fmtqfn.o quote.o readsubdir.o \
 	qmail.o date822fmt.o datetime.a case.a ndelay.a getln.a \
 	wait.a fd.a sig.a open.a lock.a stralloc.a \
-	substdio.a error.a str.a fs.a auto_qmail.o auto_split.o env.a
+	substdio.a error.a str.a fs.a auto_qmail.o auto_split.o env.a syncdir.a
 
 qmail-send.0: \
 qmail-send.8
@@ -1430,7 +1422,7 @@ open.h seek.h exit.h lock.h ndelay.h now.h datetime.h getln.h \
 substdio.h alloc.h error.h stralloc.h gen_alloc.h str.h byte.h fmt.h \
 scan.h case.h auto_qmail.h trigger.h newfield.h stralloc.h quote.h \
 qmail.h substdio.h qsutil.h prioq.h datetime.h gen_alloc.h constmap.h \
-fmtqfn.h readsubdir.h direntry.h
+fmtqfn.h readsubdir.h direntry.h syncdir.h
 	./compile qmail-send.c
 
 qmail-send.service: \
@@ -1848,6 +1840,14 @@ compile substdio_copy.c substdio.h
 substdo.o: \
 compile substdo.c substdio.h str.h byte.h error.h
 	./compile substdo.c
+
+syncdir.a: \
+makelib syncdir.o
+	./makelib syncdir.a syncdir.o
+
+syncdir.o: \
+compile syncdir.c
+	./compile syncdir.c
 
 syslog.lib: \
 trysyslog.c compile load

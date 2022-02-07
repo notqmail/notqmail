@@ -10,6 +10,7 @@
 #include "datetime.h"
 #include "now.h"
 #include "str.h"
+#include "syncdir.h"
 
 struct strerr maildir_chdir_err;
 struct strerr maildir_scan_err;
@@ -46,7 +47,7 @@ stralloc *tmpname;
    if (!stralloc_0(tmpname)) break;
    if (stat(tmpname->s,&st) == 0)
      if (time > st.st_atime + 129600)
-       unlink(tmpname->s);
+       unlinksync(tmpname->s);
   }
  closedir(dir);
 }

@@ -45,7 +45,7 @@ int fdirsyncfn(const char *filename)
 
 // XXX well, it's also borrowed from syncdir
 
-int schmonz(const char *fn, const int fd)
+int fsync_after_open_or_bust(const char *fn, const int fd)
 {
   if (fd == -1)
     return fd;
@@ -56,4 +56,20 @@ int schmonz(const char *fn, const int fd)
   }
 
   return fd;
+}
+
+int linksync(const char *oldpath, const char *newpath)
+{
+  if (link(oldpath, newpath) == -1)
+    return -1;
+
+  return fdirsyncfn(newpath);
+}
+
+int unlinksync(const char *path)
+{
+  if (unlink(path) == -1)
+    return -1;
+
+  return fdirsyncfn(path);
 }

@@ -7,6 +7,7 @@
 #include "control.h"
 #include "select.h"
 #include "open.h"
+#include "syncdir.h"
 #include "seek.h"
 #include "exit.h"
 #include "lock.h"
@@ -539,7 +540,7 @@ int j;
  if (jo[j].flaghiteof && !jo[j].numtodo)
   {
    fnmake_chanaddr(jo[j].id,jo[j].channel);
-   if (unlink(fn.s) == -1)
+   if (unlinksync(fn.s) == -1)
     {
      log3("warning: unable to unlink ",fn.s,"; will try again later\n");
      pe.dt = now() + SLEEP_SYSFAIL;
@@ -756,7 +757,7 @@ I tried to deliver a bounce message to this address, but the bounce bounced!\n\
    strnum2[fmt_ulong(strnum2,qp)] = 0;
    log3(" qp ",strnum2,"\n");
   }
- if (unlink(fn2.s) == -1)
+ if (unlinksync(fn2.s) == -1)
   {
    log3("warning: unable to unlink ",fn2.s,"\n");
    return 0;
@@ -1170,7 +1171,7 @@ unsigned long id;
 
  /* -todo +info -local -remote -bounce */
  fnmake_info(id);
- if (unlink(fn.s) == -1)
+ if (unlinksync(fn.s) == -1)
   {
    log3("warning: unable to unlink ",fn.s,"; will try again later\n");
    goto fail;
@@ -1303,12 +1304,12 @@ fd_set *rfds;
  for (c = 0;c < CHANNELS;++c)
   {
    fnmake_chanaddr(id,c);
-   if (unlink(fn.s) == -1) if (errno != error_noent)
+   if (unlinksync(fn.s) == -1) if (errno != error_noent)
     { log3("warning: unable to unlink ",fn.s,"\n"); goto fail; }
   }
 
  fnmake_info(id);
- if (unlink(fn.s) == -1) if (errno != error_noent)
+ if (unlinksync(fn.s) == -1) if (errno != error_noent)
   { log3("warning: unable to unlink ",fn.s,"\n"); goto fail; }
 
  fdinfo = open_excl(fn.s);

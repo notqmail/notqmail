@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include "select.h"
 #include "open.h"
+#include "syncdir.h"
 #include "fifo.h"
 
 #define FN "temp-trynpbg1.fifo"
@@ -22,7 +23,7 @@ int main(void)
       if (select(1,&rfds,NULL,NULL,&instant) > 0)
         flagbug = 1;
     }
-    unlink(FN);
+    unlinksync(FN);
   }
   return !flagbug;
 }

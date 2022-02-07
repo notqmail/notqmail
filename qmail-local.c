@@ -9,7 +9,7 @@
 #include "exit.h"
 #include "fork.h"
 #include "open.h"
-#include "linksync.h"
+#include "syncdir.h"
 #include "wait.h"
 #include "lock.h"
 #include "seek.h"
@@ -74,7 +74,7 @@ char outbuf[1024];
 
 char fntmptph[80 + FMT_ULONG * 2];
 char fnnewtph[80 + FMT_ULONG * 2];
-void tryunlinktmp() { unlink(fntmptph); }
+void tryunlinktmp() { unlinksync(fntmptph); }
 void sigalrm() { tryunlinktmp(); _exit(3); }
 
 void maildir_child(dir)

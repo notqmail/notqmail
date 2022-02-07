@@ -4,7 +4,7 @@
 #include "sig.h"
 #include "exit.h"
 #include "open.h"
-#include "linksync.h"
+#include "syncdir.h"
 #include "seek.h"
 #include "fmt.h"
 #include "alloc.h"
@@ -53,12 +53,12 @@ void cleanup()
  if (flagmadeintd)
   {
    seek_trunc(intdfd,0);
-   if (unlink(intdfn) == -1) return;
+   if (unlinksync(intdfn) == -1) return;
   }
  if (flagmademess)
   {
    seek_trunc(messfd,0);
-   if (unlink(messfn) == -1) return;
+   if (unlinksync(messfn) == -1) return;
   }
 }
 
@@ -196,7 +196,7 @@ int main(void)
  intdfn = fnnum("intd/",0);
 
  if (linksync(pidfn,messfn) == -1) die(64);
- if (unlink(pidfn) == -1) die(63);
+ if (unlinksync(pidfn) == -1) die(63);
  flagmademess = 1;
 
  substdio_fdbuf(&ssout,write,messfd,outbuf,sizeof(outbuf));

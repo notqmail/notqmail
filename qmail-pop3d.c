@@ -10,6 +10,7 @@
 #include "substdio.h"
 #include "alloc.h"
 #include "open.h"
+#include "syncdir.h"
 #include "prioq.h"
 #include "scan.h"
 #include "fmt.h"
@@ -181,7 +182,7 @@ void pop3_quit(arg) char *arg;
   unsigned int i;
   for (i = 0;i < numm;++i)
     if (m[i].flagdeleted) {
-      if (unlink(m[i].fn) == -1) err_nounlink();
+      if (unlinksync(m[i].fn) == -1) err_nounlink();
     }
     else
       if (str_start(m[i].fn,"new/")) {

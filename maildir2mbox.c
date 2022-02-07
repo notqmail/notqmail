@@ -15,6 +15,8 @@
 #include "myctime.h"
 #include "maildir.h"
 
+extern int rename(const char *, const char *);
+
 char *mbox;
 char *mboxtmp;
 

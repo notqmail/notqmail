@@ -13,6 +13,8 @@
 
 #define FATAL "qmail-newmrh: fatal: "
 
+extern int rename(const char *, const char *);
+
 void die_read()
 {
   strerr_die2sys(111,FATAL,"unable to read control/morercpthosts: ");

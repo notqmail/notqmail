@@ -13,6 +13,8 @@
 #include "case.h"
 #include "auto_qmail.h"
 
+extern int rename(const char *, const char *);
+
 void die_temp() { _exit(111); }
 
 void die_chdir()

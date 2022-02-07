@@ -1016,7 +1016,7 @@ load qmail-clean.o fmtqfn.o getln.a sig.a stralloc.a \
 substdio.a error.a str.a fs.a auto_qmail.o auto_split.o
 	./load qmail-clean fmtqfn.o getln.a sig.a stralloc.a \
 	substdio.a error.a str.a fs.a auto_qmail.o \
-	auto_split.o
+	auto_split.o 
 
 qmail-clean.0: \
 qmail-clean.8

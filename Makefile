@@ -581,6 +581,10 @@ scan_ulong.o scan_8long.o
 	./makelib fs.a fmt_str.o fmt_strn.o fmt_uint.o fmt_uint0.o \
 	fmt_ulong.o scan_ulong.o scan_8long.o
 
+fsyncdir.o: \
+compile fsyncdir.c
+	./compile fsyncdir.c
+
 getln.a: \
 makelib getln.o getln2.o
 	./makelib getln.a getln.o getln2.o

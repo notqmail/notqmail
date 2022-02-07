@@ -1,7 +1,5 @@
 #include <errno.h>
 #include <fcntl.h>
-#include <libgen.h>
-#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -23,7 +21,7 @@ static int fdirsync(const char* filename, unsigned length)
   return retval;
 }
 
-static int fdirsyncfn(const char *filename)
+int fdirsyncfn(const char *filename)
 {
    const char *slash = filename+strlen(filename)-1;
 
@@ -57,31 +55,4 @@ int syncdir_open(const char *fn, const int fd)
   }
 
   return fd;
-}
-
-int syncdir_link(const char *oldpath, const char *newpath)
-{
-  if (link(oldpath, newpath) == -1)
-    return -1;
-
-  return fdirsyncfn(newpath);
-}
-
-int syncdir_unlink(const char *path)
-{
-  if (unlink(path) == -1)
-    return -1;
-
-  return fdirsyncfn(path);
-}
-
-int syncdir_rename(const char *oldpath, const char *newpath)
-{
-  if (rename(oldpath,newpath) == -1)
-    return -1;
-
-  if (fdirsyncfn(newpath) == -1)
-    return -1;
-
-  return fdirsyncfn(oldpath);
 }

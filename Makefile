@@ -1843,8 +1843,20 @@ compile substdo.c substdio.h str.h byte.h error.h
 
 # XXX link from individual .o so unneeded symbols are omitted
 syncdir.a: \
-makelib syncdir.o
-	./makelib syncdir.a syncdir.o
+makelib syncdir.o syncdir_link.o syncdir_rename.o syncdir_unlink.o
+	./makelib syncdir.a syncdir.o syncdir_link.o syncdir_rename.o syncdir_unlink.o
+
+syncdir_link.o: \
+compile syncdir_link.c
+	./compile syncdir_link.c
+
+syncdir_rename.o: \
+compile syncdir_rename.c
+	./compile syncdir_rename.c
+
+syncdir_unlink.o: \
+compile syncdir_unlink.c
+	./compile syncdir_unlink.c
 
 syncdir.o: \
 compile syncdir.c

@@ -46,7 +46,7 @@ static int fdirsyncfn(const char *filename)
 
 // XXX well, it's also borrowed from syncdir
 
-int fsync_after_open_or_bust(const char *fn, const int fd)
+int syncdir_open(const char *fn, const int fd)
 {
   if (fd == -1)
     return fd;

@@ -1841,6 +1841,7 @@ substdo.o: \
 compile substdo.c substdio.h str.h byte.h error.h
 	./compile substdo.c
 
+# XXX link from individual .o so unneeded symbols are omitted
 syncdir.a: \
 makelib syncdir.o
 	./makelib syncdir.a syncdir.o

@@ -7,12 +7,11 @@
 #include "exit.h"
 #include "readwrite.h"
 #include "open.h"
+#include "syncdir.h"
 #include "auto_qmail.h"
 #include "cdbmss.h"
 
 #define FATAL "qmail-newmrh: fatal: "
-
-extern int rename(const char *, const char *);
 
 void die_read()
 {
@@ -67,7 +66,7 @@ int main(void)
   if (cdbmss_finish(&cdbmss) == -1) die_write();
   if (fsync(fdtemp) == -1) die_write();
   if (close(fdtemp) == -1) die_write(); /* NFS stupidity */
-  if (rename("control/morercpthosts.tmp","control/morercpthosts.cdb") == -1)
+  if (syncdir_rename("control/morercpthosts.tmp","control/morercpthosts.cdb") == -1)
     strerr_die2sys(111,FATAL,"unable to move control/morercpthosts.tmp to control/morercpthosts.cdb");
 
   return 0;

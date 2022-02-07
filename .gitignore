@@ -375,3 +375,5 @@ forgeries.0
 setup
 qtmp.h
 qmail-send.service
+syncdir.a
+syncdir.o

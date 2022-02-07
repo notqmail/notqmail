@@ -15,8 +15,6 @@
 #include "myctime.h"
 #include "maildir.h"
 
-extern int rename(const char *, const char *);
-
 char *mbox;
 char *mboxtmp;
 
@@ -151,7 +149,7 @@ int main(void)
    strerr_die4sys(111,FATAL,"unable to write to ",mboxtmp,": ");
  if (close(fdnewmbox) == -1) /* NFS dorks */
    strerr_die4sys(111,FATAL,"unable to write to ",mboxtmp,": ");
- if (rename(mboxtmp,mbox) == -1)
+ if (syncdir_rename(mboxtmp,mbox) == -1)
    strerr_die6(111,FATAL,"unable to move ",mboxtmp," to ",mbox,": ",&strerr_sys);
  
  while (prioq_min(&pq2,&pe))

@@ -8,11 +8,10 @@
 #include "exit.h"
 #include "readwrite.h"
 #include "open.h"
+#include "syncdir.h"
 #include "error.h"
 #include "case.h"
 #include "auto_qmail.h"
-
-extern int rename(const char *, const char *);
 
 void die_temp() { _exit(111); }
 
@@ -135,7 +134,7 @@ int main(void)
   if (cdbmss_finish(&cdbmss) == -1) die_writet();
   if (fsync(fdtemp) == -1) die_writet();
   if (close(fdtemp) == -1) die_writet(); /* NFS stupidity */
-  if (rename("users/cdb.tmp","users/cdb") == -1) die_rename();
+  if (syncdir_rename("users/cdb.tmp","users/cdb") == -1) die_rename();
 
   return 0;
 }

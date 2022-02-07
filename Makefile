@@ -1163,7 +1163,7 @@ qmail-newmrh.9 conf-qmail conf-break conf-spawn
 
 qmail-newmrh.o: \
 compile qmail-newmrh.c strerr.h stralloc.h gen_alloc.h substdio.h \
-getln.h exit.h readwrite.h open.h auto_qmail.h cdbmss.h cdbmake.h \
+getln.h exit.h readwrite.h open.h syncdir.h auto_qmail.h cdbmss.h cdbmake.h \
 uint32.h substdio.h case.h
 	./compile qmail-newmrh.c
 
@@ -1188,7 +1188,7 @@ qmail-newu.9 conf-qmail conf-break conf-spawn
 qmail-newu.o: \
 compile qmail-newu.c stralloc.h gen_alloc.h subfd.h substdio.h \
 getln.h substdio.h cdbmss.h cdbmake.h uint32.h substdio.h exit.h \
-readwrite.h open.h error.h case.h auto_qmail.h byte.h
+readwrite.h open.h syncdir.h error.h case.h auto_qmail.h byte.h
 	./compile qmail-newu.c
 
 qmail-pop3d: \

@@ -1,10 +1,11 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <libgen.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
-// XXX this code is from Bruce Guenter's GPL'd syncdir, nearly verbatim!
+// XXX this entire file is from Bruce Guenter's GPL'd syncdir, nearly verbatim!
 
 static int fdirsync(const char* filename, unsigned length)
 {
@@ -22,6 +23,7 @@ static int fdirsync(const char* filename, unsigned length)
   return retval;
 }
 
+// XXX static?
 int fdirsyncfn(const char *filename)
 {
    const char *slash = filename+strlen(filename)-1;
@@ -72,4 +74,15 @@ int unlinksync(const char *path)
     return -1;
 
   return fdirsyncfn(path);
+}
+
+int syncdir_rename(const char *oldpath, const char *newpath)
+{
+  if (rename(oldpath,newpath) == -1)
+    return -1;
+
+  if (fdirsyncfn(newpath) == -1)
+    return -1;
+
+  return fdirsyncfn(oldpath);
 }

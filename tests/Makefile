@@ -11,8 +11,8 @@ default: it
 
 TESTBINS = unittest_case unittest_qmail-remote unittest_prioq unittest_qmail-send unittest_str unittest_stralloc
 
-CHECK_INCLUDES := `pkg-config --cflags check`
-CHECK_LIBS := `pkg-config --libs check`
+CHECK_INCLUDES = `pkg-config --cflags check`
+CHECK_LIBS = `pkg-config --libs check`
 
 clean:
 	rm -f $(TESTBINS) *.o *-without-main.c

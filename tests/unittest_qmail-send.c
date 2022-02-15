@@ -39,9 +39,6 @@ static void release_job(unsigned int index)
 
 // END test helpers for the API we might prefer from qmail-send
 
-// when job_avail() returns an index, switch to ck_assert_int_eq
-#define assert_job_avail ck_assert_int_eq
-
 static void assert_job_at_index(unsigned int index, int availability)
 {
   ck_assert_int_eq(jo[index].refs, availability);
@@ -83,7 +80,7 @@ END_TEST
 START_TEST(test_qmail_job_avail_returns_free_slots_after_init)
 {
   job_init_this_many(5);
-  assert_job_avail(job_avail(), 0);
+  ck_assert_int_eq(job_avail(), 0);
 }
 END_TEST
 
@@ -92,7 +89,7 @@ START_TEST(test_qmail_job_avail_returns_no_free_slots)
   job_init_this_many(5);
   occupy_all_jobs();
 
-  assert_job_avail(job_avail(), -1);
+  ck_assert_int_eq(job_avail(), -1);
 }
 END_TEST
 
@@ -102,7 +99,7 @@ START_TEST(test_qmail_job_avail_returns_a_free_slot)
   occupy_all_jobs();
   release_job(2);
 
-  assert_job_avail(job_avail(), 2);
+  ck_assert_int_eq(job_avail(), 2);
 }
 END_TEST
 
@@ -112,7 +109,7 @@ START_TEST(test_qmail_job_avail_returns_a_free_slot_for_index_zero)
   occupy_all_jobs();
   release_job(0);
 
-  assert_job_avail(job_avail(), 0);
+  ck_assert_int_eq(job_avail(), 0);
 }
 END_TEST
 
@@ -122,7 +119,7 @@ START_TEST(test_qmail_job_avail_returns_a_free_slot_for_last_index)
   occupy_all_jobs();
   release_job(numjobs - 1);
 
-  assert_job_avail(job_avail(), numjobs - 1);
+  ck_assert_int_eq(job_avail(), numjobs - 1);
 }
 END_TEST
 

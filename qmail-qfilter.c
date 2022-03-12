@@ -10,16 +10,14 @@
 #include <signal.h>
 #include <unistd.h>
 
+#include "qmail-qfilter.h"
+
 #ifndef TMPDIR
 #define TMPDIR "/tmp"
 #endif
 
 #ifndef BUFSIZE
 #define BUFSIZE 4096
-#endif
-
-#ifndef QMAIL_QUEUE
-#define QMAIL_QUEUE "/var/qmail/bin/qmail-queue"
 #endif
 
 #define QQ_OOM 51

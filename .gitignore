@@ -377,5 +377,6 @@ qtmp.h
 qmail-send.service
 qmail-qfilter.0
 qmail-qfilter.1
+qmail-qfilter.h
 qmail-qfilter.o
 qmail-qfilter

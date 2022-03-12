@@ -1267,8 +1267,15 @@ qmail-qfilter.9
 	| sed s}QMAILHOME}"`head -n 1 conf-qmail`"}g \
 	> qmail-qfilter.1
 
+qmail-qfilter.h: \
+conf-qmail
+	( echo "#ifndef QMAIL_QUEUE"; \
+	echo "#define QMAIL_QUEUE \"`head -n 1 conf-qmail`/bin/qmail-queue\""; \
+	echo "#endif" ) \
+	> qmail-qfilter.h
+
 qmail-qfilter.o: \
-compile qmail-qfilter.c
+compile qmail-qfilter.c qmail-qfilter.h
 	./compile qmail-qfilter.c
 
 qmail-qmqpc: \

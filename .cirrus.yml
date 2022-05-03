@@ -2,9 +2,9 @@ task:
   name: FreeBSD
   freebsd_instance:
     matrix:
-      image_family: freebsd-13-0-snap
-      image_family: freebsd-12-2
-      image_family: freebsd-11-4
+      image_family: freebsd-14-0-snap
+      image_family: freebsd-13-0
+      image_family: freebsd-12-3
 
   env:
     matrix:

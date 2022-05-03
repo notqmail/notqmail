@@ -1324,11 +1324,9 @@ exit.h
 	./compile qmail-qread.c
 
 qmail-qstat: \
-warn-auto.sh qmail-qstat.sh conf-qmail conf-break conf-split
+warn-auto.sh qmail-qstat.sh conf-qmail
 	cat warn-auto.sh qmail-qstat.sh \
 	| sed s}QMAIL}"`head -n 1 conf-qmail`"}g \
-	| sed s}BREAK}"`head -n 1 conf-break`"}g \
-	| sed s}SPLIT}"`head -n 1 conf-split`"}g \
 	> qmail-qstat
 	chmod 755 qmail-qstat
 

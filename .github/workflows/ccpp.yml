@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        host: [ubuntu-latest, macos-latest]
+        host: [ubuntu-22.04, macos-latest]
         config:
          - {
            name: gcc-default,
@@ -67,14 +67,13 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: test_deps
       run: |
         if [ "${OS}" = "macos-latest" ]; then
           brew install check
         else
-          sudo sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu hirsute universe" >> /etc/apt/sources.list'
           sudo apt-get update
           sudo apt-get install check
         fi

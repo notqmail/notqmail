@@ -8,13 +8,14 @@
 #include "fmt.h"
 #include "ip.h"
 #include "lock.h"
+#include "noreturn.h"
 #include "open.h"
 #include "error.h"
 #include "exit.h"
 #include "datetime.h"
 #include "now.h"
 
-void die(n) int n; { substdio_flush(subfdout); _exit(n); }
+void _noreturn_ die(int n) { substdio_flush(subfdout); _exit(n); }
 
 void warn(s) char *s;
 {
@@ -26,10 +27,10 @@ void warn(s) char *s;
  substdio_puts(subfdout,"\n");
 }
 
-void die_chdir() { warn("fatal: unable to chdir"); die(111); }
-void die_open() { warn("fatal: unable to open tcpto"); die(111); }
-void die_lock() { warn("fatal: unable to lock tcpto"); die(111); }
-void die_read() { warn("fatal: unable to read tcpto"); die(111); }
+void _noreturn_ die_chdir(void) { warn("fatal: unable to chdir"); die(111); }
+void _noreturn_ die_open(void) { warn("fatal: unable to open tcpto"); die(111); }
+void _noreturn_ die_lock(void) { warn("fatal: unable to lock tcpto"); die(111); }
+void _noreturn_ die_read(void) { warn("fatal: unable to read tcpto"); die(111); }
 
 char tcpto_buf[1024];
 

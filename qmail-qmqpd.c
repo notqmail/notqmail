@@ -6,13 +6,14 @@
 #include "substdio.h"
 #include "readwrite.h"
 #include "exit.h"
+#include "noreturn.h"
 #include "now.h"
 #include "fmt.h"
 #include "byte.h"
 #include "env.h"
 #include "str.h"
 
-void resources() { _exit(111); }
+void _noreturn_ resources(void) { _exit(111); }
 
 ssize_t safewrite(int fd, const void *buf, size_t len)
 {

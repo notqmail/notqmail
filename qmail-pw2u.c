@@ -8,6 +8,7 @@
 #include "sgetopt.h"
 #include "control.h"
 #include "constmap.h"
+#include "noreturn.h"
 #include "stralloc.h"
 #include "fmt.h"
 #include "str.h"
@@ -20,32 +21,32 @@
 #include "auto_qmail.h"
 #include "auto_users.h"
 
-void die_chdir()
+void _noreturn_ die_chdir(void)
 {
   substdio_putsflush(subfderr,"qmail-pw2u: fatal: unable to chdir\n");
   _exit(111);
 }
-void die_nomem()
+void _noreturn_ die_nomem(void)
 {
   substdio_putsflush(subfderr,"qmail-pw2u: fatal: out of memory\n");
   _exit(111);
 }
-void die_read()
+void _noreturn_ die_read(void)
 {
   substdio_putsflush(subfderr,"qmail-pw2u: fatal: unable to read input\n");
   _exit(111);
 }
-void die_write()
+void _noreturn_ die_write(void)
 {
   substdio_putsflush(subfderr,"qmail-pw2u: fatal: unable to write output\n");
   _exit(111);
 }
-void die_control()
+void _noreturn_ die_control(void)
 {
   substdio_putsflush(subfderr,"qmail-pw2u: fatal: unable to read controls\n");
   _exit(111);
 }
-void die_alias()
+void _noreturn_ die_alias(void)
 {
   substdio_puts(subfderr,"qmail-pw2u: fatal: unable to find ");
   substdio_puts(subfderr,auto_usera);
@@ -53,7 +54,7 @@ void die_alias()
   substdio_flush(subfderr);
   _exit(111);
 }
-void die_home(fn) char *fn;
+void _noreturn_ die_home(char *fn)
 {
   substdio_puts(subfderr,"qmail-pw2u: fatal: unable to stat ");
   substdio_puts(subfderr,fn);
@@ -61,7 +62,7 @@ void die_home(fn) char *fn;
   substdio_flush(subfderr);
   _exit(111);
 }
-void die_user(s,len) char *s; unsigned int len;
+void _noreturn_ die_user(char *s, unsigned int len)
 {
   substdio_puts(subfderr,"qmail-pw2u: fatal: unable to find ");
   substdio_put(subfderr,s,len);

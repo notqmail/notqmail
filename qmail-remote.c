@@ -164,9 +164,7 @@ void outsmtptext()
   }
 }
 
-void quit(prepend,append)
-char *prepend;
-char *append;
+void _noreturn_ quit(char *prepend, char *append)
 {
   substdio_putsflush(&smtpto,"QUIT\r\n");
   /* waiting for remote side is just too ridiculous */
@@ -215,7 +213,7 @@ void blast()
 
 stralloc recip = {0};
 
-void smtp()
+void _noreturn_ smtp(void)
 {
   unsigned long code;
   int flagbother;

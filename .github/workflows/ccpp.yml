@@ -82,7 +82,7 @@ jobs:
         OS: ${{ matrix.host }}
 
     - name: configure
-      run: echo "${CC} -O2 -fPIC -Wall -Wshadow -Werror=implicit-function-declaration -Wimplicit-fallthrough ${CFLAGS}" > conf-cc
+      run: echo "${CC} -O2 -fPIC -Wall -Wshadow -Werror=implicit-function-declaration -Wimplicit-fallthrough -Wsuggest-attribute=noreturn ${CFLAGS}" > conf-cc
       env:
         CC: ${{ matrix.config.cc }}
         CFLAGS: ${{ matrix.config.cflags }}

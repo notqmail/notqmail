@@ -15,11 +15,11 @@
 
 extern int rename(const char *, const char *);
 
-void die_read()
+void _noreturn_ die_read(void)
 {
   strerr_die2sys(111,FATAL,"unable to read control/morercpthosts: ");
 }
-void die_write()
+void _noreturn_ die_write(void)
 {
   strerr_die2sys(111,FATAL,"unable to write to control/morercpthosts.tmp: ");
 }

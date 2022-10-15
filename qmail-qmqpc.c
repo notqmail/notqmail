@@ -7,6 +7,7 @@
 #include "getln.h"
 #include "readwrite.h"
 #include "exit.h"
+#include "noreturn.h"
 #include "stralloc.h"
 #include "slurpclose.h"
 #include "error.h"
@@ -21,16 +22,16 @@
 
 #define PORT_QMQP 628
 
-void die_success() { _exit(0); }
-void die_perm() { _exit(31); }
-void nomem() { _exit(51); }
-void die_read() { if (errno == error_nomem) nomem(); _exit(54); }
-void die_control() { _exit(55); }
-void die_socket() { _exit(56); }
-void die_home() { _exit(61); }
-void die_temp() { _exit(71); }
-void die_conn() { _exit(74); }
-void die_format() { _exit(91); }
+void _noreturn_ die_success(void) { _exit(0); }
+void _noreturn_ die_perm(void) { _exit(31); }
+void _noreturn_ nomem(void) { _exit(51); }
+void _noreturn_ die_read(void) { if (errno == error_nomem) nomem(); _exit(54); }
+void _noreturn_ die_control(void) { _exit(55); }
+void _noreturn_ die_socket(void) { _exit(56); }
+void _noreturn_ die_home(void) { _exit(61); }
+void _noreturn_ die_temp(void) { _exit(71); }
+void _noreturn_ die_conn(void) { _exit(74); }
+void _noreturn_ die_format(void) { _exit(91); }
 
 int lasterror = 55;
 int qmqpfd;

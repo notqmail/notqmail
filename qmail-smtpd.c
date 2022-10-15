@@ -12,6 +12,7 @@
 #include "error.h"
 #include "ipme.h"
 #include "ip.h"
+#include "noreturn.h"
 #include "qmail.h"
 #include "str.h"
 #include "fmt.h"
@@ -38,12 +39,12 @@ substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof(ssoutbuf));
 void flush() { substdio_flush(&ssout); }
 void out(s) char *s; { substdio_puts(&ssout,s); }
 
-void die_read() { _exit(1); }
-void die_alarm() { out("451 timeout (#4.4.2)\r\n"); flush(); _exit(1); }
-void die_nomem() { out("421 out of memory (#4.3.0)\r\n"); flush(); _exit(1); }
-void die_control() { out("421 unable to read controls (#4.3.0)\r\n"); flush(); _exit(1); }
-void die_ipme() { out("421 unable to figure out my IP addresses (#4.3.0)\r\n"); flush(); _exit(1); }
-void straynewline() { out("451 See https://cr.yp.to/docs/smtplf.html.\r\n"); flush(); _exit(1); }
+void _noreturn_ die_read(void) { _exit(1); }
+void _noreturn_ die_alarm(void) { out("451 timeout (#4.4.2)\r\n"); flush(); _exit(1); }
+void _noreturn_ die_nomem(void) { out("421 out of memory (#4.3.0)\r\n"); flush(); _exit(1); }
+void _noreturn_ die_control(void) { out("421 unable to read controls (#4.3.0)\r\n"); flush(); _exit(1); }
+void _noreturn_ die_ipme(void) { out("421 unable to figure out my IP addresses (#4.3.0)\r\n"); flush(); _exit(1); }
+void _noreturn_ straynewline(void) { out("451 See https://cr.yp.to/docs/smtplf.html.\r\n"); flush(); _exit(1); }
 
 void err_bmf() { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
 void err_nogateway() { out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n"); }
@@ -67,7 +68,7 @@ void smtp_help(arg) char *arg;
 {
   out("214 notqmail home page: https://notqmail.org\r\n");
 }
-void smtp_quit(arg) char *arg;
+void _noreturn_ smtp_quit(const char *arg)
 {
   smtp_greet("221 "); out("\r\n"); flush(); _exit(0);
 }

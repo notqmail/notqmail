@@ -6,6 +6,7 @@
 #include "getln.h"
 #include "str.h"
 #include "hfield.h"
+#include "noreturn.h"
 #include "token822.h"
 #include "error.h"
 #include "gen_alloc.h"
@@ -16,21 +17,21 @@
 #include "quote.h"
 #include "qmail.h"
 
-void die_noreceipt() { _exit(0); }
-void die() { _exit(100); }
-void die_temp() { _exit(111); }
-void die_nomem() {
+void _noreturn_ die_noreceipt(void) { _exit(0); }
+void _noreturn_ die(void) { _exit(100); }
+void _noreturn_ die_temp(void) { _exit(111); }
+void _noreturn_ die_nomem(void) {
  substdio_putsflush(subfderr,"qreceipt: fatal: out of memory\n"); die_temp(); }
-void die_fork() {
+void _noreturn_ die_fork(void) {
  substdio_putsflush(subfderr,"qreceipt: fatal: unable to fork\n"); die_temp(); }
-void die_qqperm() {
+void _noreturn_ die_qqperm(void) {
  substdio_putsflush(subfderr,"qreceipt: fatal: permanent qmail-queue error\n"); die(); }
-void die_qqtemp() {
+void _noreturn_ die_qqtemp(void) {
  substdio_putsflush(subfderr,"qreceipt: fatal: temporary qmail-queue error\n"); die_temp(); }
-void die_usage() {
+void _noreturn_ die_usage(void) {
  substdio_putsflush(subfderr,
  "qreceipt: usage: qreceipt deliveryaddress\n"); die(); }
-void die_read() {
+void _noreturn_ die_read(void) {
  if (errno == error_nomem) die_nomem();
  substdio_putsflush(subfderr,"qreceipt: fatal: read error\n"); die_temp(); }
 void doordie(sa,r) stralloc *sa; int r; {

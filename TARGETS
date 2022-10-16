@@ -375,3 +375,15 @@ forgeries.0
 setup
 qtmp.h
 qmail-send.service
+badrcptto.o
+realrcptto.o
+qmail-rcptcheck-badrcptto.0
+qmail-rcptcheck-badrcptto.o
+qmail-rcptcheck-badrcptto
+qmail-rcptcheck-realrcptto.0
+qmail-rcptcheck-realrcptto.o
+qmail-rcptcheck-realrcptto
+qmail-rcptcheck.8
+qmail-rcptcheck.0
+qmail-rcptcheck.o
+qmail-rcptcheck

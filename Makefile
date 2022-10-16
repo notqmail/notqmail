@@ -176,6 +176,11 @@ auto_groupq.o: \
 compile auto_groupq.c
 	./compile auto_groupq.c
 
+badrcptto.o: \
+compile badrcptto.c byte.h constmap.h control.h env.h fmt.h str.h \
+stralloc.h strerr.h
+	./compile badrcptto.c
+
 binm1: \
 binm1.sh conf-qmail
 	cat binm1.sh \
@@ -778,6 +783,7 @@ qmail-pw2u qmail-qread qmail-qstat qmail-tcpto qmail-tcpok \
 qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
 dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
+qmail-rcptcheck qmail-rcptcheck-badrcptto qmail-rcptcheck-realrcptto \
 forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox install instpackage instqueue instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
@@ -882,6 +888,7 @@ qmail-queue.0 qmail-inject.0 mailsubj.0 qmail-showctl.0 qmail-newu.0 \
 qmail-pw2u.0 qmail-qread.0 qmail-qstat.0 qmail-tcpto.0 qmail-tcpok.0 \
 qmail-pop3d.0 qmail-popup.0 qmail-qmqpc.0 qmail-qmqpd.0 qmail-qmtpd.0 \
 qmail-smtpd.0 tcp-env.0 qmail-newmrh.0 qreceipt.0 qbiff.0 forward.0 \
+qmail-rcptcheck.0 qmail-rcptcheck-badrcptto.0 qmail-rcptcheck-realrcptto.0 \
 preline.0 condredirect.0 bouncesaying.0 except.0 maildirmake.0 \
 maildir2mbox.0 qmail.0 qmail-limits.0 qmail-log.0 \
 qmail-control.0 qmail-header.0 qmail-users.0 dot-qmail.0 \
@@ -1351,6 +1358,48 @@ alloc.h substdio.h datetime.h now.h datetime.h triggerpull.h extra.h \
 uidgid.h auto_qmail.h auto_uids.h auto_users.h date822fmt.h fmtqfn.h
 	./compile qmail-queue.c
 
+qmail-rcptcheck: \
+load qmail-rcptcheck.o control.o env.a error.a fs.a getln.a open.a \
+stralloc.a substdio.a str.a wait.a
+	./load qmail-rcptcheck control.o env.a error.a fs.a getln.a open.a \
+	stralloc.a substdio.a str.a wait.a
+
+qmail-rcptcheck.o: \
+compile qmail-rcptcheck.c control.h env.h stralloc.h substdio.h wait.h
+	./compile qmail-rcptcheck.c
+
+qmail-rcptcheck.8: \
+qmail-rcptcheck.9 conf-qmail
+	cat qmail-rcptcheck.9 \
+	| sed s}QMAILHOME}"`head -n 1 conf-qmail`"}g \
+	> qmail-rcptcheck.8
+
+qmail-rcptcheck-badrcptto: \
+load qmail-rcptcheck-badrcptto.o badrcptto.o control.o constmap.o \
+case.a env.a fs.a getln.a open.a stralloc.a strerr.a substdio.a \
+error.a str.a
+	./load qmail-rcptcheck-badrcptto badrcptto.o control.o constmap.o \
+	case.a env.a fs.a getln.a open.a stralloc.a strerr.a substdio.a \
+	error.a str.a
+
+qmail-rcptcheck-badrcptto.o: \
+compile qmail-rcptcheck-badrcptto.c badrcptto.h env.h
+	./compile qmail-rcptcheck-badrcptto.c
+
+qmail-rcptcheck-realrcptto: \
+load qmail-rcptcheck-realrcptto.o realrcptto.o auto_break.o \
+auto_usera.o control.o constmap.o timeoutwrite.o \
+case.a cdb.a env.a error.a fs.a getln.a open.a str.a stralloc.a \
+substdio.a
+	./load qmail-rcptcheck-realrcptto realrcptto.o auto_break.o \
+	auto_usera.o control.o constmap.o timeoutwrite.o \
+	case.a cdb.a env.a error.a fs.a getln.a open.a str.a stralloc.a \
+	substdio.a
+
+qmail-rcptcheck-realrcptto.o: \
+compile qmail-rcptcheck-realrcptto.c env.h realrcptto.h
+	./compile qmail-rcptcheck-realrcptto.c
+
 qmail-remote: \
 load qmail-remote.o control.o constmap.o timeoutread.o timeoutwrite.o \
 timeoutconn.o tcpto.o dns.o ip.o ipalloc.o ipme.o quote.o \
@@ -1588,6 +1637,11 @@ readsubdir.o: \
 compile readsubdir.c readsubdir.h direntry.h fmt.h scan.h str.h \
 auto_split.h
 	./compile readsubdir.c
+
+realrcptto.o: \
+compile realrcptto.c auto_break.h auto_users.h byte.h case.h cdb.h \
+constmap.h error.h fmt.h open.h str.h stralloc.h uint32.h
+	./compile realrcptto.c
 
 received.o: \
 compile received.c fmt.h qmail.h substdio.h now.h datetime.h \

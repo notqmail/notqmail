@@ -24,6 +24,22 @@ header fields.
 
 .B qmail-smtpd
 supports ESMTP, including the 8BITMIME and PIPELINING options.
+
+If the environment variable
+.B RCPTCHECK
+is set,
+.B qmail-smtpd
+runs the specified recipient-checking program for each
+.BR "RCPT TO" .
+The program's environment contains the envelope sender and recipient in
+.B SENDER
+and
+.BR RECIPIENT ,
+respectively.
+A recipient-checking program exits 100 to reject,
+111 if unable to check,
+or anything other than 120 (most typically 0) to accept.
+
 .SH TRANSPARENCY
 .B qmail-smtpd
 converts the SMTP newline convention into the UNIX newline convention
@@ -176,4 +192,5 @@ qmail-control(5),
 qmail-inject(8),
 qmail-newmrh(8),
 qmail-queue(8),
-qmail-remote(8)
+qmail-remote(8),
+qmail-rcptcheck(8)

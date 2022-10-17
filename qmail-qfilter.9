@@ -1,0 +1,268 @@
+.TH qmail-qfilter 1 2021-01-05
+.SH NAME
+qmail-qfilter \- filter messages before they reach the queue
+.SH SYNOPSIS
+.B qmail-qfilter
+.I filter
+[
+.I -- filter ...
+]
+.SH DESCRIPTION
+.B qmail-qfilter
+runs the given sequence of
+.I filter
+programs
+before it executes
+.BR qmail-queue .
+Each
+.I filter
+program can accept, modify before accepting, block temporarily or permanently, or silently drop.
+If every
+.I filter
+program accepts,
+the message is queued.
+If any
+.I filter
+program blocks or drops, the sequence terminates and
+.B qmail-queue
+is not executed.
+.P
+.B qmail-qfilter
+takes effect when programs that would normally invoke
+.B qmail-queue
+have been configured to invoke
+.B qmail-qfilter
+instead.
+.P
+.B qmail-qfilter
+provides many convenient
+.B "ENVIRONMENT VARIABLES"
+as well as a simple interface for
+.I filter
+programs:
+.TP 5
+To inspect a message with full headers,
+.I filter
+reads from standard input.
+.TP
+To accept it,
+.I filter
+exits 0.
+(Other options: see
+.BR "EXIT CODES" .)
+.TP
+To modify it first,
+.I filter
+writes to standard output.
+.TP
+To modify its envelope,
+.I filter
+reads from file descriptor 3
+and writes to 4.
+.P
+A typical
+.I filter
+program reads stdin, perhaps writes stdout, and exits with a particular code.
+.I filter
+programs must be readable and must not be setuid.
+.SH "EXIT CODES"
+In the simplest case,
+.B qmail-qfilter
+exits with
+.BR qmail-queue 's
+exit code.
+In all cases,
+.B qmail-qfilter
+exits with a
+.BR qmail-queue -compatible
+code.
+.P
+If
+.B qmail-qfilter
+can't create temporary files or execute filter programs, it exits with one of:
+.TP 5
+.B 51
+Out of memory.
+.TP
+.B 53
+Write error.
+.TP
+.B 81
+Internal error.
+.P
+If
+.B qmail-qfilter
+can't read or parse envelope data, it exits:
+.TP 5
+.B 91
+Bad envelope data.
+.P
+.I filter
+programs exit with one of:
+.TP 5
+.B 0
+Accept the message.
+.TP
+.B 31
+Block the message permanently.
+.TP
+.B 71
+Block the message temporarily.
+.TP
+.B 82
+Block the message (temporarily or permanently) with a custom error string
+written to file descriptor 6.
+.TP
+.B 99
+Silently drop the message.
+.P
+If a
+.I filter
+program exits 0, the sequence continues; otherwise the sequence terminates and
+.B qmail-qfilter
+exits with that
+.IR filter 's
+exit code.
+(Exception: if it was 99,
+.B qmail-qfilter
+exits 0.)
+.SH "ENVIRONMENT VARIABLES"
+To configure programs that would normally invoke
+.B qmail-queue
+to invoke
+.B qmail-qfilter
+instead, set
+.BR QMAILQUEUE .
+.P
+To configure
+.B qmail-qfilter
+to run an alternate
+.B qmail-queue
+program,
+set
+.BR QQF_QMAILQUEUE .
+(This avoids recursive loops.
+.B qmail-qfilter
+itself does not honor
+.BR QMAILQUEUE .)
+.P
+.I filter
+programs can specify an alternate
+.B qmail-queue
+program by writing a path to file descriptor 5.
+This overrides
+.BR QQF_QMAILQUEUE .
+.P
+Each
+.I filter
+program's environment contains:
+.TP 5
+.B QMAILPPID
+The PID of
+.BR qmail-qfilter 's
+parent process (e.g.,
+.BR qmail-smtpd ).
+.TP
+.B QMAILUSER
+The user part of the envelope sender.
+.TP
+.B QMAILHOST
+The host part of the envelope sender.
+.TP
+.B QMAILRCPTS
+The list of envelope recipients, each followed by a newline.
+.TP
+.B ENVSIZE
+The size of the envelope.
+.TP
+.B MSGSIZE
+The length of the message.
+.TP
+.B NUMRCPTS
+The number of recipients.
+.P
+For compatibility with previous versions,
+.B QMAILNAME
+is unset.
+.P
+If
+.B QQF_DEBUG
+is set,
+.B qmail-qfilter
+will show its work, writing log messages to stderr.
+.SH EXAMPLES
+To SMTP-block incoming messages with long
+.B Date:
+headers,
+then add SpamAssassin headers to the rest, create
+.BR QMAILHOME/bin/qfilter-block-long-dates :
+.P
+.EX
+    #!/usr/bin/perl
+    while (<>) {
+      print;
+      last if /^\n$/o;
+      exit 31 if /^Date: .{80,}/oi;
+    }
+    while (<>) {
+      print;
+    }
+.EE
+.P
+Create
+.BR QMAILHOME/bin/qfilter-mark-spamminess :
+.P
+.EX
+    #!/bin/sh
+    exec spamc
+.EE
+.P
+Finally, create
+.BR QMAILHOME/bin/qmail-qfilter-smtpd-queue :
+.P
+.EX
+    #!/bin/sh
+    exec QMAILHOME/bin/qmail-qfilter \\
+        QMAILHOME/bin/qfilter-block-long-dates \\
+        -- \\
+        QMAILHOME/bin/qfilter-mark-spamminess
+.EE
+.P
+Then set
+.B QMAILQUEUE
+for your
+.B qmail-smtpd
+service to
+.BR QMAILHOME/bin/qmail-qfilter-smtpd-queue .
+.SH WARNINGS
+If
+.I filter
+invokes
+.BR "qmail-inject -n",
+you may want to unset
+.BR MAILUSER ,
+.BR USER ,
+and
+.B LOGNAME
+before doing so, e.g.:
+.P
+.EX
+    env -u MAILUSER -u USER -u LOGNAME qmail-inject -n
+.EE
+.P
+A message with an excessive number of recipients (more than 64K bytes of
+recipient data on Linux) will cause
+.I filter
+programs to fail to execute
+and the message to be blocked.
+.P
+Each
+.I filter
+program gets file descriptor 5 open to the same temporary file.
+When writing a program name to it, make sure to write a trailing ASCII NUL byte.
+Otherwise, multiple filters could overwrite the value in undesirable ways.
+.SH HISTORY
+.B qmail-qfilter
+was originally written by Bruce Guenter.
+.SH "SEE ALSO"
+qmail-queue(8), envelopes(5)

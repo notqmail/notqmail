@@ -778,6 +778,7 @@ qmail-pw2u qmail-qread qmail-qstat qmail-tcpto qmail-tcpok \
 qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
 dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
+qmail-qfilter \
 forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox install instpackage instqueue instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
@@ -886,7 +887,7 @@ preline.0 condredirect.0 bouncesaying.0 except.0 maildirmake.0 \
 maildir2mbox.0 qmail.0 qmail-limits.0 qmail-log.0 \
 qmail-control.0 qmail-header.0 qmail-users.0 dot-qmail.0 \
 qmail-command.0 tcp-environ.0 maildir.0 mbox.0 addresses.0 \
-envelopes.0 forgeries.0
+envelopes.0 forgeries.0 qmail-qfilter.0
 
 mbox.0: \
 mbox.5
@@ -1252,6 +1253,30 @@ sgetopt.h subgetopt.h control.h constmap.h stralloc.h gen_alloc.h \
 fmt.h str.h scan.h open.h error.h getln.h exit.h auto_break.h auto_qmail.h \
 auto_users.h byte.h
 	./compile qmail-pw2u.c
+
+qmail-qfilter: \
+load qmail-qfilter.o
+	./load qmail-qfilter
+
+qmail-qfilter.0: \
+qmail-qfilter.1
+
+qmail-qfilter.1: \
+qmail-qfilter.9
+	cat qmail-qfilter.9 \
+	| sed s}QMAILHOME}"`head -n 1 conf-qmail`"}g \
+	> qmail-qfilter.1
+
+qmail-qfilter.h: \
+conf-qmail
+	( echo "#ifndef QMAIL_QUEUE"; \
+	echo "#define QMAIL_QUEUE \"`head -n 1 conf-qmail`/bin/qmail-queue\""; \
+	echo "#endif" ) \
+	> qmail-qfilter.h
+
+qmail-qfilter.o: \
+compile qmail-qfilter.c qmail-qfilter.h
+	./compile qmail-qfilter.c
 
 qmail-qmqpc: \
 load qmail-qmqpc.o slurpclose.o timeoutread.o timeoutwrite.o \

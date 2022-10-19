@@ -13,6 +13,7 @@
 #include "str.h"
 
 void resources() { _exit(111); }
+void badproto() { _exit(100); }
 
 ssize_t safewrite(int fd, const void *buf, size_t len)
 {
@@ -52,6 +53,7 @@ unsigned long getlen()
     getbyte(&ch);
     if (ch == ':') return len;
     if (len > 200000000) resources();
+    if (ch < '0' || ch > '9') badproto();
     len = 10 * len + (ch - '0');
   }
 }

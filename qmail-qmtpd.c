@@ -50,6 +50,7 @@ unsigned long getlen()
     substdio_get(&ssin,&ch,1);
     if (ch == ':') return len;
     if (len > 200000000) resources();
+    if (ch < '0' || ch > '9') badproto();
     len = 10 * len + (ch - '0');
   }
 }

@@ -1,3 +1,5 @@
+- 20221019 code: netstring parsing in qmail-qmtpd & qmail-qmqpd now
+           checks that the netstring length is actually a number.
 - 20210122 code: remove register storage class declaration from codebase.
 - 20201224 bug: in qmail-remote, handle DNS packets up to max EDNS
            response size.

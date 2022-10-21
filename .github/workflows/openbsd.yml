@@ -1,0 +1,49 @@
+name: C CI on OpenBSD
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: OpenBSD-${{ matrix.config.name }}
+    # see https://github.com/vmactions/openbsd-vm: must be macos-12
+    runs-on: macos-12
+    env:
+      CFLAGS: ${{ matrix.config.cflags }}
+      NROFF: ${{ matrix.config.nroff }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+         - {
+           name: "default64",
+           nroff: "nroff",
+           cflags: ""
+         }
+         - {
+           name: "no_obsolete64",
+           nroff: "true",
+           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED"
+         }
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+
+    - name: Test in OpenBSD
+      id: test
+      uses: vmactions/openbsd-vm@v0
+      with:
+        envs: 'CFLAGS NROFF'
+        prepare: |
+          pkg_add check
+        run: |
+          echo "cc -m64 -O2 ${CFLAGS}" > conf-cc
+          echo "cc -m64 -s" > conf-ld
+          make it man NROFF=${NROFF}
+          cd tests
+          make test

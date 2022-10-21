@@ -10,7 +10,8 @@ on:
 jobs:
   build:
     name: Solaris-${{ matrix.config.name }}
-    runs-on: macos-10.15
+    # see https://github.com/vmactions/solaris-vm: must be macos-12
+    runs-on: macos-12
     env:
       CFLAGS: ${{ matrix.config.cflags }}
       NROFF: ${{ matrix.config.nroff }}
@@ -32,9 +33,9 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Test in solaris
+    - name: Test in Solaris
       id: test
       uses: vmactions/solaris-vm@v0
       with:

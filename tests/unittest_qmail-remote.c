@@ -14,7 +14,7 @@ static const char *writeexpect;
 static size_t readoffs;
 static size_t writeoffs;
 
-int readstub(int fd, char *buf, int len)
+ssize_t readstub(int fd, char *buf, size_t len)
 {
   size_t inlen = strlen(readexpect) - readoffs;
 
@@ -32,7 +32,7 @@ int readstub(int fd, char *buf, int len)
   return inlen;
 }
 
-int writestub(int fd, const char *buf, int len)
+ssize_t writestub(int fd, const char *buf, size_t len)
 {
   size_t outlen = strlen(writeexpect) - writeoffs;
 

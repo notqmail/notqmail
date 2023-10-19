@@ -5,7 +5,7 @@ NROFF=nroff
 
 default: it
 
-.PHONY: check clean default it man test
+.PHONY: check clean default it man test release release_prepare
 
 .SUFFIXES: .0 .1 .5 .7 .8
 
@@ -20,6 +20,20 @@ default: it
 
 .8.0:
 	$(NROFF) -man $< >$@
+
+release_prepare:
+	sed -i "1i - $(shell date +%Y%m%d) version: notqmail $(RELEASE_VERSION)." CHANGES.md
+	echo -e "\nnotqmail-$(RELEASE_VERSION)\n-------------\nNo copyright is claimed by the distributors of notqmail for changes from\nnotqmail XXX to $(RELEASE_VERSION)." >> COPYRIGHT
+	$(EDITOR) COPYRIGHT
+	git commit -S -m "notqmail $(RELEASE_VERSION)" CHANGES.md COPYRIGHT
+
+release:
+	git tag -s notqmail-$(RELEASE_VERSION)
+	git archive --prefix=notqmail-$(RELEASE_VERSION)/ -o notqmail-$(RELEASE_VERSION).tar notqmail-$(RELEASE_VERSION)
+	gzip --best --keep notqmail-$(RELEASE_VERSION).tar
+	xz --best notqmail-$(RELEASE_VERSION).tar
+	gpg --detach-sign -a -o notqmail-$(RELEASE_VERSION).tar.xz.sig notqmail-$(RELEASE_VERSION).tar.xz
+	gpg --detach-sign -a -o notqmail-$(RELEASE_VERSION).tar.gz.sig notqmail-$(RELEASE_VERSION).tar.gz
 
 addresses.0: \
 addresses.5

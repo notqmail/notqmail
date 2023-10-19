@@ -14,7 +14,7 @@ task:
   pkginstall_script:
     - pkg install -y groff pkgconf check
   configure_script:
-    - echo "clang -O2 -Wall -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations" > conf-cc
+    - echo "clang -O2 -Wall -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign -Werror=incompatible-library-redeclaration -Werror=empty-body -Werror=pointer-sign" > conf-cc
   compile_script:
     - make ${MAKE_FLAGS} it man
   test_script:

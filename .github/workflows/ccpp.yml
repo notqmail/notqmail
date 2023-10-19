@@ -21,7 +21,7 @@ jobs:
            cc: gcc,
            nroff: nroff,
            utmp: false,
-           cflags: "",
+           cflags: "-Werror=deprecated-declarations",
            makeflags: ""
          }
          - {
@@ -29,7 +29,7 @@ jobs:
            cc: gcc,
            nroff: nroff,
            utmp: false,
-           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED",
+           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED -Werror=deprecated-declarations",
            makeflags: ""
          }
          - {
@@ -37,6 +37,7 @@ jobs:
            cc: gcc,
            nroff: true,
            utmp: true,
+           # no deprecated-declarations here as utmp is deprecated on MacOS and that would break the build
            cflags: "-DDEPRECATED_FUNCTIONS_REMOVED",
            makeflags: "-o qtmp.h"
          }
@@ -45,7 +46,7 @@ jobs:
            cc: clang,
            nroff: nroff,
            utmp: false,
-           cflags: "",
+           cflags: "-Werror=incompatible-library-redeclaration -Werror=deprecated-declarations",
            makeflags: ""
          }
          - {
@@ -53,7 +54,7 @@ jobs:
            cc: clang,
            nroff: true,
            utmp: false,
-           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED",
+           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED -Werror=incompatible-library-redeclaration -Werror=deprecated-declarations",
            makeflags: ""
          }
          - {
@@ -61,7 +62,8 @@ jobs:
            cc: clang,
            nroff: true,
            utmp: true,
-           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED",
+           # no deprecated-declarations here as utmp is deprecated on MacOS and that would break the build
+           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED -Werror=incompatible-library-redeclaration",
            makeflags: "-o qtmp.h"
          }
 
@@ -81,7 +83,7 @@ jobs:
         OS: ${{ matrix.host }}
 
     - name: configure
-      run: echo "${CC} -O2 -fPIC -Wall -Wshadow -Werror=implicit-function-declaration -Wimplicit-fallthrough ${CFLAGS}" > conf-cc
+      run: echo "${CC} -O2 -fPIC -Wall -Wshadow -Werror=implicit-function-declaration -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign -Werror=pointer-sign ${CFLAGS}" > conf-cc
       env:
         CC: ${{ matrix.config.cc }}
         CFLAGS: ${{ matrix.config.cflags }}

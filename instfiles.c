@@ -27,7 +27,7 @@ static void ddhome(stralloc *dd, char *home)
   if (denv)
     if (!stralloc_copys(dd,denv)) die_nomem();
 
-  if (!stralloc_catb(dd,home,str_len(home))) die_nomem();
+  if (!stralloc_catb(dd,home,strlen(home))) die_nomem();
   if (!stralloc_0(dd)) die_nomem();
 }
 

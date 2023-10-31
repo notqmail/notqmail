@@ -106,10 +106,13 @@ void z(char *home, char *file, int len, uid_t uid, gid_t gid, int mode)
   free(dh.s);
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
   umask(077);
   init_uidgid();
-  hier();
+  if (argc == 2 && strcmp(argv[1],"queue-only") == 0)
+    hier_queue();
+  else
+    hier();
   return 0;
 }

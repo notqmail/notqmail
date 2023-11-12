@@ -15,14 +15,7 @@ int \fBcase_equals\fP(\fIs\fR,\fIt\fR);
 int \fBcase_starts\fP(\fIs\fR,\fIt\fR);
 
 int \fBcase_diffb\fP(\fIs\fR,\fIlen\fR,\fIt\fR);
-.br
-int \fBcase_startb\fP(\fIs\fR,\fIlen\fR,\fIt\fR);
 
-char *\fIs\fR;
-.br
-char *\fIt\fR;
-.br
-unsigned int \fIlen\fR;
 .SH DESCRIPTION
 .B case_lowers
 converts each uppercase byte in the string
@@ -73,16 +66,6 @@ each of length
 .IR len .
 It returns something positive, negative, or zero
 when the first is larger than, smaller than, or equal to the second.
-
-.B case_startb
-returns 1 if a lowercase version of the buffer
-.IR s ,
-of length
-.IR len ,
-starts with a lowercase version of the string
-.IR t .
-.I t
-must be 0-terminated.
 
 The
 .B case

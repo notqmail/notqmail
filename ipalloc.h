@@ -3,7 +3,15 @@
 
 #include "ip.h"
 
+#ifdef TLS
+# define IX_FQDN 1
+#endif
+
+#ifdef IX_FQDN
+struct ip_mx { struct ip_address ip; int pref; char *fqdn; } ;
+#else
 struct ip_mx { struct ip_address ip; int pref; } ;
+#endif
 
 #include "gen_alloc.h"
 

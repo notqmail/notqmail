@@ -1,7 +1,8 @@
 #include "error.h"
 #include "strerr.h"
 
-struct strerr strerr_sys;
+/* explicit initialization due to linker error on Mac OS X. dorks. */
+struct strerr strerr_sys = {0,0,0,0};
 
 void strerr_sysinit()
 {

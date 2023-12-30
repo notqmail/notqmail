@@ -1,3 +1,4 @@
+#include "case.h"
 #include "cdb.h"
 #include "byte.h"
 #include "open.h"

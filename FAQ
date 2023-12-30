@@ -1,4 +1,4 @@
-See http://cr.yp.to/qmail/faq.html for newer FAQs not included in this
+See https://cr.yp.to/qmail/faq.html for newer FAQs not included in this
 document, and http://qmail.org/ for qmail community contributions.
 
 1. Controlling the appearance of outgoing messages
@@ -131,7 +131,7 @@ running, give it a HUP.
 
 2.4. How do I set up a separate queue for a SLIP/PPP link?
 
-Answer: Use serialmail (http://pobox.com/~djb/serialmail.html).
+Answer: Use serialmail (https://cr.yp.to/serialmail.html).
 
 
 2.5. How do I deal with ``CNAME lookup failed temporarily''? The log
@@ -215,7 +215,7 @@ incoming mail for me-sos will be forwarded to each of those addresses.
 You should also touch ~me/.qmail-sos-owner so that bounces come back to
 you rather than the original sender.
 
-Alternative: ezmlm (http://pobox.com/~djb/ezmlm.html) is a modern
+Alternative: ezmlm (https://cr.yp.to/ezmlm.html) is a modern
 mailing list manager, supporting automatic subscriptions, confirmations,
 archives, fully automatic bounce handling (including warnings to
 subscribers saying which messages they've missed), and more.
@@ -263,14 +263,23 @@ uppercase is converted to lowercase.
 4.7. How do I use sendmail's .forward files with qmail?
 
 Answer: Install the dot-forward package
-(http://pobox.com/~djb/dot-forward.html).
+(https://cr.yp.to/dot-forward.html).
 
 
 4.8. How do I use sendmail's /etc/aliases with qmail?
 
 Answer: Install the fastforward package
-(http://pobox.com/~djb/fastforward.html).
+(https://cr.yp.to/fastforward.html).
 
+
+To make majordomo 1.94.* work with qmail under fastforward, insert
+
+   # system("newinclude","$listdir/$clean_list");
+
+before the lclose(LIST) line in do_subscribe and do_unsubscribe in
+majordomo. See ftp://ftp.eyrie.org/pub/software/majordomo/mjqmail
+and http://www.qmail.org for other methods of using majordomo with
+qmail. majordomo 2.0 is expected to support qmail directly.
 
 4.9. How do I make qmail defer messages during NFS or NIS outages? If
 ~joe suddenly disappears, I'd like mail for joe to be deferred.
@@ -310,22 +319,18 @@ For more precise control over address assignments, see qmail-users.0.
 loads, cutting off service for ten-minute stretches. I'd also like
 better connection logging.
 
-Answer: First, install the tcpserver program, part of the ucspi-tcp
-package (http://pobox.com/~djb/ucspi-tcp.html). Second, remove the smtp
-line from /etc/inetd.conf, and put the line
+Answer: Install ucspi-tcp (https://cr.yp.to/ucspi-tcp.html). Remove the
+smtp line from /etc/inetd.conf, and put the two lines
 
-   tcpserver -u 7770 -g 2108 0 smtp /var/qmail/bin/qmail-smtpd &
+   tcpserver -v -u 7770 -g 2108 0 smtp /var/qmail/bin/qmail-smtpd \
+   2>&1 | /var/qmail/bin/splogger smtpd 3 &
 
 into your system startup files. Replace 7770 with your qmaild uid, and
 replace 2108 with your nofiles gid. Don't forget the &. The change will
 take effect at your next reboot.
 
 By default, tcpserver allows at most 40 simultaneous qmail-smtpd
-processes. To raise this limit to 400, use tcpserver -c 400. To keep
-track of who's connecting and for how long, run (on two lines)
-
-   tcpserver -v -u 7770 -g 2108 0 smtp /var/qmail/bin/qmail-smtpd \
-   2>&1 | /var/qmail/bin/splogger smtpd 3 &
+processes. To raise this limit to 400, use tcpserver -c 400.
 
 
 5.2. How do I set up qmail-qmtpd?
@@ -352,33 +357,22 @@ question 5.1 for more details on tcpserver.
 5.3. How do I set up qmail-pop3d? My old POP server works with mbox
 delivery; I'd like to switch to maildir delivery.
 
-Answer: Four steps. First, install the checkpassword program
-(http://pobox.com/~djb/checkpwd.html). Second, make sure you have a
+Answer: Install ucspi-tcp (https://cr.yp.to/ucspi-tcp.html) and
+checkpassword (https://cr.yp.to/checkpwd.html). Put
 
-   pop3 110/tcp
+     tcpserver 0 110 /var/qmail/bin/qmail-popup YOURHOST \
+     /bin/checkpassword /var/qmail/bin/qmail-pop3d Maildir &
 
-line in /etc/services. Third, put (all on one line, including
-qmail-popup twice)
+(on two lines) into your system boot scripts; replace YOURHOST with your
+host's fully qualified domain name. Set up Maildir delivery for any user
+who wants to read mail via POP. The new service will start after you
+reboot.
 
-   pop3 stream tcp nowait root
-   /var/qmail/bin/qmail-popup qmail-popup
-   YOURHOST /bin/checkpassword /var/qmail/bin/qmail-pop3d Maildir
+Security note: You should do this only within a secure network; otherwise
+an eavesdropper can steal passwords.
 
-into /etc/inetd.conf, and give inetd a HUP; replace YOURHOST with your
-host's fully qualified domain name. Fourth, set up Maildir delivery for
-any user who wants to read mail via POP.
-
-If you have tcpserver installed, skip the inetd step, and set up (on two
-lines)
-
-   tcpserver 0 pop3 /var/qmail/bin/qmail-popup YOURHOST \
-   /bin/checkpassword /var/qmail/bin/qmail-pop3d Maildir &
-
-replacing YOURHOST with your host's fully qualified domain name. See
-question 5.1 for more details on tcpserver.
-
-Security note: pop3d should be used only within a secure network;
-otherwise an eavesdropper can steal passwords.
+There are several programs that can be substituted for checkpassword.
+See https://cr.yp.to/qmail/toaster.html for more information.
 
 
 5.4. How do I allow selected clients to use this host as a relay? I see
@@ -622,7 +616,7 @@ any data.
 
 7.6. How do I run a supervised copy of qmail? svc sounds useful.
 
-Answer: Install daemontools (http://pobox.com/~djb/daemontools.html).
+Answer: Install daemontools (https://cr.yp.to/daemontools.html).
 Create a /var/run/qmail directory. Change
 
    /var/qmail/rc
@@ -639,7 +633,7 @@ whether qmail is running.
 7.7. How do I avoid syslog? It chews up a lot of CPU time and isn't
 reliable.
 
-Answer: Install daemontools (http://pobox.com/~djb/daemontools.html).
+Answer: Install daemontools (https://cr.yp.to/daemontools.html).
 Make a /var/log/qmail directory, owned by qmaill, mode 2700. Do
 
    qmail-start ./Mailbox /usr/local/bin/accustamp \

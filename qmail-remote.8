@@ -53,6 +53,13 @@ does not take options
 and does not follow the
 .B getopt
 standard.
+
+.B qmail-rspawn
+will invoke the contents of
+.B $QMAILREMOTE
+instead of
+.BR qmail-remote,
+if that environment variable is set.
 .SH TRANSPARENCY
 End-of-file in SMTP is encoded as dot CR LF.
 A dot at the beginning of a line is encoded as dot dot.

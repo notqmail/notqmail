@@ -115,11 +115,10 @@ stralloc rwline = {0};
 int rewrite(recip)
 char *recip;
 {
-  int i;
-  int j;
+  unsigned int i;
   char *x;
   static stralloc addr = {0};
-  int at;
+  unsigned int at;
 
   if (!stralloc_copys(&rwline,"T")) return 0;
   if (!stralloc_copys(&addr,recip)) return 0;
@@ -131,7 +130,7 @@ char *recip;
   }
 
   while (constmap(&mappercenthack,addr.s + i + 1,addr.len - i - 1)) {
-    j = byte_rchr(addr.s,i,'%');
+    unsigned int j = byte_rchr(addr.s,i,'%');
     if (j == i) break;
     addr.len = i;
     i = j;
@@ -167,16 +166,14 @@ stralloc *sa;
 char *sender;
 char *recip;
 {
- int i;
- int j;
- int k;
+ unsigned int i;
 
  i = str_len(sender);
  if (i >= 4)
    if (str_equal(sender + i - 4,"-@[]"))
     {
-     j = byte_rchr(sender,i - 4,'@');
-     k = str_rchr(recip,'@');
+     unsigned int j = byte_rchr(sender,i - 4,'@');
+     unsigned int k = str_rchr(recip,'@');
      if (recip[k] && (j + 5 <= i))
       {
        /* owner-@host-@[] -> owner-recipbox=reciphost@host */
@@ -468,7 +465,7 @@ void pqfinish()
 void pqrun()
 {
  int c;
- int i;
+ unsigned int i;
  for (c = 0;c < CHANNELS;++c)
    if (pqchan[c].p)
      if (pqchan[c].len)
@@ -574,9 +571,9 @@ int j;
 char *stripvdomprepend(recip)
 char *recip;
 {
- int i;
+ unsigned int i;
  char *domain;
- int domainlen;
+ unsigned int domainlen;
  char *prepend;
 
  i = str_rchr(recip,'@');
@@ -605,7 +602,7 @@ char *recip;
 char *report;
 {
  int fd;
- int pos;
+ unsigned int pos;
  int w;
  while (!stralloc_copys(&bouncetext,"<")) nomem();
  while (!stralloc_cats(&bouncetext,stripvdomprepend(recip))) nomem();
@@ -804,7 +801,7 @@ void del_status()
 void del_init()
 {
  int c;
- int i;
+ unsigned int i;
  for (c = 0;c < CHANNELS;++c)
   {
    flagspawnalive[c] = 1;
@@ -838,7 +835,7 @@ int j;
 seek_pos mpos;
 char *recip;
 {
- int i;
+ unsigned int i;
  int c;
 
  c = jo[j].channel;
@@ -1254,7 +1251,7 @@ fd_set *rfds;
  int match;
  unsigned long id;
  unsigned int len;
- direntry *d;
+ direntry *dent;
  int c;
  unsigned long uid;
  unsigned long pid;
@@ -1280,17 +1277,17 @@ fd_set *rfds;
    nexttodorun = recent + SLEEP_TODO;
   }
 
- d = readdir(tododir);
- if (!d)
+ dent = readdir(tododir);
+ if (!dent)
   {
    closedir(tododir);
    tododir = 0;
    return;
   }
- if (str_equal(d->d_name,".")) return;
- if (str_equal(d->d_name,"..")) return;
- len = scan_ulong(d->d_name,&id);
- if (!len || d->d_name[len]) return;
+ if (str_equal(dent->d_name,".")) return;
+ if (str_equal(dent->d_name,"..")) return;
+ len = scan_ulong(dent->d_name,&id);
+ if (!len || dent->d_name[len]) return;
 
  fnmake_todo(id);
 

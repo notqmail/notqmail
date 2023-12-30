@@ -16,6 +16,13 @@ invokes
 .B qmail-remote
 asynchronously,
 so the results may not be in the same order as the commands.
+
+.B qmail-rspawn
+will invoke the contents of
+.B $QMAILREMOTE
+instead of
+.BR qmail-remote,
+if that environment variable is set.
 .SH "SEE ALSO"
 qmail-send(8),
 qmail-remote(8)

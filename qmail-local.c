@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <stdlib.h>
 #include "readwrite.h"
 #include "sig.h"
 #include "env.h"
@@ -79,7 +80,7 @@ char *dir;
 {
  unsigned long pid;
  unsigned long time;
- char host[64];
+ char myhost[64];
  char *s;
  int loop;
  struct stat st;
@@ -90,8 +91,8 @@ char *dir;
  sig_alarmcatch(sigalrm);
  if (chdir(dir) == -1) { if (error_temp(errno)) _exit(1); _exit(2); }
  pid = getpid();
- host[0] = 0;
- gethostname(host,sizeof(host));
+ myhost[0] = 0;
+ gethostname(myhost,sizeof(myhost));
  for (loop = 0;;++loop)
   {
    time = now();
@@ -99,7 +100,7 @@ char *dir;
    s += fmt_str(s,"tmp/");
    s += fmt_ulong(s,time); *s++ = '.';
    s += fmt_ulong(s,pid); *s++ = '.';
-   s += fmt_strn(s,host,sizeof(host)); *s++ = 0;
+   s += fmt_strn(s,myhost,sizeof(myhost)); *s++ = 0;
    if (stat(fntmptph,&st) == -1) if (errno == error_noent) break;
    /* really should never get to this point */
    if (loop == 2) _exit(1);
@@ -434,10 +435,7 @@ void count_print()
  substdio_flush(subfdoutsmall);
 }
 
-void sayit(type,cmd,len)
-char *type;
-char *cmd;
-int len;
+void sayit(char *type, char *cmd, unsigned int len)
 {
  substdio_puts(subfdoutsmall,type);
  substdio_put(subfdoutsmall,cmd,len);
@@ -449,11 +447,10 @@ int argc;
 char **argv;
 {
  int opt;
- int i;
- int j;
- int k;
+ unsigned int i;
+ unsigned int j;
  int fd;
- int numforward;
+ unsigned int numforward;
  char **recips;
  datetime_sec starttime;
  int flagforwardonly;
@@ -531,7 +528,8 @@ char **argv;
  if (!stralloc_copys(&ufline,"From ")) temp_nomem();
  if (*sender)
   {
-   int len; int i; char ch;
+   unsigned int len;
+   char ch;
 
    len = str_len(sender);
    if (!stralloc_readyplus(&ufline,len)) temp_nomem();
@@ -633,7 +631,7 @@ char **argv;
      i = j + 1;
     }
 
- recips = (char **) alloc((numforward + 1) * sizeof(char *));
+ recips = calloc(numforward + 1, sizeof(char *));
  if (!recips) temp_nomem();
  numforward = 0;
 
@@ -643,8 +641,8 @@ char **argv;
  for (j = 0;j < cmds.len;++j)
    if (cmds.s[j] == '\n')
     {
+     unsigned int k = j;
      cmds.s[j] = 0;
-     k = j;
      while ((k > i) && ((cmds.s[k - 1] == ' ') || (cmds.s[k - 1] == '\t')))
        cmds.s[--k] = 0;
      switch(cmds.s[i])

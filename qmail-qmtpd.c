@@ -5,12 +5,14 @@
 #include "str.h"
 #include "fmt.h"
 #include "env.h"
+#include "scan.h"
 #include "sig.h"
 #include "rcpthosts.h"
 #include "auto_qmail.h"
 #include "readwrite.h"
 #include "control.h"
 #include "received.h"
+#include "exit.h"
 
 void badproto() { _exit(100); }
 void resources() { _exit(111); }
@@ -74,6 +76,7 @@ stralloc failure = {0};
 char *relayclient;
 int relayclientlen;
 
+void
 main()
 {
   char ch;

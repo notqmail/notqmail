@@ -22,8 +22,25 @@ under
 .BR qmail-popup ,
 which reads a username and password,
 and
-.BR /bin/checkpassword ,
+.BR checkpassword ,
 which checks the password and sets up environment variables.
+
+Since root will never have a
+.B maildir
+(because
+.B qmail-lspawn
+refuses to run
+.B qmail-local
+as root),
+.B qmail-pop3d
+also refuses to run as root.
+The event will be logged and
+.B qmail-pop3d
+will exit 1, looking to
+.B qmail-popup
+like any other failed
+.B checkpassword
+login.
 
 .B qmail-pop3d
 has a 20-minute idle timeout.

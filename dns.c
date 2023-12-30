@@ -2,6 +2,9 @@
 #include <netdb.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#ifndef BIND_8_COMPAT
+#define BIND_8_COMPAT /* Mac OS X: if Bind 9, Bind 8 compatibility */
+#endif
 #include <arpa/nameser.h>
 #include <resolv.h>
 #include <errno.h>
@@ -194,7 +197,7 @@ stralloc *sa;
    if (!sa->len) return loop;
    if (sa->s[sa->len - 1] == ']') return loop;
    if (sa->s[sa->len - 1] == '.') { --sa->len; continue; }
-   switch(resolve(sa,T_ANY))
+   switch(resolve(sa,T_CNAME))
     {
      case DNS_MEM: return DNS_MEM;
      case DNS_SOFT: return DNS_SOFT;
@@ -217,32 +220,28 @@ stralloc *sa;
 
 #define FMT_IAA 40
 
-static int iaafmt(s,ip)
-char *s;
-struct ip_address *ip;
+static int iaafmt(char *s, struct ip_address *ipa)
 {
  unsigned int i;
  unsigned int len;
  len = 0;
- i = fmt_ulong(s,(unsigned long) ip->d[3]); len += i; if (s) s += i;
+ i = fmt_ulong(s,(unsigned long) ipa->d[3]); len += i; if (s) s += i;
  i = fmt_str(s,"."); len += i; if (s) s += i;
- i = fmt_ulong(s,(unsigned long) ip->d[2]); len += i; if (s) s += i;
+ i = fmt_ulong(s,(unsigned long) ipa->d[2]); len += i; if (s) s += i;
  i = fmt_str(s,"."); len += i; if (s) s += i;
- i = fmt_ulong(s,(unsigned long) ip->d[1]); len += i; if (s) s += i;
+ i = fmt_ulong(s,(unsigned long) ipa->d[1]); len += i; if (s) s += i;
  i = fmt_str(s,"."); len += i; if (s) s += i;
- i = fmt_ulong(s,(unsigned long) ip->d[0]); len += i; if (s) s += i;
+ i = fmt_ulong(s,(unsigned long) ipa->d[0]); len += i; if (s) s += i;
  i = fmt_str(s,".in-addr.arpa."); len += i; if (s) s += i;
  return len;
 }
 
-int dns_ptr(sa,ip)
-stralloc *sa;
-struct ip_address *ip;
+int dns_ptr(stralloc *sa, struct ip_address *ipa)
 {
  int r;
 
- if (!stralloc_ready(sa,iaafmt((char *) 0,ip))) return DNS_MEM;
- sa->len = iaafmt(sa->s,ip);
+ if (!stralloc_ready(sa,iaafmt((char *) 0,ipa))) return DNS_MEM;
+ sa->len = iaafmt(sa->s,ipa);
  switch(resolve(sa,T_PTR))
   {
    case DNS_MEM: return DNS_MEM;
@@ -261,10 +260,7 @@ struct ip_address *ip;
  return DNS_HARD;
 }
 
-static int dns_ipplus(ia,sa,pref)
-ipalloc *ia;
-stralloc *sa;
-int pref;
+static int dns_ipplus(ipalloc *ia, stralloc *sa, int dpref)
 {
  int r;
  struct ip_mx ix = {0};
@@ -291,7 +287,7 @@ int pref;
  while ((r = findip(T_A)) != 2)
   {
    ix.ip = ip;
-   ix.pref = pref;
+   ix.pref = dpref;
    if (r == DNS_SOFT) return DNS_SOFT;
    if (r == 1) {
 #ifdef IX_FQDN

@@ -1,5 +1,4 @@
 #include "stralloc.h"
-#include "alloc.h"
 #include "str.h"
 #include "token822.h"
 #include "gen_allocdefs.h"
@@ -22,9 +21,9 @@ token822_alloc *ta;
   }
 }
 
-GEN_ALLOC_ready(token822_alloc,struct token822,t,len,a,i,n,x,30,token822_ready)
-GEN_ALLOC_readyplus(token822_alloc,struct token822,t,len,a,i,n,x,30,token822_readyplus)
-GEN_ALLOC_append(token822_alloc,struct token822,t,len,a,i,n,x,30,token822_readyplus,token822_append)
+GEN_ALLOC_readyplus(token822_alloc,struct token822,t,len,a,30,token822_readyplus)
+GEN_ALLOC_ready(token822_alloc,struct token822,t,len,a,30,token822_ready)
+GEN_ALLOC_append(token822_alloc,struct token822,t,len,a,30,token822_readyplus,token822_append)
 
 static int needspace(t1,t2)
 int t1;

@@ -4,7 +4,6 @@
 #include "subfd.h"
 #include "sgetopt.h"
 #include "getln.h"
-#include "alloc.h"
 #include "str.h"
 #include "fmt.h"
 #include "hfield.h"
@@ -77,7 +76,7 @@ void doordie(sa,r) stralloc *sa; int r; {
  substdio_putflush(subfderr,sa->s,sa->len); perm(); }
 
 GEN_ALLOC_typedef(saa,stralloc,sa,len,a)
-GEN_ALLOC_readyplus(saa,stralloc,sa,len,a,i,n,x,10,saa_readyplus)
+GEN_ALLOC_readyplus(saa,stralloc,sa,len,a,10,saa_readyplus)
 
 static stralloc sauninit = {0};
 
@@ -358,11 +357,14 @@ stralloc *h;
  
   switch(htype) {
     case H_TO: case H_CC:
-      rw = rwtocc; break;
+      if (flagrh) rw = rwtocc;
+      break;
     case H_BCC: case H_APPARENTLYTO:
-      rw = rwhr; break;
+      if (flagrh) rw = rwhr;
+      break;
     case H_R_TO: case H_R_CC: case H_R_BCC:
-      rw = rwhrr; break;
+      if (flagrh) rw = rwhrr;
+      break;
     case H_RETURNPATH:
       rw = rwreturn; break;
     case H_SENDER: case H_FROM: case H_REPLYTO:

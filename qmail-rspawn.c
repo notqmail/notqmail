@@ -5,11 +5,18 @@
 #include "fork.h"
 #include "error.h"
 #include "tcpto.h"
+#include "uidgid.h"
+#include "auto_uids.h"
+#include "auto_users.h"
+#include "env.h"
+
+uid_t auto_uidq;
 
 void initialize(argc,argv)
 int argc;
 char **argv;
 {
+ auto_uidq = inituid(auto_userq);
  tcpto_clean();
 }
 
@@ -77,6 +84,16 @@ int len;
     }
 }
 
+static char *setup_qrargs()
+{
+ static char *qr;
+ if (qr) return qr;
+ qr = env_get("QMAILREMOTE");
+ if (qr) return qr;
+ qr = "qmail-remote";
+ return qr;
+}
+
 int spawn(fdmess,fdout,s,r,at)
 int fdmess; int fdout;
 char *s; char *r; int at;
@@ -84,13 +101,13 @@ char *s; char *r; int at;
  int f;
  char *(args[5]);
 
- args[0] = "qmail-remote";
+ args[0] = setup_qrargs();
  args[1] = r + at + 1;
  args[2] = s;
  args[3] = r;
  args[4] = 0;
 
- if (!(f = vfork()))
+ if (!(f = fork()))
   {
    if (fd_move(0,fdmess) == -1) _exit(111);
    if (fd_move(1,fdout) == -1) _exit(111);

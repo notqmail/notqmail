@@ -1,3 +1,38 @@
+20200520 version: notqmail 1.08.
+20200519 bug: fix several other places where variables could overflow.
+20200519 security: fix signedness wraparound in substdio_{put,bput}().
+         (CVE-2005-1515)
+20200519 security: fix possible signed integer overflow in commands().
+         (CVE-2005-1514)
+20200519 security: fix integer overflow in stralloc_readyplus().
+         (CVE-2005-1513)
+20200514 bug: qmail-pop3d runs as root if root authenticates.
+         impact: vector for dictionary attack on root password.
+         fix: exit 1, same as a failed checkpassword login.
+20200514 code: changed qmail-popup interface (leave kid's fd 2 alone).
+20200511 code: remove tryshsgr.c and use uid_t, gid_t types.
+20200511 add first unittest, run with "make test"
+20191227 fixed possible overflow in alloc() with allocations close to 4GiB
+20191226 add missing return types to main()
+20190919 fix ipme with multiple addresses on the same interface on platforms
+         without sa_len
+20190904 code: use stdint.h to get the definition for uint32
+20190903 code: do not parse header recipients for "qmail-inject -a"
+20190826 code: if $QMAILREMOTE is set, it's invoked instead of qmail-remote.
+20190822 cleanup: remove unused dnsmxip.
+20190822 cleanup: remove unused dnscname.
+20190819 version: notqmail 1.07.
+20190810 code: remove incorrect usage of vfork()
+20190710 code: add instchown to set ownership and mode on installed files.
+20190709 code: add instpackage to install without root access.
+20190714 code: removed idedit, install-big. var-qmail packages are no more.
+20190708 code: lookup uid/gid at runtime.
+20190711 portability problem: explicitly initialize strerr_sys and
+         define BIND_8_COMPAT to work around Mac OS X.
+20190709 doc: rename INSTALL, SENDMAIL to INSTALL.md, SENDMAIL.md to
+         support building on case-insensitive filesystems.
+20190715 code: detect and prefer utmpx where available.
+20190708 code: use DESTDIR environment variable as root directory in install.
 20071130 version: netqmail 1.06
 20071130 legal: qmail-1.03 is now in the public domain
 20051103 doc: dot-qmail.9 updated for changed (19980613) conf-patrn default, tnx ADM
@@ -19,7 +54,8 @@
 20031027 code: qmail-smtpd identifies itself as netqmail
 20031027 code: if $QMAILQUEUE is set, it's invoked instead of qmail-queue
 20031024 code: changed errno from int to #include.
-20031024 code: fixed .qmail parsing bug.
+20031024 code: fixed .qmail parsing bug (accessing an array out of bounds)
+         that was discovered by Erik Sjölund <erik.sjolund@gmail.com>).
 20031024 code: recognize 0.0.0.0 as a local address.
 20031024 code: sendmail's -f flag now overrides environment variables.
 19980615 version: qmail 1.03.

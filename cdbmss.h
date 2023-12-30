@@ -13,4 +13,8 @@ struct cdbmss {
   int fd;
 } ;
 
+extern int cdbmss_start();
+extern int cdbmss_add();
+extern int cdbmss_finish();
+
 #endif

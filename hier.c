@@ -1,15 +1,15 @@
+#include <sys/types.h>
 #include "auto_qmail.h"
 #include "auto_split.h"
 #include "auto_uids.h"
 #include "fmt.h"
 #include "fifo.h"
+#include "hier.h"
 
 char buf[100 + FMT_ULONG];
 
-void dsplit(base,uid,mode)
-char *base; /* must be under 100 bytes */
-int uid;
-int mode;
+void dsplit(char *base, /* must be under 100 bytes */
+            uid_t uid, int mode)
 {
   char *x;
   unsigned long i;
@@ -77,8 +77,8 @@ void hier()
 
   c(auto_qmail,"doc","FAQ",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","UPGRADE",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","SENDMAIL",auto_uido,auto_gidq,0644);
-  c(auto_qmail,"doc","INSTALL",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","SENDMAIL.md",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"doc","INSTALL.md",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","INSTALL.alias",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","INSTALL.ctl",auto_uido,auto_gidq,0644);
   c(auto_qmail,"doc","INSTALL.ids",auto_uido,auto_gidq,0644);

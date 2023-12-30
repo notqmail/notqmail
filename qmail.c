@@ -29,7 +29,7 @@ struct qmail *qq;
   if (pipe(pim) == -1) return -1;
   if (pipe(pie) == -1) { close(pim[0]); close(pim[1]); return -1; }
  
-  switch(qq->pid = vfork()) {
+  switch(qq->pid = fork()) {
     case -1:
       close(pim[0]); close(pim[1]);
       close(pie[0]); close(pie[1]);
@@ -61,7 +61,7 @@ void qmail_fail(qq) struct qmail *qq;
   qq->flagerr = 1;
 }
 
-void qmail_put(qq,s,len) struct qmail *qq; char *s; int len;
+void qmail_put(qq,s,len) struct qmail *qq; char *s; unsigned int len;
 {
   if (!qq->flagerr) if (substdio_put(&qq->ss,s,len) == -1) qq->flagerr = 1;
 }

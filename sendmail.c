@@ -49,9 +49,9 @@ void do_sender(s)
 const char *s;
 {
   char *x;
-  int n;
-  int a;
-  int i;
+  unsigned int n;
+  unsigned int a;
+  unsigned int i;
   
   env_unset("QMAILNAME");
   env_unset("MAILNAME");

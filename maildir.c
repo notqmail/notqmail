@@ -95,7 +95,6 @@ int flagcur;
 {
  struct prioq_elt pe;
  datetime_sec time;
- int r;
 
  if (!stralloc_copys(filenames,"")) return 0;
  while (prioq_min(pq,&pe)) prioq_delmin(pq);

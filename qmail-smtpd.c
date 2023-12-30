@@ -65,7 +65,7 @@ void die_alarm() { out("451 timeout (#4.4.2)\r\n"); flush(); _exit(1); }
 void die_nomem() { out("421 out of memory (#4.3.0)\r\n"); flush(); _exit(1); }
 void die_control() { out("421 unable to read controls (#4.3.0)\r\n"); flush(); _exit(1); }
 void die_ipme() { out("421 unable to figure out my IP addresses (#4.3.0)\r\n"); flush(); _exit(1); }
-void straynewline() { out("451 See http://pobox.com/~djb/docs/smtplf.html.\r\n"); flush(); _exit(1); }
+void straynewline() { out("451 See https://cr.yp.to/docs/smtplf.html.\r\n"); flush(); _exit(1); }
 
 void err_bmf() { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
 #ifndef TLS
@@ -96,7 +96,7 @@ void smtp_greet(code) char *code;
 }
 void smtp_help(arg) char *arg;
 {
-  out("214 netqmail home page: http://qmail.org/netqmail\r\n");
+  out("214 notqmail home page: https://notqmail.org\r\n");
 }
 void smtp_quit(arg) char *arg;
 {
@@ -458,53 +458,6 @@ void smtp_tls(char *arg)
   else tls_init();
 }
 
-RSA *tmp_rsa_cb(SSL *ssl, int export, int keylen)
-{
-  RSA *rsa;
-
-  if (!export) keylen = 2048;
-  if (keylen == 2048) {
-    FILE *in = fopen("control/rsa2048.pem", "r");
-    if (in) {
-      rsa = PEM_read_RSAPrivateKey(in, NULL, NULL, NULL);
-      fclose(in);
-      if (rsa) return rsa;
-    }
-  }
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-  BIGNUM *e; /*exponent */
-  e = BN_new(); 
-  BN_set_word(e, RSA_F4);
-  if (RSA_generate_key_ex(rsa, keylen, e, NULL) == 1)
-    return rsa;
-  return NULL;
-#else
-  return RSA_generate_key(keylen, RSA_F4, NULL, NULL);
-#endif
-}
-
-DH *tmp_dh_cb(SSL *ssl, int export, int keylen)
-{
-  DH *dh;
-
-  if (!export) keylen = 2048;
-  if (keylen == 2048) {
-    FILE *in = fopen("control/dh2048.pem", "r");
-    if (in) {
-      dh = PEM_read_DHparams(in, NULL, NULL, NULL);
-      fclose(in);
-      if (dh) return dh;
-    }
-  }
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-  if((dh = DH_new()) && (DH_generate_parameters_ex(dh, keylen, DH_GENERATOR_2, NULL) == 1))
-    return dh;
-  return NULL;
-#else
-  return DH_generate_parameters(keylen, DH_GENERATOR_2, NULL, NULL);
-#endif
-} 
-
 /* don't want to fail handshake if cert isn't verifiable */
 int verify_cb(int preverify_ok, X509_STORE_CTX *x509_ctx) { return 1; }
 
@@ -618,14 +571,11 @@ void tls_init()
   X509_LOOKUP *lookup;
   int session_id_context = 1; /* anything will do */
 
-  SSL_library_init();
+  OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, NULL);
 
   /* a new SSL context with the bare minimum of options */
-  ctx = SSL_CTX_new(SSLv23_server_method());
+  ctx = SSL_CTX_new(TLS_server_method());
   if (!ctx) { tls_err("unable to initialize ctx"); return; }
-
-  /* POODLE vulnerability */
-  SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
 
   /* renegotiation should include certificate request */
   SSL_CTX_set_options(ctx, SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
@@ -650,12 +600,9 @@ void tls_init()
     X509_STORE_set_flags(store, X509_V_FLAG_CRL_CHECK |
                                 X509_V_FLAG_CRL_CHECK_ALL);
   
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-  /* support ECDH */
-  SSL_CTX_set_ecdh_auto(ctx,1);
-#endif
-
   SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, NULL);
+
+  SSL_CTX_set_dh_auto(ctx, 1);
 
   /* a new SSL object, with the rest added to it directly to avoid copying */
   myssl = SSL_new(ctx);
@@ -678,11 +625,13 @@ void tls_init()
     }
   }
   if (!ciphers || !*ciphers) ciphers = "DEFAULT";
+  /* TLSv1.2 and lower*/
   SSL_set_cipher_list(myssl, ciphers);
+  /* TLSv1.3 and above*/
+  SSL_set_ciphersuites(myssl, ciphers);
   alloc_free(saciphers.s);
 
-  SSL_set_tmp_rsa_callback(myssl, tmp_rsa_cb);
-  SSL_set_tmp_dh_callback(myssl, tmp_dh_cb);
+
   SSL_set_rfd(myssl, ssl_rfd = substdio_fileno(&ssin));
   SSL_set_wfd(myssl, ssl_wfd = substdio_fileno(&ssout));
 

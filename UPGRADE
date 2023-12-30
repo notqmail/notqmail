@@ -3,13 +3,13 @@ information generally), the qmail system comes with NO WARRANTY. It's
 much more secure and reliable than sendmail, but that's not saying much.
 
 
-Here's how to upgrade to netqmail 1.05. This procedure will overwrite the
+Here's how to upgrade to notqmail 1.08. This procedure will overwrite the
 old qmail binaries. Furthermore, it may begin delivering messages from
 the queue before you have had a chance to test it.
 
 
 WARNING for upgrades from 1.00 or 1.01: qlist has been split into a
-separate package. You can obtain it from http://pobox.com/~djb/qlist.html
+separate package. You can obtain it from https://cr.yp.to/qlist.html
 if you have any users who need it.
 
 WARNING for upgrades from 1.01: recipientmap is gone. The virtualdomains
@@ -58,9 +58,7 @@ How to install:
 10. Read TEST.receive.
 
 
-That's it! To report success:
-       % ( echo 'First M. Last'; cat `cat SYSDEPS` ) | mail djb-qst@cr.yp.to
-Replace First M. Last with your name.
+That's it!
 
 If you have questions about qmail, join the qmail mailing list; see
-http://pobox.com/~djb/qmail.html.
+https://cr.yp.to/qmail.html.

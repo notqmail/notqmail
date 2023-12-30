@@ -45,7 +45,7 @@ char **argv;
  int opt;
  char **arg;
  char *x;
- int i;
+ unsigned int i;
  int flagesc;
 
  sig_pipeignore();

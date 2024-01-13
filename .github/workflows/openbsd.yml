@@ -1,49 +1,42 @@
-name: C CI on OpenBSD
+name: OpenBSD
 
 on:
   push:
-    branches:
-      - '*'
-  pull_request:
-    branches: [ master ]
+    branches: ['**', '!master']
+  pull_request_target:
+    branches: ['master']
+    types:
+      - closed
 
 jobs:
-  build:
-    name: OpenBSD-${{ matrix.config.name }}
-    # see https://github.com/vmactions/openbsd-vm: must be macos-12
-    runs-on: macos-12
-    env:
-      CFLAGS: ${{ matrix.config.cflags }}
-      NROFF: ${{ matrix.config.nroff }}
+  build-openbsd:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
+    name: >
+      ${{ matrix.osversion }}
+      ${{ matrix.abi == '64' && ' ' || matrix.abi }}
+      ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
+      ${{ matrix.nroff == 'no-roff' && 'no-obsolete' || ' ' }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        config:
-         - {
-           name: "default64",
-           nroff: "nroff",
-           cflags: ""
-         }
-         - {
-           name: "no_obsolete64",
-           nroff: "true",
-           cflags: "-DDEPRECATED_FUNCTIONS_REMOVED"
-         }
-
+        osversion: ["7.4", "7.3", "7.2"]
+        abi: [64] # 32
+        nroff: ["mandoc", "no-roff"]
     steps:
-    - name: checkout
+    - name: Checkout
       uses: actions/checkout@v4
-
-    - name: Test in OpenBSD
-      id: test
-      uses: vmactions/openbsd-vm@v0
+    - name: Build and Test
+      uses: vmactions/openbsd-vm@v1
       with:
-        envs: 'CFLAGS NROFF'
+        release: ${{ matrix.osversion }}
+        usesh: true
         prepare: |
+          set -e
           pkg_add check
         run: |
-          echo "cc -m64 -O2 ${CFLAGS}" > conf-cc
-          echo "cc -m64 -s" > conf-ld
-          make it man NROFF=${NROFF}
-          cd tests
-          make test
+          set -e
+          echo "cc -m${{ matrix.abi }} -O2 ${{ matrix.nroff == 'no-roff' && '-DDEPRECATED_FUNCTIONS_REMOVED' || ' ' }}" > conf-cc
+          echo "cc -m${{ matrix.abi }} -s" > conf-ld
+          make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
+          make -j 2 test

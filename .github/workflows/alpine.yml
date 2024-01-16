@@ -1,0 +1,41 @@
+name: Alpine
+
+on:
+  push:
+    branches: ['**', '!master']
+  pull_request_target:
+    branches: ['master']
+    types:
+      - closed
+
+jobs:
+  build-alpine:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
+    name: >
+      ${{ matrix.osversion }}
+      ${{ matrix.platform }}
+      ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ["x86_64", "x86", "armhf", "armv7", "aarch64", "ppc64le", "riscv64", "s390x"]
+        osversion: ["edge"]
+        nroff: ["no-roff"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Prepare
+      uses: jirutka/setup-alpine@v1
+      with:
+        branch: ${{ matrix.osversion }}
+        arch: ${{ matrix.platform }}
+        packages: "build-base check check-dev pkgconf"
+    - name: Build and Test
+      shell: alpine.sh {0}
+      run: |
+        set -e
+        echo "cc -O2" > conf-cc
+        echo "cc -s" > conf-ld
+        make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
+        make -j 2 test

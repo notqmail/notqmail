@@ -101,7 +101,7 @@ START_TEST(test_prioq_insert_high_priority_to_low)
 END_TEST
 
 static int compare(const void *a, const void *b) {
-  return (*(int*)a - *(int*)b);
+  return (*(unsigned long*)a - *(unsigned long*)b);
 }
 
 START_TEST(test_prioq_insert_all_same_priority)

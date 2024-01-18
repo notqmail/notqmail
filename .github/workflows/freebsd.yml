@@ -1,0 +1,58 @@
+name: FreeBSD
+
+on:
+  push:
+    branches: ['**', '!master']
+  pull_request_target:
+    branches: ['master']
+    types:
+      - closed
+
+jobs:
+  build-freebsd:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
+    name: >
+      ${{ matrix.osversion }}
+      ${{ matrix.abi == '64' && ' ' || matrix.abi }}
+      ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
+      ${{ matrix.cflags == '' && ' ' || 'max-Werror' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        osversion: ["14.0", "13.2"] # 12.4 can't fetch packages
+        abi: [64] # 32
+        cflags: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign -Werror=incompatible-library-redeclaration -Werror=empty-body -Werror=pointer-sign"]
+        nroff: ["nroff", "no-roff"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build and Test
+      uses: vmactions/freebsd-vm@v1
+      with:
+        release: ${{ matrix.osversion }}
+        usesh: true
+        prepare: |
+          set -e
+          pkg install -y groff pkgconf check
+        run: |
+          set -e
+          echo "clang -m${{ matrix.abi }} -O2 ${{ matrix.cflags }}" > conf-cc
+          echo "clang -m${{ matrix.abi }} -s" > conf-ld
+          make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
+          make -j 2 test
+          env DESTDIR=/tmp/qmail make package
+          make package
+          pw groupadd -g 200 -n nofiles
+          pw groupadd -g 201 -n qmail
+          pw useradd -u 200 -g nofiles -d /var/qmail/alias -n alias
+          pw useradd -u 201 -g nofiles -d /var/qmail -n qmaild
+          pw useradd -u 202 -g nofiles -d /var/qmail -n qmaill
+          pw useradd -u 203 -g nofiles -d /var/qmail -n qmailp
+          pw useradd -u 204 -g qmail -d /var/qmail -n qmailq
+          pw useradd -u 205 -g qmail -d /var/qmail -n qmailr
+          pw useradd -u 206 -g qmail -d /var/qmail -n qmails
+          ./instchown
+          make check
+          rm -rf /var/qmail
+          make setup check

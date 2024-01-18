@@ -1,0 +1,264 @@
+name: Build
+
+on:
+  push:
+    branches: ['**', '!master']
+  pull_request_target:
+    branches: ['master']
+    types:
+      - closed
+
+jobs:
+
+  alpine:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
+    name: >
+      Alpine
+      ${{ matrix.osversion }}
+      ${{ matrix.platform }}
+      ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ["x86_64", "x86", "armhf", "armv7", "aarch64", "ppc64le", "riscv64", "s390x"]
+        osversion: ["edge"]
+        nroff: ["no-roff"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Prepare
+      uses: jirutka/setup-alpine@v1
+      with:
+        branch: ${{ matrix.osversion }}
+        arch: ${{ matrix.platform }}
+        packages: "build-base check check-dev pkgconf"
+    - name: Build and Test
+      shell: alpine.sh {0}
+      run: |
+        set -e
+        echo "cc -O2" > conf-cc
+        echo "cc -s" > conf-ld
+        make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
+        make -j 2 test
+
+  freebsd:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
+    name: >
+      FreeBSD
+      ${{ matrix.osversion }}
+      ${{ matrix.abi == '64' && ' ' || matrix.abi }}
+      ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
+      ${{ matrix.cflags == '' && ' ' || 'max-Werror' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        osversion: ["14.0", "13.2"] # 12.4 can't fetch packages
+        abi: [64] # 32
+        cflags: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign -Werror=incompatible-library-redeclaration -Werror=empty-body -Werror=pointer-sign"]
+        nroff: ["nroff", "no-roff"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build and Test
+      uses: vmactions/freebsd-vm@v1
+      with:
+        release: ${{ matrix.osversion }}
+        usesh: true
+        prepare: |
+          set -e
+          pkg install -y groff pkgconf check
+        run: |
+          set -e
+          echo "clang -m${{ matrix.abi }} -O2 ${{ matrix.cflags }}" > conf-cc
+          echo "clang -m${{ matrix.abi }} -s" > conf-ld
+          make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
+          make -j 2 test
+          env DESTDIR=/tmp/qmail make package
+          make package
+          pw groupadd -g 200 -n nofiles
+          pw groupadd -g 201 -n qmail
+          pw useradd -u 200 -g nofiles -d /var/qmail/alias -n alias
+          pw useradd -u 201 -g nofiles -d /var/qmail -n qmaild
+          pw useradd -u 202 -g nofiles -d /var/qmail -n qmaill
+          pw useradd -u 203 -g nofiles -d /var/qmail -n qmailp
+          pw useradd -u 204 -g qmail -d /var/qmail -n qmailq
+          pw useradd -u 205 -g qmail -d /var/qmail -n qmailr
+          pw useradd -u 206 -g qmail -d /var/qmail -n qmails
+          ./instchown
+          make check
+          rm -rf /var/qmail
+          make setup check
+
+  macos:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
+    name: >
+      macOS
+      ${{ matrix.osversion }}
+      ${{ matrix.abi == '64' && ' ' || matrix.abi }}
+      ${{ matrix.cc == 'gcc' && ' ' || matrix.cc }}
+      ${{ matrix.nroff == 'no-roff' && matrix.nroff || ' ' }}
+      ${{ matrix.nroff == 'no-roff' && 'no-obsolete' || ' ' }}
+      ${{ matrix.utmp == 'autoselect' && ' ' || matrix.utmp }}
+    runs-on: macos-${{ matrix.osversion }}
+    strategy:
+      fail-fast: false
+      matrix:
+        osversion: ["12", "11"]
+        abi: [64]
+        warnings: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=incompatible-library-redeclaration -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign"]
+        cc: ["clang"]
+        nroff: ["nroff", "no-roff"]
+        utmp: ["autoselect", "force-old-utmp"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build and Test
+      run: |
+        set -e
+        brew install check
+        echo "${{ matrix.cc }} ${{ matrix.nroff == 'no-roff' && '-DDEPRECATED_FUNCTIONS_REMOVED' || ' ' }} -O2 -fPIC ${{ matrix.warnings }}" > conf-cc
+        [ "${{ matrix.utmp }}" = "force-old-utmp" ] && echo "break utmpx detection" >> tryutmpx.c
+        make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
+        make -j 2 test
+
+  netbsd:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
+    name: >
+      NetBSD
+      ${{ matrix.osversion }}
+      ${{ matrix.abi == '64' && ' ' || matrix.abi }}
+      ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
+      ${{ matrix.nroff == 'no-roff' && 'no-obsolete' || ' ' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        osversion: ["9.3"]
+        abi: [64]
+        nroff: ["nroff", "no-roff"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build and Test
+      uses: vmactions/netbsd-vm@v1
+      with:
+        release: ${{ matrix.osversion }}
+        usesh: true
+        prepare: |
+          set -e
+          /usr/sbin/pkg_add check pkg-config
+        run: |
+          set -e
+          echo "cc -m${{ matrix.abi }} -O2 ${{ matrix.nroff == 'no-roff' && '-DDEPRECATED_FUNCTIONS_REMOVED' || ' ' }}" > conf-cc
+          echo "cc -m${{ matrix.abi }} -s" > conf-ld
+          make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
+          make -j 2 test
+
+  openbsd:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
+    name: >
+      OpenBSD
+      ${{ matrix.osversion }}
+      ${{ matrix.abi == '64' && ' ' || matrix.abi }}
+      ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
+      ${{ matrix.nroff == 'no-roff' && 'no-obsolete' || ' ' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        osversion: ["7.4", "7.3", "7.2"]
+        abi: [64] # 32
+        nroff: ["mandoc", "no-roff"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build and Test
+      uses: vmactions/openbsd-vm@v1
+      with:
+        release: ${{ matrix.osversion }}
+        usesh: true
+        prepare: |
+          set -e
+          pkg_add check
+        run: |
+          set -e
+          echo "cc -m${{ matrix.abi }} -O2 ${{ matrix.nroff == 'no-roff' && '-DDEPRECATED_FUNCTIONS_REMOVED' || ' ' }}" > conf-cc
+          echo "cc -m${{ matrix.abi }} -s" > conf-ld
+          make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
+          make -j 2 test
+
+  solaris:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
+    name: >
+      Solaris
+      ${{ matrix.osversion }}
+      ${{ matrix.abi == '64' && ' ' || matrix.abi }}
+      ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
+      ${{ matrix.nroff == 'no-roff' && 'no-obsolete' || ' ' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        osversion: ["11.4"] # "11.4-gcc"
+        abi: [64] # 32
+        nroff: ["nroff", "no-roff"]
+        libcheck: ["0.15.2"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build and Test
+      uses: vmactions/solaris-vm@v1
+      with:
+        release: ${{ matrix.osversion }}
+        usesh: true
+        prepare: |
+          set -e
+          pkgutil -y -i gcc4core pkgconfig curl
+          curl -L -O https://github.com/libcheck/check/releases/download/${{ matrix.libcheck }}/check-${{ matrix.libcheck }}.tar.gz
+          gunzip check-${{ matrix.libcheck }}.tar.gz
+          tar -xvf check-${{ matrix.libcheck }}.tar
+          cd check-${{ matrix.libcheck }}
+          env CFLAGS="-m${{ matrix.abi }}" ./configure --prefix=/opt/csw && gmake && gmake install
+          sed -e 's|^Libs: |Libs: -Wl,-R${libdir} |' < /opt/csw/lib/pkgconfig/check.pc > /opt/csw/lib/pkgconfig/check.pc.tmp && mv /opt/csw/lib/pkgconfig/check.pc.tmp /opt/csw/lib/pkgconfig/check.pc
+        run: |
+          set -e
+          echo "gcc -m${{ matrix.abi }} -O2 -pipe ${{ matrix.nroff == 'no-roff' && '-DDEPRECATED_FUNCTIONS_REMOVED' || ' ' }}" > conf-cc
+          sed -e 's|ar cr |ar Scr |g' make-makelib.sh > make-makelib.sh.tmp && mv make-makelib.sh.tmp make-makelib.sh
+          echo "gcc -m${{ matrix.abi }} -s" > conf-ld
+          make it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
+          make test
+
+  ubuntu:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
+    name: >
+      Ubuntu
+      ${{ matrix.osversion }}
+      ${{ matrix.abi == '64' && ' ' || matrix.abi }}
+      ${{ matrix.cc == 'gcc' && ' ' || matrix.cc }}
+      ${{ matrix.nroff == 'true' && 'no-roff' || ' ' }}
+      ${{ matrix.nroff == 'no-roff' && 'no-obsolete' || ' ' }}
+      ${{ matrix.utmp == 'autoselect' && ' ' || matrix.utmp }}
+    runs-on: ubuntu-${{ matrix.osversion }}
+    strategy:
+      fail-fast: false
+      matrix:
+        osversion: ["22.04"] # 20.04's "check" package is too old
+        abi: [64]
+        warnings: ["-Wall -Wshadow -Werror=deprecated-declarations -Werror=implicit-function-declaration -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign"]
+        cc: ["gcc", "clang"]
+        nroff: ["nroff", "no-roff"]
+        utmp: ["autoselect", "force-old-utmp"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build and Test
+      run: |
+        set -e
+        sudo apt-get update
+        sudo apt-get install check
+        echo "${{ matrix.cc }} ${{ matrix.nroff == 'no-roff' && '-DDEPRECATED_FUNCTIONS_REMOVED' || ' ' }} -O2 -fPIC ${{ matrix.warnings }} ${{ matrix.cc == 'clang' && '-Werror=incompatible-library-redeclaration' || ' ' }}" > conf-cc
+        [ "${{ matrix.utmp }}" = "force-old-utmp" ] && echo "break utmpx detection" >> tryutmpx.c
+        make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
+        make -j 2 test

@@ -10,16 +10,20 @@ default: it
 .SUFFIXES: .0 .1 .5 .7 .8
 
 .1.0:
-	$(NROFF) -man $< >$@
+	$(NROFF) -man $< >$@; \
+	ret=$$?; [ 0 = $$ret ] || rm -f $@; exit $$ret
 
 .5.0:
-	$(NROFF) -man $< >$@
+	$(NROFF) -man $< >$@; \
+	ret=$$?; [ 0 = $$ret ] || rm -f $@; exit $$ret
 
 .7.0:
-	$(NROFF) -man $< >$@
+	$(NROFF) -man $< >$@; \
+	ret=$$?; [ 0 = $$ret ] || rm -f $@; exit $$ret
 
 .8.0:
-	$(NROFF) -man $< >$@
+	$(NROFF) -man $< >$@; \
+	ret=$$?; [ 0 = $$ret ] || rm -f $@; exit $$ret
 
 addresses.0: \
 addresses.5

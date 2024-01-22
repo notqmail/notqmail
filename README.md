@@ -1,3 +1,5 @@
+![Build status](https://github.com/notqmail/notqmail/actions/workflows/platform-builders.yml/badge.svg)
+
 # notqmail 1.08
 
 ## 20200520

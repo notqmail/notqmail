@@ -1,4 +1,4 @@
-![Build status](https://github.com/notqmail/notqmail/actions/workflows/platform-builders.yml/badge.svg)
+[![Build status](https://img.shields.io/github/actions/workflow/status/notqmail/notqmail/platform-builders.yml)](https://github.com/notqmail/notqmail/actions/workflows/platform-builders.yml?query=branch%3Amaster)
 
 # notqmail 1.08
 

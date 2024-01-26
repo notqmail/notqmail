@@ -1,17 +1,11 @@
 name: Build
 
 on:
-  push:
-    branches: ['**', '!master']
-  pull_request_target:
-    branches: ['master']
-    types:
-      - closed
+  push
 
 jobs:
 
   alpine:
-    if: github.event_name == 'push' || github.event.pull_request.merged == true
     name: >
       Alpine
       ${{ matrix.osversion }}
@@ -43,7 +37,6 @@ jobs:
         make -j 2 test
 
   freebsd:
-    if: github.event_name == 'push' || github.event.pull_request.merged == true
     name: >
       FreeBSD
       ${{ matrix.osversion }}
@@ -92,7 +85,6 @@ jobs:
           make setup check
 
   macos:
-    if: github.event_name == 'push' || github.event.pull_request.merged == true
     name: >
       macOS
       ${{ matrix.osversion }}
@@ -124,7 +116,6 @@ jobs:
         make -j 2 test
 
   netbsd:
-    if: github.event_name == 'push' || github.event.pull_request.merged == true
     name: >
       NetBSD
       ${{ matrix.osversion }}
@@ -157,7 +148,6 @@ jobs:
           make -j 2 test
 
   openbsd:
-    if: github.event_name == 'push' || github.event.pull_request.merged == true
     name: >
       OpenBSD
       ${{ matrix.osversion }}
@@ -190,7 +180,6 @@ jobs:
           make -j 2 test
 
   solaris:
-    if: github.event_name == 'push' || github.event.pull_request.merged == true
     name: >
       Solaris
       ${{ matrix.osversion }}
@@ -231,7 +220,6 @@ jobs:
           make test
 
   ubuntu:
-    if: github.event_name == 'push' || github.event.pull_request.merged == true
     name: >
       Ubuntu
       ${{ matrix.osversion }}

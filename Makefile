@@ -735,16 +735,6 @@ instpackage.o: \
 compile instpackage.c open.h strerr.h hier.h
 	./compile instpackage.c
 
-instqueue: \
-load instqueue.o instfiles.o fifo.o hier.o auto_qmail.o auto_split.o strerr.a \
-substdio.a open.a error.a env.a str.a fs.a stralloc.a
-	./load instqueue instfiles.o fifo.o hier.o auto_qmail.o auto_split.o \
-	strerr.a substdio.a open.a error.a env.a str.a fs.a stralloc.a
-
-instqueue.o: \
-compile instqueue.c open.h strerr.h hier.h
-	./compile instqueue.c
-
 instuidgid.o: \
 compile instuidgid.c uidgid.h auto_uids.h auto_users.h
 	./compile instuidgid.c
@@ -783,7 +773,7 @@ qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
 dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
 forward preline condredirect bouncesaying except maildirmake \
-maildir2mbox install instpackage instqueue instchown \
+maildir2mbox install instpackage instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
 binm3 binm3+df
 

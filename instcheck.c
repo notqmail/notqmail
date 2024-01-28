@@ -76,9 +76,12 @@ void z(char *home, char *file, int len, uid_t uid, gid_t gid, int mode)
   perm("",home,"/",file,S_IFREG,uid,gid,mode);
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
   init_uidgid();
-  hier();
+  if (argc == 2 && strcmp(argv[1],"queue-only") == 0)
+    hier_queue();
+  else
+    hier();
   return 0;
 }

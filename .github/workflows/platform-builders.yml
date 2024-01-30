@@ -97,11 +97,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["12", "11"]
+        osversion: ["14", "13", "12", "11"]
         abi: [64]
         warnings: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=incompatible-library-redeclaration -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign"]
         cc: ["clang"]
-        nroff: ["nroff", "no-roff"]
+        nroff: ["mandoc", "no-roff"]
         utmp: ["autoselect", "force-old-utmp"]
     steps:
     - name: Checkout

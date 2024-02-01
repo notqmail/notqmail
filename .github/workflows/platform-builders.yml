@@ -182,7 +182,7 @@ jobs:
   solaris:
     name: >
       Solaris
-      ${{ matrix.osversion }}
+      ${{ matrix.osdisplayversion }}
       ${{ matrix.abi == '64' && ' ' || matrix.abi }}
       ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
       ${{ matrix.nroff == 'no-roff' && 'no-obsolete' || ' ' }}
@@ -190,7 +190,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["11.4"] # "11.4-gcc"
+        osversion: ["11.4-gcc"]
+        osdisplayversion: ["11.4"]
         abi: [64] # 32
         nroff: ["nroff", "no-roff"]
         libcheck: ["0.15.2"]
@@ -204,7 +205,7 @@ jobs:
         usesh: true
         prepare: |
           set -e
-          pkgutil -y -i gcc4core pkgconfig curl
+          pkgutil -y -i pkgconfig curl
           curl -L -O https://github.com/libcheck/check/releases/download/${{ matrix.libcheck }}/check-${{ matrix.libcheck }}.tar.gz
           gunzip check-${{ matrix.libcheck }}.tar.gz
           tar -xvf check-${{ matrix.libcheck }}.tar

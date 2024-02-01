@@ -36,6 +36,37 @@ jobs:
         make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
         make -j 2 test
 
+  dragonflybsd:
+    name: >
+      DragonFlyBSD
+      ${{ matrix.osversion }}
+      ${{ matrix.abi == '64' && ' ' || matrix.abi }}
+      ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        osversion: ["6.4.0"]
+        abi: [64]
+        nroff: ["mandoc", "no-roff"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build and Test
+      uses: vmactions/dragonflybsd-vm@v1
+      with:
+        release: ${{ matrix.osversion }}
+        usesh: true
+        prepare: |
+          set -e
+          pkg install -y pkgconf check
+        run: |
+          set -e
+          echo "cc -m${{ matrix.abi }} -O2" > conf-cc
+          echo "cc -m${{ matrix.abi }} -s" > conf-ld
+          make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
+          make -j 2 test
+
   freebsd:
     name: >
       FreeBSD

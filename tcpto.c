@@ -127,7 +127,7 @@ void tcpto_err(ip,flagerr) struct ip_address *ip; int flagerr;
  if (i >= n)
   {
    int firstpos = -1;
-   datetime_sec firstwhen;
+   datetime_sec firstwhen = 0;
    record = tcpto_buf;
    for (i = 0;i < n;++i)
     {

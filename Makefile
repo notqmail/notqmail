@@ -712,12 +712,12 @@ compile instcheck.c strerr.h error.h readwrite.h hier.h
 
 instchown: \
 load instchown.o instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o \
-ids.a strerr.a substdio.a error.a str.a env.a fs.a stralloc.a
+ids.a strerr.a substdio.a error.a str.a env.a fs.a open.a stralloc.a
 	./load instchown instuidgid.o fifo.o hier.o auto_qmail.o auto_split.o \
-	ids.a strerr.a substdio.a error.a str.a env.a fs.a stralloc.a
+	ids.a strerr.a substdio.a error.a str.a env.a fs.a open.a stralloc.a
 
 instchown.o: \
-compile instchown.c strerr.h error.h exit.h hier.h
+compile instchown.c env.h open.h stralloc.h strerr.h error.h hier.h
 	./compile instchown.c
 
 instfiles.o: \

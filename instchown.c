@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "env.h"
+#include "open.h"
 #include "stralloc.h"
 #include "strerr.h"
 #include "error.h"
@@ -30,46 +31,66 @@ static void ddhome(stralloc *dd, const char *home)
 
 void h(char *home, uid_t uid, gid_t gid, int mode)
 {
+  int fd;
   stralloc dh = { 0 };
   ddhome(&dh, home);
   home=dh.s;
-  if (chown(home,uid,gid) == -1)
-    strerr_die4sys(111,FATAL,"unable to chown ",home,": ");
-  if (chmod(home,mode) == -1)
-    strerr_die4sys(111,FATAL,"unable to chmod ",home,": ");
+  if ((fd = open_read(home)) >= 0) {
+    if (fchown(fd,uid,gid) == -1)
+      strerr_die4sys(111,FATAL,"unable to chown ",home,": ");
+    if (fchmod(fd,mode) == -1)
+      strerr_die4sys(111,FATAL,"unable to chmod ",home,": ");
+    close(fd);
+  } else {
+    strerr_die4sys(111,FATAL,"unable to open ",home,": ");
+  }
   free(dh.s);
 }
 
 void d(char *home, char *subdir, uid_t uid, gid_t gid, int mode)
 {
+  int fd;
   stralloc dh = { 0 };
   ddhome(&dh, home);
   home=dh.s;
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
-  if (chown(subdir,uid,gid) == -1)
-    strerr_die6sys(111,FATAL,"unable to chown ",home,"/",subdir,": ");
-  if (chmod(subdir,mode) == -1)
-    strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",subdir,": ");
+  if ((fd = open_read(subdir)) >= 0) {
+    if (fchown(fd,uid,gid) == -1)
+      strerr_die6sys(111,FATAL,"unable to chown ",home,"/",subdir,": ");
+    if (fchmod(fd,mode) == -1)
+      strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",subdir,": ");
+    close(fd);
+  } else {
+    strerr_die6sys(111,FATAL,"unable to open ",home,"/",subdir,": ");
+  }
   free(dh.s);
 }
 
 void p(char *home, char *fifo, uid_t uid, gid_t gid, int mode)
 {
+  int fd;
   stralloc dh = { 0 };
   ddhome(&dh, home);
   home=dh.s;
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
-  if (chown(fifo,uid,gid) == -1)
-    strerr_die6sys(111,FATAL,"unable to chown ",home,"/",fifo,": ");
-  if (chmod(fifo,mode) == -1)
-    strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",fifo,": ");
+  if ((fd = open_read(fifo)) >= 0) {
+    if (fchown(fd,uid,gid) == -1)
+      strerr_die6sys(111,FATAL,"unable to chown ",home,"/",fifo,": ");
+    if (fchmod(fd,mode) == -1)
+      strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",fifo,": ");
+    close(fd);
+  } else {
+    strerr_die6sys(111,FATAL,"unable to open ",home,"/",fifo,": ");
+  }
   free(dh.s);
 }
 
 void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
 {
+  int fd;
+  int iscatdir = (0 == strncmp(subdir, "man/cat", 7));
   stralloc dh = { 0 };
   ddhome(&dh, home);
   home=dh.s;
@@ -77,32 +98,45 @@ void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
   if (chdir(subdir) == -1) {
     /* assume cat man pages are simply not installed */
-    if (errno == error_noent && strncmp(subdir, "man/cat", 7) == 0)
+    if (errno == error_noent && iscatdir)
       return;
     strerr_die6sys(111,FATAL,"unable to switch to ",home,"/",subdir,": ");
   }
-  if (chown(file,uid,gid) == -1) {
+  if ((fd = open_read(file)) >= 0) {
+    if (fchown(fd,uid,gid) == -1) {
+      /* assume cat man pages are simply not installed */
+      if (errno == error_noent && iscatdir)
+        return;
+      strerr_die6sys(111,FATAL,"unable to chown .../",subdir,"/",file,": ");
+    }
+    if (fchmod(fd,mode) == -1)
+      strerr_die6sys(111,FATAL,"unable to chmod .../",subdir,"/",file,": ");
+    close(fd);
+  } else {
     /* assume cat man pages are simply not installed */
-    if (errno == error_noent && strncmp(subdir, "man/cat", 7) == 0)
-      return;
-    strerr_die6sys(111,FATAL,"unable to chown .../",subdir,"/",file,": ");
+    if (!iscatdir)
+      strerr_die6sys(111,FATAL,"unable to open .../",subdir,"/",file,": ");
   }
-  if (chmod(file,mode) == -1)
-    strerr_die6sys(111,FATAL,"unable to chmod .../",subdir,"/",file,": ");
   free(dh.s);
 }
 
 void z(char *home, char *file, int len, uid_t uid, gid_t gid, int mode)
 {
+  int fd;
   stralloc dh = { 0 };
   ddhome(&dh, home);
   home=dh.s;
   if (chdir(home) == -1)
     strerr_die4sys(111,FATAL,"unable to switch to ",home,": ");
-  if (chown(file,uid,gid) == -1)
-    strerr_die6sys(111,FATAL,"unable to chown ",home,"/",file,": ");
-  if (chmod(file,mode) == -1)
-    strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",file,": ");
+  if ((fd = open_read(file)) >= 0) {
+    if (fchown(fd,uid,gid) == -1)
+      strerr_die6sys(111,FATAL,"unable to chown ",home,"/",file,": ");
+    if (fchmod(fd,mode) == -1)
+      strerr_die6sys(111,FATAL,"unable to chmod ",home,"/",file,": ");
+    close(fd);
+  } else {
+    strerr_die6sys(111,FATAL,"unable to open ",home,"/",file,": ");
+  }
   free(dh.s);
 }
 

@@ -3,6 +3,6 @@
     <param
 	name="host">github.com</param>
     <param name="protocol">https</param>
-    <param name="path">/notqmail/notqmail/releases/download/notqmail-1.08/notqmail-1.08.tar.xz</param>
+    <param name="path">/notqmail/notqmail/releases/download/notqmail-@version@/notqmail-@version@.tar.xz</param>
   </service>
 </services>

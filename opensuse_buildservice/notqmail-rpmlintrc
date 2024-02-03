@@ -1,3 +1,4 @@
+addFilter(".* unversioned-explicit-self-provides")
 addFilter(".* non-standard-gid")
 addFilter(".* is not allowed anymore in FHS .*")
 addFilter(".* invalid-license .*")

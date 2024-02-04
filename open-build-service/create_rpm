@@ -75,14 +75,14 @@ if [ $copy_src -eq 1 ] ; then
 	echo "Archiving notqmail-"$version".tar.xz in `pwd`"
 	tar \
 		--exclude="notqmail-$version/.git" \
-		--exclude="notqmail-$version/opensuse_buildservice"  \
+		--exclude="notqmail-$version/open-build-service"  \
 		--exclude="notqmail-$version/autobuilds"  \
 		-cf - notqmail-"$version" \
 		| xz -c > $rpmbuild/SOURCES/notqmail-"$version".tar.xz
-	cp notqmail-"$version"/opensuse_buildservice/notqmail-permissions.easy $rpmbuild/SOURCES
-	cp notqmail-"$version"/opensuse_buildservice/notqmail-permissions.paranoid $rpmbuild/SOURCES
-	cp notqmail-"$version"/opensuse_buildservice/notqmail-permissions.secure $rpmbuild/SOURCES
-	cp notqmail-"$version"/opensuse_buildservice/system-users-qmail.conf $rpmbuild/SOURCES
+	cp notqmail-"$version"/open-build-service/notqmail-permissions.easy $rpmbuild/SOURCES
+	cp notqmail-"$version"/open-build-service/notqmail-permissions.paranoid $rpmbuild/SOURCES
+	cp notqmail-"$version"/open-build-service/notqmail-permissions.secure $rpmbuild/SOURCES
+	cp notqmail-"$version"/open-build-service/system-users-qmail.conf $rpmbuild/SOURCES
 fi
 
 dist=`uname -r |cut -d . -f4`
@@ -90,7 +90,7 @@ if [ -z "$release" ] ; then
 	release=1
 fi
 
-cd $HOME/stage/notqmail-$version/opensuse_buildservice
+cd $HOME/stage/notqmail-$version/open-build-service
 echo -n "Build RPM for notqmail-"$version"-1."$release" (Y/N) - "
 read key
 if [ " $key" = " Y" -o " $key" = " y" ] ; then

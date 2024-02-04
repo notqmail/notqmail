@@ -16,7 +16,7 @@ cd ..
 echo "Archiving notqmail-"$version".tar.xz in `pwd`"
 tar \
 	--exclude="notqmail-$version/.git" \
-	--exclude="notqmail-$version/opensuse_buildservice"  \
+	--exclude="notqmail-$version/open-build-service"  \
 	--exclude="notqmail-$version/autobuilds"  \
 	-cf - notqmail-"$version" \
 	| xz -c > notqmail-"$version".tar.xz

@@ -47,8 +47,6 @@ esac
 
 #DEBHELPER#
 
-# notqmail.upgrade/notqmail.install are created
-# by the preinst script
 if [ $upgrade -eq 1 ] ; then # upgrade
 	if [ -f ${qmaildir}/libexec/instpackage ] ; then
 		${qmaildir}/libexec/instpackage queue-only

@@ -1,0 +1,139 @@
+#!/bin/sh
+#
+version=$(cat conf-version)
+
+verbose=0
+while test $# -gt 0; do
+    case "$1" in
+    -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'`
+	;;
+    *) optarg=
+	;;
+    esac
+
+    case "$1" in
+    --verbose)
+	verbose=1
+    ;;
+    --clean)
+	clean="--clean"
+    ;;
+    --release=*)
+	release=$optarg
+    ;;
+    *)
+    echo "invalid option [$1]"
+    read key
+    usage 1
+    ;;
+    esac
+
+    shift
+done
+
+if test -f $HOME/.rpmmacros
+then
+	topdir=`grep ^%_topdir $HOME/.rpmmacros | awk '{print $2}'`
+	if test -n "$topdir"
+	then
+		rpmbuild=$topdir
+	else
+		rpmbuild=$HOME/rpmbuild
+	fi
+else
+	rpmbuild=$HOME/rpmbuild
+fi
+
+copy_src=0
+echo -n "Copy Source Files - "
+read key
+if [ " $key" = " y" -o " $key" = " Y" ] ; then
+	copy_src=1
+fi
+
+make
+if [ $? -ne 0 ] ; then
+	echo "make failed" 1>&2
+	exit 0
+fi
+
+if [ $copy_src -eq 1 ] ; then
+	if [ ! -d $HOME/stage ] ; then
+		mkdir $HOME/stage
+	fi
+	if [ $? -ne 0 ] ; then
+		exit 1
+	fi
+	cd ../..
+	echo "Preparing notqmail-"$version""
+	/bin/cp -rp notqmail $HOME/stage/notqmail-"$version"
+	cd $HOME/stage/notqmail-$version
+	echo "Cleaning notqmail-"$version""
+	make -s clean >/dev/null 2>&1
+	# $HOME/stage/
+	cd ..
+	echo "Archiving notqmail-"$version".tar.xz in `pwd`"
+	tar \
+		--exclude="notqmail-$version/.git" \
+		--exclude="notqmail-$version/opensuse_buildservice"  \
+		--exclude="notqmail-$version/autobuilds"  \
+		-cf - notqmail-"$version" \
+		| xz -c > $rpmbuild/SOURCES/notqmail-"$version".tar.xz
+	cp notqmail-"$version"/opensuse_buildservice/notqmail-permissions.easy $rpmbuild/SOURCES
+	cp notqmail-"$version"/opensuse_buildservice/notqmail-permissions.paranoid $rpmbuild/SOURCES
+	cp notqmail-"$version"/opensuse_buildservice/notqmail-permissions.secure $rpmbuild/SOURCES
+	cp notqmail-"$version"/opensuse_buildservice/system-users-qmail.conf $rpmbuild/SOURCES
+fi
+
+dist=`uname -r |cut -d . -f4`
+if [ -z "$release" ] ; then
+	release=1
+fi
+
+cd $HOME/stage/notqmail-$version/opensuse_buildservice
+echo -n "Build RPM for notqmail-"$version"-1."$release" (Y/N) - "
+read key
+if [ " $key" = " Y" -o " $key" = " y" ] ; then
+	tmprel=`cat conf-release 2>/dev/null`
+	if [ ! " $tmprel" = " 1.$release" ] ; then
+		echo 1.$release > conf-release
+		make -s notqmail.spec
+	fi
+	cp notqmail.spec $HOME/stage
+	build_arch=`rpmbuild --showrc|grep "^build arch" | awk '{print $4}'`
+	if [ $verbose -eq 0 ] ; then
+		echo "rpmbuild -ba $clean --quiet $HOME/stage/notqmail.spec"
+		rpmbuild -ba $clean --quiet $HOME/stage/notqmail.spec
+	else
+		echo "rpmbuild -ba $clean --quiet $HOME/stage/notqmail.spec"
+		rpmbuild -ba $clean $HOME/stage/notqmail.spec
+	fi
+	if [ $? -eq 0 ] ; then
+		/bin/rm $HOME/stage/notqmail.spec
+		rpm --addsign $rpmbuild/RPMS/$build_arch/notqmail-"$version"-"1.$release".$dist.$build_arch.rpm
+		echo -n "RPM lint for notqmail-"$version"-1."$release" (Y/N) - "
+		read key
+		if [ " $key" = " Y" -o " $key" = " y" ] ; then
+			(
+			echo notqmail
+			rpmlint $rpmbuild/RPMS/$build_arch/notqmail-"$version"-"1.$release".$dist.$build_arch.rpm
+			echo ------------------------
+			echo notqmail-"$version"-"1.$release".$dist.src.rpm
+			rpmlint $rpmbuild/SRPMS/notqmail-"$version"-"1.$release".$dist.src.rpm
+			echo ------------------------
+			) 2>&1 | less
+		fi
+	else
+		/bin/rm $HOME/stage/notqmail.spec
+	fi
+else
+	/bin/rm -rf $HOME/stage/notqmail-"$version"
+fi
+
+if [ $copy_src -eq 1 ] ; then
+	echo -n "Remove Source (Y/N) - "
+	read key
+	if [ " $key" = " Y" -o " $key" = " y" ] ; then
+		/bin/rm -f $rpmbuild/SOURCES/notqmail-"$version".tar.xz
+	fi
+fi

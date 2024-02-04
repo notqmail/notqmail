@@ -46,7 +46,7 @@ Requires(postun): shadow-utils
 Requires(pre): pwdutils
 Requires(postun): pwdutils
 %endif
-%if %{undefined fedora_version} && %{undefined centos_version} && %{undefined rhel_version} && %{undefined sles_version} && %{undefined suse_version} && %{undefined scientificlinux_version} && %{undefined openeuler}
+%if %{undefined fedora_version} && %{undefined centos_version} && %{undefined rhel_version} && %{undefined sles_version} && %{undefined suse_version} && %{undefined scientificlinux_version} && %{undefined openeuler} && %{undefined almalinux_version} && %{undefined rocky_version}
 BuildRequires: sysuser-tools
 %endif
 %if 0%{?suse_version} >= 1500 || 0%{?sles_version} >= 15
@@ -82,7 +82,7 @@ Provides: user(qmails)      > 999
 Provides: group(nofiles)    > 999
 Provides: group(qmail)      > 999
 Provides: smtp_daemon
-%if %{undefined fedora_version} && %{undefined centos_version} && %{undefined rhel_version} && %{undefined sles_version} && %{undefined suse_version} && %{undefined scientificlinux_version} && %{undefined openeuler}
+%if %{undefined fedora_version} && %{undefined centos_version} && %{undefined rhel_version} && %{undefined sles_version} && %{undefined suse_version} && %{undefined scientificlinux_version} && %{undefined openeuler} && %{undefined almalinux_version} && %{undefined rocky_version}
 %sysusers_requires
 %endif
 %if 0%{?suse_version} >= 1500 || 0%{?sles_version} >= 15
@@ -124,7 +124,7 @@ This package contains the documentation for %{name}
 %setup
 
 %build
-%if %{undefined fedora_version} && %{undefined centos_version} && %{undefined rhel_version} && %{undefined sles_version} && %{undefined suse_version} && %{undefined scientificlinux_version} && %{undefined openeuler}
+%if %{undefined fedora_version} && %{undefined centos_version} && %{undefined rhel_version} && %{undefined sles_version} && %{undefined suse_version} && %{undefined scientificlinux_version} && %{undefined openeuler} && %{undefined almalinux_version} && %{undefined rocky_version}
   %sysusers_generate_pre %{S:4} notqmail
 %endif
 %if 0%{?suse_version} >= 1500 || 0%{?sles_version} >= 15
@@ -165,51 +165,51 @@ rm -f %{buildroot}%{qmaildir}/bin/{qail,elq,pinq,maildirwatch,qsmhook}
 %defattr(-, root, root,-)
 %dir %attr(755,root,qmail)        %{qmaildir}
 %dir %attr(755,root,qmail)        %{qmaildir}/bin
-%dir %attr(700,root,root)         %{qmaildir}/libexec
+%dir %attr(755,root,root)         %{qmaildir}/libexec
 %dir %attr(755,root,qmail)        %{qmaildir}/boot
 %dir %attr(755,root,qmail)        %{qmaildir}/control
 %dir %attr(755,root,qmail)        %{qmaildir}/users
 %dir %attr(2755,alias,qmail)      %{qmaildir}/alias
-%attr(0700,root,qmail)            %{qmaildir}/bin/qmail-lspawn
-%attr(0711,root,qmail)            %{qmaildir}/bin/splogger
+%attr(0755,root,qmail)            %{qmaildir}/bin/qmail-lspawn
+%attr(0755,root,qmail)            %{qmaildir}/bin/splogger
 %attr(0755,root,qmail)            %{qmaildir}/bin/preline
-%attr(0700,root,qmail)            %{qmaildir}/bin/qmail-newu
-%attr(0711,root,qmail)            %{qmaildir}/bin/qmail-popup
+%attr(0755,root,qmail)            %{qmaildir}/bin/qmail-newu
+%attr(0755,root,qmail)            %{qmaildir}/bin/qmail-popup
 %attr(0755,root,qmail)            %{qmaildir}/bin/qreceipt
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-showctl
 %attr(0755,root,qmail)            %{qmaildir}/bin/maildir2mbox
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-qread
-%attr(0711,root,qmail)            %{qmaildir}/bin/qmail-getpw
+%attr(0755,root,qmail)            %{qmaildir}/bin/qmail-getpw
 %attr(0755,root,qmail)            %{qmaildir}/bin/bouncesaying
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-smtpd
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-inject
 %attr(0755,root,qmail)            %{qmaildir}/bin/sendmail
 %attr(0755,root,qmail)            %{qmaildir}/bin/except
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-pop3d
-%attr(0711,root,qmail)            %{qmaildir}/bin/qmail-clean
+%attr(0755,root,qmail)            %{qmaildir}/bin/qmail-clean
 %attr(0755,root,qmail)            %{qmaildir}/bin/qbiff
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-qstat
 %attr(0755,root,qmail)            %{qmaildir}/bin/mailsubj
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-tcpok
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-tcpto
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-qmtpd
-%attr(0700,root,qmail)            %{qmaildir}/bin/qmail-start
+%attr(0755,root,qmail)            %{qmaildir}/bin/qmail-start
 %attr(0755,root,qmail)            %{qmaildir}/bin/maildirmake
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-qmqpd
-%attr(0711,root,qmail)            %{qmaildir}/bin/qmail-pw2u
+%attr(0755,root,qmail)            %{qmaildir}/bin/qmail-pw2u
 %attr(0755,root,qmail)            %{qmaildir}/bin/datemail
-%attr(0700,root,qmail)            %{qmaildir}/bin/qmail-newmrh
-%attr(0711,root,qmail)            %{qmaildir}/bin/qmail-local
+%attr(0755,root,qmail)            %{qmaildir}/bin/qmail-newmrh
+%attr(0755,root,qmail)            %{qmaildir}/bin/qmail-local
 %attr(0755,root,qmail)            %{qmaildir}/bin/predate
-%attr(0711,root,qmail)            %{qmaildir}/bin/qmail-send
+%attr(0755,root,qmail)            %{qmaildir}/bin/qmail-send
 %attr(0755,root,qmail)            %{qmaildir}/bin/forward
-%attr(0711,root,qmail)            %{qmaildir}/bin/qmail-rspawn
+%attr(0755,root,qmail)            %{qmaildir}/bin/qmail-rspawn
 %attr(0755,root,qmail)            %{qmaildir}/bin/qmail-qmqpc
 %attr(0755,root,qmail)            %{qmaildir}/bin/condredirect
 %attr(0755,root,qmail)            %{qmaildir}/bin/tcp-env
-%attr(0711,root,qmail)            %{qmaildir}/bin/qmail-remote
-%attr(0711,root,root)             %{qmaildir}/libexec/instchown
-%attr(0711,root,root)             %{qmaildir}/libexec/instpackage
+%attr(0755,root,qmail)            %{qmaildir}/bin/qmail-remote
+%attr(0700,root,root)             %{qmaildir}/libexec/instchown
+%attr(0700,root,root)             %{qmaildir}/libexec/instpackage
 
 %attr(0755,root,qmail)            %{qmaildir}/boot/proc+df
 %attr(0755,root,qmail)            %{qmaildir}/boot/proc
@@ -228,9 +228,9 @@ rm -f %{buildroot}%{qmaildir}/bin/{qail,elq,pinq,maildirwatch,qsmhook}
 %if 0%{?suse_version} >= 1120
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/permissions.d/%{name}-permissions
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/permissions.d/%{name}-permissions.secure
-%verify (not user group mode caps) %attr(4711, qmailq, qmail)   %{qmaildir}/bin/qmail-queue
+%verify (not user group mode caps) %attr(4755, qmailq, qmail)   %{qmaildir}/bin/qmail-queue
 %else
-%attr(4711,qmailq,qmail)           %{qmaildir}/bin/qmail-queue
+%attr(4755,qmailq,qmail)           %{qmaildir}/bin/qmail-queue
 %endif
 
 %files doc
@@ -246,6 +246,7 @@ rm -f %{buildroot}%{qmaildir}/bin/{qail,elq,pinq,maildirwatch,qsmhook}
   %verify_permissions -e %{qmaildir}/alias/
   %verify_permissions -e %{qmaildir}/queue/lock/trigger
 %endif
+/var/qmail/bin/instcheck
 
 %pretrans
 argv1=$1
@@ -295,7 +296,7 @@ done
 %endif
 
 if [ ! -f %{qmaildir}/control/me ] ; then
-	uname -n > %{qmaildir}/control/me
+  uname -n > %{qmaildir}/control/me
 fi
 
 # setup notqmail as alternative mta
@@ -360,9 +361,5 @@ do
   %{__rm} -f %{qmaildir}/alias/.qmail-"$i"
 done
 %{__rm} -rf %{qmaildir}/alias/Maildir
-
-### SCRIPTLET ###############################################################################
-%posttrans
-argv1=$1
 
 %changelog

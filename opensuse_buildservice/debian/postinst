@@ -50,11 +50,14 @@ esac
 # notqmail.upgrade/notqmail.install are created
 # by the preinst script
 if [ $upgrade -eq 1 ] ; then # upgrade
-	if [ -f ${qmaildir}/bin/instchown ] ; then
+	if [ -f ${qmaildir}/libexec/instpackage ] ; then
+		${qmaildir}/libexec/instpackage queue-only
+	fi
+	if [ -f ${qmaildir}/libexec/instchown ] ; then
 		# required because on debian you lose the setuid bit of qmail-queue
 		# and the proper permissions of files in /var/qmail/queue
 		echo "Checking Installed Permissions"
-		${qmaildir}/bin/instchown > /dev/null 2>&1 || true
+		${qmaildir}/libexec/instchown > /dev/null 2>&1 || true
 	fi
   exit 0
 fi
@@ -65,8 +68,8 @@ echo "Creating ${logdir}"
 /bin/chown -R qmaill:nofiles ${logdir}
 
 echo "Checking Installed Permissions"
-if [ -f ${qmaildir}/bin/instchown ] ; then
-	${qmaildir}/bin/instchown || true
+if [ -f ${qmaildir}/libexec/instchown ] ; then
+	${qmaildir}/libexec/instchown || true
 fi
 dpkg-statoverride --list ${qmaildir}/bin/qmail-queue >/dev/null ||
 	dpkg-statoverride --update --add qmailq qmail 4711 ${qmaildir}/bin/qmail-queue

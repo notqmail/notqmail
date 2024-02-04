@@ -133,13 +133,17 @@ This package contains the documentation for %{name}
 conf_cc=`head -1 conf-cc`
 echo "$conf_cc -g -fPIC" > conf-cc
 echo "cc -fPIE -pie"     > conf-ld
+echo %{qmaildir}         > conf-qmail
 make -s it man NROFF=true
 
 %install
 env DESTDIR=%{buildroot} ./instpackage
-%{__rm} -rf %{buildroot}%{qmaildir}/man/man3 %{buildroot}%{qmaildir}/man/cat*
+%{__rm} -rf %{buildroot}%{qmaildir}/man/man3 %{buildroot}%{qmaildir}/man/cat* %{buildroot}%{qmaildir}/queue
 %{__mkdir_p} %{buildroot}%{_mandir}
 %{__mkdir_p} %{buildroot}%{nq_docdir}
+%{__mkdir_p} %{buildroot}%{qmaildir}/libexec
+install -m 700 instchown %{buildroot}%{qmaildir}/libexec
+install -m 700 instpackage %{buildroot}%{qmaildir}/libexec
 mv %{buildroot}%{qmaildir}/man/man? %{buildroot}%{_mandir}
 mv %{buildroot}%{qmaildir}/doc/* %{buildroot}%{nq_docdir}
 %{__cp} COPYRIGHT %{buildroot}%{nq_docdir}
@@ -161,23 +165,11 @@ rm -f %{buildroot}%{qmaildir}/bin/{qail,elq,pinq,maildirwatch,qsmhook}
 %defattr(-, root, root,-)
 %dir %attr(755,root,qmail)        %{qmaildir}
 %dir %attr(755,root,qmail)        %{qmaildir}/bin
+%dir %attr(700,root,root)         %{qmaildir}/libexec
 %dir %attr(755,root,qmail)        %{qmaildir}/boot
 %dir %attr(755,root,qmail)        %{qmaildir}/control
 %dir %attr(755,root,qmail)        %{qmaildir}/users
 %dir %attr(2755,alias,qmail)      %{qmaildir}/alias
-%dir %attr(750,qmailq,qmail)      %{qmaildir}/queue
-%dir %attr(700,qmails,qmail)      %{qmaildir}/queue/bounce
-     %attr(700,qmails,qmail)      %{qmaildir}/queue/info
-%dir %attr(700,qmailq,qmail)      %{qmaildir}/queue/intd
-     %attr(700,qmails,qmail)      %{qmaildir}/queue/local
-%dir %attr(750,qmailq,qmail)      %{qmaildir}/queue/lock
-%attr(600,qmails,qmail)           %{qmaildir}/queue/lock/sendmutex
-%attr(644,qmailr,qmail)           %{qmaildir}/queue/lock/tcpto
-%attr(622,qmails,qmail)           %{qmaildir}/queue/lock/trigger
-     %attr(750,qmailq,qmail)      %{qmaildir}/queue/mess
-%dir %attr(700,qmailq,qmail)      %{qmaildir}/queue/pid
-     %attr(700,qmails,qmail)      %{qmaildir}/queue/remote
-%dir %attr(750,qmailq,qmail)      %{qmaildir}/queue/todo
 %attr(0700,root,qmail)            %{qmaildir}/bin/qmail-lspawn
 %attr(0711,root,qmail)            %{qmaildir}/bin/splogger
 %attr(0755,root,qmail)            %{qmaildir}/bin/preline
@@ -216,6 +208,8 @@ rm -f %{buildroot}%{qmaildir}/bin/{qail,elq,pinq,maildirwatch,qsmhook}
 %attr(0755,root,qmail)            %{qmaildir}/bin/condredirect
 %attr(0755,root,qmail)            %{qmaildir}/bin/tcp-env
 %attr(0711,root,qmail)            %{qmaildir}/bin/qmail-remote
+%attr(0711,root,root)             %{qmaildir}/libexec/instchown
+%attr(0711,root,root)             %{qmaildir}/libexec/instpackage
 
 %attr(0755,root,qmail)            %{qmaildir}/boot/proc+df
 %attr(0755,root,qmail)            %{qmaildir}/boot/proc
@@ -294,6 +288,8 @@ done
   %run_permissions
 %endif
 %endif
+/var/qmail/bin/instpackage queue-only
+/var/qmail/bin/instchown queue-only
 %if 0%{?suse_version} || 0%{?sles_version}
   %service_add_post %{name}.service
 %endif

@@ -38,6 +38,7 @@ build-stamp:
 	#
 	echo "cc -g -O2 -fPIC" > conf-cc
 	echo "cc -fPIE -pie"   > conf-ld
+	echo "$(qmaildir)"     > conf-qmail
 	$(MAKE) -s it man
 	touch build-stamp
 
@@ -55,7 +56,9 @@ install: build
 	dh_prep || dh_clean -k
 	dh_installdirs
 	env DESTDIR=$(DESTDIR) ./instpackage
-	cp instchown $(DESTDIR)$(qmaildir)/bin
+	mkdir -p $(DESTDIR)$(qmaildir)/libexec
+	cp instchown $(DESTDIR)$(qmaildir)/libexec
+	cp instpackage $(DESTDIR)$(qmaildir)/libexec
 	$(MAKE) -s qmail-send.service
 	# do this for dh_installdocs
 	mv $(DESTDIR)$(qmaildir)/doc doc
@@ -69,7 +72,7 @@ install: build
 	else \
 		mv debian/notqmail.service $(DESTDIR)$(qmaildir)/boot ; \
 	fi
-	rm -rf $(DESTDIR)$(mandir)/man3
+	rm -rf $(DESTDIR)$(mandir)/man3 $(DESTDIR)$(qmaildir)/queue
 
 binary-indep: build install
 	dh_testdir

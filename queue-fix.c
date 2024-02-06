@@ -25,7 +25,6 @@
 #include "env.h"
 #include "sgetopt.h"
 #include "direntry.h"
-#include "pathexec.h"
 #include "byte.h"
 #include "alloc.h"
 #include "tcpto.h"

@@ -119,6 +119,21 @@ usage()
 }
 
 int
+qchown(char *name, uid_t uid, gid_t gid)
+{
+	int             fd;
+
+	if ((fd = open_read(name)) == -1)
+		return -1;
+	if (fchown(fd, uid, gid) == -1) {
+		close(fd);
+		return -1;
+	}
+	close(fd);
+	return 0;
+}
+
+int
 qchmod(char *name, mode_t mode)
 {
 	int             fd;
@@ -211,7 +226,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, mode_t pe
 			strnum2[fmt_ulong(strnum2, gid)] = 0;
 			if (flag_verbose)
 				strmsg_out11("Changing ownership   of [", name, "] to uid ", strnum1, " (", owner, ") gid ", strnum2, " (", group, ")\n");
-			if (flag_doit && chown(name, uid, gid))
+			if (flag_doit && qchown(name, uid, gid))
 				print_err8(111, "chown", strnum1, strnum2, name);
 			return 0;
 		}
@@ -233,7 +248,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, mode_t pe
 			strnum2[fmt_ulong(strnum2, gid)] = 0;
 			if (flag_verbose)
 				strmsg_out11("Changing ownership   of [", name, "] to uid ", strnum1, " (", owner, ") gid ", strnum2, " (", group, ")\n");
-			if (flag_doit && chown(name, uid, gid))
+			if (flag_doit && qchown(name, uid, gid))
 				print_err8(111, "chown", strnum1, strnum2, name);
 		}
 		if ((st.st_mode & 07777) != perm) {
@@ -276,7 +291,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, mode_t pe
 			strnum2[fmt_ulong(strnum2, gid)] = 0;
 			if (flag_verbose)
 				strmsg_out11("Changing ownership   of [", name, "] to uid ", strnum1, " (", owner, ") gid ", strnum2, " (", group, ")\n");
-			if (flag_doit && chown(name, uid, gid))
+			if (flag_doit && qchown(name, uid, gid))
 				print_err8(111, "chown", strnum1, strnum2, name);
 		}
 		if ((st.st_mode & 07777) != perm) {
@@ -332,7 +347,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, mode_t pe
 			strnum2[fmt_ulong(strnum2, gid)] = 0;
 			if (flag_verbose)
 				strmsg_out11("Changing ownership   of [", name, "] to uid ", strnum1, " (", owner, ") gid ", strnum2, " (", group, ")\n");
-			if (flag_doit && chown(name, uid, gid))
+			if (flag_doit && qchown(name, uid, gid))
 				print_err8(111, "chown", strnum1, strnum2, name);
 			return 0;
 		}
@@ -354,7 +369,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, mode_t pe
 			strnum2[fmt_ulong(strnum2, gid)] = 0;
 			if (flag_verbose)
 				strmsg_out11("Changing ownership   of [", name, "] to uid ", strnum1, " (", owner, ") gid ", strnum2, " (", group, ")\n");
-			if (flag_doit && chown(name, uid, gid))
+			if (flag_doit && qchown(name, uid, gid))
 				print_err8(111, "chown", strnum1, strnum2, name);
 		}
 		if ((st.st_mode & 07777) != perm) {
@@ -404,7 +419,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, mode_t pe
 			strnum2[fmt_ulong(strnum2, gid)] = 0;
 			if (flag_verbose)
 				strmsg_out11("Changing ownership   of [", name, "] to uid ", strnum1, " (", owner, ") gid ", strnum2, " (", group, ")\n");
-			if (flag_doit && chown(name, uid, gid))
+			if (flag_doit && qchown(name, uid, gid))
 				print_err8(111, "chown", strnum1, strnum2, name);
 			return 0;
 		}
@@ -426,7 +441,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, mode_t pe
 			strnum2[fmt_ulong(strnum2, gid)] = 0;
 			if (flag_verbose)
 				strmsg_out11("Changing ownership   of [", name, "] to uid ", strnum1, " (", owner, ") gid ", strnum2, " (", group, ")\n");
-			if (flag_doit && chown(name, uid, gid))
+			if (flag_doit && qchown(name, uid, gid))
 				print_err8(111, "chown", strnum1, strnum2, name);
 		}
 		if ((st.st_mode & 07777) != perm) {

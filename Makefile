@@ -1595,7 +1595,10 @@ open.a error.a str.a
 	stralloc.a open.a error.a str.a
 
 queue-fix.o: \
-compile queue-fix.c
+compile queue-fix.c substdio.h subfd.h stralloc.h fmt.h \
+error.h getln.h str.h open.h fifo.h scan.h strerr.h fmt.h \
+env.h sgetopt.h direntry.h byte.h alloc.h tcpto.h strmsg.h \
+noreturn.h auto_split.h auto_uids.h
 	./compile queue-fix.c
 
 quote.o: \

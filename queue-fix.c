@@ -118,6 +118,21 @@ usage()
 	_exit(100);
 }
 
+int
+qchmod(char *name, mode_t mode)
+{
+	int             fd;
+
+	if ((fd = open_read(name)) == -1)
+		return -1;
+	if (fchmod(fd, mode) == -1) {
+		close(fd);
+		return -1;
+	}
+	close(fd);
+	return 0;
+}
+
 _noreturn_ void
 die_check(char *arg)
 {
@@ -159,7 +174,7 @@ confirm()
  * gid may be -1 on files for "unknown"
  */
 int
-check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, int perm, char type, int size)
+check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, mode_t perm, char type, int size)
 {
 	struct stat     st;
 	int             fd;
@@ -190,7 +205,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, int perm,
 			strnum1[fmt_8long(strnum1, perm)] = 0;
 			if (flag_verbose)
 				strmsg_out5("Changing permissions of [", name, "] to mode [", strnum1, "]\n");
-			if (flag_doit && chmod(name, perm))
+			if (flag_doit && qchmod(name, perm))
 				strerr_die6sys(111, FATAL, "chmod ", strnum1, " ", name, ": ");
 			strnum1[fmt_ulong(strnum1, uid)] = 0;
 			strnum2[fmt_ulong(strnum2, gid)] = 0;
@@ -233,7 +248,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, int perm,
 			strnum1[fmt_8long(strnum1, perm)] = 0;
 			if (flag_verbose)
 				strmsg_out5("Changing permissions of [", name, "] to mode [", strnum1, "]\n");
-			if (flag_doit && chmod(name, perm))
+			if (flag_doit && qchmod(name, perm))
 				strerr_die6sys(111, FATAL, "chmod ", strnum1, " ", name, ": ");
 		}
 		return 0;
@@ -276,7 +291,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, int perm,
 			strnum1[fmt_8long(strnum1, perm)] = 0;
 			if (flag_verbose)
 				strmsg_out5("Changing permissions of [", name, "] to mode [", strnum1, "]\n");
-			if (flag_doit && chmod(name, perm))
+			if (flag_doit && qchmod(name, perm))
 				strerr_die6sys(111, FATAL, "chmod ", strnum1, " ", name, ": ");
 		}
 		return 0;
@@ -311,7 +326,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, int perm,
 			strnum1[fmt_8long(strnum1, perm)] = 0;
 			if (flag_verbose)
 				strmsg_out5("Changing permissions of [", name, "] to mode [", strnum1, "]\n");
-			if (flag_doit && chmod(name, perm))
+			if (flag_doit && qchmod(name, perm))
 				strerr_die6sys(111, FATAL, "chmod ", strnum1, " ", name, ": ");
 			strnum1[fmt_ulong(strnum1, uid)] = 0;
 			strnum2[fmt_ulong(strnum2, gid)] = 0;
@@ -354,7 +369,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, int perm,
 			strnum1[fmt_8long(strnum1, perm)] = 0;
 			if (flag_verbose)
 				strmsg_out5("Changing permissions of [", name, "] to mode [", strnum1, "]\n");
-			if (flag_doit && chmod(name, perm))
+			if (flag_doit && qchmod(name, perm))
 				strerr_die6sys(111, FATAL, "chmod ", strnum1, " ", name, ": ");
 		}
 		if (st.st_size != size) {
@@ -383,7 +398,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, int perm,
 			strnum1[fmt_8long(strnum1, perm)] = 0;
 			if (flag_verbose)
 				strmsg_out5("Changing permissions of [", name, "] to mode [", strnum1, "]\n");
-			if (flag_doit && chmod(name, perm))
+			if (flag_doit && qchmod(name, perm))
 				strerr_die6sys(111, FATAL, "chmod ", strnum1, " ", name, ": ");
 			strnum1[fmt_ulong(strnum1, uid)] = 0;
 			strnum2[fmt_ulong(strnum2, gid)] = 0;
@@ -426,7 +441,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, int perm,
 			strnum1[fmt_8long(strnum1, perm)] = 0;
 			if (flag_verbose)
 				strmsg_out5("Changing permissions of [", name, "] to mode [", strnum1, "]\n");
-			if (flag_doit && chmod(name, perm))
+			if (flag_doit && qchmod(name, perm))
 				strerr_die6sys(111, FATAL, "chmod ", strnum1, " ", name, ": ");
 		}
 		return 0;
@@ -435,7 +450,7 @@ check_item(char *name, char *owner, char *group, uid_t uid, gid_t gid, int perm,
 }
 
 int
-check_files(char *directory, char *owner, char *group, uid_t uid, gid_t gid, int perm)
+check_files(char *directory, char *owner, char *group, uid_t uid, gid_t gid, mode_t perm)
 {
 	DIR            *dir;
 	direntry       *d;

@@ -1,0 +1,170 @@
+.\" vim: tw=75
+.TH spawn-filter 8
+.SH NAME
+spawn-filter \- qmail-local / qmail-remote interceptor
+
+.SH SYNOPSIS
+\fBspawn-filter\fR \fIargs\fR
+
+.SH DESCRIPTION
+\fBspawn-filter\fR is a \fBqmail-local\fR / \fBqmail-remote\fR interceptor
+to help qmail run custom filters for email being sent by \fBqmail-local\fR
+or \fBqmail-remote\fR. It can run any script which reads messages on fd 0
+and writes the output on fd 1. Whatever is output on fd 1, will be the
+input on descriptor 0 for \fBqmail-local\fR and \fBqmail-remote\fR. Thus
+the output of the filter program becomes the message that will be delivered
+to the destination. The filter can be turned on individually for local and
+remote mails by defining, \fBQMAILLOCAL\fR and \fBQMAILREMOTE\fR
+environment variables, to the path of \fBspawn-filter\fR respectively in
+\fBqmail-send\fR's supervise or rc script. If \fBspawn-filter\fR is invoked
+as \fBqmail-local\fR or \fBqmail-remote, it executes \fBqmail-local\fR or
+\fBqmail-remote\fR after running the custom filter. The filter script or
+program is run as a child of \fBspawn-filter\fR.
+
+\fBspawn-filter\fR is run by \fBqmail-lspawn\fR or \fBqmail-rspawn\fR with the
+same \fIargs\fR that is passed to \fBqmail-local\fR or \fBqmail-remote\fR.
+If \fBQMAILLOCAL\fR is set as \fIQMAILHOME/bin/spawn-filter\fR,
+\fBqmail-lspawn\fR runs \fBspawn-filter\fR with the same \fIargs\fR that is
+passed to \fBqmail-local\fR. If \fBQMAILREMOTE\fR is set as
+\fIQMAILHOME/bin/spawn-filter\fR, \fBqmail-rspawn\fR runs
+\fBspawn-filter\fR with the same \fIargs\fR that is passed to
+\fBqmail-remote\fR.
+
+\fBspawn-filter\fR unsets \fBQMAILREMOTE\fR when it runs as
+\fBqmail-local\fR. Similarly, it unsets \fBQMAILLOCAL\fR when it runs as
+\fBqmail-remote\fR. This is useful in scripts to figure out whether
+\fBspawn-filter\fR is running as \fBqmail-local\fR or \fBqmail-remote\fR.
+You can set \fBQLOCAL\fR, \fBQREMOTE\fR environment variable to make
+spawn-filter run an alternate \fBqmail-local\fR, \fBqmail-remote\fR
+programs. The alternate programs are expected to support the same interface
+as the original \fBqmail-local\fR and \fBqmail-remote\fR.
+
+Filters can be run by defining the environment variable \fBFILTERARGS\fR or
+by using the control file \fIfilterargs\fR (see below). \fBspawn-filter\fR
+uses /bin/sh to run the filter (with arguments) specified by the
+\fBFILTERARGS\fR environment variable (or the control file
+\fIfilterargs\fR). The environment variable \fBFILTERARGS\fR apply to both
+local and remote mails. For individual domain level control, it is best to
+set using the control file \fIfilterargs\fR (see below the section on
+control files). The environment variable \fBFILTERARGS\fR takes precedence
+over the control file.
+
+\fBspawn-filter\fR sets multiple environment variables which can be
+conveniently used in programs/scripts which get invoked by setting
+\fBFILTERARGS\fR environment variable or by rules in the \fBfilterargs\fR
+control file. See the section on \fBEnvironment Variables\fR below.
+
+\fBspawn-filter\fR unsets FILTERARGS, QMAILLOCAL, QMAILREMOTE before
+running \fBqmail-local\fR or \fBqmail-remote\fR. \fBspawn-filter\fR unsets
+FILTERARGS before running filter.
+
+.SH Control Files
+
+.TP 5
+.I filterargs
+This control file can be used to setup additional filters. This file has
+the following format.
+
+.EX
+\fBdomain:args\fR
+  or
+\fBdomain:args:envstr\fR
+.EE
+
+for both local and remote deliveries
+
+.EX
+\fBdomain:remote:args\fR
+  or
+\fBdomain:remote:args:envstr\fR
+.EE
+
+for remote deliveries and
+
+.EX
+\fBdomain:local:args\fR
+  or
+\fBdomain:local:args:envstr\fR
+.EE
+
+for local deliveries.
+
+\fIdomain\fR can be an exact match, wildcard or a regular expression (if
+QREGEX environment variable is defined). If there are multiple lines which
+match \fIdomain\fR, the first line that matches \fIdomain\fR will be used.
+
+For local deliveries, \fIdomain\fR refers to the recipient domain. You can
+have the match done on sender domain by setting \fBMATCH_SENDER_DOMAIN\fR.
+
+For remote deliveries, \fIdomain\fR refers to the sender domain. You can
+have the match done on recipient domain by setting
+\fBMATCH_RECIPIENT_DOMAIN\fR.
+
+.EX
+sagredo.eu:remote:QMAILHOME/bin/qmail-dkim:DKIMQUEUE=/bin/cat
+.EE
+
+\fIenvstr\fR mentioned above is a string of environment variable additions
+or removals. e.g.
+
+.EX
+QREGEX=1,DKIMSIGNOPTIONS=-z 4,HOME=
+.EX
+
+sets QREGEX to 1, DKIMSIGNOPTIONS to "-z 4" and unsets HOME envrionment
+variable.
+
+The other control files that
+.B spawn-filter
+uses are
+
+.TP 5
+.I databytes
+Maximum size of mail that will be accepted before passing it to
+\fBqmail-remote\fR or \fBqmail-local\fR
+
+If the environment variable \fBDATABYTES\fR is set, it overrides
+\fIdatabytes\fR. The value of databytes determines the maximum size of a
+message that \fBspawn-filter\fR will accept.
+
+.SH Environment Variables
+\fBspawn-filter\fR sets few environment variables. The following
+environment variables are set for both local and remote deliveries
+
+.TS
+l l.
+Environment variable | Description
+------------------------------------------------------------
+DOMAIN               | domain part of recipient address
+_EXT                 | the address extension
+_SENDER              | envelope sender address
+_RECIPIENT           | envelope recipient address
+QMAILREMOTE          | set for remote deliveries
+QMAILLOCAL           | set for local deliveries
+
+.TE
+
+.SH "EXIT CODES"
+\fBspawn-filter\fR exits 111 for any error (non-zero exit status by called
+program) or if it is not able to exec QMAILHOME/bin/qmail-local (for local
+mails) or QMAILHOME/bin/qmail-remote (for remote mails). It exits 100 if
+the program/script defined by \fBFILTERARGS\fR (or defined in the control
+file \fBfilterargs\fR) returns 100. If the program/script defined by
+\fBFILTERARGS\fR returns 2, then the mail gets blackholed. If the
+program/script defined by \fBFILTERARGS\fR exits non-zero status (other
+than 2), temporary error is issued and the mail stays in the queue. For all
+other cases where no errors occur, it exits 0.
+
+.SH "SEE ALSO"
+qmail-lspawn(8),
+qmail-rspawn(8),
+qmail-local(8),
+qmail-remote(8),
+qmail-smtpd(8),
+qmail-control(5),
+qmail-queue(8),
+qmail-command(8)
+
+.SH "AUTHORS"
+
+"Manvendra Bhangui" <mbhangui@gmail.com>.

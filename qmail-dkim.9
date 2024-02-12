@@ -1,0 +1,335 @@
+.\" vim: tw=75
+.TH qmail-dkim 8
+.SH NAME
+qmail-dkim \- sign/verify using DKIM (SSP/ADSP optionally) and queue a mail
+message for delivery
+
+.SH SYNOPSIS
+.B qmail-dkim
+
+.SH DESCRIPTION
+\fBqmail-dkim\fR has the same interface as \fBqmail-queue\fR except that it
+inserts an appropriate DKIM header (rfc4871, rfc6376) before it queues the
+message. To invoke \fBqmail-dkim\fR, set QMAILQUEUE to point to qmail-dkim
+in the environment when you send or receive email. The DKIM header is
+DKIM-Signature when signing a message or DKIM-Status when verifying DKIM
+signature.
+
+\fBqmail-dkim\fR will call \fBqmail-queue\fR. To invoke an executable other
+than \fBqmail-queue\fR set DKIMQUEUE=bin/qmail-dk for example.
+
+\fBqmail-dkim\fR supports RSA-SHA1, RSA-SHA256 and ED25519-SHA256 (rfc8463)
+encryption methods for signing and verification. By default RSA-SHA256 is
+used.
+
+\fBqmail-dkim\fR supports DKIM signing and verification and can optionally
+use \fBSender Signing Practice (SSP)\fR or \fBAuthor Domain Signing
+Practice\fR. \fBqmail-dkim\fR uses libdkim and OpenSSL libraries for
+signing and verification.
+
+To sign a message, set the \fBDKIMSIGN\fR environment variable to the
+pathname of the private key that will be used to sign the message. You can
+run \fBdknewkey\fR(8) to create a private key. Any % character in the
+environment variable are removed and replaced by the domain name in the
+From: header. The selector (s=) will be taken from the basename of the
+file. If, after substituting the %, that file does not exist, the %
+character will be removed to check if the file exists. In addition to
+\fBDKIMSIGN\fR environment variable, you can have the domain and the
+pathname of the private key in the control file \fIdkimkeys\fR which has
+the following format
+
+.EX
+domain:private_key_path:envstr
+.EE
+
+.fi
+Here \fIenvstr\fR is a string of environment variable additions or
+removals. e.g.
+
+.EX
+QREGEX=1,DKIMSIGNOPTIONS=-z 4
+.EX
+
+.fi
+If an entry for \fIdomain\fR exists in \fIdkimkeys\fR, the value of
+\fBDKIMSIGN\fR environment variable is ignored. Also \fBDKIMSIGN\fR is one
+variable that you cannot set in \fIenvstr\fR. You can disable
+\fIdkimkeys\fR by setting \fBNODKIMKEYS\fR environment variable.
+
+If a private key file does not exist and does not have a % character, the
+message will be rejected with error 32.
+
+In the absense of DKIMSIGN and DKIMVERIFY environment variable, qmail-dkim
+will sign the message if RELAYCLIENT or AUTHINFO environment variable is
+set. It will verify the message if RELAYCLIENT or AUTHINFO environment
+variable is not set. Even if DKIMVERIFY is set, you can disable dkim
+verification, if RELAYCLIENT or AUTHINFO is set, by setting
+RELAYCLIENT_NODKIMVERIFY environment variable.
+
+You can set various DKIM options in getopt style, by setting the
+environment variable \fBDKIMSIGNOPTIONS\fR
+
+.nf
+c <canonicalization> r for relaxed [DEFAULT], s - simple,
+                     t relaxed/simple, u - simple/relaxed
+l                    include body length tag
+q                    include query method tag;
+t                    include a timestamp tag
+h                    include copied headers. This adds the z= tag
+                     containing a copy of the message's original
+                     headers.
+i <identity>         the identity, if not provided it will not be included
+x <expire_time>      the expire time in seconds since epoch
+                     ( DEFAULT = current time + 604800)
+                     if set to - then it will not be included
+z <hash>             1 for RSA-SHA1, 2 for RSA-SHA256, 3 for
+                     RSA-SHA1+RSA-SHA256, 4 for Ed25519-SHA256
+.fi
+
+.EX
+DKIMSIGNOPTIONS="-z 2 -c r -q"
+Use RSA SHA256 hash, set relaxed canonicalization and include query method
+tag
+.EE
+
+Apart from setting \fBDKIMSIGNOPTIONS\fR, you can set the identity and the
+expire time by setting \fBDKIMIDENTITY\fR and \fBDKIMEXPIRE\fR
+respectively. \fBDKIMIDENTITY\fR takes precedence over -i option specified
+in \fBDKIMSIGNOPTIONS\fR. Similarly, \fBDKIMEXPIRE\fR takes precedence over
+-x option specifed in \fBR DKIMSIGNOPTIONS\fR. \fBqmail-dkim\fR uses the
+domain found in the Return-Path, Sender, From, X-Bounced-Address headers to
+set the domain tag. If not it uses the value in \fIbouncehost\fR control
+file. If \fIbouncehost\fR is missing, \fIme\fR is used. You can use
+\fBBOUNCEDOMAIN\fR environment variable to override the value in the
+control file. \fBBOUNCEDOMAIN\fR can be set to an email address or a domain
+(without the at sign).
+
+As a default \fBqmail-dkim\fR inserts RSA-SHA256 DKIM-Signature and expects
+the private key file to be a RSA private key. This can be changed by
+setting DKIMOPTIONS="-z 4" to insert ed25519 signature. \fBqmail-dkim\fR
+can insert an additional DKIM-signature if \fBDKIMSIGNEXTRA\fR is set. This
+is useful for inserting both RSA and ED25519 signature when signing. As an
+example you can have \fBDKIMSIGN\fR pointing to a RSA private key,
+\fBDKIMSIGNOPTIONS\fR having "-z 2" along with other options if any.
+Additionally set \fBDKIMSIGNEXTRA\fR pointing to an ed25519 private key and
+set \fBDKIMSIGNOPTIONSEXTRA\fR to have "-z 4" along with other options if
+any.
+
+To verify a message, set the \fBDKIMVERIFY\fR environment variable to a
+desired set of letters. Precisely, if you want a libdkim return status to
+generate an error, include that letter, where A is the first return status
+(DKIM_SUCCESS), B is the second (DKIM_FINISHED_BODY), etc. The letter
+should be uppercase if you want a permanent error to be returned, and
+lowercase if you want a temporary error to be returned (exit code 88). If
+you omit the letter, qmail-dkim will not issue any error inspite of DKIM
+verification failure. It will return success and the email will get
+delivered.
+
+The complete set of letters with the corresponding return status is given
+below
+.nf
+A - DKIM_SUCCESS                        - Function executed successfully
+B - DKIM_FINISHED_BODY                  - process result: no more message
+                                          body is needed
+C - DKIM_PARTIAL_SUCCESS                - verify result: at least one
+                                          but not all signatures verified
+D - DKIM_NEUTRAL                        - verify result: no signatures
+                                          verified but message is
+                                          not suspicious
+E - DKIM_SUCCESS_BUT_EXTRA              - signature result: signature
+                                          verified but it did not
+                                          include all of the body
+F - DKIM_3PS_SIGNATURE                  - 3rd-party signature
+G - DKIM_FAIL                           - Function failed to execute
+H - DKIM_BAD_SYNTAX                     - signature error: DKIM-Signature
+                                          could not parse or has bad
+                                          tags/values
+I - DKIM_SIGNATURE_BAD                  - signature error: RSA verify
+                                          failed
+J - DKIM_SIGNATURE_BAD_BUT_TESTING      - signature error: RSA verify
+                                          failed but testing
+K - DKIM_SIGNATURE_EXPIRED              - signature error: x= is old
+L - DKIM_SELECTOR_INVALID               - signature error: selector doesn't
+                                          parse or contains invalid values
+M - DKIM_SELECTOR_GRANULARITY_MISMATCH  - signature error: selector
+                                          g= doesn't match i=
+N - DKIM_SELECTOR_KEY_REVOKED           - signature error: selector
+                                          p= empty
+O - DKIM_SELECTOR_DOMAIN_NAME_TOO_LONG  - signature error: selector domain
+                                          name too long to request
+P - DKIM_SELECTOR_DNS_TEMP_FAILURE      - signature error: temporary dns
+                                          failure requesting selector
+Q - DKIM_SELECTOR_DNS_PERM_FAILURE      - signature error: permanent dns
+                                          failure requesting selector
+R - DKIM_SELECTOR_PUBLIC_KEY_INVALID    - signature error: selector
+                                          p= value invalid or wrong format
+S - DKIM_NO_SIGNATURES                  - no signatures
+T - DKIM_NO_VALID_SIGNATURES            - no valid signatures
+U - DKIM_BODY_HASH_MISMATCH             - sigature verify error: message
+                                          body does not hash to bh value
+V - DKIM_SELECTOR_ALGORITHM_MISMATCH    - signature error: selector
+                                          h= doesn't match signature a=
+W - DKIM_STAT_INCOMPAT                  - signature error: incompatible v=
+X - DKIM_UNSIGNED_FROM                  - signature error: not found
+                                          message From headers in signature
+.fi
+
+For example, if you want to permanently reject messages that have a
+signature that is expired, include the letter 'K' in the \fBDKIMVERIFY\fR
+environment variable. If you want to accept all mails and just have the
+DKIM-Status header, set \fBDKIMVERIFY\fR to "p". A conservative set of
+letters is \fBFGHIKLMNOQRTUVWjp\fR. Reject permanently 3PS, FAILURE,
+SYNTAX, SIGNATURE_BAD, SIGNATURE_EXPIRED, SELECTOR_INVALID,
+GRANULARITY_MISMATCH, SELECTOR_KEY_REVOKED, DOMAIN_NAME_TOO_LONG,
+SELECTOR_PUBLIC_KEY_INVALID, NO_VALID_SIGNATURES and BODY_HASH_MISMATCH
+errors, and temporarily SIGNATURE_BAD_BUT_TESTING and DNS_TEMP_FAILURE.
+Add in \fBS\fR if you want to reject messages that do not have a DKIM
+signature. You can use the control files \fBsignaturedomains\fR and
+\fBnosignaturedomains\fR (See Below) to further fine tune the action to be
+taken when a mail arrives with no DKIM signature. Note that
+\fBqmail-dkim\fR always inserts the \fBDKIM-Status\fR header, so that
+messages can be rejected later at delivery time, or in the mail reader. In
+that case you may set \fBDKIMVERIFY\fR to "p" or an empty string. If you
+want to check all message's From header in signature set the
+\fBUNSIGNED_FROM\fR environment variable to an empty string. If you want to
+check messages without signed subject header, set \fBUNSIGNED_SUBJECT\fR
+environment variable. If you want to honor body lengh tag (l=), set
+\fBHONOR_BODYLENGTHTAG\fR environment variable.
+
+qmail-dkim supports signing practice which can be additonall checked when a
+signature verifcation fails -
+
+.BR "SSP - Sender Signing Practice"
+
+and
+
+.BR "ADSP - Author Domain Signing Practice" .
+
+When a signature fails to verify for a message, you can use SSP/ADSP to
+determine if the message is suspicious or not. To verify a message against
+SSP/ADSP, set the \fBDKIMPRACTICE\fR environment variable to the desired
+set of letters allowed for DKIMVERIFY environment variable. SSP/ADSP should
+be used only when signature verification fails. SSP/ADSP should be invoked
+only when libdkim returns the error codes
+(F,G,H,I,J,K,L,M,N,P,Q,R,S,T,U,V,W,X) for signature verification. In case
+you want to test against SSP/ADSP only for DKIM_NO_SIGNATURE and
+DKIM_NO_VALID_SIGNATURE set the environment variable
+\fBDKIMPRACTICE="ST"\fR. If you want automatic behaviour, set DKIMPRACTICE
+to an empty string. In this case ADSP/SSP will be used when return code
+matches "FGHIJKLMNPQRSTUVWX". \fBqmail-dkim\fR uses ADSP as the default
+signing practice. You can override this by setting the SIGN_PRACTICE to
+ssp, adsp, local (lowercase). if you set SIGN_PRACTICE to \fIlocal\fB,
+\fBqmail-dkim\fR will check the domain against the control file
+\fIsignaturedomains\fR (See Below). If the domain is found listed in
+\fIsignaturedomains\fR, \fBqmail-dkim\fR will bypass ADSP/SSP and return
+DKIM_FAIL if signature fails to verify. Setting \fBSIGN_PRACTICE\fR to
+anything else will cause \fBqmail-dkim\fR to disable Signing Practice.
+
+If ADSP or SSP is checked, \fBqmail-dkim will insert the \fBX-DKIM-ADSP\fR
+or \fBX-DKIM-SSP\fR header as given below
+
+.nf
+A - DKIM_SUCCESS             - Message passes ADSP test
+B - DKIM_ADSP_UNKNOWN        - some messages may be signed
+C - DKIM_ADSP_ALL            - All message are signed with author signature 
+D - DKIM_ADSP_DISCARDABLE    - messages which fail verification are
+                               Discardable
+E - DKIM_ADSP_SCOPE          - domain is out of scope
+F - DKIM_ADSP_TEMPFAIL       - Temporary Error 
+
+or
+
+A - DKIM_SUCCESS             - Message passes ADSP test
+B - DKIM_SSP_UNKNOWN         - some messages may be signed
+C - DKIM_SSP_ALL             - All message are signed with author signature 
+D - DKIM_SSP_STRICT          - messages which fail verification are
+                               Discardable
+E - DKIM_SSP_SCOPE           - domain is out of scope
+F - DKIM_SSP_TEMPFAIL        - Temporary Error 
+.fi
+
+You can have a control file \fIsignaturedomains\fR containing a list of
+domains which you know are sure to sign messages using DKIM. If a message
+comes from a domain listed in \fIRsignaturedomains\fR, and the signature
+fails verification (any of DKIM failure status), \fBqmail-dkim\fR will
+bypass ADSP/SSP checks and return DKIM_FAIL. The name of this control file
+can be overriden by the environment variable \fBSIGNATUREDOMAINS\fR.
+
+You can have a control file \fInosignaturedomains\fR containing a list of
+domains which you know are sure not to sign messages using DKIM. If a
+message comes from a domain listed in \fInosignaturedomains\fR, and does
+not have a DKIM-Signature header, \fBqmail-dkim\fR will bypass ADSP/SSP
+checks and return DKIM_NEUTRAL. The wildcard entry '*' in this file, will
+result in all mails which do not have a signature to pass DKIM test (unless
+the domain is listed in the control file \fBsignaturedomains\fR). The name
+of this control file can be overriden by the environment variable
+\fBNOSIGNATUREDOMAINS\fR.
+
+\fBqmail-dkim\fR will use the environment variable \fBSELECTOR_DATA\fR
+instead of dns for the public key text record. This can be used to test
+signatures without deploying the public key in dns.
+
+Typically, you would sign messages generated on-host by setting
+\fBDKIMSIGN\fR in the environment before running an \fBqmail-smtpd\fR(8) or
+\fBsendmail(1)\fR / \fBqmail-inject\fR(8). \fBDKIMSIGN\fR will be carried
+through qmail-smtpd or through qmail's sendmail emulation through
+\fBqmail-inject\fR to \fBqmail-dkim\fR. You would also set it for
+\fBqmail-smtpd\fR at the same time \fBRELAYCLIENT\fR is set, most often in
+the tcpserver cdb file. If a host is authorized to relay, you probably want
+to sign messages sent by that host. \fBDKIMVERIFY\fR should be set for all
+other hosts.
+
+If neither \fBDKIMSIGN\fR nor \fBDKIMVERIFY\fR are set, then \fBDKIMSIGN\fR
+will be set to @controldir@/domainkeys/%/default. The % will be replaced by
+the domain in the From: header. If such a file does not exist, then it will
+be set to @controldir@/domainkeys/default. If such a private key exists, it
+will be used to sign the domain. You can also set \fBDKIMKEY\fR to chose a
+key different from @controldir@/domainkeys/%/default. \fBDKIMKEY\fR can
+also have % character that will be replaced by the domain in the From:
+header. If the private key does not exist, qmail-dkim will exit with return
+code 32.
+
+By default \fBqmail-dkim\fR will use all of the headers when signing a
+message. You an exclude headers from gettng signed by setting a colon
+separated list of headers in \fBEXCLUDE_DKIMSIGN\fR environment variable.
+
+.SH NOTES
+If the environment variable \fBCONTROLDIR\fR is set, \fBqmail-dkim\fR uses
+that instead of @controldir@ to read control files and the private key.
+
+.SH "EXIT CODES"
+\fBqmail-dkim\fR returns the same exit codes as qmail-queue with these
+additions:
+
+.TP 5
+\fB32\fR
+The private key file does not exist.
+
+.TP 5
+\fB57\fR
+Trouble waiting for qmail-queue to exit.
+
+.TP 5
+\fB58\fR
+Unable to vfork.
+
+.TP 5
+\fB59\fR
+Unable to create a pipe to qmail-queue.
+
+.TP 5
+\fB88\fR
+For custom errors. Additionally diagnostic information of the error will be
+written to descriptor 2.
+
+.SH "SEE ALSO"
+addresses(5),
+envelopes(5),
+qmail-header(5),
+dknewkey(8),
+dkim(8),
+qmail-inject(8),
+qmail-qmqpc(8),
+qmail-queue(8),
+qmail-send(8),
+qmail-smtpd(8)

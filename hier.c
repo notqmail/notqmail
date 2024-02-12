@@ -52,6 +52,7 @@ void hier()
   h(auto_qmail,auto_uido,auto_gidq,0755);
 
   d(auto_qmail,"control",auto_uido,auto_gidq,0755);
+  d(auto_qmail,"control/cache",auto_uidd,auto_gidq,0755);
   d(auto_qmail,"users",auto_uido,auto_gidq,0755);
   d(auto_qmail,"bin",auto_uido,auto_gidq,0755);
   d(auto_qmail,"boot",auto_uido,auto_gidq,0755);
@@ -110,10 +111,16 @@ void hier()
   c(auto_qmail,"bin","qmail-start",auto_uido,auto_gidq,0700);
   c(auto_qmail,"bin","qmail-getpw",auto_uido,auto_gidq,0711);
   c(auto_qmail,"bin","qmail-local",auto_uido,auto_gidq,0711);
+  c(auto_qmail,"bin","spawn-filter",auto_uido,auto_gidq,0711);
+  c(auto_qmail,"bin","surblfilter",auto_uido,auto_gidq,0711);
+  c(auto_qmail,"bin","surblqueue",auto_uido,auto_gidq,0555);
   c(auto_qmail,"bin","qmail-remote",auto_uido,auto_gidq,0711);
   c(auto_qmail,"bin","qmail-rspawn",auto_uido,auto_gidq,0711);
   c(auto_qmail,"bin","qmail-clean",auto_uido,auto_gidq,0711);
   c(auto_qmail,"bin","qmail-send",auto_uido,auto_gidq,0711);
+  c(auto_qmail,"bin","dknewkey", auto_uido, auto_gidq, 0711);
+  c(auto_qmail,"bin","qmail-dkim",auto_uidq,auto_gidq,0711);
+  c(auto_qmail,"bin","dkim",auto_uidq,auto_gidq,0711);
   c(auto_qmail,"bin","splogger",auto_uido,auto_gidq,0711);
   c(auto_qmail,"bin","qmail-newu",auto_uido,auto_gidq,0700);
   c(auto_qmail,"bin","qmail-newmrh",auto_uido,auto_gidq,0700);
@@ -144,6 +151,7 @@ void hier()
   c(auto_qmail,"bin","except",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","maildirmake",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","maildir2mbox",auto_uido,auto_gidq,0755);
+  c(auto_qmail,"bin","testqmail-dks",auto_uido,auto_gidq,0755);
 
   c(auto_qmail,"man/man5","addresses.5",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat5","addresses.0",auto_uido,auto_gidq,0644);
@@ -197,6 +205,13 @@ void hier()
   c(auto_qmail,"man/cat1","tcp-env.0",auto_uido,auto_gidq,0644);
 
   c(auto_qmail,"man/man8","qmail-local.8",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/man8","dkim.8",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/man8","qmail-dkim.8",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/cat8","qmail-dkim.0",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/man8","surblfilter.8",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/cat8","surblfilter.0",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/man8","spawn-filter.8",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/cat8","spawn-filter.0",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat8","qmail-local.0",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/man8","qmail-lspawn.8",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat8","qmail-lspawn.0",auto_uido,auto_gidq,0644);
@@ -248,4 +263,5 @@ void hier()
   c(auto_qmail,"man/cat8","qmail-smtpd.0",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/man8","qmail-command.8",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat8","qmail-command.0",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/man8","dknewkey.8",auto_uido,auto_gidq,0644);
 }

@@ -129,6 +129,7 @@ struct qmail *qq;
     case 115: /* compatibility */
     case 11: return "Denvelope address too long for qq (#5.1.3)";
     case 31: return "Dmail server permanently rejected message (#5.3.0)";
+    case 32: return "DPrivate key file does not exist (#5.3.5)";
     case 51: return "Zqq out of memory (#4.3.0)";
     case 52: return "Zqq timeout (#4.3.0)";
     case 53: return "Zqq write error or disk full (#4.3.0)";
@@ -136,12 +137,15 @@ struct qmail *qq;
     case 54: return "Zqq read error (#4.3.0)";
     case 55: return "Zqq unable to read configuration (#4.3.0)";
     case 56: return "Zqq trouble making network connection (#4.3.0)";
+    case 58: return "Zqq trouble creating child (#4.3.0)";
+    case 59: return "Zqq trouble creating pipes (#4.3.0)";
     case 61: return "Zqq trouble in home directory (#4.3.0)";
     case 63:
     case 64:
     case 65:
     case 66:
     case 62: return "Zqq trouble creating files in queue (#4.3.0)";
+    case 70: return "Zqq trouble with pid file (#4.3.0)";
     case 71: return "Zmail server temporarily rejected message (#4.3.0)";
     case 72: return "Zconnection to mail server timed out (#4.4.1)";
     case 73: return "Zconnection to mail server rejected (#4.4.1)";
@@ -149,11 +153,13 @@ struct qmail *qq;
     case 91: /* fall through */
     case 81: return "Zqq internal bug (#4.3.0)";
     case 120: return "Zunable to exec qq (#4.3.0)";
+    case 122: return "Zqq waitpid surprise (#4.3.0)";
+    case 123: return "Zqq crashed (#4.3.0)";
     default:
       if (exitcode == 82 && errlen > 2)
         return errstr;
       if ((exitcode >= 11) && (exitcode <= 40))
-	return "Dqq permanent problem (#5.3.0)";
+        return "Dqq permanent problem (#5.3.0)";
       return "Zqq temporary problem (#4.3.0)";
   }
 }

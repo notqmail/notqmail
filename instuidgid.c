@@ -4,6 +4,7 @@
 #include "auto_users.h"
 
 uid_t auto_uida;
+uid_t auto_uidd;
 uid_t auto_uido;
 uid_t auto_uidq;
 uid_t auto_uidr;
@@ -15,6 +16,7 @@ void
 init_uidgid()
 {
   auto_uida = inituid(auto_usera);
+  auto_uidd = inituid(auto_userd);
   auto_uido = inituid(auto_usero);
   auto_uidq = inituid(auto_userq);
   auto_uidr = inituid(auto_userr);

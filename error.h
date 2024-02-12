@@ -8,6 +8,7 @@
 #define error_noent ENOENT
 #define error_txtbsy ETXTBSY
 #define error_io EIO
+#define error_isdir EISDIR
 #define error_exist EEXIST
 #define error_timeout ETIMEDOUT
 #define error_inprogress EINPROGRESS

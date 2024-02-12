@@ -1,0 +1,1372 @@
+#!/bin/sh
+verbose=0
+domainkey_dir=/tmp/domainkeys
+
+# The domain under your control and for which you
+# have the public key in dns. Have the following
+# keys in dns or modify the RSA 2048, RSA 4096,
+# ed25519 keys appropriately
+#
+if [ $# -eq 0 ] ; then
+	real_domain=$(cat /var/qmail/control/me)
+else
+	real_domain=$1
+fi
+# rsa key 2048
+real_domain_rsa2048=/var/qmail/control/domainkeys/$real_domain/b2048
+
+# rsa key 4096
+real_domain_rsa4096=/var/qmail/control/domainkeys/$real_domain/default
+
+# ed25519 key
+real_domain_ed25519=/var/qmail/control/domainkeys/$real_domain/ed25519
+
+#
+# set bindir and sbindir to locate your binaries. use $PWD
+# to test your binaries at current localtion or use /var/qmail/bin,
+# bin/sbin whatever
+#
+bindir=$PWD
+sbindir=$PWD
+
+dkim=$bindir/dkim
+qmail_dkim=$sbindir"/qmail-dkim"
+dk_filter=$bindir/dk-filter
+dknewkey=$bindir/dknewkey
+
+# for qmail this is 32, for indimail this is 35
+nokeyerror=32
+
+# This is where lot of the output goes
+out=/dev/null
+
+## For testing on indimail. Comment out next 5 lines if not commented
+#real_domain=indimail.org
+#real_domain_rsa2048=/etc/indimail/control/domainkeys/argos.indimail.org/argos
+#real_domain_rsa4096=/etc/indimail/control/domainkeys/argos.indimail.org/b4096
+#real_domain_ed25519=/etc/indimail/control/domainkeys/argos.indimail.org/ed25519
+#nokeyerror=35
+
+if [ ! -d $domainkey_dir ] ; then
+	sudo mkdir -p $domainkey_dir
+	#sudo chown root:qmail $domainkey_dir
+fi
+/bin/rm -f /tmp/control/dkimkeys
+for i in example.com example.org
+do
+	if [ ! -d $domainkey_dir/$i ] ; then
+		sudo mkdir -p $domainkey_dir/$i
+		#sudo chown root:qmail $domainkey_dir/$i
+	fi
+	if [ ! -f $domainkey_dir/$i/default ] ; then
+		echo "Creating private key bits 4096 $domainkey_dir/$i/default"
+		sudo $dknewkey -e -b 4096 $domainkey_dir/$i/default >$out
+		sudo chmod 644 $domainkey_dir/$i/default
+	fi
+	if [ ! -f $domainkey_dir/$i/dkimkeys1 ] ; then
+		echo "Creating private key bits 2048 $domainkey_dir/$i/dkimkeys1"
+		sudo $dknewkey -e -b 2048 $domainkey_dir/$i/dkimkeys1 >$out
+		sudo chmod 644 $domainkey_dir/$i/dkimkeys1
+	fi
+	if [ ! -f $domainkey_dir/$i/dkimkeys2 ] ; then
+		echo "Creating private key $domainkey_dir/$i/dkimkeys2"
+		sudo $dknewkey -e -t ed25519 $domainkey_dir/$i/dkimkeys2 >$out
+		sudo chmod 644 $domainkey_dir/$i/dkimkeys2
+	fi
+done
+
+for i in test default
+do
+	if [ ! -f $domainkey_dir/$i ] ; then
+		echo "Creating private key bits 4096 $domainkey_dir/$i"
+		sudo $dknewkey -e -b 4096 $domainkey_dir/$i >$out
+		sudo chmod 644 $domainkey_dir/$i
+	fi
+done
+
+for i in example.com example.org
+do
+	if [ ! -d $domainkey_dir/$i ] ; then
+		sudo mkdir -p $domainkey_dir/$i
+		#sudo chown root:qmail $domainkey_dir/$i
+	fi
+	if [ ! -f $domainkey_dir/$i/ed25519 ] ; then
+		echo "Creating private key $domainkey_dir/$i/ed25519"
+		sudo $dknewkey -e -t ed25519 $domainkey_dir/$i/ed25519 >$out
+		sudo chmod 644 $domainkey_dir/$i/ed25519
+	fi
+done
+mkdir -p /tmp/control
+
+# Test No 1
+failed=0
+echo "testing real domain $real_domain (rsa2048,rsa4096,ed25519) using dkim with selector from dns"
+for k in $real_domain_rsa2048 $real_domain_rsa4096 $real_domain_ed25519
+do
+	case $k in
+		$real_domain_rsa2048)
+		echo "    testing rsa2048"
+		;;
+		$real_domain_rsa4096)
+		echo "    testing rsa4096"
+		;;
+		$real_domain_ed25519)
+		echo "    testing ed25519"
+		;;
+	esac
+	if [ $verbose -gt 0 ] ; then
+		echo "testing real domain $real_domain $ktype DKIM record"
+	fi
+	ktype=$(cat $k.pub| grep "k="|sed 's{v=DKIM1;{{'|cut -d= -f2|cut -d';' -f1)
+	case $ktype in
+		"rsa")
+		enc="2"
+		;;
+		"ed25519")
+		enc="4"
+		;;
+	esac
+	(
+	echo "From: postmaster@$real_domain"
+	echo "To: postmaster@$real_domain"
+	echo "Subject: Test"
+	echo "Date: $(date -R)"
+	echo
+	echo "Test message"
+	) > /tmp/mail.txt 
+	(cat /tmp/mail.txt | $bindir/dkim -z $enc -s "$k"; cat /tmp/mail.txt) | $bindir/dkim -v > $out
+	ret=$?
+	/bin/rm -f /tmp/mail.txt
+	if [ $ret -eq 0 ] ; then
+		if [ $verbose -gt 0 ] ; then
+			echo "SUCCESS: [ret=$ret] domain=$real_domain key=$k"
+			echo
+		fi
+		echo SUCCESS ======================== >$out
+	else
+		echo "FAILED : [ret=$ret] domain=$real_domain key=$k"
+		echo
+		echo FAILURE [$ret] ======================== >$out
+		echo >$out
+		failed=1
+	fi
+done
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for real domain $real_domain (rsa2048,rsa4096,ed25519) using $dkim with selector from dns"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for real domain $real_domain (rsa2048,rsa4096,ed25519) using $dkim with selector from dns"
+fi
+
+# Test No 2
+failed=0
+echo "testing multi-signature real domain $real_domain (rsa4096+ed25519) signing+verification by dkim with selector from dns"
+if [ $verbose -gt 0 ] ; then
+	echo "testing real domain $real_domain multi DKIM record"
+fi
+(
+echo "From: postmaster@$real_domain"
+echo "To: postmaster@$real_domain"
+echo "Subject: Test"
+echo "Date: $(date -R)"
+echo
+echo "Test message"
+) > /tmp/mail.txt 
+(cat /tmp/mail.txt | $bindir/dkim -z 2 -s $real_domain_rsa4096 -z 4 -s $real_domain_ed25519; cat /tmp/mail.txt) | $bindir/dkim -vV >$out 2>/tmp/err.out
+ret=$?
+/bin/rm -f /tmp/mail.txt
+grep Signature /tmp/err.out | sed -e 's{Signature #{    Signature{g' \
+	-e 's{01{rsa-256{' -e 's{02{ed25519{' -e 's{Failure.*{Failure - Correct{'
+if [ $ret -eq 0 ] ; then
+	if [ $verbose -gt 0 ] ; then
+		echo "SUCCESS: [ret=$ret] domain=$real_domain key=$real_domain_rsa4096+$real_domain_ed25519"
+		echo
+	fi
+	echo SUCCESS ======================== >$out
+else
+	echo "FAILED : [ret=$ret] domain=$real_domain key=$real_domain_rsa4096+$real_domain_ed25519"
+	echo
+	echo FAILURE [$ret] ======================== >$out
+	echo >$out
+	failed=1
+fi
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for multi-signature real domain $real_domain (rsa2048+rsa4096+ed25519) using $dkim with selector from dns"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for multi-signature real domain $real_domain (rsa2048+rsa4096+ed25519) using $dkim with selector from dns"
+fi
+
+# Test No 3
+failed=0
+echo "testing multi-signature real domain $real_domain (rsa4096+ed25519) signing by qmail-dkim, verification by dkim with selector from dns"
+if [ $verbose -gt 0 ] ; then
+	echo "testing real domain $real_domain multi DKIM record"
+fi
+(
+echo "From: postmaster@$real_domain"
+echo "To: postmaster@$real_domain"
+echo "Subject: Test"
+echo "Date: $(date -R)"
+echo
+echo "Test message"
+) | env - \
+		CONTROLDIR=/tmp/control \
+		DKIMSIGN="$real_domain_rsa4096" \
+		DKIMSIGNOPTIONS="-z 2" \
+		DKIMSIGNEXTRA="$real_domain_ed25519" \
+		DKIMSIGNOPTIONSEXTRA="-z 4" \
+		DKIMQUEUE=/bin/cat \
+		$qmail_dkim | $bindir/dkim -vV >$out 2>/tmp/err.out
+ret=$?
+grep Signature /tmp/err.out | sed -e 's{Signature #{    Signature{g' \
+	-e 's{01{ed25519{' -e 's{02{rsa-256{' -e 's{Failure.*{Failure - Correct{'
+if [ $ret -eq 0 ] ; then
+	if [ $verbose -gt 0 ] ; then
+		echo "SUCCESS: [ret=$ret] domain=$real_domain key=$real_domain_rsa4096+$real_domain_ed25519"
+		echo
+	fi
+	echo SUCCESS ======================== >$out
+else
+	echo "FAILED : [ret=$ret] domain=$real_domain key=$real_domain_rsa4096+$real_domain_ed25519"
+	echo
+	echo FAILURE [$ret] ======================== >$out
+	echo >$out
+	failed=1
+fi
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for multi-signature real domain $real_domain (rsa2048+rsa4096+ed25519) using $dkim with selector from dns"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded multi-signature for real domain $real_domain (rsa2048+rsa4096+ed25519) using $dkim with selector from dns"
+fi
+
+# Test No 4
+failed=0
+echo "testing real domain $real_domain (rsa2048+rsa4096+ed25519) using qmail-dkim with selector from dns"
+for k in $real_domain_rsa2048 $real_domain_rsa4096 $real_domain_ed25519
+do
+	if [ $verbose -gt 0 ] ; then
+		echo "testing real domain $real_domain"
+	fi
+	case $k in
+		$real_domain_rsa2048)
+		echo "    testing rsa2048"
+		;;
+		$real_domain_rsa4096)
+		echo "    testing rsa4096"
+		;;
+		$real_domain_ed25519)
+		echo "    testing ed25519"
+		;;
+	esac
+	ktype=$(cat $k.pub| grep "k="|sed 's{v=DKIM1;{{'|cut -d= -f2|cut -d';' -f1)
+	case $ktype in
+		"rsa")
+		enc="2"
+		;;
+		"ed25519")
+		enc="4"
+		;;
+	esac
+	(
+	echo "From: postmaster@$real_domain"
+	echo "To: postmaster@$real_domain"
+	echo "Subject: Test"
+	echo "Date: $(date -R)"
+	echo
+	echo "Test message"
+	) | env - \
+		DKIMSIGN="$k" \
+		DKIMSIGNOPTIONS="-z $enc" \
+		DKIMQUEUE=/bin/cat \
+		$qmail_dkim | env - \
+			DKIMVERIFY="" \
+			DKIMQUEUE=/bin/cat \
+			$qmail_dkim > $out
+	ret=$?
+	if [ $ret -eq 0 ] ; then
+		if [ $verbose -gt 0 ] ; then
+			echo "SUCCESS: [ret=$ret] domain=$real_domain key=$real_domain_key"
+			echo
+		fi
+		echo SUCCESS ======================== >$out
+	else
+		echo "FAILED : [ret=$ret] domain=$real_domain key=$real_domain_key"
+		echo
+		echo FAILURE [$ret] ======================== >$out
+		echo >$out
+		failed=1
+	fi
+done
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for real domain $real_domain (rsa2048+rsa4096+ed25519) using $qmail_dkim with selector from dns"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for real domain $real_domain (rsa2048+rsa4096+ed25519) using $qmail_dkim with selector from dns"
+fi
+
+# Test No 5
+echo "testing dkim with different key types (rsa2048+rsa4096+ed25519) signing+verification by dkim"
+failed=0
+for i in dkimkeys1 default ed25519
+do
+	if [ $verbose -gt 0 ] ; then
+		echo testing key type $i
+	fi
+	if [ "$i" = "ed25519" ] ; then
+		enc=4
+	else
+		enc=2
+	fi
+	case $i in
+		dkimkeys1)
+		echo "    testing rsa2048"
+		;;
+		default)
+		echo "    testing rsa4096"
+		;;
+		ed25519)
+		echo "    testing ed25519"
+		;;
+	esac
+	for j in example.com example.org
+	do
+		selector=$(cat $domainkey_dir/$j/$i.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+		if [ $verbose -gt 0 ] ; then
+			echo "($dkim -z $enc -s $domainkey_dir/$j/$i </tmp/mail.txt;cat /tmp/mail.txt) | $dkim -v -T $selector"
+		fi
+		(
+		echo "From: postmaster@$j"
+		echo "To: postmaster@$j"
+		echo "Subject: Test"
+		echo "Date: $(date -R)"
+		echo
+		echo "Test message"
+		) > /tmp/mail.txt
+		(cat /tmp/mail.txt | $dkim -z $enc -s $domainkey_dir/$j/$i; cat /tmp/mail.txt) | $dkim -v -T "$selector" > $out
+		ret=$?
+		/bin/rm /tmp/mail.txt
+		if [ $ret -eq 0 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret]  $selector"
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			echo "FAILED : [ret=$ret] domain=$j key=$domainkey_dir/$j/$i $selector"
+			echo
+			echo FAILURE [$ret] ======================== >$out
+			echo >$out
+			failed=1
+		fi
+	done
+done
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for $dkim with different key types (rsa+ed25519)"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for $dkim with different key types (rsa+ed25519)"
+fi
+
+# Test No 6
+echo "testing multi-signature signing+verification by dkim"
+failed=0
+for i in example.com example.org
+do
+	key1=$domainkey_dir/$i/default
+	key2=$domainkey_dir/$i/ed25519
+	(
+	echo "From: postmaster@$i"
+	echo "To: postmaster@$i"
+	echo "Subject: Test"
+	echo "Date: $(date -R)"
+	echo
+	echo "Test message"
+	) > /tmp/mail.txt
+	(cat /tmp/mail.txt | $dkim -z 2 -s $key1 -z 4 -s $key2; cat /tmp/mail.txt) > /tmp/result.out
+	/bin/rm -f /tmp/mail.txt
+	for j in default ed25519
+	do
+		if [ $verbose -gt 0 ] ; then
+			echo key $j domain $i
+		fi
+		selector=$(cat $domainkey_dir/$i/$j.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+		case $j in
+			default)
+			echo "  rsa+ed25519 with rsa-256 selector"
+			;;
+			ed25519)
+			echo "  rsa+ed25519 with ed25519 selector"
+			;;
+		esac
+		sig_count=$(grep DKIM-Signature /tmp/result.out|wc -l)
+		$dkim -vV -T "$selector" > $out 2>/tmp/err.out < /tmp/result.out
+		ret=$?
+		grep Signature /tmp/err.out | sed -e 's{Signature #{    Signature{g' \
+			-e 's{01{rsa-256{' -e 's{02{ed25519{' -e 's{Failure.*{Failure - Correct{'
+		if [ $ret -eq 0 -a $sig_count -eq 2 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret]  dkim -s $key1 -s $key2..."
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			echo "FAILED : [ret=$ret] domain=$i sig_count=$sig_count dkim -s $key1 -s $key2..."
+			echo
+			echo FAILURE [$ret] ======================== >$out
+			echo >$out
+			failed=1
+		fi
+	done
+	/bin/rm -f /tmp/result.out /tmp/err.out
+done
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for  multi-signature signing+verification by $dkim"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for  multi-signature signing+verification by $dkim"
+fi
+
+# Test No 7
+echo "testing multi-signature signing by qmail-dkim + verification by dkim DKIMSIGNEXTRA in env"
+failed=0
+key1=$domainkey_dir/%/default
+key2=$domainkey_dir/%/ed25519
+for i in example.com example.org
+do
+	(
+	echo "From: postmaster@$i"
+	echo "To: postmaster@$i"
+	echo "Subject: Test"
+	echo "Date: $(date -R)"
+	echo
+	echo "Test message"
+	) | env \
+		CONTROLDIR=/tmp/control \
+		DKIMSIGN="$key1" \
+		DKIMSIGNOPTIONS="-z 2" \
+		DKIMQUEUE=/bin/cat \
+		DKIMSIGNEXTRA="$key2" \
+		DKIMSIGNOPTIONSEXTRA="-z 4" \
+		ERR_FD=2 \
+	$qmail_dkim > /tmp/result.out
+	sig_count=$(grep DKIM-Signature /tmp/result.out|wc -l)
+	for j in default ed25519
+	do
+		if [ $verbose -gt 0 ] ; then
+			echo key $j domain $i
+		fi
+		selector=$(cat $domainkey_dir/$i/$j.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+		case $j in
+			default)
+			echo "  rsa+ed25519 with rsa-256 selector"
+			;;
+			ed25519)
+			echo "  rsa+ed25519 with ed25519 selector"
+			;;
+		esac
+		$dkim -vV -T "$selector" >$out 2>/tmp/err.out < /tmp/result.out
+		ret=$?
+		grep Signature /tmp/err.out | sed -e 's{Signature #{    Signature{g' \
+			-e 's{01{ed25519{' -e 's{02{rsa-256{' -e 's{Failure.*{Failure - Correct{'
+		if [ $ret -eq 0 -a $sig_count -eq 2 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret] domain=$i sig_count=$sig_count $qmail_dkim"
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			echo "FAILED : [ret=$ret] domain=$i sig_count=$sig_count $qmail_dkim"
+			echo
+			echo FAILURE [$ret] ======================== >$out
+			echo >$out
+			failed=1
+		fi
+	done
+	/bin/rm -f /tmp/result.out /tmp/err.out
+done
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for  multi-signature signing by $qmail_dkim + verification by $dkim DKIMSIGNEXTRA in env"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for  multi-signature signing by $qmail_dkim + verification by $dkim DKIMSIGNEXTRA in env"
+fi
+
+# Test No 8
+echo "testing multi-signature signing by qmail-dkim + verification by dkim DKIMSIGNEXTRA in dkimkeys"
+(
+echo "ex*.com:/tmp/domainkeys/%/dkimkeys1:DKIMSIGNEXTRA=/tmp/domainkeys/%/dkimkeys2,DKIMSIGNOPTIONS=-z 4"
+echo "ex.*.org:/tmp/domainkeys/%/dkimkeys1:QREGEX=1,DKIMSIGNEXTRA=/tmp/domainkeys/%/dkimkeys2,DKIMSIGNOPTIONS=-z 4"
+) >/tmp/control/dkimkeys
+failed=0
+for i in example.com example.org
+do
+	(
+	echo "From: postmaster@$i"
+	echo "To: postmaster@$i"
+	echo "Subject: Test"
+	echo "Date: $(date -R)"
+	echo
+	echo "Test message"
+	) | env \
+	CONTROLDIR=/tmp/control \
+	DKIMSIGN="" \
+	DKIMSIGNOPTIONS="-z 2" \
+	DKIMQUEUE=/bin/cat \
+	ERR_FD=2 \
+	$qmail_dkim > /tmp/result.out
+	sig_count=$(grep DKIM-Signature /tmp/result.out|wc -l)
+	for j in dkimkeys1 dkimkeys2
+	do
+		if [ $verbose -gt 0 ] ; then
+			echo key $j domain $i
+		fi
+		selector=$(cat $domainkey_dir/$i/$j.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+		case $j in
+			dkimkeys1)
+			echo "  rsa+ed25519 with rsa-256 selector"
+			;;
+			dkimkeys2)
+			echo "  rsa+ed25519 with ed25519 selector"
+			;;
+		esac
+		$dkim -vV -T "$selector" >$out 2>/tmp/err.out < /tmp/result.out
+		ret=$?
+		grep Signature /tmp/err.out | sed -e 's{Signature #{    Signature{g' \
+			-e 's{01{ed25519{' -e 's{02{rsa-256{' -e 's{Failure.*{Failure - Correct{'
+		if [ $ret -eq 0 -a $sig_count -eq 2 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret] domain=$i sig_count=$sig_count dkimkeys $qmail_dkim" 
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			echo "FAILED : [ret=$ret] domain=$i sig_count=$sig_count dkimkeys $qmail_dkim"
+			echo
+			echo FAILURE [$ret] ======================== >$out
+			echo >$out
+			failed=1
+		fi
+	done
+	/bin/rm -f /tmp/result.out /tmp/err.out
+done
+/bin/rm -f /tmp/control/dkimkeys
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for  multi-signature signing by $qmail_dkim + verification by $dkim DKIMSIGNEXTRA in dkimkeys"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for  multi-signature signing by $qmail_dkim + verification by $dkim DKIMSIGNEXTRA in dkimkeys"
+fi
+
+# Test No 9
+echo "testing multi-signature signing+verification by qmail-dkim"
+failed=0
+key1=$domainkey_dir/%/default
+key2=$domainkey_dir/%/ed25519
+for i in example.com example.org
+do
+	(
+	echo "From: postmaster@$i"
+	echo "To: postmaster@$i"
+	echo "Subject: Test"
+	echo "Date: $(date -R)"
+	echo
+	echo "Test message"
+	) | env \
+		CONTROLDIR=/tmp/control \
+		DKIMSIGN="$key1" \
+		DKIMSIGNOPTIONS="-z 2" \
+		DKIMQUEUE=/bin/cat \
+		DKIMSIGNEXTRA="$key2" \
+		DKIMSIGNOPTIONSEXTRA="-z 4" \
+		ERR_FD=2 \
+		$qmail_dkim > /tmp/result.out
+	sig_count=$(grep DKIM-Signature /tmp/result.out|wc -l)
+	for j in default ed25519
+	do
+		if [ $verbose -gt 0 ] ; then
+			echo key $j domain $i
+		fi
+		selector=$(cat $domainkey_dir/$i/$j.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+		case $j in
+			default)
+			echo "  rsa+ed25519 with rsa-256 selector"
+			;;
+			ed25519)
+			echo "  rsa+ed25519 with ed25519 selector"
+			;;
+		esac
+		cat /tmp/result.out | env - \
+				DKIMVERIFY="" \
+				SELECTOR_DATA="$selector" \
+				DKIMQUEUE=/bin/cat \
+				VERBOSE=1 \
+				$qmail_dkim >$out 2>/tmp/err.out
+		ret=$?
+		grep Signature /tmp/err.out | sed -e 's{Signature #{    Signature{g' \
+			-e 's{01{ed25519{' -e 's{02{rsa-256{' -e 's{Failure.*{Failure - Correct{'
+		if [ $ret -eq 0 -a $sig_count -eq 2 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret] domain=$i sig_count=$sig_count env - DKIMSIGN=$key1 DKIMSIGNEXTRA=$key2... $qmail_dkim"
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			echo "FAILED : [ret=$ret] domain=$i sig_count=$sig_count env - DKIMSIGN=$key1 DKIMSIGNEXTRA=$key2... $qmail_dkim"
+			echo
+			echo FAILURE [$ret] ======================== >$out
+			echo >$out
+			failed=1
+		fi
+	done
+done
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for  multi-signature signing+verification by $qmail_dkim"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for  multi-signature signing+verification by $qmail_dkim"
+fi
+
+# Test No 10
+echo "testing multi-signature signing+verification by dk-filter"
+failed=0
+key1=$domainkey_dir/%/default
+key2=$domainkey_dir/%/ed25519
+for i in example.com example.org
+do
+	(
+	echo "From: postmaster@$i"
+	echo "To: postmaster@$i"
+	echo "Subject: Test"
+	echo "Date: $(date -R)"
+	echo
+	echo "Test message"
+	) | env \
+		NODK="1" \
+		QMAILREMOTE="1" \
+  		_SENDER=postmaster@$i \
+		CONTROLDIR=/tmp \
+		DKIMSIGN="$key1" \
+		DKIMSIGNOPTIONS="-z 2" \
+		DKIMSIGNEXTRA="$key2" \
+		DKIMSIGNOPTIONSEXTRA="-z 4" $dk_filter > /tmp/result.out
+	sig_count=$(grep DKIM-Signature /tmp/result.out|wc -l)
+	for j in default ed25519
+	do
+		if [ $verbose -gt 0 ] ; then
+			echo key $j domain $i
+		fi
+		selector=$(cat $domainkey_dir/$i/$j.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+		case $j in
+			default)
+			echo "  rsa+ed25519 with rsa-256 selector"
+			;;
+			ed25519)
+			echo "  rsa+ed25519 with ed25519 selector"
+			;;
+		esac
+		cat /tmp/result.out | env - \
+			NODK="1" \
+			QMAILREMOTE="1" \
+			DKIMVERIFY="1" \
+			VERBOSE=1 \
+			SELECTOR_DATA="$selector" \
+		$dk_filter >$out 2>/tmp/err.out
+		ret=$?
+		grep Signature /tmp/err.out | sed -e 's{Signature #{    Signature{g' \
+			-e 's{01{rsa-256{' -e 's{02{ed25519{' -e 's{Failure.*{Failure - Correct{'
+		if [ $ret -eq 0 -a $sig_count -eq 2 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret] domain=$i sig_count=$sig_count env - DKIMSIGN=$key1 DKIMSIGNEXTRA=$key2... dk-filter"
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			echo "FAILED : [ret=$ret] domain=$i sig_count=$sig_count env - DKIMSIGN=$key1 DKIMSIGNEXTRA=$key2... dk-filter"
+			echo
+			echo FAILURE [$ret] ======================== >$out
+			echo >$out
+			failed=1
+		fi
+	done
+	/bin/rm -f /tmp/result.out
+done
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for  multi-signature signing+verification by dk-filter"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for  multi-signature signing+verification by dk-filter"
+fi
+
+# Test No 11
+echo "testing qmail-dkim signing+verification by qmail-dkim"
+failed=0
+for i in $domainkey_dir/test $domainkey_dir/%/default $domainkey_dir/%/test $domainkey_dir/%/ed25519
+do
+	for j in example.com example.org
+	do
+		selector=""
+		if [ "$i" = "$domainkey_dir/test" -a -f $i.pub ] ; then
+			selector=$(cat $i.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+		fi
+		if [ -z "$selector" ] ; then
+			case $i in
+			$domainkey_dir/%/default)
+			enc="-z 2"
+			if [ -f $domainkey_dir/$j/default.pub ] ; then
+				selector=$(cat $domainkey_dir/$j/default.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+			elif [ -f $domainkey_dir/default.pub ] ; then
+				selector=$(cat $domainkey_dir/default.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+			fi
+			;;
+			$domainkey_dir/%/test)
+			enc="-z 2"
+			if [ -f $domainkey_dir/$j/test.pub ] ; then
+				selector=$(cat $domainkey_dir/$j/test.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+			elif [ -f $domainkey_dir/test.pub ] ; then
+				selector=$(cat $domainkey_dir/test.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+			fi
+			;;
+			$domainkey_dir/%/ed25519)
+			enc="-z 4"
+			if [ -f $domainkey_dir/$j/ed25519.pub ] ; then
+				selector=$(cat $domainkey_dir/$j/ed25519.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+			elif [ -f $domainkey_dir/ed25519.pub ] ; then
+				selector=$(cat $domainkey_dir/ed25519.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+			fi
+			;;
+			esac
+		fi
+		if [ $verbose -gt 0 ] ; then
+			echo key=$i domain=$j
+		fi
+		(
+		echo "From: postmaster@$j"
+		echo "To: postmaster@$j"
+		echo "Subject: Test"
+		echo "Date: $(date -R)"
+		echo
+		echo "Test message"
+		) | env - \
+			CONTROLDIR=/tmp/control \
+			DKIMSIGN="$i" \
+			DKIMSIGNOPTIONS="$enc" \
+			DKIMQUEUE=/bin/cat \
+			$qmail_dkim | env - \
+				DKIMVERIFY="" \
+				SELECTOR_DATA="$selector" \
+				DKIMQUEUE=/bin/cat \
+				$qmail_dkim > $out
+		ret=$?
+		if [ $ret -eq 0 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret]  env - DKIMSIGN=$i DKIMQUEUE=/bin/cat $qmail_dkim"
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			echo "FAILED : [ret=$ret] domain=$j key=$i env - DKIMSIGN=$i DKIMQUEUE=/bin/cat $qmail_dkim"
+			echo
+			echo FAILURE [$ret] domain=$j ======================== >$out
+			echo >$out
+			failed=1
+		fi
+	done
+done
+
+for i in $domainkey_dir/%/notexist $domainkey_dir/%
+do
+	for j in example.com example.org
+	do
+		if [ $verbose -gt 0 ] ; then
+			echo key=$i domain=$j
+		fi
+		(
+		echo "From: postmaster@$j"
+		echo "To: postmaster@$j"
+		echo "Subject: Test"
+		echo "Date: $(date -R)"
+		echo
+		echo "Test message"
+		) | env - \
+			CONTROLDIR=/tmp/control \
+			DKIMSIGN="$i" \
+			DKIMQUEUE=/bin/cat \
+			$qmail_dkim >$out
+		ret=$?
+		if [ $ret -eq 0 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret]  env - DKIMSIGN=$i DKIMQUEUE=/bin/cat $qmail_dkim"
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			echo "FAILED : [ret=$ret] domain=$j key=$i env - DKIMSIGN=$i DKIMQUEUE=/bin/cat $qmail_dkim"
+			echo
+			echo FAILURE [$ret] domain=$j ======================== >$out
+			echo >$out
+			failed=1
+		fi
+	done
+done
+
+for i in $domainkey_dir/notexist
+do
+	for j in example.com example.org
+	do
+		if [ $verbose -gt 0 ] ; then
+			echo key $i domain $j
+		fi
+		(
+		echo "From: postmaster@$j"
+		echo "To: postmaster@$j"
+		echo "Subject: Test"
+		echo "Date: $(date -R)"
+		echo
+		echo "Test message"
+		) | env - \
+			CONTROLDIR=/tmp/control \
+			DKIMSIGN="$i" \
+			DKIMQUEUE=/bin/cat \
+			ERROR_FD=2 \
+			$qmail_dkim >$out 2>&1
+		ret=$?
+		if [ $ret -eq 0 ] ; then
+			echo "FAILED : [ret=$ret] domain=$j key=$i env - DKIMSIGN=$i DKIMQUEUE=/bin/cat $qmail_dkim"
+			echo
+			echo FAILURE [$ret] domain=$j ======================== > $out
+			echo >$out
+			failed=1
+		else
+			if [ $ret -ne $nokeyerror -a $ret -ne 88 ] ; then
+				echo "FAILED : [ret=$ret] domain=$j key=$i env - DKIMSIGN=$i DKIMQUEUE=/bin/cat $dkim"
+				echo
+				echo FAILURE [$ret] domain=$j ======================== > $out
+				echo >$out
+				failed=1
+			else
+				if [ $verbose -gt 0 ] ; then
+					echo "SUCCESS: [ret=$ret] env - DKIMSIGN=$i DKIMQUEUE=/bin/cat $dkim"
+				fi
+				echo SUCCESS ======================== >$out
+			fi
+		fi
+	done
+done
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test failed for $qmail_dkim signing+verification by $qmail_dkim"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for $qmail_dkim signing+verification by $qmail_dkim"
+fi
+
+# Test No 12
+echo "testing dk-filter signing"
+failed=0
+for i in $domainkey_dir/test $domainkey_dir/%/default $domainkey_dir/%/test $domainkey_dir/%/notexist $domainkey_dir/%
+do
+	for j in example.com example.org
+	do
+		if [ $verbose -gt 0 ] ; then
+			echo key $i domain $j
+		fi
+		(
+		echo "From: postmaster@$j"
+		echo "To: postmaster@$j"
+		echo "Subject: Test"
+		echo "Date: $(date -R)"
+		echo
+		echo "Test message"
+		) | env - \
+			NODK="1" \
+			QMAILREMOTE="1" \
+			CONTROLDIR=/tmp/control \
+  			_SENDER=postmaster@$j \
+  			DKIMSIGN=$i \
+  			$dk_filter > $out
+		ret=$?
+		if [ $ret -eq 0 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret]  env - NODK=1 QMAILREMOTE=1 _SENDER=postmaster@$j DKIMSIGN=$i DKIMQUEUE=/bin/cat $dk_filter"
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			echo "FAILED : [ret=$ret] domain=$j key=$i env - NODK=1 QMAILREMOTE=1 _SENDER=postmaster@$j DKIMSIGN=$i DKIMQUEUE=/bin/cat $dk_filter"
+			echo
+			echo FAILURE [$ret] domain=$j ======================== >$out
+			echo >$out
+			failed=1
+		fi
+	done
+done
+
+for i in $domainkey_dir/notexist
+do
+	for j in example.com example.org
+	do
+		if [ $verbose -gt 0 ] ; then
+			echo key $i domain $j
+		fi
+		(
+		echo "From: postmaster@$j"
+		echo "To: postmaster@$j"
+		echo "Subject: Test"
+		echo "Date: $(date -R)"
+		echo
+		echo "Test message"
+		) | env - \
+			NODK="1" \
+			QMAILREMOTE="1" \
+			CONTROLDIR=/tmp/control \
+	  		_SENDER=postmaster@$j \
+			DKIMSIGN="$i" \
+			DKIMQUEUE=/bin/cat $dk_filter > $out 2>&1
+		ret=$?
+		if [ $ret -eq 0 ] ; then
+			echo SUCCESS ======================== > $out
+		else
+			if [ $ret -ne $nokeyerror -a $ret -ne 88 ] ; then
+				echo "FAILED : [ret=$ret] domain=$j key=$i env - NODK=1 QMAILREMOTE=1 _SENDER=postmaster@$j DKIMSIGN=$i DKIMQUEUE=/bin/cat $dk_filter"
+				echo
+				echo FAILURE [$ret] domain=$j ======================== > $out
+				echo >$out
+				failed=1
+			else
+				if [ $verbose -gt 0 ] ; then
+					echo "SUCCESS: [ret=$ret] env - NODK=1 QMAILREMOTE=1 _SENDER=postmaster@$j DKIMSIGN=$i DKIMQUEUE=/bin/cat $dk_filter"
+				fi
+			fi
+		fi
+	done
+done
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for dk-filter signing"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for dk-filter signing"
+fi
+
+# Test No 13
+echo "testing dk-filter signing+verification by dk-filter"
+failed=0
+for i in default ed25519
+do
+	for j in example.com example.org
+	do
+		if [ $verbose -gt 0 ] ; then
+			echo key $i domain $j
+		fi
+		case $i in 
+			default)
+				enc="-z 2"
+				;;
+			ed25519)
+				enc="-z 4"
+				;;
+		esac
+		selector=$(cat $domainkey_dir/$j/$i.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+		(
+		echo "From: postmaster@$j"
+		echo "To: postmaster@$j"
+		echo "Subject: Test"
+		echo "Date: $(date -R)"
+		echo
+		echo "Test message"
+		) | env - \
+			NODK="1" \
+			QMAILREMOTE="1" \
+			CONTROLDIR=/tmp/control \
+  			_SENDER=postmaster@$j \
+  			DKIMSIGN="$domainkey_dir/%/$i" \
+			DKIMSIGNOPTIONS="$enc" \
+  			$dk_filter | env - \
+			NODK="1" \
+			QMAILREMOTE="1" \
+			DKIMVERIFY="1" \
+			SELECTOR_DATA="$selector" \
+		$dk_filter > $out
+		ret=$?
+		if [ $ret -eq 0 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret]  env - NODK=1 QMAILREMOTE=1 _SENDER=postmaster@$j DKIMSIGN=$i DKIMQUEUE=/bin/cat $dk_filter"
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			echo "FAILED : [ret=$ret] domain=$j key=$i env - NODK=1 QMAILREMOTE=1 _SENDER=postmaster@$j DKIMSIGN=$i DKIMQUEUE=/bin/cat $dk_filter"
+			echo
+			echo FAILURE [$ret] domain=$j ======================== >$out
+			echo >$out
+			failed=1
+		fi
+	done
+done
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for dk-filter signing+verification by dk-filter"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for dk-filter signing+verification by dk-filter"
+fi
+
+# Test No 14
+echo "testing dkimkeys control file feature"
+failed=0
+if [ ! -d /tmp/control ] ; then
+	mkdir -p /tmp/control
+fi
+
+(
+echo "ex*.com:/tmp/domainkeys/%/dkimkeys1"
+echo "ex.*.org:/tmp/domainkeys/%/dkimkeys2:QREGEX=1,DKIMSIGNOPTIONS=-z 4"
+) >/tmp/control/dkimkeys
+for i in example.com example.org
+do
+	if [ $verbose -gt 0 ] ; then
+		echo domain $i
+	fi
+	if [ "$i" = "example.com" ] ; then
+		selector=$(cat $domainkey_dir/$i/dkimkeys1.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+	else
+		selector=$(cat $domainkey_dir/$i/dkimkeys2.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+	fi
+	(
+	echo "From: postmaster@$i"
+	echo "To: postmaster@$i"
+	echo "Subject: Test"
+	echo "Date: $(date -R)"
+	echo
+	echo "Test message"
+	) | env -  \
+		DKIMSIGN="" \
+		CONTROLDIR=/tmp/control \
+		DKIMQUEUE=/bin/cat \
+		ERROR_FD=2 \
+		$qmail_dkim | $dkim -v -T "$selector" > $out
+	ret=$?
+	if [ $ret -eq 0 ] ; then
+		if [ $verbose -gt 0 ] ; then
+			echo "SUCCESS: [ret=$ret]  dkimkeys"
+			echo
+		fi
+		echo SUCCESS ======================== >$out
+	else
+	(
+	echo "From: postmaster@$i"
+	echo "To: postmaster@$i"
+	echo "Subject: Test"
+	echo "Date: $(date -R)"
+	echo
+	echo "Test message"
+	) >/tmp/mail.txt
+		echo "FAILED : [ret=$ret] domain=$i dkimkeys"
+		echo
+		echo FAILURE [$ret] domain=$i ======================== >$out
+		echo >$out
+		failed=1
+	fi
+done
+
+(
+echo "ex*.com:/tmp/domainkeys/notexists"
+echo "ex*.org:/tmp/domainkeys/notexists:QREGEX=1"
+) >/tmp/control/dkimkeys
+for i in example.com example.org
+do
+	if [ $verbose -gt 0 ] ; then
+		echo domain $i
+	fi
+	(
+	echo "From: postmaster@$i"
+	echo "To: postmaster@$i"
+	echo "Subject: Test"
+	echo "Date: $(date -R)"
+	echo
+	echo "Test message"
+	) | env -  \
+		DKIMSIGN="" \
+		CONTROLDIR=/tmp/control \
+		DKIMQUEUE=/bin/cat \
+		ERROR_FD=2 \
+		$qmail_dkim > $out 2>&1
+	ret=$?
+	if [ $ret -eq 0 ] ; then
+		echo "FAILED : [ret=$ret] domain=$i key=dkimkeys"
+		echo
+		echo FAILURE [$ret] domain=$j ======================== > $out
+		echo >$out
+		failed=1
+	else
+		if [ $ret -ne $nokeyerror -a $ret -ne 88 ] ; then
+			echo "FAILED : [ret=$ret] domain=$i key=dkimkeys"
+			echo
+			echo FAILURE [$ret] domain=$j ======================== > $out
+			echo >$out
+			failed=1
+		else
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret] dkimkeys"
+			fi
+			echo SUCCESS ======================== >$out
+		fi
+	fi
+done
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for dkimkeys"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for dkimkeys"
+fi
+
+# Test No 15
+echo "testing multi-signature signing+verification by dk-filter DKIMSIGNEXTRA in dkimkeys"
+(
+echo "ex*.com:/tmp/domainkeys/%/dkimkeys1:DKIMSIGNEXTRA=/tmp/domainkeys/%/dkimkeys2,DKIMSIGNOPTIONSEXTRA=-z 4"
+echo "ex.*.org:/tmp/domainkeys/%/dkimkeys1:QREGEX=1,DKIMSIGNEXTRA=/tmp/domainkeys/%/dkimkeys2,DKIMSIGNOPTIONSEXTRA=-z 4"
+) >/tmp/control/dkimkeys
+
+failed=0
+for i in example.com example.org
+do
+	(
+	echo "From: postmaster@$i"
+	echo "To: postmaster@$i"
+	echo "Subject: Test"
+	echo "Date: $(date -R)"
+	echo
+	echo "Test message"
+	) | env \
+		NODK="1" \
+		QMAILREMOTE="1" \
+  		_SENDER=postmaster@$i \
+		CONTROLDIR=/tmp/control \
+		DKIMSIGN="" \
+		DKIMSIGNOPTIONS="-z 2" \
+		$dk_filter > /tmp/result.out
+	sig_count=$(grep DKIM-Signature /tmp/result.out|wc -l)
+	for j in dkimkeys1 dkimkeys2
+	do
+		if [ $verbose -gt 0 ] ; then
+			echo key $j domain $i
+		fi
+		selector=$(cat $domainkey_dir/$i/$j.pub |sed -e 's{.*({{' -e 's{).*{{' -e '/^$/d' -e 's{"{{g' -e 's{\t{{g' | tr -d '\n')
+		case $j in
+			dkimkeys1)
+			echo "  rsa+ed25519 with rsa-256 selector"
+			;;
+			dkimkeys2)
+			echo "  rsa+ed25519 with ed25519 selector"
+			;;
+		esac
+		cat /tmp/result.out | env - \
+			NODK="1" \
+			QMAILREMOTE="1" \
+			DKIMVERIFY="1" \
+			VERBOSE=1 \
+			SELECTOR_DATA="$selector" \
+		$dk_filter >$out 2>/tmp/err.out
+		ret=$?
+		grep Signature /tmp/err.out | sed -e 's{Signature #{    Signature{g' \
+			-e 's{01{rsa-256{' -e 's{02{ed25519{' -e 's{Failure.*{Failure - Correct{'
+		if [ $ret -eq 0 -a $sig_count -eq 2 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret] domain=$i sig_count=$sig_count ... dk-filter"
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			echo "FAILED : [ret=$ret] domain=$i sig_count=$sig_count ... dk-filter"
+			echo
+			echo FAILURE [$ret] ======================== >$out
+			echo >$out
+			failed=1
+		fi
+	done
+	/bin/rm -f /tmp/result.out
+done
+
+# Test No 15
+key1=$domainkey_dir/example.com/dkimkeys1
+qmail_inject=$bindir/qmail-inject
+qmail_queue=$sbindir/qmail-queue
+echo "testing qmail-dkim custom error feature"
+(
+	echo "From: postmaster@$real_domain"
+	echo "To: $user@$real_domain"
+	echo "Subject: Test"
+	echo "Date: $(date -R)"
+	echo
+	echo "Test message"
+) > /tmp/mail.txt 
+for i in PQ pq
+do
+	echo "  testing return value  for DKIMVERIFY=$i"
+	(cat /tmp/mail.txt | $bindir/dkim -z 2 -s $key1; cat /tmp/mail.txt) | env - \
+		QUEUEDIR=/var/indimail/queue/queue1 \
+		CONFSPLIT=23 \
+		BIGTODO=0 \
+		DKIMVERIFY="$i" \
+		QMAILQUEUE=$qmail_dkim \
+		FASTQUEUE=1 \
+		ERROR_FD=2 \
+		$qmail_inject -a $user 2>/tmp/out.$$
+	ret=$?
+	echo "    return value=$ret"
+	case $i in
+		PQ)
+		if [ $ret -eq 100 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret] DKIMVERIFY=$i qmail-dkim custom error"
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			failed=1
+			echo "FAILED : [ret=$ret] DKIMVERIFY=$i qmail-dkim custom error"
+			echo
+			echo FAILURE [$ret] ======================== >$out
+			echo >>$out
+		fi
+		echo "  testing error message for DKIMVERIFY=$i"
+		echo "    error message=$(cat /tmp/out.$$)"
+		grep "qmail-inject: fatal: qmail-dkim: signature error: permanent dns failure requesting selector (#5.7.0)" /tmp/out.$$ > /dev/null
+		if [ $? -eq 0 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret] DKIMVERIFY=$i qmail-dkim custom error message"
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			failed=1
+			echo "FAILED : [ret=$ret] DKIMVERIFY=$i qmail-dkim custom error message"
+			echo
+			echo FAILURE [$ret] ======================== >$out
+			echo >>$out
+		fi
+		;;
+		pq)
+		if [ $ret -eq 111 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret] DKIMVERIFY=$i qmail-dkim custom error"
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			failed=1
+			echo "FAILED : [ret=$ret] DKIMVERIFY=$i qmail-dkim custom error"
+			echo
+			echo FAILURE [$ret] ======================== >$out
+			echo >>$out
+		fi
+		echo "  testing error message for DKIMVERIFY=$i"
+		echo "    error message=$(cat /tmp/out.$$)"
+		grep "qmail-inject: fatal: qmail-dkim: signature error: permanent dns failure requesting selector (#4.7.0)" /tmp/out.$$ > /dev/null
+		if [ $? -eq 0 ] ; then
+			if [ $verbose -gt 0 ] ; then
+				echo "SUCCESS: [ret=$ret] DKIMVERIFY=$i qmail-dkim custom error message"
+				echo
+			fi
+			echo SUCCESS ======================== >$out
+		else
+			failed=1
+			echo "FAILED : [ret=$ret] DKIMVERIFY=$i qmail-dkim custom error message"
+			echo
+			echo FAILURE [$ret] ======================== >$out
+			echo >>$out
+		fi
+		;;
+	esac
+done
+/bin/rm -f /tmp/mail.txt /tmp/out.$$
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for qmail-dkim custom error"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "Test succeeded for qmail-dkim custom error"
+fi
+
+/bin/rm -f /tmp/control/dkimkeys
+
+if [ $verbose -eq 0 -a $failed -eq 0 ] ; then
+	echo "  Success"
+	echo
+fi
+if [ $failed -eq 1 ] ; then
+	echo "Test Failed for  multi-signature signing+verification by dk-filter DKIMSIGNEXTRA in dkimkeys"
+	exit 1
+elif [ $verbose -ne 0 ] ; then
+	echo "All Tests succeeded for  multi-signature signing+verification by dk-filter DKIMSIGNEXTRA in dkimkeys"
+fi
+
+#sudo /bin/rm -f /tmp/domainkeys
+echo "All Tests succeeded"
+exit 0

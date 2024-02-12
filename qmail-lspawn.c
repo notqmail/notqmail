@@ -1,4 +1,5 @@
 #include "fd.h"
+#include "env.h"
 #include "wait.h"
 #include "prot.h"
 #include "substdio.h"
@@ -170,6 +171,7 @@ int fdmess; int fdout;
 char *s; char *r; int at;
 {
  int f;
+ char *ptr;
 
  if (!(f = fork()))
   {
@@ -226,7 +228,10 @@ char *s; char *r; int at;
    if (prot_uid(uid) == -1) _exit(QLX_USAGE);
    if (!getuid()) _exit(QLX_ROOT);
 
-   execv(*args,args);
+	if(!(ptr = env_get("QMAILLOCAL")))
+		execv(*args, args);
+	else
+		execv(ptr, args);
    if (error_temp(errno)) _exit(QLX_EXECSOFT);
    _exit(QLX_EXECHARD);
   }

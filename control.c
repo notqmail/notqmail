@@ -85,6 +85,82 @@ char *fn;
  return 1;
 }
 
+int
+control_readulong(i, fn)
+	unsigned long  *i;
+	char           *fn;
+{
+	unsigned long   u;
+
+	switch (control_readline(&line, fn))
+	{
+	case 0:
+		return 0;
+	case -1:
+		return -1;
+	}
+	if (!stralloc_0(&line))
+		return -1;
+	if (!scan_ulong(line.s, &u))
+		return 0;
+	*i = u;
+	return 1;
+}
+
+/*
+ * read entire file in variable sa
+ * without any interpretation (e.g. comments)
+ * To be used in case a file contains '#' character
+ * in the first column (which control_readfile() will
+ * skip
+ */
+int
+control_readnativefile(sa, fn, mode)
+	stralloc       *sa;
+	char           *fn;
+	int             mode;
+{
+	substdio        ss;
+	int             fd, match;
+
+	if (!stralloc_copys(sa, ""))
+		return -1;
+	if ((fd = open_read(fn)) == -1)
+	{
+		if (errno == error_noent)
+			return(0);
+		return -1;
+	}
+	substdio_fdbuf(&ss, read, fd, inbuf, sizeof(inbuf));
+	for (;;)
+	{
+		if (getln(&ss, &line, &match, '\n') == -1)
+			break;
+		if (!match && !line.len)
+		{
+			close(fd);
+			return 1;
+		}
+		if (mode) /* for qmail-dk */
+		{
+			striptrailingwhitespace(&line);
+			if (!stralloc_0(&line))
+				break;
+			if (line.s[0] && !stralloc_cat(sa, &line))
+				break;
+		} else
+		if (!stralloc_cat(sa, &line))
+			break;
+		if (!match)
+		{
+			close(fd);
+			return 1;
+		}
+	}
+	close(fd);
+	return -1;
+}
+
 int control_readfile(sa,fn,flagme)
 stralloc *sa;
 char *fn;

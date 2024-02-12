@@ -1,3 +1,5 @@
+#include <unistd.h>
+#include <unistd.h>
 #include "stralloc.h"
 #include "substdio.h"
 #include "qmail.h"

@@ -807,8 +807,9 @@ qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast dnscname \
 dnsptr dnsip dnsmxip dnsfq hostname ipmeprint qreceipt qsmhook qbiff \
 forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox maildirwatch qail elq pinq idedit install-big install \
+qmail-dkim dkim spawn-filter surblfilter \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
-binm3 binm3+df
+binm3 binm3+df surblqueue dknewkey testfilterargs
 
 load: \
 make-load warn-auto.sh systype
@@ -933,9 +934,10 @@ qmail-pop3d.0 qmail-popup.0 qmail-qmqpc.0 qmail-qmqpd.0 qmail-qmtpd.0 \
 qmail-smtpd.0 tcp-env.0 qmail-newmrh.0 qreceipt.0 qbiff.0 forward.0 \
 preline.0 condredirect.0 bouncesaying.0 except.0 maildirmake.0 \
 maildir2mbox.0 maildirwatch.0 qmail.0 qmail-limits.0 qmail-log.0 \
-qmail-control.0 qmail-header.0 qmail-users.0 dot-qmail.0 \
-qmail-command.0 tcp-environ.0 maildir.0 mbox.0 addresses.0 \
-envelopes.0 forgeries.0
+qmail-control.0 qmail-header.0 qmail-users.0 dot-qmail.0 dknewkey.8 \
+qmail-command.0 tcp-environ.0 maildir.0 mbox.0 addresses.0 dkim.8 \
+envelopes.0 forgeries.0 qmail-dkim.0 spawn-filter.0 \
+surblfilter.0
 
 mbox.0: \
 mbox.5
@@ -1107,6 +1109,28 @@ qmail-control.9 conf-break conf-spawn
 	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> qmail-control.5
 
+qmail-dkim: \
+load qmail-dkim.o triggerpull.o fmtqfn.o now.o date822fmt.o \
+subgetopt.o makeargs.o datetime.a seek.a ndelay.a \
+dns_text.o open.a sig.a alloc.a substdio.a error.a \
+wildmat.o str.a case.a fs.a auto_qmail.o auto_split.o \
+parse_env.o auto_uids.o fd.a wait.a getDomainToken.o \
+env.a getln.a control.o stralloc.a dns.lib libdkim.a
+	g++ -o qmail-dkim qmail-dkim.o triggerpull.o fmtqfn.o now.o \
+	subgetopt.o makeargs.o date822fmt.o datetime.a seek.a ndelay.a \
+	dns_text.o open.a sig.a substdio.a error.a auto_qmail.o \
+	wildmat.o auto_split.o auto_uids.o fd.a wait.a \
+	getDomainToken.o parse_env.o \
+	-lcrypto env.a control.o open.a getln.a stralloc.a alloc.a \
+	substdio.a str.a case.a libdkim.a fs.a `cat dns.lib`
+
+qmail-dkim.o: \
+compile qmail-dkim.c readwrite.h sig.h exit.h open.h seek.h fmt.h \
+qmail.h alloc.h substdio.h datetime.h now.h datetime.h triggerpull.h extra.h \
+sgetopt.h env.h wait.h fd.h fork.h str.h dkim.h dns_text.h \
+auto_qmail.h auto_uids.h date822fmt.h fmtqfn.h makeargs.h
+	./compile -DHAVE_CONFIG_H qmail-dkim.c
+
 qmail-getpw: \
 load qmail-getpw.o case.a substdio.a error.a str.a fs.a auto_break.o \
 auto_usera.o
@@ -1124,6 +1148,26 @@ qmail-getpw.9 conf-break conf-spawn
 	| sed s}BREAK}"`head -1 conf-break`"}g \
 	| sed s}SPAWN}"`head -1 conf-spawn`"}g \
 	> qmail-getpw.8
+
+qmail-dkim.0: qmail-dkim.8
+	nroff -man qmail-dkim.8 > qmail-dkim.0
+qmail-dkim.8: qmail-dkim.9
+	cat qmail-dkim.9 \
+	| sed s}@controldir\@}"`head -1 conf-qmail`/control"}g \
+	> qmail-dkim.8
+
+dkim.8: dkim.9
+	cat dkim.9 | sed s}@controldir\@}"`head -1 conf-qmail`/control"}g \
+	> dkim.8
+
+dknewkey: dknewkey.sh warn-auto.sh
+	cat warn-auto.sh dknewkey.sh \
+	| sed s}@qsysconfdir\@}"`head -1 conf-qmail`"}g \
+	> dknewkey
+	chmod +x dknewkey
+dknewkey.8: dknewkey.9
+	cat dknewkey.9 | sed s}@qsysconfdir\@}"`head -1 conf-qmail`"}g \
+	> dknewkey.8
 
 qmail-getpw.o: \
 compile qmail-getpw.c readwrite.h substdio.h subfd.h substdio.h \
@@ -1200,11 +1244,11 @@ qmail-log.5
 qmail-lspawn: \
 load qmail-lspawn.o spawn.o prot.o slurpclose.o coe.o sig.a wait.a \
 case.a cdb.a fd.a open.a stralloc.a alloc.a substdio.a error.a str.a \
-fs.a auto_qmail.o auto_uids.o auto_spawn.o
+fs.a auto_qmail.o auto_uids.o auto_spawn.o envread.o str_diffn.o
 	./load qmail-lspawn spawn.o prot.o slurpclose.o coe.o \
 	sig.a wait.a case.a cdb.a fd.a open.a stralloc.a alloc.a \
 	substdio.a error.a str.a fs.a auto_qmail.o auto_uids.o \
-	auto_spawn.o 
+	auto_spawn.o envread.o str_diffn.o
 
 qmail-lspawn.0: \
 qmail-lspawn.8
@@ -1213,7 +1257,7 @@ qmail-lspawn.8
 qmail-lspawn.o: \
 compile qmail-lspawn.c fd.h wait.h prot.h substdio.h stralloc.h \
 gen_alloc.h scan.h exit.h fork.h error.h cdb.h uint32.h case.h \
-slurpclose.h auto_qmail.h auto_uids.h qlx.h
+slurpclose.h auto_qmail.h auto_uids.h qlx.h env.h
 	./compile qmail-lspawn.c
 
 qmail-newmrh: \
@@ -1463,11 +1507,11 @@ tcpto.h readwrite.h timeoutconn.h timeoutread.h timeoutwrite.h
 qmail-rspawn: \
 load qmail-rspawn.o spawn.o tcpto_clean.o now.o coe.o sig.a open.a \
 seek.a lock.a wait.a fd.a stralloc.a alloc.a substdio.a error.a str.a \
-auto_qmail.o auto_uids.o auto_spawn.o
+auto_qmail.o auto_uids.o auto_spawn.o envread.o str_diffn.o
 	./load qmail-rspawn spawn.o tcpto_clean.o now.o coe.o \
 	sig.a open.a seek.a lock.a wait.a fd.a stralloc.a alloc.a \
 	substdio.a error.a str.a auto_qmail.o auto_uids.o \
-	auto_spawn.o 
+	auto_spawn.o  envread.o str_diffn.o
 
 qmail-rspawn.0: \
 qmail-rspawn.8
@@ -1475,7 +1519,7 @@ qmail-rspawn.8
 
 qmail-rspawn.o: \
 compile qmail-rspawn.c fd.h wait.h substdio.h exit.h fork.h error.h \
-tcpto.h
+tcpto.h env.h
 	./compile qmail-rspawn.c
 
 qmail-send: \
@@ -1541,8 +1585,7 @@ fs.a auto_qmail.o socket.lib
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
 	received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
 	datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
-	alloc.a substdio.a error.a str.a fs.a auto_qmail.o  `cat \
-	socket.lib`
+	alloc.a substdio.a error.a str.a fs.a auto_qmail.o `cat socket.lib`
 
 qmail-smtpd.0: \
 qmail-smtpd.8
@@ -1639,10 +1682,10 @@ qmail.h substdio.h auto_qmail.h
 qreceipt: \
 load qreceipt.o headerbody.o hfield.o quote.o token822.o qmail.o \
 getln.a fd.a wait.a sig.a env.a stralloc.a alloc.a substdio.a error.a \
-str.a auto_qmail.o
+str.a auto_qmail.o scan_ulong.o
 	./load qreceipt headerbody.o hfield.o quote.o token822.o \
 	qmail.o getln.a fd.a wait.a sig.a env.a stralloc.a alloc.a \
-	substdio.a error.a str.a auto_qmail.o 
+	substdio.a error.a str.a auto_qmail.o scan_ulong.o
 
 qreceipt.0: \
 qreceipt.1
@@ -1912,11 +1955,11 @@ scan.h fmt.h
 	./compile splogger.c
 
 str.a: \
-makelib str_len.o str_diff.o str_diffn.o str_cpy.o str_chr.o \
+makelib str_len.o str_diff.o str_diffn.o str_cpy.o str_cpyb.o str_chr.o \
 str_rchr.o str_start.o byte_chr.o byte_rchr.o byte_diff.o byte_copy.o \
 byte_cr.o byte_zero.o
 	./makelib str.a str_len.o str_diff.o str_diffn.o str_cpy.o \
-	str_chr.o str_rchr.o str_start.o byte_chr.o byte_rchr.o \
+	str_cpyb.o str_chr.o str_rchr.o str_start.o byte_chr.o byte_rchr.o \
 	byte_diff.o byte_copy.o byte_cr.o byte_zero.o
 
 str_chr.o: \
@@ -1926,6 +1969,10 @@ compile str_chr.c str.h
 str_cpy.o: \
 compile str_cpy.c str.h
 	./compile str_cpy.c
+
+str_cpyb.o: \
+compile str_cpyb.c str.h
+	./compile str_cpyb.c
 
 str_diff.o: \
 compile str_diff.c str.h
@@ -2139,3 +2186,181 @@ compile wait_nohang.c haswaitp.h
 wait_pid.o: \
 compile wait_pid.c error.h haswaitp.h
 	./compile wait_pid.c
+
+makeargs.o: compile makeargs.c alloc.h str.h alloc.h stralloc.h
+	./compile makeargs.c
+
+spawn-filter: \
+load spawn-filter.o auto_qmail.o getDomainToken.o \
+parse_env.o fmt_ulong.o scan_ulong.o control.o \
+open_read.o wildmat.o qregex.o makeargs.o report.o \
+case_lowerb.o constmap.o byte_chr.o byte_cr.o case_diffb.o \
+error.a env.a stralloc.a wait.a strerr.a str.a \
+getln.a substdio.a alloc.a
+	./load spawn-filter getDomainToken.o parse_env.o \
+	fmt_ulong.o scan_ulong.o control.o open_read.o \
+	wildmat.o qregex.o makeargs.o case_lowerb.o \
+	constmap.o byte_chr.o byte_cr.o case_diffb.o \
+	auto_qmail.o report.o \
+	error.a env.a stralloc.a wait.a strerr.a str.a \
+	getln.a substdio.a alloc.a
+
+spawn-filter.o: \
+compile spawn-filter.c fmt.h str.h strerr.h env.h \
+substdio.h stralloc.h error.h wait.h qregex.h \
+getDomainToken.h makeargs.h scan.h control.h \
+report.h qregex.h auto_qmail.h
+	./compile spawn-filter.c
+
+qregex.o: \
+compile qregex.c qregex.h case.h stralloc.h constmap.h \
+substdio.h byte.h env.h
+	./compile qregex.c
+
+getDomainToken.o: \
+compile getDomainToken.c getDomainToken.h \
+parse_env.h wildmat.h
+	./compile getDomainToken.c
+
+parse_env.o: \
+compile parse_env.c parse_env.h
+	./compile parse_env.c
+
+report.o: \
+compile report.c report.h substdio.h subfd.h \
+strerr.h getDomainToken.h
+	./compile report.c
+
+wildmat.o: \
+compile wildmat.c
+	./compile wildmat.c
+
+spawn-filter.0: \
+spawn-filter.8
+	nroff -man spawn-filter.8 > spawn-filter.0
+
+spawn-filter.8: \
+spawn-filter.9
+	cat spawn-filter.9 \
+	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
+	> spawn-filter.8
+
+str_cspn.o: \
+compile str.h str_cspn.c
+	./compile str_cspn.c
+
+mess822_ok.o: \
+compile mess822_ok.c uint64.h
+
+surblfilter.0: surblfilter.8
+	nroff -man surblfilter.8 > surblfilter.0
+
+surblfilter.8: surblfilter.9
+	cat surblfilter.9 \
+	| sed s}QMAILHOME}"`head -1 conf-qmail`"}g \
+	> surblfilter.8
+
+surblfilter: \
+load surblfilter.o envread.o strerr_die.o strerr_sys.o \
+control.o alloc.o alloc_re.o error.o \
+error_str.o auto_qmail.o \
+case_startb.o byte_diff.o str_cspn.o \
+byte_copy.o byte_chr.o byte_rchr.o byte_cr.o \
+getln.o getln2.o open_read.o str_len.o str_diffn.o \
+str_cpy.o str_chr.o scan_xlong.o \
+now.o scan_ulong.o mess822_ok.o constmap.o \
+ip.o dns.o ipalloc.o fmt_str.o fmt_ulong.o \
+socket_v6any.o socket_v4mappedprefix.o \
+sgetopt.o subgetopt.o base64sub.o \
+case_diffb.o stralloc.a substdio.a
+	./load surblfilter envread.o strerr_die.o strerr_sys.o \
+	control.o alloc.o alloc_re.o error.o \
+	error_str.o auto_qmail.o \
+	case_startb.o byte_diff.o str_cspn.o \
+	byte_copy.o byte_chr.o byte_rchr.o byte_cr.o \
+	getln.o getln2.o open_read.o str_len.o str_diffn.o \
+	str_cpy.o str_chr.o scan_xlong.o \
+	now.o scan_ulong.o mess822_ok.o constmap.o \
+	ip.o dns.o ipalloc.o fmt_str.o fmt_ulong.o \
+	socket_v6any.o socket_v4mappedprefix.o \
+	sgetopt.o subgetopt.o base64sub.o \
+	case_diffb.o stralloc.a substdio.a -lresolv
+
+surblfilter.o: \
+compile surblfilter.c alloc.h error.h str.h case.h \
+constmap.h auto_qmail.h stralloc.h env.h control.h \
+strerr.h substdio.h getln.h byte.h dns.h ip.h \
+ipalloc.h mess822.h scan.h subgetopt.h uint64.h \
+base64.h
+	./compile surblfilter.c
+
+surblqueue: \
+surblqueue.sh conf-qmail
+	cat warn-auto.sh surblqueue.sh \
+	| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+	> surblqueue
+	chmod 755 surblqueue
+
+hastai.h: \
+trytai.c compile load
+	(( ./compile trytai.c && ./load trytai -ltai) >/dev/null \
+	2>&1 \
+	&& echo \#define HASTAI 1 || exit 0 ) > hastai.h
+	rm -f trytai.o trytai
+
+uint64.h: \
+tryulong64.c compile load uint64.h1 uint64.h2
+	( ( ./compile tryulong64.c && ./load tryulong64 && \
+	./tryulong64 ) >/dev/null 2>&1 \
+	&& cat uint64.h1 || cat uint64.h2 ) > uint64.h
+	rm -f tryulong64.o tryulong64
+
+base64sub.o: \
+compile base64sub.c base64.h stralloc.h substdio.h str.h
+	./compile base64sub.c
+
+DKIMHDRS = dkim.h dkimbase.h dkimsign.h dkimverify.h time_t_size.h
+DKIMSRCS = dkimfuncs.cpp dkimbase.cpp
+DKIMOBJS = $(DKIMSRCS:.cpp=.o)
+
+time_t_size.h: time_t_size.c compile load
+	(./compile time_t_size.c && ./load time_t_size && \
+		./time_t_size) > time_t_size.h
+	rm -f time_t_size.o time_t_size
+
+dkimfuncs.o: dkimfuncs.cpp time_t_size.h
+	g++ -g -DHAVE_EVP_SHA256 -c dkimfuncs.cpp
+
+dkimverify.o: dkim.h dns_text.h dkimverify.h dkimverify.cpp time_t_size.h
+	g++ -g -DHAVE_EVP_SHA256 -c dkimverify.cpp
+
+dkimsign.o: dkim.h dkimsign.h dkimsign.cpp
+	g++ -g -DHAVE_EVP_SHA256 -c dkimsign.cpp
+
+dkim: libdkim.a dkim.o dns_text.h dns_text.o \
+error.o alloc.o alloc_re.o str.a stralloc.a dns.lib
+	g++ -o dkim $(LFLAGS) -L. dkim.o dns_text.o str.a \
+	error.o alloc.o alloc_re.o stralloc.a libdkim.a \
+	`cat dns.lib` -lcrypto
+	
+dkim.o: dkim.c $(DKIMHDRS)
+	gcc -c -g -DHAVE_OPENSSL_EVP_H -DHAVE_EVP_SHA256 -I. -DHAVE_EVP_SHA256 dkim.c
+
+dns_text.o: compile dns_text.c dns.h dns_text.h
+	./compile -I. dns_text.c
+
+libdkim.a: $(DKIMOBJS) dkimverify.o dkimsign.o makelib time_t_size.h
+	rm -f libdkim.a
+	./makelib libdkim.a $(DKIMOBJS) dkimsign.o dkimverify.o
+.cpp.o:
+	g++ -g -I. -DHAVE_EVP_SHA256 $(CFLAGS) $(INCL) -c $<
+
+testfilterargs: testfilterargs.o wildmat.o byte_cr.o scan_ulong.o parse_env.o getln.o \
+getln2.o getDomainToken.o control.o ./stralloc.a env.a str.a alloc.a \
+substdio.a error.a open.a load
+	./load testfilterargs wildmat.o byte_cr.o scan_ulong.o parse_env.o getln.o \
+	getln2.o getDomainToken.o control.o ./stralloc.a env.a str.a alloc.a \
+	substdio.a error.a open.a
+
+testfilterargs.o: testfilterargs.c compile control.h error.h stralloc.h getDomainToken.h
+	./compile testfilterargs.c

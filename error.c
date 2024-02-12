@@ -31,6 +31,13 @@ ETXTBSY;
 -4;
 #endif
 
+int error_isdir =
+#ifdef EISDIR
+EISDIR;
+#else
+-4;
+#endif
+
 int error_io =
 #ifdef EIO
 EIO;

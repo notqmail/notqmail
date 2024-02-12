@@ -3,11 +3,13 @@
 
 #include "substdio.h"
 
+#define CUSTOM_ERR_FD 4
 struct qmail {
   int flagerr;
   unsigned long pid;
   int fdm;
   int fde;
+  int fdc;
   substdio ss;
   char buf[1024];
 } ;

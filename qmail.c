@@ -23,22 +23,32 @@ struct qmail *qq;
 {
   int pim[2];
   int pie[2];
+  int pic[2], errfd;
+  char *x;
 
   setup_qqargs();
 
   if (pipe(pim) == -1) return -1;
   if (pipe(pie) == -1) { close(pim[0]); close(pim[1]); return -1; }
+  if (pipe(pic) == -1) { close(pim[0]); close(pim[1]); close(pie[0]); close(pie[1]); return -1; }
  
   switch(qq->pid = vfork()) {
     case -1:
       close(pim[0]); close(pim[1]);
       close(pie[0]); close(pie[1]);
+      close(pic[0]); close(pic[1]);
       return -1;
     case 0:
       close(pim[1]);
       close(pie[1]);
+      close(pic[0]); /*- we want to receive data */
       if (fd_move(0,pim[0]) == -1) _exit(120);
       if (fd_move(1,pie[0]) == -1) _exit(120);
+      if (!(x = env_get("ERROR_FD")))
+        errfd = CUSTOM_ERR_FD;
+      else
+        scan_int(x, &errfd);
+      if (fd_move(errfd, pic[1]) == -1) _exit(120);
       if (chdir(auto_qmail) == -1) _exit(61);
       execv(*binqqargs,binqqargs);
       _exit(120);
@@ -46,6 +56,7 @@ struct qmail *qq;
 
   qq->fdm = pim[1]; close(pim[0]);
   qq->fde = pie[1]; close(pie[0]);
+  qq->fdc = pic[0]; close(pic[1]);
   substdio_fdbuf(&qq->ss,write,qq->fdm,qq->buf,sizeof(qq->buf));
   qq->flagerr = 0;
   return 0;
@@ -93,10 +104,21 @@ struct qmail *qq;
 {
   int wstat;
   int exitcode;
+  int len = 0;
+  char ch;
+  static char errstr[256];
 
   qmail_put(qq,"",1);
   if (!qq->flagerr) if (substdio_flush(&qq->ss) == -1) qq->flagerr = 1;
   close(qq->fde);
+  substdio_fdbuf(&qq->ss, read, qq->fdc, qq->buf, sizeof(qq->buf));
+  while (substdio_bget(&qq->ss, &ch, 1) && len < 255)
+  {
+    errstr[len] = ch; len++;
+  }
+  if (len > 0)
+    errstr[len] = 0; /* add str-term */
+  close(qq->fdc);
 
   if (wait_pid(&wstat,qq->pid) != qq->pid)
     return "Zqq waitpid surprise (#4.3.0)";
@@ -108,6 +130,7 @@ struct qmail *qq;
     case 115: /* compatibility */
     case 11: return "Denvelope address too long for qq (#5.1.3)";
     case 31: return "Dmail server permanently rejected message (#5.3.0)";
+    case 32: return "DPrivate key file does not exist (#5.3.5)";
     case 51: return "Zqq out of memory (#4.3.0)";
     case 52: return "Zqq timeout (#4.3.0)";
     case 53: return "Zqq write error or disk full (#4.3.0)";
@@ -115,22 +138,30 @@ struct qmail *qq;
     case 54: return "Zqq read error (#4.3.0)";
     case 55: return "Zqq unable to read configuration (#4.3.0)";
     case 56: return "Zqq trouble making network connection (#4.3.0)";
+    case 58: return "Zqq trouble creating child (#4.3.0)";
+    case 59: return "Zqq trouble creating pipes (#4.3.0)";
     case 61: return "Zqq trouble in home directory (#4.3.0)";
     case 63:
     case 64:
     case 65:
     case 66:
     case 62: return "Zqq trouble creating files in queue (#4.3.0)";
+    case 70: return "Zqq trouble with pid file (#4.3.0)";
     case 71: return "Zmail server temporarily rejected message (#4.3.0)";
     case 72: return "Zconnection to mail server timed out (#4.4.1)";
     case 73: return "Zconnection to mail server rejected (#4.4.1)";
     case 74: return "Zcommunication with mail server failed (#4.4.2)";
     case 91: /* fall through */
     case 81: return "Zqq internal bug (#4.3.0)";
+    case 82: /*- simscan exits with 82 */
+    case 88: /*- custom error */
+      if (len > 2) return errstr;
     case 120: return "Zunable to exec qq (#4.3.0)";
+    case 122: return "Zqq waitpid surprise (#4.3.0)";
+    case 123: return "Zqq crashed (#4.3.0)";
     default:
       if ((exitcode >= 11) && (exitcode <= 40))
-	return "Dqq permanent problem (#5.3.0)";
+        return "Dqq permanent problem (#5.3.0)";
       return "Zqq temporary problem (#4.3.0)";
   }
 }

@@ -2,6 +2,7 @@
 #define SCAN_H
 
 extern unsigned int scan_uint();
+extern unsigned int scan_int();
 extern unsigned int scan_xint();
 extern unsigned int scan_nbbint();
 extern unsigned int scan_ushort();

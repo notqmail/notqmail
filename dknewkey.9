@@ -1,0 +1,100 @@
+.TH dknewkey 8
+.SH NAME
+dknewkey \- create a new domain key
+
+.SH SYNOPSIS
+\fBdknewkey\fR [-\fBt\fR \fItype\fR] [-\fBd\fR \fIdomain\fR | --\fBdomain\fR \fIdomain\fR]
+[-\fBb\fR | --\fBbits\fR \fIbits\fR] [-\fBf\fR | --\fBforce\fR] [-\fBe\fR | --\fBenforce\fR]
+\fIselector\fR
+
+or
+
+\fBdknewkey\fR [-\fBp\fR | --\fBprint\fR]
+[-\fBd\fR \fIdomain\fR | --\fBdomain\fR \fIdomain\fR] [\fIselector\fR]
+
+or
+
+\fBdknewkey\fR [-\fBr\fR | --\fBremove\fR]
+[-\fBd\fR \fIdomain\fR | --\fBdomain\fR \fIdomain\fR] \fIselector\fR
+
+.SH DESCRIPTION
+.B dknewkey
+generates new DKIM keys and prints the associated DNS record (public key)
+on stdout. For RSA keys, it defaults to 2048 bit key size. This is
+controlled by the \fIbits\fR variable. ed25519 keys do not have a variable
+size. For RSA keys k=sha256 is now included in the public DNS record to
+prevent inadvertent use with the now obsolete sha1 hash algorithm (See RFC
+8301).
+
+.I selector
+is the file which will hold the private key. Additionally \fIselector.pub\fR
+containing the public key will be created.
+.I bits
+is the number of bits in the key. If not specified, defaults to 1024.
+To implement domainkeys you can use
+.B envrules
+in
+.B qmail-smtpd
+or
+.B spawn-filter
+to set the DKSIGN, DKIMSIGN variable to the path of the signature file holding
+the private key.
+
+.B dknewkey
+uses the following
+.B openssl
+command to generate the private/public keys
+.IP \[bu] 2
+openssl -genrsa -out \fIselector\fR \fIbits\fR # for RSA
+.IP \[bu]
+openssl genpkey -algorithm Ed25519 -out \fIselector\fR # for Ed25519
+.IP \[bu]
+openssl rsa -in \fIselector\fR -out \fIselector.pub\fR -pubout -outform PEM
+
+
+.SH OPTIONS
+.TP
+-\fBp\fR | --\fBprint\fR
+print DKIM public key for selector \fIselector\fR, domain \fIdomain\fR. If
+\fIselector\fR is not provided, all selectors will be printed. If
+\fIdomain\fR is not provided, all selectors for all domains will be printed.
+
+.TP
+-\fBr\fR | --\fBremove\fR
+remove DKIM keys for selector \fIselector\fR, domain \fIdomain\fR
+
+.TP
+-\fBt\fR \fItype\fR | --\fBtype\fR \fItype\fR
+Key type to use for cryptography method. Valid values are rsa and ed25519.
+Defaults to rsa.
+
+.TP
+-\fBd\fR \fIdomain\fR | --\fBdomain\fR \fIdomain\fR
+domain name for the DKIM key. The private key \fIselector\fR, public key
+\fIselector.pub\fR will be created in the directory
+@qsysconfdir@/control/domainkeys/\fIdomain\fR.
+
+If this is not specified, the private key \fIselector\fR, public key
+\fIselector.pub\fR will be created  in the directory
+@qsysconfdir@/control/domainkeys.
+
+.TP
+-\fBb\fR | --\fBbits\fR \fIkeysize\fR
+Specify the key size for the DKIM record. Default is 1024
+
+.TP
+-\fBf\fR | --\fBforce\fR
+Force creation of DKIM key even if it exists. Without this, \fBdknewkey\fR will not
+overwrite an existing DKIM key
+
+.TP
+-\fBe\fR | --\fBenforce\fR
+Create a production key. This will not have the t=y in the selector record
+
+.SH "SEE ALSO"
+qmail-dkim(8),
+qmail-smtpd(8),
+qmail-queue(8),
+spawn-filter(8),
+dkim(8),
+openssl(1)

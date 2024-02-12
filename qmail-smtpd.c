@@ -25,6 +25,7 @@
 #include "commands.h"
 
 #define MAXHOPS 100
+static char     strnum[FMT_ULONG];
 unsigned int databytes = 0;
 int timeout = 1200;
 
@@ -218,6 +219,7 @@ int addrallowed()
 
 
 int seenmail = 0;
+int rcptcount = 0;
 int flagbarf; /* defined if seenmail */
 stralloc mailfrom = {0};
 stralloc rcptto = {0};
@@ -261,6 +263,7 @@ void smtp_rcpt(arg) char *arg; {
   if (!stralloc_cats(&rcptto,"T")) die_nomem();
   if (!stralloc_cats(&rcptto,addr.s)) die_nomem();
   if (!stralloc_0(&rcptto)) die_nomem();
+  rcptcount++;
   out("250 ok\r\n");
 }
 

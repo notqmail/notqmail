@@ -1,3 +1,4 @@
+#include "env.h"
 #include "fd.h"
 #include "wait.h"
 #include "substdio.h"
@@ -82,7 +83,7 @@ int fdmess; int fdout;
 char *s; char *r; int at;
 {
  int f;
- char *(args[5]);
+ char *ptr, *(args[5]);
 
  args[0] = "qmail-remote";
  args[1] = r + at + 1;
@@ -95,7 +96,10 @@ char *s; char *r; int at;
    if (fd_move(0,fdmess) == -1) _exit(111);
    if (fd_move(1,fdout) == -1) _exit(111);
    if (fd_copy(2,1) == -1) _exit(111);
-   execvp(*args,args);
+   if(!(ptr = env_get("QMAILREMOTE")))
+      execvp(*args, args);
+   else
+      execvp(ptr, args);
    if (error_temp(errno)) _exit(111);
    _exit(100);
   }

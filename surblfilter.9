@@ -1,0 +1,85 @@
+.\" vim: tw=75
+.TH surblfilter 8
+.SH NAME
+surblfilter \- qmail SURBL blocklist interface
+.SH SYNOPSIS
+.B surblfilter
+[
+.B \-v
+]
+[
+.B \-c
+]
+[
+.B \-t
+]
+.SH DESCRIPTION
+\fBSURBL\fRs are lists of web sites that have appeared in unsolicited messages. Unlike most lists,
+SURBLs are not lists of message senders.
+
+Web sites seen in unsolicited messages tend to be more stable than the rapidly changing botnet
+IP addresses used to send the vast majority of them. Sender lists like zen.spamhaus.org can be
+used in a first stage filter to help identify 80% to 90% of unsolicited messages. SURBLs can
+help find about 75% of the otherwise difficult, remaining unsolicited messages in a second
+stage filter. Used together with sender lists, SURBLs have proven to be a highly-effective way
+to detect 95% of unsolicited messages.
+
+\fBsurblfilter\fR reads an rfc822 email on stdin, extracts URL and checks them against SURBL.
+\fBsurblfilter\fR can be used as a filter using \fBqmail-qfilter(1)\fR. It can also be used
+as a qmail-queue(8) frontend by setting QMAILQUEUE environment variable to a wrapper
+QMAILHOME/bin/surblqueue. You can define \fBSURBLQUEUE\fR environment variable to make
+\fBsurblqueue\fR execute something other than \fBqmail-queue\fR(8).
+
+\fBsurblfilter\fR uses \fBQMAILRCPTS\fR environment variable to get the recipient list. You can
+whitelist recipients by having the email addresses in \fIsurblrcpt\fR control file. You can
+change the name of this control file by setting \fBSURBLRCPT\fR environment variable.
+
+.PP
+\fBsurblfilter\fR uses the control file \fIsurbldomainwhite\fR to whitelist a domain.
+
+.PP
+The default SURBL list that is used is \fBmulti.surbl.org\fR. You can use a different list
+by setting the \fIsurbldomain\fR control file.
+
+.PP
+\fBsurblfilter\fR caches results in @controldir@/cache directory. The filename of files in this
+directory represents the domain. If a file has permission 0600, it means that the domain was
+blacklisted. The entries are cached for a default of 300 seconds. You can change this by
+setting \fBCACHELIFETIME\fR environment variable or setting this value in \fBcacheliftime\fR
+control file. The cache directory should be owned by the uid of the running qmail-smtpd(8).
+
+\fBsurblfilter\fR removes all leading host names, subdomains, www., randomized subdomains, etc. In
+order to determine the level of domain check, it uses the control files \fBlevel3-tlds\fR and
+\fBlevel2-tlds\fR. For any domain found in \fBlevel3-tlds\fR, it checks the domain at level4. For any
+domain found in \fBlevel2-tlds\fR, it checks the domain at level3. For all domains not found in
+these two control files, it checks the domain at level2. Please look at http://www.surbl.org/guidelines
+for more details.
+
+
+.SH OPTIONS
+.PP
+.TP
+\fB-v\fR
+Use debug mode. If debug is turned on \fBsurblfilter\fR writes debug output
+to descriptor 5. You can set \fBSURBL_DEBUG_FN\fR to a filename to make
+surblqueue redirect debug output to the debug file.
+
+.TP
+\fB-c\fR
+Do not cache results
+
+.TP
+\fB-t\fR
+Do dns text query to get the reason. This option will slow \fBsurblfilter\fR. Remember that
+last octet of the IP address obtained for the domain gives you the reason for the block
+
+.SH RETURN VALUE
+\fBsurbfilter\fR returns 88 if the domain is blocked and prints the reason on standard error.
+This allows for qmail-smtpd(8) to print a permanent error during a SMTP session.
+It returns 111 for all temporary errors. It returns 0 if the message does not contain any
+domain blocked by SURBL
+
+.SH "SEE ALSO"
+qmail-smtpd(8),
+qmail-queue(8),
+qmail-qfilter(1)

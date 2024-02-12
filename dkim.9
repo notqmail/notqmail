@@ -1,0 +1,212 @@
+.\" vim: tw=75
+.TH dkim 8
+.SH NAME
+dkim \- exercise the domainkeys library
+.SH SYNOPSIS
+.B dkim
+.I opts
+
+.I opts
+is a series of getopt-style options.
+
+.SH DESCRIPTION
+.B dkim
+exercises the dkim library. Both signing and verification merely print out the DKIM header.
+They do not keep a copy of the input file. You will need to do something like this:
+
+.EX
+This example verifies using DNS
+
+ (./dkim -s @controldir@/domainkeys/dog </tmp/testmsg; cat /tmp/testmsg)\\
+ | ./dkim -v
+
+This example does not use DNS. Useful for testing
+
+ (./dkim -z 4 -s /tmp/domainkeys/efgh </tmp/mail.txt;cat /tmp/mail.txt) \\
+ | ./dkim -v -T \\
+ "v=DKIM1; k=ed25519; t=y; p=okZUL1G6RmS4IWfCpCX3xjGKhVssoM4KfKpkmW8IERg="
+.EE
+
+.SH OPTIONS
+.TP
+-s \fIprivkey\fR
+.I privkey
+is a path to a file containing a PEM-format private key. Without the 'y'
+option, the base name of the file is used as the selector. Reads the email
+message on stdin. Prints the \fBDKIM-Signature\fR header. You can pass
+multiple \fIkey\fR to generate multiple signatures. For each \fB-s\fR
+option, you can pass \fB-y\fR, \fB-z\fR option before the \fB-s\fR option.
+
+.TP
+-z \fIhash\fR
+1 - sha1, 2 - sha256, 3 - sha1+sha256, 4 - ed25519
+
+.TP
+-y \fIselector\fR
+the selector tag DEFAULT=private
+
+.TP
+-v
+Verifies the email on stdin. Exits with a non-zero exit code and a message to
+stderr if there was a problem with the signature. Always prints a
+.B DKIM-Status:
+header to stdout. This option requires the \fBs\fR._domainkey.\fBd\fR txt record in
+dns (public key). Here \fBs\fR is the selector and \fBd\fR is the domain
+
+.EX
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+d=gmail.com; s=gamma; h=DomainKey-Status:
+To:Subject:Message-Id:Date:From; bh=IarZI4AMTl/vy1jTbPphDcOl4YNS
+POk7Vn0tDdgkbV4=; b=VpIS6XNOLU2WWWlsYGeLB3wMbyFQwkg7F0hr7blu1W8f
+0RRtuyw9igFwY7q7FNaPVlfZ0cfLPh0mRrlExu4V7uQaTP8nnnHO2cAokYbncGS5
+ADU9NbAcpDh+E2YQwzCX
+.EE
+
+.TP
+-l
+include body length tag when signing. Honor body length tag when verifying
+
+.TP
+-q
+include query method tag
+
+.TP
+-t
+include a timestamp tag
+
+.TP
+-f
+issue error if not all message's From headers are in signature
+
+.TP
+-S
+Allow unsigned subject in signature
+
+.TP
+-h
+include Copied Headers. This adds the z= tag with a list of the message's
+original headers and may differ from the headers listed in the h= tag. This
+tag may be used by some mailbox providers in the process of diagnosing a
+verification error. Its value is not well defined.
+
+.TP
+-p \fIssp\fR | \fIadsp\fR
+0 - disable practice (default), 1- SSP, or 2 - ADSP verification
+
+.TP
+-c \fIcanonicalization\fR
+r for relaxed [DEFAULT], s - simple, t relaxed/simple, u - simple/relaxed
+
+.TP
+-d \fIdomain\fR
+the domain tag, if not provided, determined from the return-path/sender/from header
+
+.TP
+-i \fIidentity\fR
+the identity, if not provided it will not be included
+
+.TP
+-x \fIexpire_time\fR
+the expire time in seconds since epoch ( DEFAULT = current time + 604800). If set to - then it will not be included
+
+.TP
+-T \fIselectorRecord\fR
+Bypass DNS and use \fIselectorRecord\fR instead of fetching the record using DNS.
+
+.TP
+-X \fIexclude_headers\fR
+\fIexclude_headers\fR is a colon separated list of headers to be excluded
+from DKIM signing.
+
+.TP
+-V
+Sets verbose output
+
+.TP
+-H
+this help
+
+.SH Return Value
+When signing, \fBdkim\fR returns 0 on success and non-zero on any failure.
+
+When verifying, you can set the environment variable \fBDKIMVERIFY\fR to
+set the exit code corresponding to the DKIM verifcation status by setting
+\fBDKIMVERIFY\fR environment variable to a desired set of letters. Precisely,
+if you want a dkim return status to generate an error, include that
+letter, where A is the first return status (DKIM_SUCCESS), B is the
+second (DKIM_FINISHED_BODY), etc.  The letter should be uppercase if you
+want a permanent error (exit code 14) to be returned, and lowercase if you want a temporary
+error to be returned (exit code 88). If you omit the letter, \fBdkim\fR will
+not issue any error inspite of DKIM verification failure. It will return
+success.
+
+The complete set of letters with the corresponding return status is given below
+.nf
+A - DKIM_SUCCESS                        - Function executed successfully
+B - DKIM_FINISHED_BODY                  - process result: no more message
+                                          body is needed
+C - DKIM_PARTIAL_SUCCESS                - verify result: at least one
+                                          but not all signatures verified
+D - DKIM_NEUTRAL                        - verify result: no signatures
+                                          verified but message is
+                                          not suspicious
+E - DKIM_SUCCESS_BUT_EXTRA              - signature result: signature
+                                          verified but it did not
+                                          include all of the body
+F - DKIM_3PS_SIGNATURE                  - 3rd-party signature
+G - DKIM_FAIL                           - Function failed to execute
+H - DKIM_BAD_SYNTAX                     - signature error: DKIM-Signature
+                                          could not parse or has bad
+                                          tags/values
+I - DKIM_SIGNATURE_BAD                  - signature error: RSA verify
+                                          failed
+J - DKIM_SIGNATURE_BAD_BUT_TESTING      - signature error: RSA verify
+                                          failed but testing
+K - DKIM_SIGNATURE_EXPIRED              - signature error: x= is old
+L - DKIM_SELECTOR_INVALID               - signature error: selector doesn't
+                                          parse or contains invalid values
+M - DKIM_SELECTOR_GRANULARITY_MISMATCH  - signature error: selector
+                                          g= doesn't match i=
+N - DKIM_SELECTOR_KEY_REVOKED           - signature error: selector
+                                          p= empty
+O - DKIM_SELECTOR_DOMAIN_NAME_TOO_LONG  - signature error: selector domain
+                                          name too long to request
+P - DKIM_SELECTOR_DNS_TEMP_FAILURE      - signature error: temporary dns
+                                          failure requesting selector
+Q - DKIM_SELECTOR_DNS_PERM_FAILURE      - signature error: permanent dns
+                                          failure requesting selector
+R - DKIM_SELECTOR_PUBLIC_KEY_INVALID    - signature error: selector
+                                          p= value invalid or wrong format
+S - DKIM_NO_SIGNATURES                  - no signatures
+T - DKIM_NO_VALID_SIGNATURES            - no valid signatures
+U - DKIM_BODY_HASH_MISMATCH             - sigature verify error: message
+                                          body does not hash to bh value
+V - DKIM_SELECTOR_ALGORITHM_MISMATCH    - signature error: selector
+                                          h= doesn't match signature a=
+W - DKIM_STAT_INCOMPAT                  - signature error: incompatible v=
+X - DKIM_UNSIGNED_FROM                  - signature error: not all message's
+                                          From headers in signature
+.fi
+
+For example, if you want to permanently reject messages that have a
+signature that is expired, include the letter 'K' in the
+.B DKIMVERIFY
+environment variable. If you want to accept all mails and just have the
+DKIM-Status header, set \fBDKIMVERIFY\fR to "p". A conservative set of
+letters is
+.BR FGHIKLMNOQRTUVWjp .
+Reject permanently 3PS, FAILURE, SYNTAX, SIGNATURE_BAD, SIGNATURE_EXPIRED,
+SELECTOR_INVALID, GRANULARITY_MISMATCH, SELECTOR_KEY_REVOKED,
+DOMAIN_NAME_TOO_LONG, SELECTOR_PUBLIC_KEY_INVALID, NO_VALID_SIGNATURES and
+BODY_HASH_MISMATCH errors, and temporarily SIGNATURE_BAD_BUT_TESTING and
+DNS_TEMP_FAILURE. Add in \fBS\fR if you want to reject messages that do not
+have a DKIM signature. Note that \fBdkim\fR always inserts the
+\fBDKIM-Status\fR header, so that messages can be rejected later at
+delivery time, or in the mail reader. In that case you need not set
+\fBDKIMVERIFY\fR.
+
+.SH "SEE ALSO"
+qmail-dkim(8),
+dknewkey(8),
+rfc-4870(5),
+rfc-4871(5)

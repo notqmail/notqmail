@@ -8,6 +8,7 @@ extern int error_nomem;
 extern int error_noent;
 extern int error_txtbsy;
 extern int error_io;
+extern int error_isdir;
 extern int error_exist;
 extern int error_timeout;
 extern int error_inprogress;

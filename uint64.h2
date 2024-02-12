@@ -1,0 +1,12 @@
+/*
+ * $Log: uint64.h2,v $
+ * Revision 1.1  2004-10-22 15:00:36+05:30  Cprogrammer
+ * Initial revision
+ *
+ */
+#ifndef UINT64_H
+#define UINT64_H
+
+typedef unsigned long long uint64;
+
+#endif

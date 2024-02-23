@@ -103,6 +103,7 @@ void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
 {
   int fdin;
   int fdout;
+  int iscatdir = (0 == strncmp(subdir, "man/cat", 7));
   stralloc dh = { 0 };
 
   if (fchdir(fdsourcedir) == -1)
@@ -111,13 +112,13 @@ void c(char *home, char *subdir, char *file, uid_t uid, gid_t gid, int mode)
   fdin = open_read(file);
   if (fdin == -1) {
     /* silently ignore missing catman pages */
-    if (errno == error_noent && strncmp(subdir, "man/cat", 7) == 0)
+    if (errno == error_noent && iscatdir)
       return;
     strerr_die4sys(111,FATAL,"unable to read ",file,": ");
   }
 
   /* if the user decided to build only dummy catman pages then don't install */
-  if (strncmp(subdir, "man/cat", 7) == 0) {
+  if (iscatdir) {
     struct stat st;
     if (fstat(fdin, &st) != 0)
       strerr_die4sys(111,FATAL,"unable to stat ",file,": ");

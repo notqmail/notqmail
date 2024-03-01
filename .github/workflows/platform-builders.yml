@@ -189,7 +189,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["7.4", "7.3", "7.2"]
+        osversion: ["7.4", "7.3"]
         abi: [64] # 32
         nroff: ["mandoc", "no-roff"]
     steps:

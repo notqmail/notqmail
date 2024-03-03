@@ -73,14 +73,14 @@ jobs:
       rawhide
       ${{ matrix.abi == '64' && ' ' || matrix.abi }}
       ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
-      ${{ matrix.cflags == '' && ' ' || 'max-OBS-flags' }}
+      ${{ matrix.cflags == '' && ' ' || 'max-OBS-flags-and-Werror' }}
     runs-on: ubuntu-latest
     container: fedora:rawhide
     strategy:
       fail-fast: false
       matrix:
         abi: [64]
-        cflags: ["-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -fstack-protector-strong -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer"]
+        cflags: ["-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -fstack-protector-strong -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer  -Wshadow -Werror=deprecated-declarations -Werror=implicit-function-declaration -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign"]
         ldflags: ["-Wl,-z,relro -Wl,--as-needed  -Wl,-z,pack-relative-relocs -Wl,-z,now -Wl,--build-id=sha1"]
         nroff: ["groff", "no-roff"]
     steps:

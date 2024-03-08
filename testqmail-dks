@@ -133,7 +133,7 @@ do
 	echo "Date: $(date -R)"
 	echo
 	echo "Test message"
-	) > /tmp/mail.txt 
+	) > /tmp/mail.txt
 	(cat /tmp/mail.txt | $bindir/dkim -z $enc -s "$k"; cat /tmp/mail.txt) | $bindir/dkim -v > $out
 	ret=$?
 	/bin/rm -f /tmp/mail.txt
@@ -176,7 +176,7 @@ echo "Subject: Test"
 echo "Date: $(date -R)"
 echo
 echo "Test message"
-) > /tmp/mail.txt 
+) > /tmp/mail.txt
 (cat /tmp/mail.txt | $bindir/dkim -z 2 -s $real_domain_rsa4096 -z 4 -s $real_domain_ed25519; cat /tmp/mail.txt) | $bindir/dkim -vV >$out 2>/tmp/err.out
 ret=$?
 /bin/rm -f /tmp/mail.txt
@@ -572,7 +572,7 @@ do
 			-e 's{01{ed25519{' -e 's{02{rsa-256{' -e 's{Failure.*{Failure - Correct{'
 		if [ $ret -eq 0 -a $sig_count -eq 2 ] ; then
 			if [ $verbose -gt 0 ] ; then
-				echo "SUCCESS: [ret=$ret] domain=$i sig_count=$sig_count dkimkeys $qmail_dkim" 
+				echo "SUCCESS: [ret=$ret] domain=$i sig_count=$sig_count dkimkeys $qmail_dkim"
 				echo
 			fi
 			echo SUCCESS ======================== >$out
@@ -690,7 +690,7 @@ do
 	) | env \
 		NODK="1" \
 		QMAILREMOTE="1" \
-  		_SENDER=postmaster@$i \
+		_SENDER=postmaster@$i \
 		CONTROLDIR=/tmp \
 		DKIMSIGN="$key1" \
 		DKIMSIGNOPTIONS="-z 2" \
@@ -1017,7 +1017,7 @@ do
 		if [ $verbose -gt 0 ] ; then
 			echo key $i domain $j
 		fi
-		case $i in 
+		case $i in
 			default)
 				enc="-z 2"
 				;;
@@ -1266,7 +1266,7 @@ echo "testing qmail-dkim custom error feature"
 	echo "Date: $(date -R)"
 	echo
 	echo "Test message"
-) > /tmp/mail.txt 
+) > /tmp/mail.txt
 for i in PQ pq
 do
 	echo "  testing return value  for DKIMVERIFY=$i"

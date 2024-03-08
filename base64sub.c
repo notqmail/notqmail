@@ -25,7 +25,7 @@ static char    *b64alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 #define B64PAD '='
 
 /*
- * returns 0 ok, 1 illegal, -1 problem 
+ * returns 0 ok, 1 illegal, -1 problem
  */
 
 int

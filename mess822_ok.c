@@ -24,7 +24,7 @@ mess822_ok(sa)
 	if (!len)
 		return 0;
 	/*
-	 * if input message is 822-compliant, will return 1 after this 
+	 * if input message is 822-compliant, will return 1 after this
 	 */
 	if (sa->s[0] == ' ')
 		return 1;

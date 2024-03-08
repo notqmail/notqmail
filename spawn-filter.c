@@ -35,7 +35,7 @@ static stralloc q = { 0 };
 static void
 set_environ(char *host, char *ext, char *sender_p, char *recipient_p)
 {
-	if (ext && !env_put2("_EXT", ext))	
+	if (ext && !env_put2("_EXT", ext))
 		report(111, "spawn-filter: out of memory", ". (#4.3.0)", 0, 0, 0, 0);
 	if (!env_put2("DOMAIN", host) ||
 			!env_put2("_SENDER", sender_p) ||

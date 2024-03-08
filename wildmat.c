@@ -3,7 +3,7 @@
  * Do shell-style pattern matching for ?, \, [], and * characters.
  * Might not be robust in face of malformed patterns; e.g., "foo[a-"
  * could cause a segmentation violation.  It is 8bit clean.
- * 
+ *
  * Written by Rich $alz, mirror!rs, Wed Nov 26 19:03:17 EST 1986.
  * Rich $alz is now <rsalz@osf.org>.
  * April, 1991:  Replaced mutually-recursive calls with in-line code
@@ -23,7 +23,7 @@
  * behaviour in cases like pattern "*a*b*c*d" with text "abcxxxxx".  With
  * FALSE, each star-loop has to run to the end of the text; with ABORT
  * only the last one does.
- * 
+ *
  * Once the control of one instance of DoMatch enters the star-loop, that
  * instance will return either TRUE or ABORT, and any calling instance
  * will therefore return immediately after (without calling recursively

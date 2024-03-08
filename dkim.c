@@ -237,7 +237,7 @@ void
 dkim_error(int e)
 {
 	const char     *ptr;
-	
+
 	if ((ptr = dkim_error_str(e, 0)))
 		fprintf(stderr, "%s\n", ptr);
 	return;
@@ -845,7 +845,7 @@ main(int argc, char **argv)
 		if (ret < 0 || ret == DKIM_3PS_SIGNATURE) {
 			if (useADSP) {
 				char           *domain;
-	
+
 				if ((domain = DKIMVerifyGetDomain(&ctxt)))
 					resDKIMADSP = GetADSP(domain);
 				if (sCount > 0) {

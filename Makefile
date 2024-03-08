@@ -2342,7 +2342,7 @@ error.o alloc.o alloc_re.o str.a stralloc.a dns.lib
 	g++ -o dkim $(LFLAGS) -L. dkim.o dns_text.o str.a \
 	error.o alloc.o alloc_re.o stralloc.a libdkim.a \
 	`cat dns.lib` -lcrypto
-	
+
 dkim.o: dkim.c $(DKIMHDRS)
 	gcc -c -g -DHAVE_OPENSSL_EVP_H -DHAVE_EVP_SHA256 -I. -DHAVE_EVP_SHA256 dkim.c
 

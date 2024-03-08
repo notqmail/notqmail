@@ -11,7 +11,7 @@
  *
  */
 /*
- * simple header file for the matchregex prototype 
+ * simple header file for the matchregex prototype
  */
 #ifndef _QREGEX_H_
 #define _QREGEX_H_

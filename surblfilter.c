@@ -614,7 +614,7 @@ checkuri(char **ouri, char **text, size_t textlen)
 		uri++;
 	if (*uri == ':' && (uri[1] == '/' || uri[1] == '\\'))
 		uri += 2;
-	else 
+	else
 		return 0;
 	if (*uri == '/' || *uri == '\\')
 		uri++;

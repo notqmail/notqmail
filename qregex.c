@@ -60,7 +60,7 @@
  * Note: this revision follows the coding guidelines set forth by the rest of
  *       the qmail code and that described at the following URL.
  *       http://cr.yp.to/qmail/guarantee.html
- * 
+ *
  */
 #include "case.h"
 #include "scan.h"

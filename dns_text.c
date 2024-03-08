@@ -178,7 +178,7 @@ char           *
 dns_text(char *dn)
 {
   int             r;
-  
+
   switch (r = dns_txtplus(dn))
   {
   case DNS_MEM:

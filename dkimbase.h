@@ -43,7 +43,7 @@ public:
 	~CDKIMBase();
 
 	int             Init(void);
-	int             Process(char *szBuffer, int nBufLength, bool bEOF);
+	int             Process(const char *szBuffer, int nBufLength, bool bEOF);
 	int             ProcessFinal(void);
 	int             Alloc(char *&szBuffer, int nRequiredSize);
 	int             ReAlloc(char *&szBuffer, int &nBufferLength, int nRequiredSize);
@@ -55,7 +55,7 @@ public:
 	static void     CompressSWSP(string & sBuffer);
 	static string   RelaxHeader(const string & sHeader);
 	virtual int     ProcessHeaders(void);
-	virtual int     ProcessBody(char *szBuffer, int nBufLength, bool bEOF);
+	virtual int     ProcessBody(const char *szBuffer, int nBufLength, bool bEOF);
 
 protected:
 	char           *m_From;

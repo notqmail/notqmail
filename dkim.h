@@ -152,10 +152,10 @@ typedef struct DKIMVerifyDetails_t {
 
 int DKIM_CALL   DKIMSignInit(DKIMContext *pSignContext, DKIMSignOptions *pOptions);
 int DKIM_CALL   DKIMSignProcess(DKIMContext *pSignContext, char *szBuffer, int nBufLength);
-int DKIM_CALL   DKIMSignGetSig(DKIMContext *pSignContext, char *szPrivKey, char *szSignature, int nSigLength);
-int DKIM_CALL   DKIMSignGetSig2(DKIMContext *pSignContext, char *szPrivKey, char **pszSignature);
+int DKIM_CALL   DKIMSignGetSig(DKIMContext *pSignContext, const char *szPrivKey, char *szSignature, int nSigLength);
+int DKIM_CALL   DKIMSignGetSig2(DKIMContext *pSignContext, const char *szPrivKey, const char **pszSignature);
 void DKIM_CALL  DKIMSignFree(DKIMContext *pSignContext);
-char           *DKIM_CALL DKIMSignGetDomain(DKIMContext *pSignContext);
+const char     *DKIM_CALL DKIMSignGetDomain(DKIMContext *pSignContext);
 
 int DKIM_CALL   DKIMVerifyInit(DKIMContext *pVerifyContext, DKIMVerifyOptions *pOptions);
 int DKIM_CALL   DKIMVerifyProcess(DKIMContext *pVerifyContext, char *szBuffer, int nBufLength);
@@ -164,7 +164,7 @@ int DKIM_CALL   DKIMVerifyGetDetails(DKIMContext *pVerifyContext, int *nSigCount
 char           *DKIM_CALL DKIMVerifyGetDomain(DKIMContext *pVerifyContext);
 void DKIM_CALL  DKIMVerifyFree(DKIMContext *pVerifyContext);
 char           *DKIM_CALL DKIMVersion();
-char           *DKIM_CALL DKIMGetErrorString(int ErrorCode);
+const char     *DKIM_CALL DKIMGetErrorString(int ErrorCode);
 int  DKIM_CALL  DKIMSignReplaceSelector(DKIMContext *pSignContext, DKIMSignOptions *pOptions);
 int  DKIM_CALL  DKIMSignReplaceHash(DKIMContext *pSignContext, DKIMSignOptions *pOptions);
 #include "macros.h"

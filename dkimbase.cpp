@@ -98,10 +98,10 @@ void CDKIMBase::Free(char *szBuffer)
 /*
  * Process - split buffers into lines without any CRs or LFs at the end.
  */
-int CDKIMBase::Process(char *szBuffer, int nBufLength, bool bEOF)
+int CDKIMBase::Process(const char *szBuffer, int nBufLength, bool bEOF)
 {
-	char           *p = szBuffer;
-	char           *e = szBuffer + nBufLength;
+	const char           *p = szBuffer;
+	const char           *e = szBuffer + nBufLength;
 
 	while (p < e) {
 		if (*p != '\n' && *p != '\r') {
@@ -159,11 +159,11 @@ int CDKIMBase::Process(char *szBuffer, int nBufLength, bool bEOF)
 int CDKIMBase::ProcessFinal(void)
 {
 	if (m_LinePos > 0)
-		Process((char *) "\r\n", 2, true);
+		Process("\r\n", 2, true);
 	if (m_InHeaders) {
 		m_InHeaders = false;
 		ProcessHeaders();
-		ProcessBody((char *) "", 0, true);
+		ProcessBody("", 0, true);
 	}
 	return DKIM_SUCCESS;
 }
@@ -181,7 +181,7 @@ int CDKIMBase::ProcessHeaders()
 /*
  * ProcessBody - process body line (to be implemented by derived class)
  */
-int CDKIMBase::ProcessBody(char *szBuffer, int nBufLength, bool bEOF)
+int CDKIMBase::ProcessBody(const char *szBuffer, int nBufLength, bool bEOF)
 {
 	return DKIM_SUCCESS;
 }

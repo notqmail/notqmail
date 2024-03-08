@@ -117,7 +117,7 @@ DKIMSignGetSig(DKIMContext *pSignContext, char *szPrivKey, char *szSignature, in
 }
 
 int             DKIM_CALL
-DKIMSignGetSig2(DKIMContext *pSignContext, char *szPrivKey, char **pszSignature)
+DKIMSignGetSig2(DKIMContext *pSignContext, const char *szPrivKey, const char **pszSignature)
 {
 	CDKIMSign      *pSign = (CDKIMSign *) ValidateContext(pSignContext, true);
 	if (pSign)
@@ -125,7 +125,7 @@ DKIMSignGetSig2(DKIMContext *pSignContext, char *szPrivKey, char **pszSignature)
 	return DKIM_INVALID_CONTEXT;
 }
 
-char           *DKIM_CALL
+const char           *DKIM_CALL
 DKIMSignGetDomain(DKIMContext *pSignContext)
 {
 	CDKIMSign      *pSign = (CDKIMSign *) ValidateContext(pSignContext, true);
@@ -208,37 +208,37 @@ DKIMVerifyGetDomain(DKIMContext *pVerifyContext)
 	return ((char *) 0);
 }
 
-static char    *DKIMErrorStrings[-1 - DKIM_MAX_ERROR] = {
-	(char *) "DKIM_FAIL",
-	(char *) "DKIM_BAD_SYNTAX",
-	(char *) "DKIM_SIGNATURE_BAD",
-	(char *) "DKIM_SIGNATURE_BAD_BUT_TESTING",
-	(char *) "DKIM_SIGNATURE_EXPIRED",
-	(char *) "DKIM_SELECTOR_INVALID",
-	(char *) "DKIM_SELECTOR_GRANULARITY_MISMATCH",
-	(char *) "DKIM_SELECTOR_KEY_REVOKED",
-	(char *) "DKIM_SELECTOR_DOMAIN_NAME_TOO_LONG",
-	(char *) "DKIM_SELECTOR_DNS_TEMP_FAILURE",
-	(char *) "DKIM_SELECTOR_DNS_PERM_FAILURE",
-	(char *) "DKIM_SELECTOR_PUBLIC_KEY_INVALID",
-	(char *) "DKIM_NO_SIGNATURES",
-	(char *) "DKIM_NO_VALID_SIGNATURES",
-	(char *) "DKIM_BODY_HASH_MISMATCH",
-	(char *) "DKIM_SELECTOR_ALGORITHM_MISMATCH",
-	(char *) "DKIM_STAT_INCOMPAT",
-	(char *) "DKIM_UNSIGNED_FROM",
-	(char *) "DKIM_OUT_OF_MEMORY",
-	(char *) "DKIM_INVALID_CONTEXT",
-	(char *) "DKIM_NO_SENDER",
-	(char *) "DKIM_BAD_PRIVATE_KEY",
-	(char *) "DKIM_BUFFER_TOO_SMALL"
+static const char    *DKIMErrorStrings[-1 - DKIM_MAX_ERROR] = {
+	"DKIM_FAIL",
+	"DKIM_BAD_SYNTAX",
+	"DKIM_SIGNATURE_BAD",
+	"DKIM_SIGNATURE_BAD_BUT_TESTING",
+	"DKIM_SIGNATURE_EXPIRED",
+	"DKIM_SELECTOR_INVALID",
+	"DKIM_SELECTOR_GRANULARITY_MISMATCH",
+	"DKIM_SELECTOR_KEY_REVOKED",
+	"DKIM_SELECTOR_DOMAIN_NAME_TOO_LONG",
+	"DKIM_SELECTOR_DNS_TEMP_FAILURE",
+	"DKIM_SELECTOR_DNS_PERM_FAILURE",
+	"DKIM_SELECTOR_PUBLIC_KEY_INVALID",
+	"DKIM_NO_SIGNATURES",
+	"DKIM_NO_VALID_SIGNATURES",
+	"DKIM_BODY_HASH_MISMATCH",
+	"DKIM_SELECTOR_ALGORITHM_MISMATCH",
+	"DKIM_STAT_INCOMPAT",
+	"DKIM_UNSIGNED_FROM",
+	"DKIM_OUT_OF_MEMORY",
+	"DKIM_INVALID_CONTEXT",
+	"DKIM_NO_SENDER",
+	"DKIM_BAD_PRIVATE_KEY",
+	"DKIM_BUFFER_TOO_SMALL"
 };
 
-char           *DKIM_CALL
+const char           *DKIM_CALL
 DKIMGetErrorString(int ErrorCode)
 {
 	if (ErrorCode >= 0 || ErrorCode <= DKIM_MAX_ERROR)
-		return (char *) "Unknown";
+		return "Unknown";
 
 	else
 		return DKIMErrorStrings[-1 - ErrorCode];

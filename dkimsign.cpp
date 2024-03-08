@@ -332,12 +332,12 @@ CDKIMSign::ProcessHeaders(void)
 	return DKIM_SUCCESS;
 }
 
-char           *DKIM_CALL
+const char           *DKIM_CALL
 CDKIMSign::GetDomain(void)
 {
 	if (ParseFromAddress() == false)
 		return ((char *) 0);
-	return ((char *) sDomain.c_str());
+	return (sDomain.c_str());
 }
 
 void
@@ -586,7 +586,7 @@ void CDKIMSign::AddFoldedValueToSig(const string &sValue, char cbrk)
 /*
  * GetSig - compute hash and return signature header in szSignature
  */
-int CDKIMSign::GetSig(char *szPrivKey, char *szSignature, unsigned int nSigLength)
+int CDKIMSign::GetSig(const char *szPrivKey, char *szSignature, unsigned int nSigLength)
 {
 	if (szPrivKey == NULL)
 		return DKIM_BAD_PRIVATE_KEY;
@@ -606,7 +606,7 @@ int CDKIMSign::GetSig(char *szPrivKey, char *szSignature, unsigned int nSigLengt
 /*
  * GetSig - compute hash and return signature header in szSignature
  */
-int CDKIMSign::GetSig2(char *szPrivKey, char **pszSignature)
+int CDKIMSign::GetSig2(const char *szPrivKey, const char **pszSignature)
 {
 	if (szPrivKey == NULL)
 		return DKIM_BAD_PRIVATE_KEY;
@@ -615,7 +615,7 @@ int CDKIMSign::GetSig2(char *szPrivKey, char **pszSignature)
 	int             nRet = AssembleReturnedSig(szPrivKey);
 	if (nRet != DKIM_SUCCESS)
 		return nRet;
-	*pszSignature = (char *) m_sReturnedSig.c_str();
+	*pszSignature = m_sReturnedSig.c_str();
 	return DKIM_SUCCESS;
 }
 
@@ -645,7 +645,7 @@ bool CDKIMSign::IsRequiredHeader(const string &sTag)
 }
 
 int
-CDKIMSign::ConstructSignature(char *szPrivKey, int nSigAlg)
+CDKIMSign::ConstructSignature(const char *szPrivKey, int nSigAlg)
 {
 	string          sSignedSig, sTemp;
 	unsigned char  *sig;
@@ -923,7 +923,7 @@ CDKIMSign::ConstructSignature(char *szPrivKey, int nSigAlg)
 }
 
 int
-CDKIMSign::AssembleReturnedSig(char *szPrivKey)
+CDKIMSign::AssembleReturnedSig(const char *szPrivKey)
 {
 	int             nRet;
 

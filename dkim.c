@@ -123,10 +123,10 @@ SignThisHeader(const char *szHeader)
 	return 1;
 }
 
-unsigned int str_chr(char *s, int c)
+unsigned int str_chr(const char *s, int c)
 {
 	char            ch;
-	char           *t;
+	const char      *t;
 
 	ch = c;
 	t = s;
@@ -248,28 +248,28 @@ dkim_error(int e)
  */
 void writeHeader(int ret, int resDKIMSSP, int resDKIMADSP, int useSSP, int useADSP )
 {
-	char           *dkimStatus, *sspStatus, *adspStatus;
+	const char           *dkimStatus, *sspStatus, *adspStatus;
 
-	sspStatus = adspStatus = (char *) "";
-	dkimStatus = (char *) dkim_error_str(ret, 1);
+	sspStatus = adspStatus = "";
+	dkimStatus = dkim_error_str(ret, 1);
 	if (useSSP && resDKIMSSP != -1) {
 		switch(resDKIMSSP)
 		{
 			case DKIM_SSP_ALL:
-				sspStatus = (char *) "all;";
+				sspStatus = "all;";
 				break;
 			case DKIM_SSP_STRICT:
-				sspStatus = (char *) "strict;";
+				sspStatus = "strict;";
 				break;
 			case DKIM_SSP_SCOPE:
-				sspStatus = (char *) "out of scope;";
+				sspStatus = "out of scope;";
 				break;
 			case DKIM_SSP_TEMPFAIL:
-				sspStatus = (char *) "temporary failure;";
+				sspStatus = "temporary failure;";
 				break;
 			case DKIM_SSP_UNKNOWN:
 			default:
-				sspStatus = (char *) "unknown;";
+				sspStatus = "unknown;";
 				break;
 		}
 	}
@@ -277,20 +277,20 @@ void writeHeader(int ret, int resDKIMSSP, int resDKIMADSP, int useSSP, int useAD
 		switch(resDKIMADSP)
 		{
 			case DKIM_ADSP_ALL:
-				adspStatus = (char *) "all;";
+				adspStatus = "all;";
 				break;
 			case DKIM_ADSP_DISCARDABLE:
-				adspStatus = (char *) "discardable;";
+				adspStatus = "discardable;";
 				break;
 			case DKIM_ADSP_SCOPE:
-				adspStatus = (char *) "out of scope;";
+				adspStatus = "out of scope;";
 				break;
 			case DKIM_ADSP_TEMPFAIL:
-				adspStatus = (char *) "temporary failure;";
+				adspStatus = "temporary failure;";
 				break;
 			case DKIM_ADSP_UNKNOWN:
 			default:
-				adspStatus = (char *) "unknown;";
+				adspStatus = "unknown;";
 				break;
 		}
 	}
@@ -351,7 +351,7 @@ ParseTagValues(char *list, char *letters[], char *values[])
 }
 
 int
-GetSSP(char *domain, int *bTesting)
+GetSSP(const char *domain, int *bTesting)
 {
 	char           *query, *results;
 	char           *tags[] = { (char *) "dkim", (char *) "t", (char *) 0};
@@ -424,7 +424,7 @@ GetSSP(char *domain, int *bTesting)
 }
 
 int
-GetADSP(char *domain)
+GetADSP(const char *domain)
 {
 	char           *query, *results;
 	char           *tags[] = {(char *) "dkim", (char *) 0};
@@ -521,7 +521,7 @@ main(int argc, char **argv)
 {
 	PRIVKEY        *PrivKey = NULL;
 	int             PrivKeyLen = 0, len, nHash = 0;
-	char           *pSig = NULL, *dkimverify;
+	const char     *pSig = NULL, *dkimverify;
 	int             i, ret, ch, fd, verbose = 0;
 	int             bSign = 1, nSigCount = 0, useSSP = 0, useADSP = 0, accept3ps = 0;
 	int             sCount = 0, sSize = 0, resDKIMSSP = -1, resDKIMADSP = -1;

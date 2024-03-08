@@ -22,6 +22,6 @@ typedef enum {
 	local_or_remote,
 } dtype;
 
-char           *getDomainToken(char *, stralloc *);
+char           *getDomainToken(const char *, stralloc *);
 
 #endif

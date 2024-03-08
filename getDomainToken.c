@@ -50,7 +50,7 @@ dtype           delivery;
  * QREGEX environment variable is defined
  */
 char           *
-getDomainToken(char *domain, stralloc *sa)
+getDomainToken(const char *domain, stralloc *sa)
 {
 	regex_t         qreg;
 	int             len, n, retval, use_regex;

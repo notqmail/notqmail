@@ -118,8 +118,8 @@ DoMatch(text, p)
 /*- User-level routine.  Returns TRUE or FALSE.  */
 int
 wildmat_internal(text, p)
-	char           *text;
-	char           *p;
+	const char           *text;
+	const char           *p;
 {
 #ifdef	OPTIMIZE_JUST_STAR
 	if (p[0] == '*' && p[1] == '\0')

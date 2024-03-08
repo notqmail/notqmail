@@ -33,6 +33,6 @@
 #define DNS_HARD -2
 #define DNS_MEM  -3
 
-extern char *dns_text(char *szFQDN);
+extern char *dns_text(const char *szFQDN);
 extern int DNSGetTXT(const char *domain, char *buffer, int maxlen);
 #endif

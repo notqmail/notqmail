@@ -140,7 +140,7 @@ static int findtxt(int wanttype)
 }
 
 static int
-dns_txtplus(char *domain)
+dns_txtplus(const char *domain)
 {
   int             r;
 
@@ -175,7 +175,7 @@ dns_txtplus(char *domain)
  * Note that it never returns NULL.
  */
 char           *
-dns_text(char *dn)
+dns_text(const char *dn)
 {
   int             r;
 

@@ -58,7 +58,7 @@ char           *pidfn;
 int             messfd;
 int             readfd;
 DKIMContext     ctxt;
-static char    *dkimsignoptions;
+static const char    *dkimsignoptions;
 static char    *binqqargs[2] = { "bin/qmail-queue", 0 };
 static char    *controldir;
 static stralloc fntmp = {0};
@@ -258,10 +258,11 @@ static stralloc dkimopts = { 0 };
 static stralloc dkimkeys = { 0 };
 static char    *dkimqueue = 0;
 
-char           *
-replace_pct(char *keyfn, char *domain, int pos, int *replace)
+const char           *
+replace_pct(const char *keyfn, const char *domain, int pos, int *replace)
 {
-	char           *p, *t, *s;
+	const char      *p;
+	char            *t, *s;
 	int             i, d, r, len;
 	static stralloc tmp = {0};
 
@@ -308,7 +309,7 @@ replace_pct(char *keyfn, char *domain, int pos, int *replace)
 }
 
 int
-dkim_setoptions(DKIMSignOptions *opts, char *signOptions)
+dkim_setoptions(DKIMSignOptions *opts, const char *signOptions)
 {
 	int             ch, argc;
 	char          **argv;
@@ -426,9 +427,9 @@ format_controlfile(char *fn, int what)
 }
 
 static void
-write_signature(char *domain, DKIMSignOptions *opts, size_t selector_size)
+write_signature(const char *domain, DKIMSignOptions *opts, size_t selector_size)
 {
-	char           *pSig, *keyfn, *ptr, *selector;
+	const char           *pSig, *keyfn, *ptr, *selector;
 	int             i, r_selector, pct_found;
 	static stralloc tmp = { 0 };
 
@@ -1191,7 +1192,7 @@ main(int argc, char *argv[])
 	}
 	if (dkimsign || dkimverify) {
 		if (dkimsign) {
-			char           *t;
+			const char           *t;
 
 			if (!(t = DKIMSignGetDomain(&ctxt))) {
 				DKIMSignFree(&ctxt);

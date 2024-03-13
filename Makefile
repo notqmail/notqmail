@@ -538,6 +538,10 @@ fifo.o: \
 compile fifo.c hasmkffo.h fifo.h
 	./compile fifo.c
 
+fmt_8long.o: \
+compile fmt_8long.c fmt.h
+	./compile fmt_8long.c
+
 fmt_str.o: \
 compile fmt_str.c fmt.h
 	./compile fmt_str.c
@@ -581,9 +585,9 @@ strerr.h substdio.h fmt.h
 
 fs.a: \
 makelib fmt_str.o fmt_strn.o fmt_uint.o fmt_uint0.o fmt_ulong.o \
-scan_ulong.o scan_8long.o
+scan_ulong.o scan_8long.o fmt_8long.o
 	./makelib fs.a fmt_str.o fmt_strn.o fmt_uint.o fmt_uint0.o \
-	fmt_ulong.o scan_ulong.o scan_8long.o
+	fmt_ulong.o scan_ulong.o scan_8long.o fmt_8long.o
 
 getln.a: \
 makelib getln.o getln2.o
@@ -773,7 +777,7 @@ qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
 dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
 forward preline condredirect bouncesaying except maildirmake \
-maildir2mbox install instpackage instchown \
+maildir2mbox install instpackage instchown queue-fix \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
 binm3 binm3+df
 
@@ -879,7 +883,7 @@ qmail-smtpd.0 tcp-env.0 qmail-newmrh.0 qreceipt.0 qbiff.0 forward.0 \
 preline.0 condredirect.0 bouncesaying.0 except.0 maildirmake.0 \
 maildir2mbox.0 qmail.0 qmail-limits.0 qmail-log.0 \
 qmail-control.0 qmail-header.0 qmail-users.0 dot-qmail.0 \
-qmail-command.0 tcp-environ.0 maildir.0 mbox.0 addresses.0 \
+qmail-command.0 queue-fix.0 tcp-environ.0 maildir.0 mbox.0 addresses.0 \
 envelopes.0 forgeries.0
 
 mbox.0: \
@@ -1569,6 +1573,34 @@ tryutmpx.c compile load qtmp.h1 qtmp.h2
 	&& cat qtmp.h2 || cat qtmp.h1 ) > qtmp.h
 	rm -f tryutmpx.o tryutmpx
 
+queue-fix.0: \
+queue-fix.8
+
+queue-fix.8: \
+queue-fix.9 conf-qmail conf-break conf-spawn
+	cat queue-fix.9 \
+	| sed s}SPLIT}"`head -n 1 conf-qmail`"}g \
+	> queue-fix.8
+
+queue-fix: \
+load queue-fix.o auto_split.o strmsg_out.o fifo.o \
+instuidgid.o uid.o gid.o subgetopt.o sgetopt.o auto_usero.o \
+auto_userq.o auto_userr.o auto_users.o auto_usera.o \
+auto_groupq.o strerr.a getln.a substdio.a fs.a stralloc.a \
+open.a error.a str.a
+	./load queue-fix auto_split.o strmsg_out.o uid.o gid.o \
+	fifo.o instuidgid.o subgetopt.o sgetopt.o auto_usero.o \
+	auto_userq.o auto_userr.o auto_users.o auto_usera.o \
+	auto_groupq.o strerr.a getln.a substdio.a fs.a \
+	stralloc.a open.a error.a str.a
+
+queue-fix.o: \
+compile queue-fix.c substdio.h subfd.h stralloc.h fmt.h \
+error.h getln.h str.h open.h fifo.h scan.h strerr.h fmt.h \
+env.h sgetopt.h direntry.h byte.h alloc.h tcpto.h strmsg.h \
+noreturn.h auto_split.h auto_uids.h
+	./compile queue-fix.c
+
 quote.o: \
 compile quote.c stralloc.h gen_alloc.h str.h quote.h oflops.h error.h
 	./compile quote.c
@@ -1785,6 +1817,10 @@ compile strerr_die.c substdio.h subfd.h substdio.h exit.h strerr.h
 strerr_sys.o: \
 compile strerr_sys.c error.h strerr.h
 	./compile strerr_sys.c
+
+strmsg_out.o: \
+compile strmsg_out.c substdio.h subfd.h
+	./compile strmsg_out.c
 
 subfderr.o: \
 compile subfderr.c readwrite.h substdio.h subfd.h substdio.h

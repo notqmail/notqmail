@@ -1,0 +1,46 @@
+.\" vim: tw=75
+.TH queue-fix 8
+.SH NAME
+queue-fix \- Create or Repair a qmail queue structure
+.SH SYNOPSIS
+\fBqueue-fix\fR [-\fBi\fR -\fBN\fR \fR -\fBv\fR] \fIqueue_dir\fR
+
+.SH DESCRIPTION
+\fBqueue-fix\fR analyzes and repairs the qmail queue structure. It will fix
+uid/gid settings and permissions. It will rename the message files to match
+their inodes. It will even create missing directories and files. You can
+even create a queue from scratch. It will also print warnings for any
+files it finds that should not exist. However, queue-fix doesn't attempt to
+fix if it finds the wrong type of file present; e.g. regular file instead
+of directory, directory instead of a regular file, fifo instead of a
+regular file, regular file instead of a fifo, etc
+
+\fBqueue-fix\fR uses the uids \fIqmailq\fR, \fIqmailr\fR and \fIqmails\fR
+to set permissions for various directories.
+
+\fBqueue-fix\fR needs root privileges to run.
+
+.SH OPTIONS
+.TP 3
+\fB\-i\fR
+Interactive mode
+
+.TP
+\fB\-N\fR
+Test mode. This option will report inconsistencies in the queue and 
+not make any changes.
+
+.TP
+\fB\-v\fR
+Verbose mode
+
+.TP
+\fIqueue_dir\fR
+Directory where the qmail queue stucture is created. This directory has the subdirectories
+bounce, info, intd, local, lock, mess, pid, remote, todo, trash, ratelimit.
+
+.SH "SEE ALSO"
+instpackage(8), instchown(8), qmail-queue(8)
+
+.SH Original AUTHOR
+Eric Huss

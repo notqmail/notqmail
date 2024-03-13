@@ -133,6 +133,7 @@ void hier()
   c(auto_qmail,"bin","qmail-qmqpd",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qmail-qmtpd",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qmail-smtpd",auto_uido,auto_gidq,0755);
+  c(auto_qmail,"bin","queue-fix",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","sendmail",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","tcp-env",auto_uido,auto_gidq,0755);
   c(auto_qmail,"bin","qreceipt",auto_uido,auto_gidq,0755);
@@ -248,4 +249,6 @@ void hier()
   c(auto_qmail,"man/cat8","qmail-smtpd.0",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/man8","qmail-command.8",auto_uido,auto_gidq,0644);
   c(auto_qmail,"man/cat8","qmail-command.0",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/man8","queue-fix.8",auto_uido,auto_gidq,0644);
+  c(auto_qmail,"man/cat8","queue-fix.0",auto_uido,auto_gidq,0644);
 }

@@ -1,3 +1,6 @@
+- 20240206 code: add queue-fix to create qmail queue from scratch,
+           fix existing queue and set proper permissions for all directories,
+           files, fifo which are part of the queue
 - 20240127 remove instqueue, now replaced by "instpackage queue-only"
 - 20221115 honor all groups of qmailr user when spawning qmail-rspawn
 - 20221019 code: netstring parsing in qmail-qmtpd & qmail-qmqpd now

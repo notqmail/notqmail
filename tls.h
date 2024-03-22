@@ -3,11 +3,13 @@
 
 #include <openssl/ssl.h>
 
+#include "noreturn.h"
+
 extern int smtps;
 extern SSL *ssl;
 
 void ssl_free(SSL *myssl);
-void ssl_exit(int status);
+void _noreturn_ ssl_exit(int status);
 # define _exit ssl_exit
 
 const char *ssl_error();

@@ -41,15 +41,15 @@ int tls_verify();
 void tls_nogateway();
 int ssl_rfd = -1, ssl_wfd = -1; /* SSL_get_Xfd() are broken */
 
+GEN_SAFE_TIMEOUTWRITE(safewrite_raw,timeout,fd,_exit(1))
 ssize_t safewrite(int fd, const void *buf, size_t len)
 {
-  ssize_t r;
-  if (ssl && fd == ssl_wfd)
-    r = ssl_timeoutwrite(timeout, ssl_rfd, ssl_wfd, ssl, buf, len);
-  else
-  r = timeoutwrite(timeout,fd,buf,len);
-  if (r == 0 || r == -1) _exit(1);
-  return r;
+  if (ssl && fd == ssl_wfd) {
+    int r = ssl_timeoutwrite(timeout, ssl_rfd, ssl_wfd, ssl, buf, len);
+    if (r == 0 || r == -1) _exit(1);
+    return r;
+  }
+  return safewrite_raw(fd, buf, len);
 }
 
 char ssoutbuf[512];

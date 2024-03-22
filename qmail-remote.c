@@ -118,16 +118,18 @@ int timeoutconnect = 60;
 int smtpfd;
 int timeout = 1200;
 
+GEN_SAFE_TIMEOUTREAD(saferead_raw,timeout,smtpfd,dropped())
+GEN_SAFE_TIMEOUTWRITE(safewrite_raw,timeout,smtpfd,dropped())
+
 ssize_t saferead(int fd, void *buf, size_t len)
 {
-  ssize_t r;
   if (ssl) {
-    r = ssl_timeoutread(timeout, smtpfd, smtpfd, ssl, buf, len);
+    int r = ssl_timeoutread(timeout, smtpfd, smtpfd, ssl, buf, len);
     if (r < 0) ssl_err_str = ssl_error_str();
-  } else
-  r = timeoutread(timeout,smtpfd,buf,len);
-  if (r == 0 || r == -1) dropped();
-  return r;
+    if (r == 0 || r == -1) dropped();
+    return r;
+  }
+  return saferead_raw(fd, buf, len);
 }
 
 ssize_t safewrite(int fd, const void *buf, size_t len)
@@ -136,10 +138,10 @@ ssize_t safewrite(int fd, const void *buf, size_t len)
   if (ssl) {
     r = ssl_timeoutwrite(timeout, smtpfd, smtpfd, ssl, buf, len);
     if (r < 0) ssl_err_str = ssl_error_str();
-  } else
-  r = timeoutwrite(timeout,smtpfd,buf,len);
-  if (r == 0 || r == -1) dropped();
-  return r;
+    if (r == 0 || r == -1) dropped();
+    return r;
+  }
+  return safewrite_raw(fd, buf, len);
 }
 
 char inbuf[1024];

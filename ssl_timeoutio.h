@@ -12,10 +12,7 @@ int ssl_timeoutconn(int t, int rfd, int wfd, SSL *ssl);
 int ssl_timeoutaccept(int t, int rfd, int wfd, SSL *ssl);
 int ssl_timeoutrehandshake(int t, int rfd, int wfd, SSL *ssl);
 
-int ssl_timeoutread(int t, int rfd, int wfd, SSL *ssl, char *buf, int len);
-int ssl_timeoutwrite(int t, int rfd, int wfd, SSL *ssl, char *buf, int len);
-
-int ssl_timeoutio(
-  int (*fun)(), int t, int rfd, int wfd, SSL *ssl, char *buf, int len);
+int ssl_timeoutread(int t, int rfd, int wfd, SSL *ssl, void *buf, int len);
+int ssl_timeoutwrite(int t, int rfd, int wfd, SSL *ssl, const void *buf, int len);
 
 #endif

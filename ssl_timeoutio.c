@@ -5,8 +5,8 @@
 #include "now.h"
 #include "ssl_timeoutio.h"
 
-int ssl_timeoutio(int (*fun)(),
-  int t, int rfd, int wfd, SSL *ssl, char *buf, int len)
+static int ssl_timeoutio(int (*fun)(),
+  int t, int rfd, int wfd, SSL *ssl, void *buf, int len)
 {
   int n;
   const datetime_sec end = (datetime_sec)t + now();
@@ -111,15 +111,15 @@ int ssl_timeoutrehandshake(int t, int rfd, int wfd, SSL *ssl)
   return ssl_timeoutio(SSL_do_handshake, t, rfd, wfd, ssl, NULL, 0);
 }
 
-int ssl_timeoutread(int t, int rfd, int wfd, SSL *ssl, char *buf, int len)
+int ssl_timeoutread(int t, int rfd, int wfd, SSL *ssl, void *buf, int len)
 {
   if (!buf) return 0;
   if (SSL_pending(ssl)) return SSL_read(ssl, buf, len);
   return ssl_timeoutio(SSL_read, t, rfd, wfd, ssl, buf, len);
 }
 
-int ssl_timeoutwrite(int t, int rfd, int wfd, SSL *ssl, char *buf, int len)
+int ssl_timeoutwrite(int t, int rfd, int wfd, SSL *ssl, const void *buf, int len)
 {
   if (!buf) return 0;
-  return ssl_timeoutio(SSL_write, t, rfd, wfd, ssl, buf, len);
+  return ssl_timeoutio(SSL_write, t, rfd, wfd, ssl, (void *)buf, len);
 }

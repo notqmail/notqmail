@@ -169,6 +169,7 @@ constmap.o
 timeoutread.o
 timeoutwrite.o
 tls.o
+tls_smtpd.o
 ssl_timeoutio.o
 timeoutconn.o
 tcpto.o

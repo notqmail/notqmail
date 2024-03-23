@@ -1,9 +1,8 @@
 #include "substdio.h"
-#include "str.h"
 #include "byte.h"
 #include "error.h"
 
-static int allwrite(ssize_t (*op)(), int fd, char *buf, size_t len)
+static int allwrite(ssize_t (*op)(int,const char*,size_t), int fd, const char *buf, size_t len)
 {
   ssize_t w;
 
@@ -30,7 +29,7 @@ int substdio_flush(substdio *s)
   return allwrite(s->op,s->fd,s->x,p);
 }
 
-int substdio_bput(substdio *s, char *buf, size_t len)
+int substdio_bput(substdio *s, const char *buf, size_t len)
 {
   unsigned int n;
  
@@ -47,7 +46,7 @@ int substdio_bput(substdio *s, char *buf, size_t len)
   return 0;
 }
 
-int substdio_put(substdio *s, char *buf, size_t len)
+int substdio_put(substdio *s, const char *buf, size_t len)
 {
   unsigned int n = s->n; /* how many bytes to write in next chunk */
  
@@ -71,23 +70,8 @@ int substdio_put(substdio *s, char *buf, size_t len)
   return 0;
 }
 
-int substdio_putflush(substdio *s, char *buf, size_t len)
+int substdio_putflush(substdio *s, const char *buf, size_t len)
 {
   if (substdio_flush(s) == -1) return -1;
   return allwrite(s->op,s->fd,buf,len);
-}
-
-int substdio_bputs(substdio *s, char *buf)
-{
-  return substdio_bput(s,buf,str_len(buf));
-}
-
-int substdio_puts(substdio *s, char *buf)
-{
-  return substdio_put(s,buf,str_len(buf));
-}
-
-int substdio_putsflush(substdio *s, char *buf)
-{
-  return substdio_putflush(s,buf,str_len(buf));
 }

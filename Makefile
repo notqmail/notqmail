@@ -1830,7 +1830,7 @@ compile substdio_copy.c substdio.h
 	./compile substdio_copy.c
 
 substdo.o: \
-compile substdo.c substdio.h str.h byte.h error.h
+compile substdo.c substdio.h byte.h error.h
 	./compile substdo.c
 
 syslog.lib: \

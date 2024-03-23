@@ -2,7 +2,7 @@
 #include "byte.h"
 #include "error.h"
 
-static int allwrite(ssize_t (*op)(), int fd, char *buf, size_t len)
+static int allwrite(ssize_t (*op)(int,const char*,size_t), int fd, char *buf, size_t len)
 {
   ssize_t w;
 

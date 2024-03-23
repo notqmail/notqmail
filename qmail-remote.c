@@ -108,8 +108,8 @@ int timeoutconnect = 60;
 int smtpfd;
 int timeout = 1200;
 
-GEN_SAFE_TIMEOUTREAD(saferead,timeout,smtpfd,dropped())
-GEN_SAFE_TIMEOUTWRITE(safewrite,timeout,smtpfd,dropped())
+GEN_SAFE_TIMEOUTREAD(saferead,timeout,fd,dropped())
+GEN_SAFE_TIMEOUTWRITE(safewrite,timeout,fd,dropped())
 
 char inbuf[1024];
 substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof(inbuf));
@@ -393,7 +393,10 @@ int main(int argc, char **argv)
  
     smtpfd = socket(AF_INET,SOCK_STREAM,0);
     if (smtpfd == -1) temp_oserr();
- 
+
+    smtpto.fd = smtpfd;
+    smtpfrom.fd = smtpfd;
+
     if (timeoutconn(smtpfd,&ip.ix[i].ip,(unsigned int) port,timeoutconnect) == 0) {
       tcpto_err(&ip.ix[i].ip,0);
       partner = ip.ix[i].ip;

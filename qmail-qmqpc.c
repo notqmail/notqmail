@@ -35,8 +35,8 @@ void die_format() { _exit(91); }
 int lasterror = 55;
 int qmqpfd;
 
-GEN_SAFE_TIMEOUTREAD(saferead,60,qmqpfd,die_conn())
-GEN_SAFE_TIMEOUTWRITE(safewrite,60,qmqpfd,die_conn())
+GEN_SAFE_TIMEOUTREAD(saferead,60,fd,die_conn())
+GEN_SAFE_TIMEOUTWRITE(safewrite,60,fd,die_conn())
 
 char buf[1024];
 substdio to = SUBSTDIO_FDBUF(safewrite,-1,buf,sizeof(buf));
@@ -97,6 +97,9 @@ char *server;
 
   qmqpfd = socket(AF_INET,SOCK_STREAM,0);
   if (qmqpfd == -1) die_socket();
+
+  to.fd = qmqpfd;
+  from.fd = qmqpfd;
 
   if (timeoutconn(qmqpfd,&ip,PORT_QMQP,10) != 0) {
     lasterror = 73;

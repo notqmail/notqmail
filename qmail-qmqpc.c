@@ -35,8 +35,8 @@ void die_format() { _exit(91); }
 int lasterror = 55;
 int qmqpfd;
 
-GEN_SAFE_TIMEOUTREAD(saferead,60,fd,die_conn())
-GEN_SAFE_TIMEOUTWRITE(safewrite,60,fd,die_conn())
+GEN_SAFE_TIMEOUTREAD(saferead,60,die_conn())
+GEN_SAFE_TIMEOUTWRITE(safewrite,60,die_conn())
 
 char buf[1024];
 substdio to = SUBSTDIO_FDBUF(safewrite,-1,buf,sizeof(buf));

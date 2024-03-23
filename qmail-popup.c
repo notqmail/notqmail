@@ -18,8 +18,8 @@
 
 void _noreturn_ die() { _exit(1); }
 
-GEN_SAFE_TIMEOUTREAD(saferead,1200,fd,die())
-GEN_SAFE_TIMEOUTWRITE(safewrite,1200,fd,die())
+GEN_SAFE_TIMEOUTREAD(saferead,1200,die())
+GEN_SAFE_TIMEOUTWRITE(safewrite,1200,die())
 
 char ssoutbuf[128];
 substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof(ssoutbuf));

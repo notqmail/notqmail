@@ -1,5 +1,4 @@
 #include "substdio.h"
-#include "str.h"
 #include "byte.h"
 #include "error.h"
 
@@ -75,19 +74,4 @@ int substdio_putflush(substdio *s, char *buf, size_t len)
 {
   if (substdio_flush(s) == -1) return -1;
   return allwrite(s->op,s->fd,buf,len);
-}
-
-int substdio_bputs(substdio *s, char *buf)
-{
-  return substdio_bput(s,buf,str_len(buf));
-}
-
-int substdio_puts(substdio *s, char *buf)
-{
-  return substdio_put(s,buf,str_len(buf));
-}
-
-int substdio_putsflush(substdio *s, char *buf)
-{
-  return substdio_putflush(s,buf,str_len(buf));
 }

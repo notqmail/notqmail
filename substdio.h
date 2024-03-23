@@ -1,6 +1,7 @@
 #ifndef SUBSTDIO_H
 #define SUBSTDIO_H
 
+#include <string.h>
 #include <sys/types.h>
 
 #include "deprecated.h"
@@ -21,9 +22,21 @@ extern int substdio_flush();
 extern int substdio_put(substdio *s, char *buf, size_t len);
 extern int substdio_bput(substdio *s, char *buf, size_t len);
 extern int substdio_putflush(substdio *s, char *buf, size_t len);
-extern int substdio_puts();
-extern int substdio_bputs();
-extern int substdio_putsflush();
+
+static inline int substdio_puts(substdio *s, char *buf)
+{
+  return substdio_put(s, buf, strlen(buf));
+}
+
+static inline int substdio_bputs(substdio *s, char *buf)
+{
+  return substdio_bput(s, buf, strlen(buf));
+}
+
+static inline int substdio_putsflush(substdio *s, char *buf)
+{
+  return substdio_putflush(s, buf, strlen(buf));
+}
 
 extern ssize_t substdio_get(substdio *s, char *buf, size_t len);
 #ifdef DEPRECATED_FUNCTIONS_AVAILABLE

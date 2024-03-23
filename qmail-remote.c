@@ -108,8 +108,8 @@ int timeoutconnect = 60;
 int smtpfd;
 int timeout = 1200;
 
-GEN_SAFE_TIMEOUTREAD(saferead,timeout,fd,dropped())
-GEN_SAFE_TIMEOUTWRITE(safewrite,timeout,fd,dropped())
+GEN_SAFE_TIMEOUTREAD(saferead,timeout,dropped())
+GEN_SAFE_TIMEOUTWRITE(safewrite,timeout,dropped())
 
 char inbuf[1024];
 substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof(inbuf));

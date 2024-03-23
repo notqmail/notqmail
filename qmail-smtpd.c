@@ -30,7 +30,7 @@
 unsigned int databytes = 0;
 int timeout = 1200;
 
-GEN_SAFE_TIMEOUTWRITE(safewrite,timeout,fd,_exit(1))
+GEN_SAFE_TIMEOUTWRITE(safewrite,timeout,_exit(1))
 
 char ssoutbuf[512];
 substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof(ssoutbuf));

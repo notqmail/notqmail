@@ -19,21 +19,21 @@ typedef struct substdio {
 extern void substdio_fdbuf(substdio *s, ssize_t (*op)(), int fd, char *buf, int len);
 
 extern int substdio_flush(substdio *s);
-extern int substdio_put(substdio *s, char *buf, size_t len);
-extern int substdio_bput(substdio *s, char *buf, size_t len);
-extern int substdio_putflush(substdio *s, char *buf, size_t len);
+extern int substdio_put(substdio *s, const char *buf, size_t len);
+extern int substdio_bput(substdio *s, const char *buf, size_t len);
+extern int substdio_putflush(substdio *s, const char *buf, size_t len);
 
-static inline int substdio_puts(substdio *s, char *buf)
+static inline int substdio_puts(substdio *s, const char *buf)
 {
   return substdio_put(s, buf, strlen(buf));
 }
 
-static inline int substdio_bputs(substdio *s, char *buf)
+static inline int substdio_bputs(substdio *s, const char *buf)
 {
   return substdio_bput(s, buf, strlen(buf));
 }
 
-static inline int substdio_putsflush(substdio *s, char *buf)
+static inline int substdio_putsflush(substdio *s, const char *buf)
 {
   return substdio_putflush(s, buf, strlen(buf));
 }

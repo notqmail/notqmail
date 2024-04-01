@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+# This script is for creating a Debian package locally
+# This script is not used by Open Build Service
 #
 if [ ! -f /etc/debian_version ] ; then
 	echo "Not a debian or ubuntu distribution" 1>&2

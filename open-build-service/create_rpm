@@ -1,5 +1,8 @@
 #!/bin/sh
 #
+# This script is for creating a RPM package locally
+# This script is not used by open build service
+#
 version=$(cat conf-version)
 
 verbose=0

@@ -9,9 +9,8 @@ Package: notqmail
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, net-tools, coreutils
 Provides: default-mta, mail-transport-agent
-Description: notqmail is a community-driven fork of qmail, beginning where netqmail
- left off: providing stable, compatible, small releases to which existing
- qmail users can safely update.
- notqmail also aims higher: developing an extensible, easily packaged, and
- increasingly useful modern mail server.
-
+Description: notqmail is the collaborative Open Source successor to qmail
+ and netqmail. It begins with stable, compatible, small releases to which
+ existing qmail users can safely update, and aims to become a more
+ extensible, more easily packaged, and more modern Mail Transport Agent
+ suitable for most needs.

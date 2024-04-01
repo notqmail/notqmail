@@ -32,7 +32,6 @@ Source0: https://github.com/notqmail/notqmail/releases/download/notqmail-@versio
 %if 0%{?suse_version} >= 1120
 Source1: %{name}-permissions.easy
 Source2: %{name}-permissions.secure
-Source3: %{name}-permissions.paranoid
 %endif
 Source4: system-users-qmail.conf
 %if %{undefined suse_version} && %{undefined sles_version}

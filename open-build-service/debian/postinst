@@ -48,9 +48,6 @@ esac
 #DEBHELPER#
 
 if [ $upgrade -eq 1 ] ; then # upgrade
-	if [ -f ${qmaildir}/libexec/instpackage ] ; then
-		${qmaildir}/libexec/instpackage queue-only
-	fi
 	if [ -f ${qmaildir}/libexec/instchown ] ; then
 		# required because on debian you lose the setuid bit of qmail-queue
 		# and the proper permissions of files in /var/qmail/queue
@@ -61,6 +58,10 @@ if [ $upgrade -eq 1 ] ; then # upgrade
 fi
 
 echo "Post Installation..."
+echo "Creating notqmail queue"
+if [ -f ${qmaildir}/libexec/instpackage ] ; then
+	${qmaildir}/libexec/instpackage queue-only
+fi
 echo "Creating ${logdir}"
 /bin/mkdir -p ${logdir}
 /bin/chown -R qmaill:nofiles ${logdir}
@@ -77,8 +78,8 @@ if [ ! -f ${qmaildir}/control/me ] ; then
 fi
 
 # setup notqmail as an alternative mta
-update-alternatives --install /usr/sbin/sendmail mta /var/qmail/bin/sendmail 120 \
-	--slave /usr/lib/sendmail mta-sendmail /var/qmail/bin/sendmail
+update-alternatives --install /usr/sbin/sendmail mta ${qmaildir}/bin/sendmail 120 \
+	--slave /usr/lib/sendmail mta-sendmail ${qmaildir}/bin/sendmail
 
 # Create aliases if they do not exist
 mkdir -p  ${qmaildir}/alias/Maildir/new

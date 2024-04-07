@@ -7,4 +7,5 @@ fi
 cd ..
 echo "Preparing notqmail-"$version""
 mkdir -p $HOME/stage
+echo git archive --format=tar.gz --prefix=notqmail-"$version"/ -o $HOME/stage/notqmail-"$version".tar.gz notqmail-"$version"
 git archive --format=tar.gz --prefix=notqmail-"$version"/ -o $HOME/stage/notqmail-"$version".tar.gz notqmail-"$version"

@@ -21,6 +21,9 @@
 #log directory if we use multilog in supervise scripts
 %global logdir             /var/log/svc
 %global see_base           For a description of notqmail visit https://notqmail.org/
+%if %build_on_obs == 1
+%global packager           @email@
+%endif
 
 Name: notqmail
 Version: @version@ 
@@ -244,7 +247,7 @@ mv %{buildroot}%{qmaildir}/doc/* %{buildroot}%{nq_docdir}
   %verify_permissions -e %{qmaildir}/alias/
   %verify_permissions -e %{qmaildir}/queue/lock/trigger
 %endif
-/var/qmail/bin/instcheck
+%{qmaildir}/bin/instcheck
 
 %pretrans
 argv1=$1
@@ -277,8 +280,34 @@ done
   %service_add_pre %{name}.service
 %endif
 
+# value of argv1 ($1) passed to scriptlets
+#            install   erase   upgrade  reinstall
+# pretrans      0        -         0
+# pre           1        -         2         2
+# post          1        -         2         2
+# preun         -        0         1         -
+# postun        -        0         1         -
+# posttrans     0        -         0
+# The scriptlets in %%pre and %%post are respectively run before and after a package is installed.
+# The scriptlets %%preun and %%postun are run before and after a package is uninstalled.
+# The scriptlets %%pretrans and %%posttrans are run at start and end of a transaction.
+# On upgrade, the scripts are run in the following order:
+#
+#   1. pretrans of new package
+#   2. pre of new package
+#   3. (package install)
+#   4. post of new package
+#   5. preun of old package
+#   6. (removal of old package)
+#   7. postun of old package
+#   8. posttrans of new package
+
 ### SCRIPTLET ###############################################################################
 %post
+argv1=$1
+if [ -z "$argv1" ] ; then
+  argv1=0
+fi
 %if 0%{?suse_version} >= 1120
 %if 0%{?set_permissions:1} > 0
   %set_permissions %{qmaildir}/bin/qmail-queue
@@ -287,8 +316,20 @@ done
   %run_permissions
 %endif
 %endif
-/var/qmail/libexec/instpackage queue-only
-/var/qmail/libexec/instchown queue-only
+
+# we are doing upgrade
+if [ $argv1 -eq 2 ] ; then
+  if [ -f %{qmaildir}/libexec/instchown ] ; then
+    %{qmaildir}/libexec/instchown queue-only
+  fi
+  exit 0
+fi
+if [ -f %{qmaildir}/libexec/instpackage ] ; then
+  %{qmaildir}/libexec/instpackage queue-only
+fi
+if [ -f %{qmaildir}/libexec/instchown ] ; then
+  %{qmaildir}/libexec/instchown queue-only
+fi
 %if 0%{?suse_version} || 0%{?sles_version}
   %service_add_post %{name}.service
 %endif

@@ -11,7 +11,7 @@ Priority: extra
 Binary: notqmail
 Architecture: any
 Version: @version@-@release@
-Maintainer: notqmail <packages@notqmail.org>
+Maintainer: @email@
 Homepage: https://notqmail.org/
 Debtransform-Release: 1
 Debtransform-Tar: notqmail-@version@.tar.xz

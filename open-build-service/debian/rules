@@ -61,7 +61,7 @@ install: build
 	cp instpackage $(DESTDIR)$(qmaildir)/libexec
 	$(MAKE) -s qmail-send.service
 	# do this for dh_installdocs
-	mv $(DESTDIR)$(qmaildir)/doc doc
+	mv $(DESTDIR)$(qmaildir)/doc /usr/share/doc/notqmail
 	ln -s /usr/share/doc/notqmail $(DESTDIR)$(qmaildir)/doc
 	cp qmail-send.service debian/notqmail.service
 	if [ -x /usr/bin/dh_installsystemd ] ; then \

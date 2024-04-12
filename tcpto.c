@@ -10,7 +10,7 @@
 #include "datetime.h"
 #include "readwrite.h"
 
-char tcpto_buf[1024];
+char tcpto_buf[TCPTO_BUFSIZ];
 
 static int flagwasthere;
 static int fdlock;

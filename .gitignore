@@ -373,3 +373,9 @@ forgeries.0
 setup
 qtmp.h
 qmail-send.service
+queue-fix.o
+strmsg_out.o
+fmt_8long.o
+queue-fix.0
+queue-fix.8
+queue-fix

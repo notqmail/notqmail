@@ -9,7 +9,7 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_case unittest_qmail-remote unittest_prioq unittest_qmail-send unittest_str unittest_stralloc
+TESTBINS = unittest_byte unittest_case unittest_qmail-remote unittest_prioq unittest_qmail-send unittest_str unittest_stralloc
 
 clean:
 	rm -f $(TESTBINS) *.o *-without-main.c
@@ -20,6 +20,16 @@ test: it
 	@for tbin in $(TESTBINS); do \
 		./$$tbin || exit 1 ; \
 	done
+
+unittest_byte: \
+../load unittest_byte.o ../str.a
+	../load unittest_byte ../str.a \
+	$(CHECK_LIBS)
+
+unittest_byte.o: \
+../compile unittest_byte.c ../byte.h
+	../compile unittest_byte.c -I.. \
+	$(CHECK_INCLUDES)
 
 unittest_case: \
 ../load unittest_case.o ../case.a

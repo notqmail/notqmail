@@ -16,12 +16,25 @@ START_TEST(test_byte_copy)
 }
 END_TEST
 
+START_TEST(test_byte_chr)
+{
+  char buf[8] = "a\0c \2af";
+  ck_assert_uint_eq(byte_chr(buf, 1, 'a'), 0);
+  ck_assert_uint_eq(byte_chr(buf, 8, 'a'), 0);
+  ck_assert_uint_eq(byte_chr(buf, 8, 0), 1);
+  ck_assert_uint_eq(byte_chr(buf, 8, 'c'), 2);
+  ck_assert_uint_eq(byte_chr(buf, 8, 2), 4);
+  ck_assert_uint_eq(byte_chr(buf, 8, 'z'), 8);
+}
+END_TEST
+
 TCase
 *str_something(void)
 {
   TCase *tc = tcase_create("basic operations");
 
   tcase_add_test(tc, test_byte_copy);
+  tcase_add_test(tc, test_byte_chr);
 
   return tc;
 }

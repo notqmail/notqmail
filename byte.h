@@ -3,9 +3,9 @@
 
 #include <string.h>
 
-static inline unsigned int byte_chr(char *s, unsigned int n, int c)
+static inline unsigned int byte_chr(const void *s, unsigned int n, int c)
 {
-  const char *t = memchr(s, c, n);
+  const void *t = memchr(s, c, n);
   if (!t)
     return n;
   return t - s;

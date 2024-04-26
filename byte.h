@@ -3,7 +3,13 @@
 
 #include <string.h>
 
-extern unsigned int byte_chr();
+static inline unsigned int byte_chr(char *s, unsigned int n, int c)
+{
+  const char *t = memchr(s, c, n);
+  if (!t)
+    return n;
+  return t - s;
+}
 extern unsigned int byte_rchr();
 #define byte_copy(to,n,from) memcpy(to,from,n)
 extern void byte_copyr();

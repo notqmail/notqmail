@@ -90,7 +90,6 @@ substdio.a
 error_str.o
 error_temp.o
 error.a
-byte_chr.o
 byte_rchr.o
 byte_copy.o
 byte_cr.o

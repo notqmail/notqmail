@@ -5,7 +5,7 @@
 
 extern unsigned int byte_chr();
 extern unsigned int byte_rchr();
-extern void byte_copy();
+#define byte_copy(to,n,from) memcpy(to,from,n)
 extern void byte_copyr();
 extern void byte_zero();
 

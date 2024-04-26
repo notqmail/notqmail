@@ -24,12 +24,12 @@ test: it
 unittest_byte: \
 ../load unittest_byte.o ../str.a
 	../load unittest_byte ../str.a \
-	$(CHECK_LIBS)
+	`pkg-config --libs check`
 
 unittest_byte.o: \
 ../compile unittest_byte.c ../byte.h
 	../compile unittest_byte.c -I.. \
-	$(CHECK_INCLUDES)
+	`pkg-config --cflags check`
 
 unittest_case: \
 ../load unittest_case.o ../case.a

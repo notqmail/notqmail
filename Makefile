@@ -238,10 +238,6 @@ byte_chr.o: \
 compile byte_chr.c byte.h
 	./compile byte_chr.c
 
-byte_copy.o: \
-compile byte_copy.c byte.h
-	./compile byte_copy.c
-
 byte_cr.o: \
 compile byte_cr.c byte.h
 	./compile byte_cr.c
@@ -1705,11 +1701,11 @@ scan.h fmt.h
 
 str.a: \
 makelib \
-byte_chr.o byte_rchr.o byte_copy.o \
+byte_chr.o byte_rchr.o \
 byte_cr.o byte_zero.o
 	./makelib str.a \
 	byte_chr.o byte_rchr.o \
-	byte_copy.o byte_cr.o byte_zero.o
+	byte_cr.o byte_zero.o
 
 stralloc.a: \
 makelib stralloc_eady.o stralloc_pend.o stralloc_copy.o \

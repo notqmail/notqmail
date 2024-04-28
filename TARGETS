@@ -13,7 +13,6 @@ slurpclose.o
 make-makelib
 makelib
 case_diffb.o
-case_diffs.o
 case_lowerb.o
 case_lowers.o
 case_starts.o
@@ -49,6 +48,7 @@ seek_end.o
 seek_set.o
 seek_trunc.o
 seek.a
+hasbzero.h
 hasflock.h
 lock_ex.o
 lock_exnb.o
@@ -91,10 +91,6 @@ substdio.a
 error_str.o
 error_temp.o
 error.a
-str_chr.o
-str_rchr.o
-str_start.o
-byte_chr.o
 byte_rchr.o
 byte_copy.o
 byte_cr.o

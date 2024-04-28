@@ -234,14 +234,6 @@ bouncesaying.o: \
 compile bouncesaying.c fork.h strerr.h error.h wait.h sig.h exit.h
 	./compile bouncesaying.c
 
-byte_chr.o: \
-compile byte_chr.c byte.h
-	./compile byte_chr.c
-
-byte_copy.o: \
-compile byte_copy.c byte.h
-	./compile byte_copy.c
-
 byte_cr.o: \
 compile byte_cr.c byte.h
 	./compile byte_cr.c
@@ -251,22 +243,18 @@ compile byte_rchr.c byte.h
 	./compile byte_rchr.c
 
 byte_zero.o: \
-compile byte_zero.c byte.h
+compile byte_zero.c byte.h hasbzero.h
 	./compile byte_zero.c
 
 case.a: \
-makelib case_diffb.o case_diffs.o case_lowerb.o case_lowers.o \
+makelib case_diffb.o case_lowerb.o case_lowers.o \
 case_starts.o
-	./makelib case.a case_diffb.o case_diffs.o case_lowerb.o \
+	./makelib case.a case_diffb.o case_lowerb.o \
 	case_lowers.o case_starts.o
 
 case_diffb.o: \
 compile case_diffb.c case.h
 	./compile case_diffb.c
-
-case_diffs.o: \
-compile case_diffs.c case.h
-	./compile case_diffs.c
 
 case_lowerb.o: \
 compile case_lowerb.c case.h
@@ -608,6 +596,13 @@ compile gfrom.c str.h gfrom.h
 gid.o: \
 compile gid.c uidgid.h subfd.h substdio.h exit.h
 	./compile gid.c
+
+hasbzero.h: \
+trybzero.c compile load
+	( ( ./compile trybzero.c && ./load trybzero ) >/dev/null \
+	2>&1 \
+	&& echo \#define HAS_EXPLICIT_BZERO 1 || exit 0 ) > hasbzero.h
+	rm -f trybzero.o trybzero
 
 hasflock.h: \
 tryflock.c compile load
@@ -1708,24 +1703,12 @@ scan.h fmt.h
 	./compile splogger.c
 
 str.a: \
-makelib str_chr.o \
-str_rchr.o str_start.o byte_chr.o byte_rchr.o byte_copy.o \
+makelib \
+byte_rchr.o \
 byte_cr.o byte_zero.o
 	./makelib str.a \
-	str_chr.o str_rchr.o str_start.o byte_chr.o byte_rchr.o \
-	byte_copy.o byte_cr.o byte_zero.o
-
-str_chr.o: \
-compile str_chr.c str.h
-	./compile str_chr.c
-
-str_rchr.o: \
-compile str_rchr.c str.h
-	./compile str_rchr.c
-
-str_start.o: \
-compile str_start.c str.h
-	./compile str_start.c
+	byte_rchr.o \
+	byte_cr.o byte_zero.o
 
 stralloc.a: \
 makelib stralloc_eady.o stralloc_pend.o stralloc_copy.o \

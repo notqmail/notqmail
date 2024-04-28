@@ -9,7 +9,7 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_stralloc unittest_qmail-remote unittest_prioq unittest_qmail-send
+TESTBINS = unittest_byte unittest_case unittest_qmail-remote unittest_prioq unittest_qmail-send unittest_str unittest_stralloc
 
 clean:
 	rm -f $(TESTBINS) *.o *-without-main.c
@@ -20,6 +20,36 @@ test: it
 	@for tbin in $(TESTBINS); do \
 		./$$tbin || exit 1 ; \
 	done
+
+unittest_byte: \
+../load unittest_byte.o ../str.a
+	../load unittest_byte ../str.a \
+	`pkg-config --libs check`
+
+unittest_byte.o: \
+../compile unittest_byte.c ../byte.h
+	../compile unittest_byte.c -I.. \
+	`pkg-config --cflags check`
+
+unittest_case: \
+../load unittest_case.o ../case.a
+	../load unittest_case ../case.a \
+	`pkg-config --libs check`
+
+unittest_case.o: \
+../compile unittest_case.c ../case.h
+	../compile unittest_case.c -I.. \
+	`pkg-config --cflags check`
+
+unittest_str: \
+../load unittest_str.o ../str.a
+	../load unittest_str ../str.a \
+	`pkg-config --libs check`
+
+unittest_str.o: \
+../compile unittest_str.c ../str.h
+	../compile unittest_str.c -I.. \
+	`pkg-config --cflags check`
 
 unittest_stralloc: \
 ../load unittest_stralloc.o ../stralloc.a ../str.a ../error.a

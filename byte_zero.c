@@ -4,7 +4,7 @@
 #include <string.h>
 #endif
 
-void byte_zero(void *m, unsigned int n)
+void byte_zero(void *m, size_t n)
 {
 #ifdef HAS_EXPLICIT_BZERO
   explicit_bzero(m, n);

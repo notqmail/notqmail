@@ -642,7 +642,7 @@ int main()
    r = read(fdin, &c, 1);
    if ((r == -1) && (errno != error_intr))
      _exit(100); /* read failed probably qmail-send died */
- } while (r =! 1); /* we assume it is a 'S' */
+ } while (r != 1); /* we assume it is a 'S' */
 
  for (;;)
   {

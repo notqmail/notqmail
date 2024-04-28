@@ -12,6 +12,7 @@
 #include "dns.h"
 #include "case.h"
 #include "spf.h"
+#include <unistd.h>
 
 #define SPF_EXT    -1
 #define SPF_SYNTAX -2

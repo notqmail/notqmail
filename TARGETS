@@ -48,6 +48,7 @@ seek_end.o
 seek_set.o
 seek_trunc.o
 seek.a
+hasbzero.h
 hasflock.h
 lock_ex.o
 lock_exnb.o

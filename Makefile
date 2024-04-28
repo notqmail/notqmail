@@ -243,7 +243,7 @@ compile byte_rchr.c byte.h
 	./compile byte_rchr.c
 
 byte_zero.o: \
-compile byte_zero.c byte.h
+compile byte_zero.c byte.h hasbzero.h
 	./compile byte_zero.c
 
 case.a: \
@@ -596,6 +596,13 @@ compile gfrom.c str.h gfrom.h
 gid.o: \
 compile gid.c uidgid.h subfd.h substdio.h exit.h
 	./compile gid.c
+
+hasbzero.h: \
+trybzero.c compile load
+	( ( ./compile trybzero.c && ./load trybzero ) >/dev/null \
+	2>&1 \
+	&& echo \#define HAS_EXPLICIT_BZERO 1 || exit 0 ) > hasbzero.h
+	rm -f trybzero.o trybzero
 
 hasflock.h: \
 tryflock.c compile load

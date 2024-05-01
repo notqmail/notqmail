@@ -2,6 +2,7 @@
 #include "subfd.h"
 #include "stralloc.h"
 #include "alloc.h"
+#include "dns.h"
 #include "spf.h"
 #include "exit.h"
 

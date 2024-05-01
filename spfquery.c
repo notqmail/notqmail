@@ -19,9 +19,7 @@ stralloc spflocal = {0};
 stralloc spfguess = {0};
 stralloc spfexp = {0};
 
-void main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
 	stralloc sa = {0};
 	int r;
@@ -81,5 +79,5 @@ char **argv;
 	substdio_put(subfdout,sa.s,sa.len);
 	substdio_putsflush(subfdout,"\n");
 
-	_exit(0);
+	return 0;
 }

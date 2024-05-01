@@ -6,6 +6,7 @@
 #include "dns.h"
 #include "dnsdoe.h"
 #include "strsalloc.h"
+#include <unistd.h>
 
 strsalloc ssa = {0};
 stralloc sa = {0};

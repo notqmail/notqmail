@@ -1832,7 +1832,7 @@ compile strerr_sys.c error.h strerr.h
 
 strsalloc.o: \
 compile strsalloc.c alloc.h gen_allocdefs.h stralloc.h strsalloc.h \
-gen_alloc.h
+gen_alloc.h oflops.h
 	./compile strsalloc.c
 
 subfderr.o: \

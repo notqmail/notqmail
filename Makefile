@@ -1451,13 +1451,13 @@ load qmail-smtpd.o rcpthosts.o commands.o timeoutread.o \
 timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o received.o \
 date822fmt.o qmail.o cdb.a fd.a wait.a datetime.a getln.a \
 open.a sig.a case.a env.a stralloc.a substdio.a error.a str.a \
-fs.a auto_qmail.o str.a qmail-spp.o socket.lib
+fs.a auto_qmail.o qmail-spp.o socket.lib
 	./load qmail-smtpd rcpthosts.o commands.o timeoutread.o \
 	timeoutwrite.o ip.o ipme.o ipalloc.o control.o constmap.o \
 	received.o date822fmt.o qmail.o cdb.a fd.a wait.a \
 	datetime.a getln.a open.a sig.a case.a qmail-spp.o env.a stralloc.a \
 	substdio.a error.a str.a fs.a auto_qmail.o \
-	str.a `cat socket.lib`
+	`cat socket.lib`
 
 qmail-smtpd.0: \
 qmail-smtpd.8

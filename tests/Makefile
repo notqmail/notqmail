@@ -43,11 +43,13 @@ unittest_qmail-remote: \
 ../load unittest_qmail-remote.o qmail-remote-without-main.o ../control.o ../ip.o ../constmap.o \
 ../timeoutread.o ../timeoutwrite.o ../quote.o \
 ../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a ../str.a \
-../getln.a ../case.a
+../getln.a ../case.a \
+../base64.o ../md5c.o ../hmac_md5.o
 	../load unittest_qmail-remote qmail-remote-without-main.o ../control.o ../ip.o ../constmap.o \
 	../timeoutread.o ../timeoutwrite.o ../quote.o \
 	../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a \
 	../getln.a ../str.a ../case.a \
+	../base64.o ../md5c.o ../hmac_md5.o \
 	`pkg-config --libs check`
 
 unittest_qmail-remote.o: \

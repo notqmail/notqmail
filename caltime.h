@@ -11,6 +11,8 @@ struct caltime {
   long offset;
 } ;
 
+#include "tai.h"
+
 extern void caltime_tai(const struct caltime *, struct tai *);
 extern void caltime_utc(struct caltime *, const struct tai *, int *, int *);
 

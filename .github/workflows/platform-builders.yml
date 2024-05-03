@@ -26,7 +26,7 @@ jobs:
       with:
         branch: ${{ matrix.osversion }}
         arch: ${{ matrix.platform }}
-        packages: "build-base check check-dev pkgconf"
+        packages: "build-base check check-dev pkgconf openssl"
     - name: Build and Test
       shell: alpine.sh {0}
       run: |
@@ -89,7 +89,7 @@ jobs:
     - name: Build and Test
       run: |
         set -e
-        dnf -y install gcc make groff pkgconf check check-devel
+        dnf -y install gcc make groff pkgconf check check-devel openssl openssl-devel
         echo "cc -m${{ matrix.abi }} -O2 ${{ matrix.cflags }}" > conf-cc
         echo "cc -m${{ matrix.abi }} -s ${{ matrix.ldflags }}" > conf-ld
         make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
@@ -168,7 +168,7 @@ jobs:
     - name: Build and Test
       run: |
         set -e
-        brew install check
+        brew install check openssl
         echo "${{ matrix.cc }} ${{ matrix.nroff == 'no-roff' && '-DDEPRECATED_FUNCTIONS_REMOVED' || ' ' }} -O2 -fPIC ${{ matrix.warnings }}" > conf-cc
         [ "${{ matrix.utmp }}" = "force-old-utmp" ] && echo "break utmpx detection" >> tryutmpx.c
         make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
@@ -264,7 +264,7 @@ jobs:
         usesh: true
         prepare: |
           set -e
-          pkgutil -y -i pkgconfig curl
+          pkgutil -y -i pkgconfig curl openssl
           curl -L -O https://github.com/libcheck/check/releases/download/${{ matrix.libcheck }}/check-${{ matrix.libcheck }}.tar.gz
           gunzip check-${{ matrix.libcheck }}.tar.gz
           tar -xvf check-${{ matrix.libcheck }}.tar
@@ -305,7 +305,7 @@ jobs:
       run: |
         set -e
         sudo apt-get update
-        sudo apt-get install check
+        sudo apt-get install check libssl-dev
         echo "${{ matrix.cc }} ${{ matrix.nroff == 'no-roff' && '-DDEPRECATED_FUNCTIONS_REMOVED' || ' ' }} -O2 -fPIC ${{ matrix.warnings }} ${{ matrix.cc == 'clang' && '-Werror=incompatible-library-redeclaration' || ' ' }}" > conf-cc
         [ "${{ matrix.utmp }}" = "force-old-utmp" ] && echo "break utmpx detection" >> tryutmpx.c
         make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}

@@ -575,19 +575,19 @@ int auth_login(arg) char *arg;
   int r;
 
   if (*arg) {
-    if (r = b64decode(arg,str_len(arg),&user) == 1) return err_input();
+    if ((r = b64decode(arg,str_len(arg),&user)) == 1) return err_input();
   }
   else {
     out("334 VXNlcm5hbWU6\r\n"); flush();       /* Username: */
     if (authgetl() < 0) return -1;
-    if (r = b64decode(authin.s,authin.len,&user) == 1) return err_input();
+    if ((r = b64decode(authin.s,authin.len,&user)) == 1) return err_input();
   }
   if (r == -1) die_nomem();
 
   out("334 UGFzc3dvcmQ6\r\n"); flush();         /* Password: */
 
   if (authgetl() < 0) return -1;
-  if (r = b64decode(authin.s,authin.len,&pass) == 1) return err_input();
+  if ((r = b64decode(authin.s,authin.len,&pass)) == 1) return err_input();
   if (r == -1) die_nomem();
 
   if (!user.len || !pass.len) return err_input();
@@ -599,12 +599,12 @@ int auth_plain(arg) char *arg;
   int r, id = 0;
 
   if (*arg) {
-    if (r = b64decode(arg,str_len(arg),&resp) == 1) return err_input();
+    if ((r = b64decode(arg,str_len(arg),&resp)) == 1) return err_input();
   }
   else {
     out("334 \r\n"); flush();
     if (authgetl() < 0) return -1;
-    if (r = b64decode(authin.s,authin.len,&resp) == 1) return err_input();
+    if ((r = b64decode(authin.s,authin.len,&resp)) == 1) return err_input();
   }
   if (r == -1 || !stralloc_0(&resp)) die_nomem();
   while (resp.s[id]) id++;                       /* "authorize-id\0userid\0passwd\0" */
@@ -642,7 +642,7 @@ int auth_cram()
   flush();
 
   if (authgetl() < 0) return -1;                        /* got response */
-  if (r = b64decode(authin.s,authin.len,&resp) == 1) return err_input();
+  if ((r = b64decode(authin.s,authin.len,&resp)) == 1) return err_input();
   if (r == -1 || !stralloc_0(&resp)) die_nomem();
 
   i = str_rchr(resp.s,' ');

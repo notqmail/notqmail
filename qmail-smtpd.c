@@ -259,7 +259,7 @@ stralloc mfparms = {0};
 
 int mailfrom_size(arg) char *arg;
 {
-  long r;
+  unsigned long r;
   unsigned long sizebytes = 0;
 
   scan_ulong(arg,&r);

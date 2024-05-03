@@ -341,7 +341,7 @@ int mailfrom_cram()
     if (b64decode(slop.s,slop.len,&chal)) quit("ZConnected to "," but unable to base64decode challenge.");
   }
 
-  hmac_md5(chal.s,chal.len,pass.s,pass.len,digest);
+  hmac_md5((unsigned char *)chal.s,chal.len,(unsigned char *)pass.s,pass.len,digest);
 
   for (j = 0;j < 16;j++)				/* HEX => ASCII */
   {

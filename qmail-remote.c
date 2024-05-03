@@ -30,6 +30,7 @@
 #include "timeoutread.h"
 #include "timeoutwrite.h"
 #include "base64.h"
+#include "hmac_md5.h"
 
 #define HUGESMTPTEXT 5000
 

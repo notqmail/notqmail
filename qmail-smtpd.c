@@ -26,6 +26,8 @@
 #include "timeoutwrite.h"
 #include "commands.h"
 #include "wait.h"
+#include "fd.h"
+#include "base64.h"
 
 #define AUTHSLEEP 5
 

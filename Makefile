@@ -1380,7 +1380,7 @@ subfd.h substdio.h scan.h case.h error.h auto_qmail.h control.h dns.h \
 alloc.h quote.h ip.h ipalloc.h ip.h gen_alloc.h ipme.h ip.h ipalloc.h \
 gen_alloc.h gen_allocdefs.h str.h now.h datetime.h exit.h constmap.h \
 tcpto.h readwrite.h timeoutconn.h timeoutread.h timeoutwrite.h oflops.h \
-error.h
+error.h base64.h hmac_md5.h
 	./compile qmail-remote.c
 
 qmail-rspawn: \
@@ -1477,7 +1477,7 @@ compile qmail-smtpd.c sig.h readwrite.h stralloc.h gen_alloc.h \
 substdio.h alloc.h auto_qmail.h control.h received.h constmap.h \
 error.h ipme.h ip.h ipalloc.h ip.h gen_alloc.h ip.h qmail.h \
 substdio.h str.h fmt.h scan.h byte.h case.h env.h now.h datetime.h \
-exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h base64.h
+exit.h rcpthosts.h timeoutread.h timeoutwrite.h commands.h fd.h base64.h
 	./compile qmail-smtpd.c
 
 qmail-start: \

@@ -370,6 +370,5 @@ mbox.0
 addresses.0
 envelopes.0
 forgeries.0
-setup
 qtmp.h
 qmail-send.service

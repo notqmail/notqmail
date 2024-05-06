@@ -137,7 +137,7 @@ custom_error(char *program, char *type, char *message, char *extra, char *code)
 
 	if (errfd == -1) {
 		if (!(c = env_get("ERROR_FD")))
-			errfd = CUSTOM_ERR_FD;
+			errfd = 6;
 		else
 			scan_int(c, &errfd);
 	}

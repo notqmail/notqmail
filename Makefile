@@ -1416,11 +1416,11 @@ error.h
 qmail-rspawn: \
 load qmail-rspawn.o spawn.o tcpto_clean.o coe.o sig.a open.a \
 lock.a wait.a fd.a stralloc.a substdio.a error.a env.a str.a \
-auto_qmail.o auto_spawn.o ids.a envread.o
+auto_qmail.o auto_spawn.o ids.a
 	./load qmail-rspawn spawn.o tcpto_clean.o coe.o \
 	sig.a open.a lock.a wait.a fd.a stralloc.a \
 	auto_qmail.o ids.a substdio.a error.a env.a str.a \
-	auto_spawn.o envread.o
+	auto_spawn.o
 
 qmail-rspawn.0: \
 qmail-rspawn.8
@@ -2046,7 +2046,7 @@ surblfilter.8: surblfilter.9
 surblfilter: \
 load surblfilter.o envread.o strerr_die.o strerr_sys.o \
 control.o error.a \
-error_str.o auto_qmail.o \
+auto_qmail.o \
 case_startb.o str_cspn.o \
 byte_copy.o byte_chr.o byte_rchr.o byte_cr.o \
 getln.o getln2.o open_read.o \
@@ -2058,7 +2058,7 @@ sgetopt.o subgetopt.o base64sub.o \
 case_diffb.o stralloc.a substdio.a
 	./load surblfilter envread.o strerr_die.o strerr_sys.o \
 	control.o error.a \
-	error_str.o auto_qmail.o \
+	auto_qmail.o \
 	case_startb.o str_cspn.o \
 	byte_copy.o byte_chr.o byte_rchr.o byte_cr.o \
 	getln.o getln2.o open_read.o \

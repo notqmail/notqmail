@@ -1,3 +1,4 @@
+- 20240506 version: notqmail 1.09.
 - 20240323 code: declare `op()` parameter list in `allwrite()`.
 - 20240323 code: declare `substdio_flush()` parameter list.
 - 20240323 code: convert `substdio_*puts*()` to static inlines.

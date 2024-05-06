@@ -2,7 +2,7 @@
 
 SHELL=/bin/sh
 NROFF=nroff
-RELEASE_VERSION=1.08
+RELEASE_VERSION=1.09
 
 default: it
 

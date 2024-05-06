@@ -1,19 +1,72 @@
-- 20240127 remove instqueue, now replaced by "instpackage queue-only"
-- 20221115 honor all groups of qmailr user when spawning qmail-rspawn
-- 20221019 code: netstring parsing in qmail-qmtpd & qmail-qmqpd now
+- 20240506 version: notqmail 1.09.
+- 20240323 code: declare `op()` parameter list in `allwrite()`.
+- 20240323 code: declare `substdio_flush()` parameter list.
+- 20240323 code: convert `substdio_*puts*()` to static inlines.
+- 20240323 code: avoid shadowing built-in puts() in `auto-*.c`.
+- 20240209 code: `instchown`: operate on fds directly.
+- 20240127 code: replace `instqueue` with `instpackage queue-only`.
+- 20221115 code: honor all groups of qmailr user when spawning `qmail-rspawn`.
+- 20221023 code: netstring parsing in `qmail-qmtpd` & `qmail-qmqpd` now
            checks that the netstring length is actually a number.
-- 20210122 code: remove register storage class declaration from codebase.
-- 20201224 bug: in qmail-remote, handle DNS packets up to max EDNS
+- 20221013 code: add missing system headers for `close()`, `chdir()`, `getpid()`.
+- 20220510 code: `qmail-qstat`: simplify the code.
+- 20220215 bug: `qmail-inject`: fix header parse regression.
+- 20220130 code: add tests for `qmail-send:job_*()` functions.
+- 20210816 code: `Makefile`: remove stale references to `auto-uid`.
+- 20210815 code: fix `make clean`.
+- 20210130 code: add `noreturn` attribute to a couple of functions.
+- 20210124 bug: `qmail-remote`: handle DNS packets up to max EDNS
            response size.
-- 20201206 code: extend qmail-queue(8) interface so a custom rejection
+- 20210122 portability: Do not use POSIX-style `-n` argument for `tail`.
+- 20210122 code: remove `register` storage class declaration from codebase.
+- 20210122 code: restore (and deprecate) `substdio_bget()`.
+- 20210122 code: extend `qmail-queue` interface so a custom rejection
            message can be communicated to the caller.
-- 20201120 code: add instqueue for packagers, extracted from instpackage.
-- 20200803 avoid sending CRCRLF in qmail-remote if input contains CRLF
-- 20200614 remove maildirwatch
-- 20200614 stop rewriting RCPT TO: domains when they are a CNAME (RFC 5321 5.1)
-- 20200523 doc: give text files .md extensions.
-- 20200523 cleanup: remove qsmhook, replaced by preline.
-- 20200520 remove wrappers for obsolete mail clients without maildir support
+- 20210122 code: fix 3 warnings from `-Wpointer-sign`.
+- 20201219 code: add `instqueue` for packagers, extracted from `instpackage`.
+- 20201218 code: include our own headers first in all C files.
+- 20201216 code: fix CodeQL cpp/integer-multiplication-cast-to-long.
+- 20201204 code: use `ssize_t` in `substdio`.
+- 20201130 bug: `qmail-local`: close race window when creating file in `tmp/`.
+- 20201128 code: fix 5 warnings from `-Wdangling-else`.
+- 20201128 code: fix 17 warnings from `-Wparentheses`.
+- 20201128 code: fix 1 warning from `-Wempty-body`.
+- 20201127 code: fix 3 warnings from `-Wpointer-sign`.
+- 20201127 code: fix 2 warnings from `-Wincompatible-library-redeclaration`.
+- 20201114 code: put all usernames into the same object.
+- 20201109 code: get rid of `error_*` variables and just `#define` them to their `errno` equivalents.
+- 20201108 code: add some tests for `prioq`.
+- 20201107 code: add `.gitattributes` to keep some files out of release tarballs.
+- 20201019 code: `qmail-remote`: avoid sending CRCRLF if input contains CRLF.
+- 20200708 code: remove orphaned `now.c`.
+- 20200708 code: reintroduce `alloc_re()`.
+- 20200708 code: `qmail-remote`: fix warnings about `get()` being used with wrong pointer signedness.
+- 20200708 code: clean up `hier.h` and spawn functions.
+- 20200708 code: `qmail-smtpd`: allow `[]` to appear in `Received:` lines.
+- 20200705 code: improve platform checks.
+- 20200704 code: `qmail-send`: use `utimes()` instead of `utime()`.
+- 20200701 code: add missing includes for `NULL`.
+- 20200621 code: make `now()` an inline function.
+- 20200619 cleanup: remove inefficient `maildirwatch`.
+- 20200617 code: `TARGETS`: drop needless `auto_uid*.o` and `auto_gid*.o` entries.
+- 20200614 code: use `NULL` instead of casting 0 to a pointer type.
+- 20200614 code: replace `alloc_re()` with plain `realloc()`.
+- 20200614 code: `predate`: use better version of calling `time()`.
+- 20200614 code: `qmail-remote`: stop rewriting `RCPT TO:` domains when they are a `CNAME` (RFC 5321 5.1).
+- 20200611 doc: append `.md` suffix to text docs.
+- 20200611 code: return `int` from all `main()` functions.
+- 20200611 code: make most output of `auto-str` human-readable.
+- 20200611 code: fix all warnings about usage of undeclared functions.
+- 20200524 code: remove functions that only reimplement standard C functions.
+- 20200523 cleanup: remove `qsmhook`, long since replaced by `preline`.
+- 20200523 code: use POSIX-compliant calling of `head` and `tail`.
+- 20200523 code: remove unused `substdio_bget()`.
+- 20200523 code: remove the custom allocator.
+- 20200523 code: add `scan.h` prototypes.
+- 20200523 code: add `fmt.h` prototypes.
+- 20200522 code: use default `strdup()` instead of open coding it.
+- 20200522 code: add back accidentally removed typecast in `gen_allocdefs.h`.
+- 20200520 cleanup: remove obsolete mail client wrappers `elq`, `pinq`, and `qail`.
 - 20200520 version: notqmail 1.08.
 - 20200519 bug: fix several other places where variables could overflow.
 - 20200519 security: fix signedness wraparound in substdio_{put,bput}().

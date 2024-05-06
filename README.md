@@ -1,32 +1,18 @@
 [![Build status](https://img.shields.io/github/actions/workflow/status/notqmail/notqmail/platform-builders.yml)](https://github.com/notqmail/notqmail/actions/workflows/platform-builders.yml?query=branch%3Amaster)
 
-# notqmail 1.08
+# notqmail
 
-## 20200520
+[notqmail](https://notqmail.org)
+is the collaborative Open Source successor to
+[qmail](https://cr.yp.to/qmail.html)
+and
+[netqmail](http://netqmail.org).
+It begins with stable, compatible, small releases to which existing
+qmail users can safely update, and aims to become a more extensible,
+more easily packaged, and more modern Mail Transport Agent suitable
+for most needs.
 
-notqmail 1.08 was produced by this motley krewe:
-
-    Rolf Eike Beer <eike@sf-mail.de>
-    Manvendra Bhangui <mbhangui@gmail.com>
-    Alan Post <adp@prgmr.com>
-    Amitai Schleier <schmonz@schmonz.com>
-
-qmail is a secure, reliable, efficient, simple message transfer agent.
-It is meant as a replacement for the entire sendmail-binmail system on
-typical Internet-connected UNIX hosts. See BLURB.md, BLURB2.md, BLURB3.md, and
-BLURB4.md for more detailed advertisements.
-
-INSTALL.md says how to set up and test qmail. If you're upgrading from a
-previous version, read UPGRADE.md instead.
-
-See PIC.* for some "end-to-end" pictures of mail flowing through the
-qmail system.
-
-See <https://cr.yp.to/qmail.html> for other qmail-related software
-and a pointer to the qmail mailing list.
-
-Other documentation: <https://cr.yp.to/proto.html> shows solutions to
-several Internet mail problems; many of these solutions are implemented
-in qmail. CHANGES.md and THANKS.md show how qmail has changed since it was
-first released. SECURITY.md, INTERNALS.md, and THOUGHTS.md record many of
-the qmail design decisions.
+qmail's design principles haven't _always_ prevented bugs or holes,
+nor have they _always_ made adding new functionality easy. But
+pretty often we get both. And that's why we continue to invest in
+this codebase.

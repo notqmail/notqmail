@@ -2,10 +2,13 @@
 
 SHELL=/bin/sh
 NROFF=nroff
+RELEASE_VERSION=1.08
 
 default: it
 
 .PHONY: check clean default it man test
+.PHONY: release-changes release-commit release-copyright
+.PHONY: release-signatures release-tag release-tag-push release-tarballs
 
 .SUFFIXES: .0 .1 .5 .7 .8
 
@@ -24,6 +27,42 @@ default: it
 .8.0:
 	$(NROFF) -man $< >$@; \
 	ret=$$?; [ 0 = $$ret ] || rm -f $@; exit $$ret
+
+release-changes:
+	( grep 'version: notqmail $(RELEASE_VERSION)\.$$' CHANGES.md >/dev/null 2>&1 ) || \
+	( echo - `date '+%Y%m%d'` version: notqmail $(RELEASE_VERSION).; \
+	cat CHANGES.md; \
+	) > CHANGES.md.new; \
+	[ ! -f CHANGES.md.new ] || mv -f CHANGES.md.new CHANGES.md
+
+release-commit:
+	git commit -S -m 'This is notqmail $(RELEASE_VERSION).' CHANGES.md COPYRIGHT Makefile
+
+release-copyright:
+	[ `git diff master COPYRIGHT | wc -l` -gt 0 ] || \
+	( previous=`grep version: CHANGES.md | grep -v '$(RELEASE_VERSION)\.$$' | head -n 1 | sed -e 's|.* ||' -e 's|\.$$||'`; \
+	echo; echo notqmail-$(RELEASE_VERSION); \
+	yes - | head -n `echo notqmail-$(RELEASE_VERSION) | tr -d '\n' | wc -c` | tr -d '\n'; \
+	echo; \
+	echo No copyright is claimed by the distributors of notqmail for changes from; \
+	echo $$previous to $(RELEASE_VERSION).; \
+	) >> COPYRIGHT
+
+release-signatures:
+	gpg --detach-sign -a -o notqmail-$(RELEASE_VERSION).tar.gz.sig notqmail-$(RELEASE_VERSION).tar.gz
+	gpg --detach-sign -a -o notqmail-$(RELEASE_VERSION).tar.xz.sig notqmail-$(RELEASE_VERSION).tar.xz
+
+release-tag:
+	git tag -s notqmail-$(RELEASE_VERSION)
+
+release-tag-push:
+	git push origin notqmail-$(RELEASE_VERSION)
+
+release-tarballs:
+	git archive --prefix=notqmail-$(RELEASE_VERSION)/ -o notqmail-$(RELEASE_VERSION).tar notqmail-$(RELEASE_VERSION)
+	gzip --best --keep notqmail-$(RELEASE_VERSION).tar
+	xz --best --keep notqmail-$(RELEASE_VERSION).tar
+	rm -f notqmail-$(RELEASE_VERSION).tar
 
 addresses.0: \
 addresses.5

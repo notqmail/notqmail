@@ -252,6 +252,7 @@ rcpthosts.o
 qmail-qmtpd
 qmail-smtpd.o
 qmail-smtpd
+qmail-spp.o
 sendmail.o
 sendmail
 tcp-env.o

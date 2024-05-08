@@ -46,12 +46,12 @@ int timeout;
   s = socket(AF_INET,SOCK_STREAM,0);
   if (s == -1) return 0;
  
-  byte_zero(&sin,sizeof(sin));
+/*  byte_zero(&sin,sizeof(sin));
   sin.sin_family = AF_INET;
   byte_copy(&sin.sin_addr,4,ipl);
   sin.sin_port = 0;
-  if (bind(s,(struct sockaddr *) &sin,sizeof(sin)) == -1) { close(s); return 0; }
-  if (timeoutconn(s,ipr,113,timeout) == -1) { close(s); return 0; }
+  if (bind(s,(struct sockaddr *) &sin,sizeof(sin)) == -1) { close(s); return 0; } */
+  if (timeoutconn(s,ipr,ipl,113,timeout) == -1) { close(s); return 0; }
   fcntl(s,F_SETFL,fcntl(s,F_GETFL,0) & ~O_NDELAY);
  
   len = 0;

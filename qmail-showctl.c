@@ -257,6 +257,7 @@ int main(void)
   do_str("localiphost",1,"localiphost","Local IP address becomes ");
   do_lst("locals","Messages for me are delivered locally.","Messages for "," are delivered locally.");
   do_str("me",0,"undefined! Uh-oh","My name is ");
+  do_str("outgoingip",0,"0.0.0.0","Outgoing IP address is ");
   do_lst("percenthack","The percent hack is not allowed.","The percent hack is allowed for user%host@",".");
   do_str("plusdomain",1,"plusdomain","Plus domain name is ");
   do_lst("qmqpservers","No QMQP servers.","QMQP server: ",".");

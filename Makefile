@@ -39,7 +39,7 @@ release-commit:
 	git commit -S -m 'This is notqmail $(RELEASE_VERSION).' CHANGES.md COPYRIGHT Makefile
 
 release-copyright:
-	[ `git diff master COPYRIGHT | wc -l` -gt 0 ] || \
+	[ `git diff main COPYRIGHT | wc -l` -gt 0 ] || \
 	( previous=`grep version: CHANGES.md | grep -v '$(RELEASE_VERSION)\.$$' | head -n 1 | sed -e 's|.* ||' -e 's|\.$$||'`; \
 	echo; echo notqmail-$(RELEASE_VERSION); \
 	yes - | head -n `echo notqmail-$(RELEASE_VERSION) | tr -d '\n' | wc -c` | tr -d '\n'; \

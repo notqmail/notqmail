@@ -174,7 +174,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["14", "13", "12", "11"]
+        osversion: ["14", "13", "12"]
         abi: [64]
         warnings: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=incompatible-library-redeclaration -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign"]
         cc: ["clang"]
@@ -203,7 +203,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["10.0", "9.3"]
+        osversion: ["10.0", "9.4"]
         abi: [64]
         nroff: ["nroff", "no-roff"]
     steps:

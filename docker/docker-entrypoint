@@ -1,0 +1,39 @@
+#!/bin/sh
+# WARNING: This file was auto-generated. Do not edit!
+#
+set -e
+
+case "$1" in
+notqmail)
+	# create /etc/mtab as link ro /proc/self/mounts or /proc/mounts
+	# to enable getmntent() call to work
+	if [ ! -f /etc/mtab ] ; then
+		if [ -f /proc/self/mounts ] ; then
+			echo "Warning  linking /etc/mtab to /proc/self/mounts" 1>&2
+			ln -s /proc/self/mounts /etc/mtab
+		elif [ -f /proc/mounts ] ; then
+			echo "Warning  linking /etc/mtab to /proc/mounts" 1>&2
+			ln -s /proc/mounts /etc/mtab
+		else
+			echo "Warning /etc/mtab: No such file or directory" 1>&2
+		fi
+	fi
+	if [ ! -f /var/qmail/control/me ] ; then
+		HOSTNAME=`hostname`
+		echo $HOSTNAME > /var/qmail/control/me
+		/usr/libexec/notqmail/config-fast $HOSTNAME
+	fi
+	# this is a minimal system
+	# start system logger for splogger to log entries
+	if [ -x /usr/lib/systemd/systemd-journald ] ; then
+		/usr/lib/systemd/systemd-journald &
+	elif [ -f /etc/init.d/rsyslog ] ; then
+		/etc/init.d/rsyslog start
+	fi
+	exec env PATH=/var/qmail/bin:$PATH qmail-start ./Maildir/ splogger qmail
+;;
+*)
+	echo "docker-entrypoint: executing $@"
+	exec "$@"
+;;
+esac

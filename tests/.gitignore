@@ -1,4 +1,6 @@
 *.o
 unittest_blast
+unittest_prioq
+unittest_smtpcode
 unittest_stralloc
 blast.c

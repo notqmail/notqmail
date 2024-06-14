@@ -1,0 +1,11 @@
+#
+# /etc/permissions.easy is set up for the use in a standalone and single-user
+# installation to make things "work" out-of-the box.
+#
+# Binaries
+#
+/var/qmail/bin/qmail-queue      qmailq:qmail   4711
+#
+# Directories
+#
+/var/qmail/alias/                alias:qmail    2755

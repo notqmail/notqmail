@@ -1,0 +1,99 @@
+#!/usr/bin/make -f
+
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This is the debhelper compatibility version to use.
+# export DH_COMPAT=4
+CFLAGS=-g
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0 -fno-strict-aliasing -Wno-unused-result -Wno-unused-result
+else
+	CFLAGS += -O2 -fno-strict-aliasing -Wno-unused-result -Wno-unused-result
+endif
+
+qmaildir=/var/qmail
+mandir=$(qmaildir)/man
+
+DESTDIR=$(CURDIR)/debian/notqmail.tmp
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+	#
+	# Extract source archives
+	#
+	#
+	# run configure script
+	#
+	#
+	# run make
+	#
+	echo "cc -g -O2 -fPIC" > conf-cc
+	echo "cc -fPIE -pie"   > conf-ld
+	echo "$(qmaildir)"     > conf-qmail
+	$(MAKE) -s it man
+	touch build-stamp
+
+clean:
+	rm -f build-stamp configure-stamp
+	rm -rf $(DESTDIR)
+	$(MAKE) -s clean
+	dh_testdir
+	dh_testroot
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep || dh_clean -k
+	dh_installdirs
+	env DESTDIR=$(DESTDIR) ./instpackage
+	mkdir -p $(DESTDIR)$(qmaildir)/libexec
+	cp instchown $(DESTDIR)$(qmaildir)/libexec
+	cp instpackage $(DESTDIR)$(qmaildir)/libexec
+	$(MAKE) -s qmail-send.service
+	# do this for dh_installdocs
+	mv $(DESTDIR)$(qmaildir)/doc /usr/share/doc/notqmail
+	ln -s /usr/share/doc/notqmail $(DESTDIR)$(qmaildir)/doc
+	cp qmail-send.service debian/notqmail.service
+	if [ -x /usr/bin/dh_installsystemd ] ; then \
+		dh_installsystemd --no-enable --no-start; \
+	elif [ -x /usr/bin/dh_installinit ] ; then \
+		dh_installinit --no-enable --no-start ||  \
+		dh_installinit --no-start; \
+	else \
+		mv debian/notqmail.service $(DESTDIR)$(qmaildir)/boot ; \
+	fi
+	rm -rf $(DESTDIR)$(mandir)/man3 $(DESTDIR)$(qmaildir)/queue
+
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	#find $(DESTDIR)$(mandir) -name '*'.? -type f -exec gzip -q {} \;
+	dh_install --sourcedir=$(DESTDIR) -pnotqmail
+	dh_installchangelogs
+	dh_installcron
+	dh_installdocs
+	dh_link
+	dh_strip
+	dh_fixperms
+	dh_installdeb
+	dh_makeshlibs -V
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-dependent files here. 
+binary-arch: build install
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure

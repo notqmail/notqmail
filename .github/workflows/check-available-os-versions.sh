@@ -13,7 +13,8 @@ fetch_alpine_upstream_latest_stable() {
 	fetch_webpage_as_markdown 'https://alpinelinux.org/downloads/' \
 		| grep 'Current Alpine Version' \
 		| awk '{print $4}' \
-		| sed -e 's|\*||g'
+		| sed -e 's|\*||g' \
+		| awk 'BEGIN {FS="."} {printf "%s.%s", $1, $2}'
 }
 
 fetch_github_runner_list() {
@@ -72,6 +73,7 @@ fetch_os_versions() {
 		;;
 	*)
 		echo unknown
+		;;
 	esac
 }
 
@@ -116,7 +118,7 @@ get_workflow_platform_versions() {
 get_known_platform_versions() {
 	osname="$1"; shift
 	case ${osname} in
-	Alpine) echo 3.20.0 ;;
+	Alpine) echo 3.20 ;;
 	DragonFlyBSD) echo 6.4.0 ;;
 	Fedora) echo rawhide ;;
 	FreeBSD) echo 14.0 13.3 13.2 12.4 ;;

@@ -57,11 +57,11 @@ static void teardown(void)
   numjobs = -88;
 }
 
-static void assert_all_slots_are_available(int numjobs)
+static void assert_all_slots_are_available(int numslots)
 {
   int j;
 
-  for (j = 0; j < numjobs; j++)
+  for (j = 0; j < numslots; j++)
   {
     assert_job_at_index(j, available);
     ck_assert_ptr_null(jo[j].sender.s);

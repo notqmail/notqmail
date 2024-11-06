@@ -6,7 +6,7 @@ SURPRISE_COUNT=0
 [ -z "${HTML2TEXT}" ] && HTML2TEXT=html2text
 
 fetch_webpage_as_markdown() {
-	curl -sS "$1" | ${HTML2TEXT}
+	curl -sS "$1" | ${HTML2TEXT} --body-width 0
 }
 
 fetch_alpine_upstream_latest_stable() {
@@ -51,6 +51,7 @@ fetch_vmactions_os_versions() {
 		| grep 'All the supported' \
 		| sed -e "s|.*${osname} ||i" -e 's|, test\.releases.*||g' -e 's|,||g' \
 		| tr ' ' '\n' \
+		| grep -v '\-pre$' \
 		| sort -rn \
 		| tr '\n' ' ' \
 		| sed -e 's| $||'
@@ -121,12 +122,12 @@ get_known_platform_versions() {
 	Alpine) echo 3.20 ;;
 	DragonFlyBSD) echo 6.4.0 ;;
 	Fedora) echo rawhide ;;
-	FreeBSD) echo 14.1 14.0 13.3 13.2 12.4 ;;
-	macOS) echo 14 13 12 ;;
+	FreeBSD) echo 15.0 14.1 14.0 13.4 13.3 13.2 12.4 ;;
+	macOS) echo 14 13 ;;
 	NetBSD) echo 10.0 9.4 9.3 9.2 9.1 9.0 ;;
-	OpenBSD) echo 7.5 7.4 7.3 7.2 ;;
+	OpenBSD) echo 7.6 7.5 7.4 7.3 7.2 ;;
 	Solaris) echo 11.4-gcc 11.4 ;;
-	Ubuntu) echo 22.04 20.04 ;;
+	Ubuntu) echo 24.04 22.04 20.04 ;;
 	*) echo unknown ;;
 	esac
 }

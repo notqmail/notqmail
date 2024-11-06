@@ -124,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["14.1", "13.3"] # 12.4 can't fetch packages
+        osversion: ["14.1", "13.4"] # 12.4 can't fetch packages
         abi: [64] # 32
         cflags: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign -Werror=incompatible-library-redeclaration -Werror=empty-body -Werror=pointer-sign"]
         nroff: ["nroff", "no-roff"]
@@ -174,7 +174,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["14", "13", "12"]
+        osversion: ["14", "13"]
         abi: [64]
         warnings: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=incompatible-library-redeclaration -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign"]
         cc: ["clang"]
@@ -235,7 +235,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["7.5", "7.4", "7.3"]
+        osversion: ["7.6", "7.5", "7.4"]
         abi: [64] # 32
         nroff: ["mandoc", "no-roff"]
     steps:
@@ -310,7 +310,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["22.04"] # 20.04's "check" package is too old
+        osversion: ["24.04"] # 20.04's "check" package is too old
         abi: [64]
         warnings: ["-Wall -Wshadow -Werror=deprecated-declarations -Werror=implicit-function-declaration -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign"]
         cc: ["gcc", "clang"]

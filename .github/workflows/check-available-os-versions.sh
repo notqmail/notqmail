@@ -119,7 +119,7 @@ get_workflow_platform_versions() {
 get_known_platform_versions() {
 	osname="$1"; shift
 	case ${osname} in
-	Alpine) echo 3.20 ;;
+	Alpine) echo 3.21 ;;
 	DragonFlyBSD) echo 6.4.0 ;;
 	Fedora) echo rawhide ;;
 	FreeBSD) echo 15.0 14.1 14.0 13.4 13.3 13.2 12.4 ;;

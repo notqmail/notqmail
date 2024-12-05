@@ -34,7 +34,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: ["x86_64", "x86", "armhf", "armv7", "aarch64", "ppc64le", "riscv64", "s390x"]
-        osversion: ["3.20"]
+        osversion: ["3.21"]
         nroff: ["no-roff"]
     steps:
     - name: Checkout

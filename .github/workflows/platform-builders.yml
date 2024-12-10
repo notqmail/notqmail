@@ -295,7 +295,7 @@ jobs:
           sed -e 's|ar cr |ar Scr |g' make-makelib.sh > make-makelib.sh.tmp && mv make-makelib.sh.tmp make-makelib.sh
           echo "gcc -m${{ matrix.abi }} -s" > conf-ld
           make it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
-          make test
+          make test PKG_CONFIG_PATH=/opt/csw/lib/pkgconfig
 
   ubuntu:
     name: >

@@ -124,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["14.1", "13.4"] # 12.4 can't fetch packages
+        osversion: ["14.2", "13.4"] # 12.4 can't fetch packages
         abi: [64] # 32
         cflags: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign -Werror=incompatible-library-redeclaration -Werror=empty-body -Werror=pointer-sign"]
         nroff: ["nroff", "no-roff"]
@@ -203,7 +203,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["10.0", "9.4"]
+        osversion: ["10.1", "9.4"]
         abi: [64]
         nroff: ["nroff", "no-roff"]
     steps:

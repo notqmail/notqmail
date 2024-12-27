@@ -35,39 +35,39 @@ GEN_SAFE_TIMEOUTWRITE(safewrite,timeout,fd,_exit(1))
 char ssoutbuf[512];
 substdio ssout = SUBSTDIO_FDBUF(safewrite,1,ssoutbuf,sizeof(ssoutbuf));
 
-void flush() { substdio_flush(&ssout); }
-void out(s) char *s; { substdio_puts(&ssout,s); }
+void flush(void) { substdio_flush(&ssout); }
+void out(char *s) { substdio_puts(&ssout,s); }
 
-void die_read() { _exit(1); }
-void die_alarm() { out("451 timeout (#4.4.2)\r\n"); flush(); _exit(1); }
-void die_nomem() { out("421 out of memory (#4.3.0)\r\n"); flush(); _exit(1); }
-void die_control() { out("421 unable to read controls (#4.3.0)\r\n"); flush(); _exit(1); }
-void die_ipme() { out("421 unable to figure out my IP addresses (#4.3.0)\r\n"); flush(); _exit(1); }
-void straynewline() { out("451 See https://cr.yp.to/docs/smtplf.html.\r\n"); flush(); _exit(1); }
+void die_read(void) { _exit(1); }
+void die_alarm(void) { out("451 timeout (#4.4.2)\r\n"); flush(); _exit(1); }
+void die_nomem(void) { out("421 out of memory (#4.3.0)\r\n"); flush(); _exit(1); }
+void die_control(void) { out("421 unable to read controls (#4.3.0)\r\n"); flush(); _exit(1); }
+void die_ipme(void) { out("421 unable to figure out my IP addresses (#4.3.0)\r\n"); flush(); _exit(1); }
+void straynewline(void) { out("451 See https://cr.yp.to/docs/smtplf.html.\r\n"); flush(); _exit(1); }
 
-void err_bmf() { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
-void err_nogateway() { out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n"); }
-void err_unimpl(arg) char *arg; { out("502 unimplemented (#5.5.1)\r\n"); }
-void err_syntax() { out("555 syntax error (#5.5.4)\r\n"); }
-void err_wantmail() { out("503 MAIL first (#5.5.1)\r\n"); }
-void err_wantrcpt() { out("503 RCPT first (#5.5.1)\r\n"); }
-void err_noop(arg) char *arg; { out("250 ok\r\n"); }
-void err_vrfy(arg) char *arg; { out("252 send some mail, i'll try my best\r\n"); }
-void err_qqt() { out("451 qqt failure (#4.3.0)\r\n"); }
+void err_bmf(void) { out("553 sorry, your envelope sender is in my badmailfrom list (#5.7.1)\r\n"); }
+void err_nogateway(void) { out("553 sorry, that domain isn't in my list of allowed rcpthosts (#5.7.1)\r\n"); }
+void err_unimpl(char *arg, void *data) { out("502 unimplemented (#5.5.1)\r\n"); }
+void err_syntax(void) { out("555 syntax error (#5.5.4)\r\n"); }
+void err_wantmail(void) { out("503 MAIL first (#5.5.1)\r\n"); }
+void err_wantrcpt(void) { out("503 RCPT first (#5.5.1)\r\n"); }
+void err_noop(char *arg, void *data) { out("250 ok\r\n"); }
+void err_vrfy(char *arg, void *data) { out("252 send some mail, i'll try my best\r\n"); }
+void err_qqt(void) { out("451 qqt failure (#4.3.0)\r\n"); }
 
 
 stralloc greeting = {0};
 
-void smtp_greet(code) char *code;
+void smtp_greet(char *code)
 {
   substdio_puts(&ssout,code);
   substdio_put(&ssout,greeting.s,greeting.len);
 }
-void smtp_help(arg) char *arg;
+void smtp_help(char *arg, void *data)
 {
   out("214 notqmail home page: https://notqmail.org\r\n");
 }
-void smtp_quit(arg) char *arg;
+void smtp_quit(char *arg, void *data)
 {
   smtp_greet("221 "); out("\r\n"); flush(); _exit(0);
 }
@@ -81,7 +81,7 @@ char *relayclient;
 stralloc helohost = {0};
 char *fakehelo; /* pointer into helohost, or 0 */
 
-void dohelo(arg) char *arg; {
+void dohelo(char *arg) {
   if (!stralloc_copys(&helohost,arg)) die_nomem(); 
   if (!stralloc_0(&helohost)) die_nomem(); 
   fakehelo = case_diffs(remotehost,helohost.s) ? helohost.s : 0;
@@ -93,7 +93,7 @@ int bmfok = 0;
 stralloc bmf = {0};
 struct constmap mapbmf;
 
-void setup()
+void setup(void)
 {
   char *x;
   unsigned long u;
@@ -133,8 +133,7 @@ void setup()
 
 stralloc addr = {0}; /* will be 0-terminated, if addrparse returns 1 */
 
-int addrparse(arg)
-char *arg;
+int addrparse(char *arg)
 {
   int i;
   char ch;
@@ -193,7 +192,7 @@ char *arg;
   return 1;
 }
 
-int bmfcheck()
+int bmfcheck(void)
 {
   int j;
   if (!bmfok) return 0;
@@ -204,7 +203,7 @@ int bmfcheck()
   return 0;
 }
 
-int addrallowed()
+int addrallowed(void)
 {
   int r;
   r = rcpthosts(addr.s,str_len(addr.s));
@@ -218,22 +217,22 @@ int flagbarf; /* defined if seenmail */
 stralloc mailfrom = {0};
 stralloc rcptto = {0};
 
-void smtp_helo(arg) char *arg;
+void smtp_helo(char *arg, void *data)
 {
   smtp_greet("250 "); out("\r\n");
   seenmail = 0; dohelo(arg);
 }
-void smtp_ehlo(arg) char *arg;
+void smtp_ehlo(char *arg, void *data)
 {
   smtp_greet("250-"); out("\r\n250-PIPELINING\r\n250 8BITMIME\r\n");
   seenmail = 0; dohelo(arg);
 }
-void smtp_rset(arg) char *arg;
+void smtp_rset(char *arg, void *data)
 {
   seenmail = 0;
   out("250 flushed\r\n");
 }
-void smtp_mail(arg) char *arg;
+void smtp_mail(char *arg, void *data)
 {
   if (!addrparse(arg)) { err_syntax(); return; }
   flagbarf = bmfcheck();
@@ -243,7 +242,7 @@ void smtp_mail(arg) char *arg;
   if (!stralloc_0(&mailfrom)) die_nomem();
   out("250 ok\r\n");
 }
-void smtp_rcpt(arg) char *arg; {
+void smtp_rcpt(char *arg, void *data) {
   if (!seenmail) { err_wantmail(); return; }
   if (!addrparse(arg)) { err_syntax(); return; }
   if (flagbarf) { err_bmf(); return; }
@@ -276,8 +275,7 @@ substdio ssin = SUBSTDIO_FDBUF(saferead,0,ssinbuf,sizeof(ssinbuf));
 struct qmail qqt;
 unsigned int bytestooverflow = 0;
 
-void put(ch)
-char *ch;
+void put(char *ch)
 {
   if (bytestooverflow)
     if (!--bytestooverflow)
@@ -285,8 +283,7 @@ char *ch;
   qmail_put(&qqt,ch,1);
 }
 
-void blast(hops)
-int *hops;
+void blast(int *hops)
 {
   char ch;
   int state;
@@ -347,7 +344,7 @@ int *hops;
 }
 
 char accept_buf[FMT_ULONG];
-void acceptmessage(qp) unsigned long qp;
+void acceptmessage(unsigned long qp)
 {
   datetime_sec when;
   when = now();
@@ -360,7 +357,7 @@ void acceptmessage(qp) unsigned long qp;
   out("\r\n");
 }
 
-void smtp_data(arg) char *arg; {
+void smtp_data(char *arg, void *data) {
   int hops;
   unsigned long qp;
   char *qqx;
@@ -389,28 +386,42 @@ void smtp_data(arg) char *arg; {
   out("\r\n");
 }
 
-struct commands smtpcommands[] = {
-  { "rcpt", smtp_rcpt, 0 }
-, { "mail", smtp_mail, 0 }
-, { "data", smtp_data, flush }
-, { "quit", smtp_quit, flush }
-, { "helo", smtp_helo, flush }
-, { "ehlo", smtp_ehlo, flush }
-, { "rset", smtp_rset, 0 }
-, { "help", smtp_help, flush }
-, { "noop", err_noop, flush }
-, { "vrfy", err_vrfy, flush }
-, { 0, err_unimpl, flush }
+struct command smtpcommands[] = {
+  { "rcpt", smtp_rcpt, 0, 0 }
+, { "mail", smtp_mail, 0, 0 }
+, { "data", smtp_data, flush, 0 }
+, { "quit", smtp_quit, flush, 0 }
+, { "helo", smtp_helo, flush, 0 }
+, { "ehlo", smtp_ehlo, flush, 0 }
+, { "rset", smtp_rset, 0, 0 }
+, { "help", smtp_help, flush, 0 }
+, { "noop", err_noop, flush, 0 }
+, { "vrfy", err_vrfy, flush, 0 }
+, { 0, err_unimpl, flush, 0 }
 } ;
 
 int main(void)
 {
+  stralloc line = {0};
   sig_pipeignore();
   if (chdir(auto_qmail) == -1) die_control();
   setup();
   if (ipme_init() != 1) die_ipme();
   smtp_greet("220 ");
   out(" ESMTP\r\n");
-  if (commands(&ssin,&smtpcommands) == 0) die_read();
-  die_nomem();
+  for (;;) {
+    line.len = 0;
+
+    for (;;) {
+      int j;
+      if (!stralloc_readyplus(&line, 1))
+        die_nomem();
+      j = substdio_get(&ssin, line.s + line.len, 1);
+      if (j == 0)
+        die_read();
+      if (line.s[line.len] == '\n') break;
+      ++line.len;
+    }
+    execute_command(line.s, line.len, smtpcommands);
+  }
 }

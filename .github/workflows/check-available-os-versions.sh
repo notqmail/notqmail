@@ -47,11 +47,8 @@ fetch_github_runner_os_versions() {
 fetch_vmactions_os_versions() {
 	osname="$1"
 	osname_lower="$(echo ${osname} | tr '[:upper:]' '[:lower:]')"
-	fetch_webpage_as_markdown "https://github.com/vmactions/${osname_lower}-vm" \
-		| grep 'All the supported' \
-		| sed -e "s|.*${osname} ||i" -e 's|, test\.releases.*||g' -e 's|,||g' \
-		| tr ' ' '\n' \
-		| grep -v '\-pre$' \
+	fetch_webpage_as_markdown "https://raw.githubusercontent.com/vmactions/${osname_lower}-vm/refs/heads/main/conf/test.releases" \
+		| sed -e 's|, *|\n|g' -e 's|"||g' \
 		| sort -rn \
 		| tr '\n' ' ' \
 		| sed -e 's| $||'
@@ -81,11 +78,16 @@ fetch_os_versions() {
 check_os_versions() {
 	osname="$1"; shift
 	known="$@"
-	available="$(fetch_os_versions ${osname})"
-	[ "${known}" = "${available}" ] || {
+	found="$(fetch_os_versions ${osname})"
+	[ "${known}" = "${found}" ] || {
 		SURPRISE_COUNT=$(expr 1 + ${SURPRISE_COUNT})
-		echo "==> known to us: ${known}"
-		echo "==> now existing: ${available}"
+		versions_known="$(mktemp)"
+		versions_found="$(mktemp)"
+		trap "rm -f '${versions_known}' '${versions_found}'" 0 2 3 15
+		echo "${known}" > "${versions_known}"
+		echo "${found}" > "${versions_found}"
+		git diff --no-index --no-prefix --no-relative --word-diff "${versions_known}" "${versions_found}" || true
+		rm -f "${versions_known}" "${versions_found}"
 	}
 }
 
@@ -122,10 +124,10 @@ get_known_platform_versions() {
 	Alpine) echo 3.21 ;;
 	DragonFlyBSD) echo 6.4.0 ;;
 	Fedora) echo rawhide ;;
-	FreeBSD) echo 15.0 14.2 14.1 14.0 13.4 13.3 13.2 12.4 ;;
+	FreeBSD) echo 15.0 14.2 14.1 14.0 13.4 13.3 13.2 ;;
 	macOS) echo 14 13 ;;
 	NetBSD) echo 10.1 10.0 9.4 9.3 9.2 9.1 9.0 ;;
-	OpenBSD) echo 7.6 7.5 7.4 7.3 7.2 ;;
+	OpenBSD) echo 7.6 7.5 7.4 7.3 ;;
 	Solaris) echo 11.4-gcc 11.4 ;;
 	Ubuntu) echo 24.04 22.04 20.04 ;;
 	*) echo unknown ;;

@@ -34,7 +34,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: ["x86_64", "x86", "armhf", "armv7", "aarch64", "ppc64le", "riscv64", "s390x"]
-        osversion: ["3.21"]
+        osversion: ["3.22"]
         nroff: ["no-roff"]
     steps:
     - name: Checkout
@@ -64,8 +64,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["6.4.0"]
-        abi: [64]
+        osversion: ["6.4.2"]
+        abi: ["64"]
         nroff: ["mandoc", "no-roff"]
     steps:
     - name: Checkout
@@ -96,8 +96,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["14.2", "13.4"] # 12.4 can't fetch packages
-        abi: [64] # 32
+        osversion: ["14.3", "13.5"]
+        abi: ["64"]
         cflags: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign -Werror=incompatible-library-redeclaration -Werror=empty-body -Werror=pointer-sign"]
         nroff: ["nroff", "no-roff"]
     steps:
@@ -146,7 +146,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["14", "13"]
+        osversion: ["15", "14", "13"]
         abi: [64]
         warnings: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=incompatible-library-redeclaration -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign"]
         cc: ["clang"]
@@ -207,7 +207,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["7.6", "7.5", "7.4"]
+        osversion: ["7.7", "7.6"]
         abi: [64] # 32
         nroff: ["mandoc", "no-roff"]
     steps:

@@ -22,7 +22,7 @@ extern int res_search();
 
 #define MAX_EDNS_RESPONSE_SIZE 65536
 
-static unsigned short getshort(c) unsigned char *c;
+static unsigned short nqgetshort(unsigned char *c)
 { unsigned short u; u = c[0]; return (u << 8) + c[1]; }
 
 static struct { unsigned char *buf; } response;
@@ -114,8 +114,8 @@ int wanttype;
  i = responseend - responsepos;
  if (i < 4 + 3 * 2) return DNS_SOFT;
    
- rrtype = getshort(responsepos);
- rrdlen = getshort(responsepos + 8);
+ rrtype = nqgetshort(responsepos);
+ rrdlen = nqgetshort(responsepos + 8);
  responsepos += 10;
 
  if (rrtype == wanttype)
@@ -148,8 +148,8 @@ int wanttype;
  i = responseend - responsepos;
  if (i < 4 + 3 * 2) return DNS_SOFT;
    
- rrtype = getshort(responsepos);
- rrdlen = getshort(responsepos + 8);
+ rrtype = nqgetshort(responsepos);
+ rrdlen = nqgetshort(responsepos + 8);
  responsepos += 10;
 
  if (rrtype == wanttype)
@@ -186,8 +186,8 @@ int wanttype;
  i = responseend - responsepos;
  if (i < 4 + 3 * 2) return DNS_SOFT;
    
- rrtype = getshort(responsepos);
- rrdlen = getshort(responsepos + 8);
+ rrtype = nqgetshort(responsepos);
+ rrdlen = nqgetshort(responsepos + 8);
  responsepos += 10;
 
  if (rrtype == wanttype)

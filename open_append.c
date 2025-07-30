@@ -1,3 +1,6 @@
+#if defined(__sun)
+#define __EXTENSIONS__
+#endif
 #include <sys/types.h>
 #include <fcntl.h>
 #include "open.h"

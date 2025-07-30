@@ -3,6 +3,7 @@
 #include "select.h"
 #include "error.h"
 #include "readwrite.h"
+#include <string.h>
 
 ssize_t timeoutread(int t, int fd, char *buf, size_t len)
 {

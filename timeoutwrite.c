@@ -3,6 +3,7 @@
 #include "select.h"
 #include "error.h"
 #include "readwrite.h"
+#include <string.h>
 
 ssize_t timeoutwrite(int t, int fd, const void *buf, size_t len)
 {

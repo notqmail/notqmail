@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/file.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include "hasflock.h"
 #include "lock.h"

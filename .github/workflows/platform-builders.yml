@@ -89,6 +89,7 @@ jobs:
     name: >
       FreeBSD
       ${{ matrix.osversion }}
+      ${{ matrix.platform }}
       ${{ matrix.abi == '64' && ' ' || matrix.abi }}
       ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
       ${{ matrix.cflags == '' && ' ' || 'max-Werror' }}
@@ -96,6 +97,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        platform: ["x86_64", "aarch64"]
         osversion: ["14.3", "13.5"]
         abi: ["64"]
         cflags: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign -Werror=incompatible-library-redeclaration -Werror=empty-body -Werror=pointer-sign"]
@@ -107,6 +109,7 @@ jobs:
       uses: vmactions/freebsd-vm@v1
       with:
         release: ${{ matrix.osversion }}
+        arch: ${{ matrix.platform }}
         usesh: true
         prepare: |
           set -e

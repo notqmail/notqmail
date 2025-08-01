@@ -48,7 +48,7 @@ fetch_vmactions_os_versions() {
 	osname="$1"
 	osname_lower="$(echo ${osname} | tr '[:upper:]' '[:lower:]')"
 	fetch_webpage_as_markdown "https://raw.githubusercontent.com/vmactions/${osname_lower}-vm/refs/heads/main/conf/test.releases" \
-		| sed -e 's|, *|\n|g' -e 's|"||g' \
+		| sed -e 's| ,|,|g' -e 's|, *|\n|g' -e 's|"||g' -e 's| $||g' \
 		| sort -rn \
 		| tr '\n' ' ' \
 		| sed -e 's| $||'
@@ -63,7 +63,7 @@ fetch_os_versions() {
 	Fedora)
 		echo rawhide
 		;;
-	*BSD|Solaris)
+	*BSD|OmniOS|Solaris)
 		fetch_vmactions_os_versions $1
 		;;
 	macOS|Ubuntu)
@@ -127,6 +127,7 @@ get_known_platform_versions() {
 	FreeBSD) echo 14.3 14.2 14.1 14.0 13.5 13.4 13.3 13.2 ;;
 	macOS) echo 15 14 13 ;;
 	NetBSD) echo 10.1 10.0 9.4 9.3 9.2 9.1 9.0 ;;
+	OmniOS) echo r151054 r151052 r151050 r151048 r151046 ;;
 	OpenBSD) echo 7.7 7.6 7.5 7.4 7.3 ;;
 	Solaris) echo 11.4-gcc 11.4 ;;
 	Ubuntu) echo 24.04 22.04 ;;

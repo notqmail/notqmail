@@ -150,7 +150,7 @@ jobs:
       fail-fast: false
       matrix:
         osversion: ["15", "14", "13"]
-        abi: [64]
+        abi: ["64"]
         warnings: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=incompatible-library-redeclaration -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign"]
         cc: ["clang"]
         nroff: ["mandoc", "no-roff"]
@@ -179,7 +179,7 @@ jobs:
       fail-fast: false
       matrix:
         osversion: ["10.1", "9.4"]
-        abi: [64]
+        abi: ["64"]
         nroff: ["nroff", "no-roff"]
     steps:
     - name: Checkout
@@ -199,6 +199,46 @@ jobs:
           make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
           make -j 2 test
 
+  omnios:
+    name: >
+      OmniOS
+      ${{ matrix.osversion }}
+      ${{ matrix.abi == '64' && ' ' || matrix.abi }}
+      ${{ matrix.cc == 'gcc' && ' ' || matrix.cc }}
+      ${{ matrix.nroff == 'nroff' && ' ' || matrix.nroff }}
+      ${{ matrix.nroff == 'no-roff' && 'no-obsolete' || ' ' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        osversion: ["r151054"]
+        abi: ["64", "32"]
+        cc: ["gcc", "clang"]
+        nroff: ["mandoc", "no-roff"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build and Test
+      uses: vmactions/omnios-vm@v1
+      with:
+        release: ${{ matrix.osversion }}
+        usesh: true
+        prepare: |
+          set -e
+          pkg install developer/gcc14 developer/clang-19
+          BOOTSTRAP_TAR="bootstrap-trunk-x86_64-20240116.tar.gz"
+          curl -O https://pkgsrc.smartos.org/packages/SmartOS/bootstrap/${BOOTSTRAP_TAR}
+          tar -zxpf ${BOOTSTRAP_TAR} -C /
+          PATH=/opt/local/sbin:/opt/local/bin:$PATH
+          pkgin -y install pkg-config check
+        run: |
+          set -e
+          PATH=/opt/local/sbin:/opt/local/bin:$PATH
+          echo "${{ matrix.cc }} -m${{ matrix.abi }} -O2 ${{ matrix.nroff == 'no-roff' && '-DDEPRECATED_FUNCTIONS_REMOVED' || ' ' }}" > conf-cc
+          echo "${{ matrix.cc }} -m${{ matrix.abi }} -s" > conf-ld
+          make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
+          if [ "${{ matrix.abi }}" = "64" ]; then make -j 2 test; fi
+
   openbsd:
     name: >
       OpenBSD
@@ -211,7 +251,7 @@ jobs:
       fail-fast: false
       matrix:
         osversion: ["7.7", "7.6"]
-        abi: [64] # 32
+        abi: ["64"]
         nroff: ["mandoc", "no-roff"]
     steps:
     - name: Checkout
@@ -244,7 +284,7 @@ jobs:
       matrix:
         osversion: ["11.4-gcc"]
         osdisplayversion: ["11.4"]
-        abi: [64] # 32
+        abi: ["64"]
         nroff: ["nroff", "no-roff"]
         libcheck: ["0.15.2"]
     steps:
@@ -286,7 +326,7 @@ jobs:
       fail-fast: false
       matrix:
         osversion: ["24.04"] # 20.04's "check" package is too old
-        abi: [64]
+        abi: ["64"]
         warnings: ["-Wall -Wshadow -Werror=deprecated-declarations -Werror=implicit-function-declaration -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign"]
         cc: ["gcc", "clang"]
         nroff: ["nroff", "no-roff"]
@@ -300,6 +340,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install check
         echo "${{ matrix.cc }} ${{ matrix.nroff == 'no-roff' && '-DDEPRECATED_FUNCTIONS_REMOVED' || ' ' }} -O2 -fPIC ${{ matrix.warnings }} ${{ matrix.cc == 'clang' && '-Werror=incompatible-library-redeclaration' || ' ' }}" > conf-cc
+        echo "${{ matrix.cc }} -s" > conf-ld
         [ "${{ matrix.utmp }}" = "force-old-utmp" ] && echo "break utmpx detection" >> tryutmpx.c
         make -j 2 it man NROFF=${{ matrix.nroff == 'no-roff' && 'true' || matrix.nroff }}
         make -j 2 test

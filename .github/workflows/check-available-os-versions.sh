@@ -25,8 +25,8 @@ fetch_github_runner_list() {
 		| grep -v ' beta ' \
 		| grep -v ' deprecated ' \
 		| grep -v 'windows-' \
-		| cut -d'|' -f2 \
-		| sed -e 's| or |\n|g' -e 's|, |\n|g' -e 's|^ ||' -e 's|`||g' -e 's| $||' \
+		| cut -d'|' -f3 \
+		| sed -e 's| or |\n|g' -e 's|, |\n|g' -e 's|,|\n|g' -e 's|^ ||' -e 's|`||g' -e 's| $||' \
 		| grep -v -- '-latest' \
 		| grep -v -- '-large' \
 		| grep -v -- '-xlarge' \
@@ -121,16 +121,16 @@ get_workflow_platform_versions() {
 get_known_platform_versions() {
 	osname="$1"; shift
 	case ${osname} in
-	Alpine) echo 3.22 ;;
-	DragonFlyBSD) echo 6.4.2 6.4.1 6.4.0 ;;
+	Alpine) echo 3.23 ;;
+	DragonFlyBSD) echo 6.4.2 6.4.1 ;;
 	Fedora) echo rawhide ;;
-	FreeBSD) echo 14.3 14.2 14.1 14.0 13.5 13.4 13.3 13.2 ;;
-	macOS) echo 15 14 13 ;;
+	FreeBSD) echo 15.0 14.3 14.2 14.1 14.0 13.5 13.4 13.3 13.2 ;;
+	macOS) echo 26 15-intel 15 14 ;;
 	NetBSD) echo 10.1 10.0 9.4 9.3 9.2 9.1 9.0 ;;
-	OmniOS) echo r151054 r151052 r151050 r151048 r151046 ;;
-	OpenBSD) echo 7.7 7.6 7.5 7.4 7.3 ;;
-	Solaris) echo 11.4-gcc 11.4 ;;
-	Ubuntu) echo 24.04 22.04 ;;
+	OmniOS) echo r151056 r151054 r151052 r151050 r151048 r151046 ;;
+	OpenBSD) echo 7.8 7.7 ;;
+	Solaris) echo 11.4-gcc-14 11.4-gcc 11.4-clang-19 11.4 ;;
+	Ubuntu) echo 24.04 22.04 slim ;;
 	*) echo unknown ;;
 	esac
 }

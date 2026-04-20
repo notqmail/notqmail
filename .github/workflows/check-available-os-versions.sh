@@ -124,7 +124,7 @@ get_known_platform_versions() {
 	Alpine) echo 3.23 ;;
 	DragonFlyBSD) echo 6.4.2 6.4.1 ;;
 	Fedora) echo rawhide ;;
-	FreeBSD) echo 15.0 14.3 14.2 14.1 14.0 13.5 13.4 13.3 13.2 ;;
+	FreeBSD) echo 15.0 14.4 14.3 14.2 14.1 14.0 13.5 13.4 13.3 13.2 ;;
 	macOS) echo 26 15-intel 15 14 ;;
 	NetBSD) echo 10.1 10.0 9.4 9.3 9.2 9.1 9.0 ;;
 	OmniOS) echo r151056 r151054 r151052 r151050 r151048 r151046 ;;

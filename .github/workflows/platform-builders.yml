@@ -98,7 +98,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: ["x86_64", "aarch64"]
-        osversion: ["15.0", "14.3"]
+        osversion: ["15.0", "14.4"]
         abi: ["64"]
         cflags: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=deprecated-declarations -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign -Werror=incompatible-library-redeclaration -Werror=empty-body -Werror=pointer-sign"]
         nroff: ["nroff", "no-roff"]

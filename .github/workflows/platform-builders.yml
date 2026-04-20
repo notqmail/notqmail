@@ -149,7 +149,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["26", "15-intel", "14"]
+        osversion: ["26", "26-intel", "14"]
         abi: ["64"]
         warnings: ["-Wall -Wshadow -Werror=implicit-function-declaration -Werror=incompatible-library-redeclaration -Werror=parentheses -Werror=dangling-else -Werror=pointer-sign"]
         cc: ["clang"]

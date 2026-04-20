@@ -127,7 +127,7 @@ get_known_platform_versions() {
 	FreeBSD) echo 15.0 14.4 14.3 14.2 14.1 14.0 13.5 13.4 13.3 13.2 ;;
 	macOS) echo 26 26-intel 15-intel 15 14 ;;
 	NetBSD) echo 10.1 10.0 9.4 9.3 9.2 9.1 9.0 ;;
-	OmniOS) echo r151056 r151054 r151052 r151050 r151048 r151046 ;;
+	OmniOS) echo r151056-build r151056 r151054 r151052 r151050 r151048 r151046 ;;
 	OpenBSD) echo 7.8 7.7 ;;
 	Solaris) echo 11.4-gcc-14 11.4-gcc 11.4-clang-19 11.4 ;;
 	Ubuntu) echo 24.04 22.04 slim ;;

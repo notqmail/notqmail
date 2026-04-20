@@ -211,7 +211,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        osversion: ["r151056"]
+        osversion: ["r151056-build"]
         abi: ["64", "32"]
         cc: ["gcc", "clang"]
         nroff: ["mandoc", "no-roff"]
@@ -225,7 +225,7 @@ jobs:
         usesh: true
         prepare: |
           set -e
-          pkg install developer/gcc14 developer/clang-19
+          pkg install developer/clang-19
           BOOTSTRAP_TAR="bootstrap-trunk-x86_64-20240116.tar.gz"
           curl -O https://pkgsrc.smartos.org/packages/SmartOS/bootstrap/${BOOTSTRAP_TAR}
           tar -zxpf ${BOOTSTRAP_TAR} -C /

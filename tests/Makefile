@@ -9,7 +9,11 @@ default: it
 
 .PHONY: clean default it test
 
-TESTBINS = unittest_stralloc unittest_qmail-remote unittest_prioq unittest_qmail-send
+TESTBINS = unittest_qmail-remote \
+	unittest_qmail-send \
+	unittest_prioq \
+	unittest_smtpcode \
+	unittest_stralloc
 
 clean:
 	rm -f $(TESTBINS) *.o *-without-main.c
@@ -41,11 +45,11 @@ qmail-remote-without-main.o: \
 
 unittest_qmail-remote: \
 ../load unittest_qmail-remote.o qmail-remote-without-main.o ../control.o ../ip.o ../constmap.o \
-../timeoutread.o ../timeoutwrite.o ../quote.o \
+../timeoutread.o ../timeoutwrite.o ../quote.o ../smtpcode.o \
 ../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a ../str.a \
 ../getln.a ../case.a
 	../load unittest_qmail-remote qmail-remote-without-main.o ../control.o ../ip.o ../constmap.o \
-	../timeoutread.o ../timeoutwrite.o ../quote.o \
+	../timeoutread.o ../timeoutwrite.o ../quote.o ../smtpcode.o \
 	../stralloc.a ../str.a ../error.a ../substdio.a ../fs.a ../open.a \
 	../getln.a ../str.a ../case.a \
 	`pkg-config --libs check`
@@ -86,4 +90,14 @@ unittest_qmail-send: \
 unittest_qmail-send.o: \
 ../compile unittest_qmail-send.c qmail-send-without-main.c
 	../compile unittest_qmail-send.c -I.. \
+	`pkg-config --cflags check`
+
+unittest_smtpcode: \
+../load unittest_smtpcode.o ../smtpcode.o ../stralloc.a ../substdio.a ../str.a
+	../load unittest_smtpcode ../smtpcode.o ../stralloc.a ../substdio.a ../str.a \
+	`pkg-config --libs check`
+
+unittest_smtpcode.o: \
+../compile unittest_smtpcode.c ../smtpcode.h ../stralloc.h ../substdio.h
+	../compile unittest_smtpcode.c -I.. \
 	`pkg-config --cflags check`

@@ -373,3 +373,8 @@ forgeries.0
 setup
 qtmp.h
 qmail-send.service
+caldate_fmjd.o
+caltime_utc.o
+leapsecs_init.o
+leapsecs_sub.o
+tai_unpack.o

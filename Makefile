@@ -6,7 +6,7 @@ RELEASE_VERSION=1.09
 
 default: it
 
-.PHONY: check clean default it man test
+.PHONY: check clean default it man package test setup
 .PHONY: release-changes release-commit release-copyright
 .PHONY: release-signatures release-tag release-tag-push release-tarballs
 

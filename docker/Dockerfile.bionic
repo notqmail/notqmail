@@ -1,0 +1,37 @@
+# docker build -f dockerfile.focal -t cprogrammer/indimail:focal
+# run dpkg-reconfigure tzdata after starting the container
+From ubuntu:bionic
+MAINTAINER cprogrammer
+
+# Freshen RUN apt-get -y update
+RUN export DEBIAN_FRONTEND=noninteractive \
+	&& mkdir -p /root /usr/libexec/notqmail \
+	&& apt-get -y update \
+	&& apt-get -y install wget gnupg2 apt-utils \
+	&& wget -nv https://download.opensuse.org/repositories/home:notqmail/xUbuntu_18.04/Release.key -O - | apt-key add - \
+	&& echo 'deb http://download.opensuse.org/repositories/home:/notqmail/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/notqmail.list \
+	&& apt-get -y update \
+	&& apt-get -y install \
+		debianutils \
+		binutils \
+		net-tools \
+		openssl \
+		procps \
+		psmisc \
+		rsyslog \
+		telnet \
+		notqmail \
+	&& (sed -i -e 's{^module(load="imklog".*{#&{' /etc/rsyslog.conf; \
+		echo "/var/qmail/alias/Maildir/" > /var/qmail/alias/.qmail-root; \
+		mkdir -p /var/qmail/alias/Maildir/tmp; \
+		mkdir -p /var/qmail/alias/Maildir/new; \
+		mkdir -p /var/qmail/alias/Maildir/cur; \
+		chown -R alias:qmail /var/qmail/alias/Maildir) \
+	&& (update-alternatives --install /usr/sbin/sendmail mta /var/qmail/bin/sendmail 120 \
+        --slave /usr/bin/mailq mta-mailq /var/qmail/bin/qmail-qread \
+        --slave /usr/lib/sendmail mta-sendmail /var/qmail/bin/sendmail) \
+	&& ln -s /usr/libexec/notqmail/docker-entrypoint /usr/sbin/docker-entrypoint \
+	&& unset DEBIAN_FRONTEND
+COPY docker-entrypoint config-fast /usr/libexec/notqmail
+ENTRYPOINT ["docker-entrypoint"]
+CMD ["notqmail"]

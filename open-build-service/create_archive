@@ -1,0 +1,11 @@
+#!/bin/sh
+version=$(cat conf-version)
+if [ ! -f  create_archive ] ; then
+	echo "create_archive not found in current directory" 1>&2
+	exit 1
+fi
+cd ..
+echo "Preparing notqmail-"$version""
+mkdir -p $HOME/stage
+echo git archive --format=tar.gz --prefix=notqmail-"$version"/ -o $HOME/stage/notqmail-"$version".tar.gz notqmail-"$version"
+git archive --format=tar.gz --prefix=notqmail-"$version"/ -o $HOME/stage/notqmail-"$version".tar.gz notqmail-"$version"

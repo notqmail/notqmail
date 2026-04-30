@@ -1,0 +1,12 @@
+# /etc/permissions.secure is designed for the use in a multi-user and
+# networked installation. Most privileged file modes are disabled here.
+# Many programs that still have their suid- or sgid-modes have had their
+# security problems in the past already.
+#
+# Binaries
+#
+/var/qmail/bin/qmail-queue      qmailq:qmail   4711
+#
+# Directories
+#
+/var/qmail/alias/                alias:qmail    2755

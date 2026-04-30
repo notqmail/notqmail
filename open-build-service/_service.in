@@ -1,0 +1,8 @@
+<services>
+  <service name="download_url">
+    <param
+	name="host">github.com</param>
+    <param name="protocol">https</param>
+    <param name="path">/notqmail/notqmail/releases/download/notqmail-@version@/notqmail-@version@.tar.xz</param>
+  </service>
+</services>

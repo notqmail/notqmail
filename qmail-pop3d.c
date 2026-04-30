@@ -24,8 +24,8 @@ void die() { _exit(0); }
 
 extern int rename(const char *, const char *);
 
-GEN_SAFE_TIMEOUTREAD(saferead,1200,fd,die())
-GEN_SAFE_TIMEOUTWRITE(safewrite,1200,fd,die())
+GEN_SAFE_TIMEOUTREAD(saferead,1200,die())
+GEN_SAFE_TIMEOUTWRITE(safewrite,1200,die())
 
 char sserrbuf[128];
 substdio sserr = SUBSTDIO_FDBUF(safewrite,2,sserrbuf,sizeof(sserrbuf));

@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Build and Test
       run: |
         set -e
@@ -39,7 +39,7 @@ jobs:
         nroff: ["no-roff"]
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Prepare
       uses: jirutka/setup-alpine@v1
       with:
@@ -70,7 +70,7 @@ jobs:
         nroff: ["mandoc", "no-roff"]
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Build and Test
       uses: vmactions/dragonflybsd-vm@v1
       with:
@@ -105,7 +105,7 @@ jobs:
         nroff: ["nroff", "no-roff"]
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Build and Test
       uses: vmactions/freebsd-vm@v1
       with:
@@ -158,7 +158,7 @@ jobs:
         utmp: ["autoselect", "force-old-utmp"]
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Build and Test
       run: |
         set -e
@@ -184,7 +184,7 @@ jobs:
         nroff: ["nroff", "no-roff"]
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Build and Test
       uses: vmactions/netbsd-vm@v1
       with:
@@ -218,7 +218,7 @@ jobs:
         nroff: ["mandoc", "no-roff"]
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Build and Test
       uses: vmactions/omnios-vm@v1
       with:
@@ -256,7 +256,7 @@ jobs:
         nroff: ["mandoc", "no-roff"]
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Build and Test
       uses: vmactions/openbsd-vm@v1
       with:
@@ -290,7 +290,7 @@ jobs:
         libcheck: ["0.15.2"]
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Build and Test
       uses: vmactions/solaris-vm@v1
       with:
@@ -334,7 +334,7 @@ jobs:
         utmp: ["autoselect", "force-old-utmp"]
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Build and Test
       run: |
         set -e

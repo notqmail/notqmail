@@ -1,3 +1,4 @@
+- 20260910 cleanup: remove archaic qbiff tty based mail notification
 - 20240506 version: notqmail 1.09.
 - 20240323 code: declare `op()` parameter list in `allwrite()`.
 - 20240323 code: declare `substdio_flush()` parameter list.

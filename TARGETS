@@ -274,8 +274,6 @@ ipmeprint.o
 ipmeprint
 qreceipt.o
 qreceipt
-qbiff.o
-qbiff
 forward.o
 forward
 preline.o
@@ -344,7 +342,6 @@ tcp-env.0
 qmail-newmrh.8
 qmail-newmrh.0
 qreceipt.0
-qbiff.0
 forward.0
 preline.0
 condredirect.0
@@ -371,5 +368,4 @@ addresses.0
 envelopes.0
 forgeries.0
 setup
-qtmp.h
 qmail-send.service

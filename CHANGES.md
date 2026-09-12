@@ -1,3 +1,5 @@
+- 20260912 cleanup: remove `qbiff`, which is mbox tooling that should have
+           gone away with the `elq`, `pinq`, and `qail` wrappers.
 - 20240506 version: notqmail 1.09.
 - 20240323 code: declare `op()` parameter list in `allwrite()`.
 - 20240323 code: declare `substdio_flush()` parameter list.

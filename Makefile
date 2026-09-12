@@ -810,7 +810,7 @@ predate datemail mailsubj qmail-upq qmail-showctl qmail-newu \
 qmail-pw2u qmail-qread qmail-qstat qmail-tcpto qmail-tcpok \
 qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
 qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast \
-dnsptr dnsip dnsfq hostname ipmeprint qreceipt qbiff \
+dnsptr dnsip dnsfq hostname ipmeprint qreceipt \
 forward preline condredirect bouncesaying except maildirmake \
 maildir2mbox install instpackage instchown \
 instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
@@ -914,7 +914,7 @@ qmail-rspawn.0 qmail-clean.0 qmail-send.0 qmail-start.0 splogger.0 \
 qmail-queue.0 qmail-inject.0 mailsubj.0 qmail-showctl.0 qmail-newu.0 \
 qmail-pw2u.0 qmail-qread.0 qmail-qstat.0 qmail-tcpto.0 qmail-tcpok.0 \
 qmail-pop3d.0 qmail-popup.0 qmail-qmqpc.0 qmail-qmqpd.0 qmail-qmtpd.0 \
-qmail-smtpd.0 tcp-env.0 qmail-newmrh.0 qreceipt.0 qbiff.0 forward.0 \
+qmail-smtpd.0 tcp-env.0 qmail-newmrh.0 qreceipt.0 forward.0 \
 preline.0 condredirect.0 bouncesaying.0 except.0 maildirmake.0 \
 maildir2mbox.0 qmail.0 qmail-limits.0 qmail-log.0 \
 qmail-control.0 qmail-header.0 qmail-users.0 dot-qmail.0 \
@@ -1029,20 +1029,6 @@ proc+df.sh conf-qmail
 prot.o: \
 compile prot.c prot.h
 	./compile prot.c
-
-qbiff: \
-load qbiff.o headerbody.o hfield.o getln.a env.a open.a stralloc.a \
-substdio.a error.a str.a
-	./load qbiff headerbody.o hfield.o getln.a env.a open.a \
-	stralloc.a substdio.a error.a str.a
-
-qbiff.0: \
-qbiff.1
-
-qbiff.o: \
-compile qbiff.c readwrite.h stralloc.h gen_alloc.h substdio.h subfd.h \
-substdio.h open.h byte.h str.h headerbody.h hfield.h env.h exit.h qtmp.h
-	./compile qbiff.c
 
 qmail-clean: \
 load qmail-clean.o fmtqfn.o getln.a sig.a stralloc.a \
@@ -1601,12 +1587,6 @@ qsutil.o: \
 compile qsutil.c stralloc.h gen_alloc.h readwrite.h substdio.h \
 qsutil.h
 	./compile qsutil.c
-
-qtmp.h: \
-tryutmpx.c compile load qtmp.h1 qtmp.h2
-	( ( ./compile tryutmpx.c && ./load tryutmpx ) >/dev/null 2>&1 \
-	&& cat qtmp.h2 || cat qtmp.h1 ) > qtmp.h
-	rm -f tryutmpx.o tryutmpx
 
 quote.o: \
 compile quote.c stralloc.h gen_alloc.h str.h quote.h oflops.h error.h

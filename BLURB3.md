@@ -81,7 +81,6 @@ Local delivery (qmail-local):
 * mbox delivery
 * reliable NFS delivery (maildir)
 * user-controlled program delivery: procmail etc. (qmail-command)
-* optional new-mail notification (qbiff)
 * optional NRUDT return receipts (qreceipt)
 * conditional filtering (condredirect, bouncesaying)
 
